@@ -81,18 +81,20 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: austn_production
-    username: austn
-    password: <%= ENV["AUSTN_DATABASE_PASSWORD"] %>
+    url: <%= ENV['DATABASE_URL'] %>
+    database: <%= ENV['DATABASE_NAME'] || 'austn_production' %>
+    username: <%= ENV['DATABASE_USERNAME'] || 'austn' %>
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    host: <%= ENV['DATABASE_HOST'] %>
   cache:
     <<: *primary_production
-    database: austn_production_cache
+    database: <%= ENV['DATABASE_NAME'] || 'austn_production' %>_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: austn_production_queue
+    database: <%= ENV['DATABASE_NAME'] || 'austn_production' %>_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: austn_production_cable
+    database: <%= ENV['DATABASE_NAME'] || 'austn_production' %>_cable
     migrations_paths: db/cable_migrate
