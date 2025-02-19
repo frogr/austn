@@ -4,6 +4,9 @@
 # belong in git's global ignore instead:
 # `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`
 
+node_modules/
+/node_modules/
+node_modules
 # Ignore bundler config.
 /.bundle
 
