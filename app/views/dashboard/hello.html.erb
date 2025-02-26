@@ -1,48 +1,4 @@
 austn. coming soon :D
-
 <% if Rails.env.development? %>
-  <div class="p-8">
-  <h1 class="text-3xl font-bold mb-8">Technology Tests</h1>
-
-  <!-- Tailwind Test -->
-  <div class="mb-8">
-    <h2 class="text-xl font-semibold mb-4">Tailwind Test</h2>
-    <div class="bg-blue-500 text-white p-4 rounded-lg shadow hover:bg-blue-600 transition-colors">
-      This div is styled with Tailwind
-    </div>
-  </div>
-
-  <!-- React Test -->
-  <div class="mb-8">
-    <h2 class="text-xl font-semibold mb-4">React Test</h2>
-    <div data-react-component="HelloWorld"></div>
-  </div>
-
-  <!-- Stimulus Test -->
-  <div class="mb-8">
-    <h2 class="text-xl font-semibold mb-4">Stimulus Test</h2>
-    <div data-controller="hello">
-      <button data-action="click->hello#greet" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-        Click me (Stimulus)
-      </button>
-      <p data-hello-target="output" class="mt-2"></p>
-    </div>
-  </div>
-
-  <!-- Turbo Test -->
-  <div class="mb-8">
-    <h2 class="text-xl font-semibold mb-4">Turbo Test</h2>
-    <%= turbo_frame_tag "messages" do %>
-      <div id="message" class="p-4 bg-gray-100 rounded-lg">
-        Current time: <%= Time.current.strftime('%H:%M:%S') %>
-      </div>
-      <%= form_with(url: turbo_message_path, method: :post) do |f| %>
-        <%= f.submit "Update Time",
-            class: "mt-2 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors",
-            data: { turbo_frame: "messages" }
-        %>
-      <% end %>
-    <% end %>
-  </div>
-</div>
+  <%= render 'asset_tests' %>
 <% end %>
