@@ -1,0 +1,21 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to "← Back to blog", blog_path, class: "text-blue-600 hover:underline" %>
+  </div>
+
+  <article>
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold mb-4"><%= @blog_post.title %></h1>
+      
+      <% if @blog_post.published_at %>
+        <div class="text-gray-600">
+          Published on <%= @blog_post.published_at.strftime("%B %d, %Y") %>
+        </div>
+      <% end %>
+    </header>
+
+    <div class="prose max-w-none">
+      <%= render_markdown(@blog_post.content) %>
+    </div>
+  </article>
+</div>
