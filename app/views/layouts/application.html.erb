@@ -25,7 +25,11 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <!-- Sidebar React Component -->
+    <div data-react-component="Sidebar"></div>
+    
+    <!-- Main content with padding for sidebar -->
+    <main class="ml-64 min-h-screen p-8">
       <%= yield %>
     </main>
   </body>
