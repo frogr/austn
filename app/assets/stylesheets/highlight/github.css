@@ -1,8 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*!
+  Theme: GitHub
+  Description: Light theme as seen on github.com
+  Author: github.com
+  Maintainer: @Hirse
+  Updated: 2021-05-15
 
-/* Highlight.js Theme: GitHub */
+  Outdated base version: https://github.com/primer/github-syntax-light
+  Current colors taken from GitHub's CSS
+*/
+
 .hljs {
   color: #24292e;
   background: #f6f8fa;
@@ -93,4 +99,46 @@
 .hljs-deletion {
   color: #b31d28;
   background-color: #ffeef0;
+}
+
+/* Additional styles for Markdown rendering */
+.markdown-content pre {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.markdown-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  background-color: #f6f8fa;
+  border-radius: 0.25rem;
+}
+
+.markdown-content pre code {
+  padding: 0;
+  background-color: transparent;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+}
+
+.markdown-content table th {
+  background-color: #f9fafb;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  color: #6b7280;
 }

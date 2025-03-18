@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   # Blog routes
   get "/blog", to: "blog#index"
   get "/blog/:slug", to: "blog#show", as: :blog_post
+  get "/blog/:slug/content", to: "blog#content", as: :blog_post_content
 
   # Portfolio routes
   get "/work", to: "portfolio#work"
