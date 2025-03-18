@@ -2,9 +2,9 @@ module BlogHelper
   def render_markdown(text)
     renderer = Redcarpet::Render::HTML.new(
       hard_wrap: true,
-      link_attributes: { target: '_blank', rel: 'noopener noreferrer' }
+      link_attributes: { target: "_blank", rel: "noopener noreferrer" }
     )
-    
+
     markdown = Redcarpet::Markdown.new(
       renderer,
       autolink: true,
@@ -14,7 +14,7 @@ module BlogHelper
       superscript: true,
       highlight: true
     )
-    
+
     raw markdown.render(text)
   end
 end
