@@ -1,3 +1,5 @@
+import React from 'react';
+
 const MarkdownComponents = {
   // Heading components
   h1: ({node, children, ...props}) => (
