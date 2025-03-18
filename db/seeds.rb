@@ -57,7 +57,7 @@ Inline `code` looks like this.
 class BlogPost < ApplicationRecord
   validates :title, presence: true
   validates :content, presence: true
-  
+#{'  '}
   def self.published
     where.not(published_at: nil)
   end
