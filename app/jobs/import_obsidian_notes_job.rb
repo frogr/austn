@@ -2,7 +2,7 @@ class ImportObsidianNotesJob < ApplicationJob
   queue_as :default
 
   OBSIDIAN_PUBLIC_PATH = File.join(
-    ENV['OBSIDIAN_PATH'] || File.join(Dir.home, "Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes/public")
+    ENV["OBSIDIAN_PATH"] || File.join(Dir.home, "Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes/public")
   )
 
   def perform
@@ -12,7 +12,7 @@ class ImportObsidianNotesJob < ApplicationJob
     end
 
     Rails.logger.info "Importing markdown files from #{OBSIDIAN_PUBLIC_PATH}"
-    
+
     Dir.glob(File.join(OBSIDIAN_PUBLIC_PATH, "**/*.md")).each do |file_path|
       process_markdown_file(file_path)
     end
@@ -23,16 +23,16 @@ class ImportObsidianNotesJob < ApplicationJob
   def process_markdown_file(file_path)
     content = File.read(file_path)
     filename = File.basename(file_path, ".md")
-    
+
     # Extract frontmatter and content
     frontmatter, markdown_content = extract_frontmatter(content)
-    
+
     # Skip if the post has a "draft: true" in frontmatter
     return if frontmatter["draft"] == true
-    
+
     title = frontmatter["title"] || filename.titleize
     slug = frontmatter["slug"] || filename.parameterize
-    
+
     blog_post = BlogPost.find_or_initialize_by(slug: slug)
     blog_post.assign_attributes(
       title: title,
@@ -40,7 +40,7 @@ class ImportObsidianNotesJob < ApplicationJob
       published_at: frontmatter["date"],
       metadata: frontmatter
     )
-    
+
     if blog_post.save
       Rails.logger.info "Imported: #{title}"
     else
@@ -65,6 +65,6 @@ class ImportObsidianNotesJob < ApplicationJob
       end
     end
 
-    [frontmatter, markdown_content]
+    [ frontmatter, markdown_content ]
   end
 end

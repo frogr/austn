@@ -12,9 +12,17 @@ Rails.application.routes.draw do
   # Blog routes
   get "/blog", to: "blog#index"
   get "/blog/:slug", to: "blog#show", as: :blog_post
+  get "/blog/:slug/content", to: "blog#content", as: :blog_post_content
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  root "dashboard#hello"
-  post 'turbo_message', to: 'dashboard#turbo_message', as: :turbo_message
+  # Portfolio routes
+  get "/work", to: "portfolio#work"
+  get "/contact", to: "portfolio#contact"
+  get "/fun", to: "portfolio#fun"
+
+  # Dashboard for development/testing
+  get "/dashboard", to: "dashboard#hello", as: :dashboard
+  post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message
+
+  # Portfolio as root
+  root "portfolio#index"
 end

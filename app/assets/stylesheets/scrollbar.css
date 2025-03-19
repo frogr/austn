@@ -1,0 +1,56 @@
+/* Custom Timeline Scrollbar Styles */
+body {
+  /* Set scrollbar variables */
+  --scrollbar-width: 8px;
+  --scrollbar-track-color: #f1f1f1;
+  --scrollbar-thumb-color: #888;
+  --scrollbar-thumb-hover: #555;
+  --timeline-dot-color: #aaa;
+  --timeline-dot-size: 4px;
+  --timeline-dot-gap: 100px;
+}
+
+/* Webkit scrollbar customization */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track-color);
+  background-image: 
+    linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent calc(var(--timeline-dot-gap) - var(--timeline-dot-size)/2),
+      var(--timeline-dot-color) calc(var(--timeline-dot-gap) - var(--timeline-dot-size)/2),
+      var(--timeline-dot-color) calc(var(--timeline-dot-gap) + var(--timeline-dot-size)/2),
+      transparent calc(var(--timeline-dot-gap) + var(--timeline-dot-size)/2)
+    );
+  background-repeat: repeat-y;
+  background-position: center;
+  background-size: var(--timeline-dot-size) auto;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox scrollbar customization */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+/* Custom sidebar styles */
+.sidebar a {
+  color: white !important; /* Force white text for all sidebar links */
+}
+
+.sidebar a:hover {
+  color: #fde68a !important; /* TailwindCSS yellow-300 equivalent */
+}

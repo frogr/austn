@@ -17,15 +17,22 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%# Include stylesheets in the correct order %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= javascript_include_tag "application", defer: true %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    
+    <%# Make sure application.css is loaded AFTER tailwind to apply our specific styles %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <!-- Sidebar React Component -->
+    <div data-react-component="Sidebar"></div>
+    
+    <!-- Main content with padding for sidebar -->
+    <main class="ml-64 min-h-screen p-8">
       <%= yield %>
     </main>
   </body>

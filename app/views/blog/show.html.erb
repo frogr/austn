@@ -14,8 +14,13 @@
       <% end %>
     </header>
 
-    <div class="prose max-w-none">
-      <%= render_markdown(@blog_post.content) %>
+    <div class="prose-container max-w-none">   
+      <% content_json = @blog_post.content.to_json %>
+      <div 
+        id="markdown-container"
+        data-react-component="MarkdownRenderer" 
+        data-props='<%= raw({ content: @blog_post.content }.to_json) %>'
+      ></div>
     </div>
   </article>
 </div>
