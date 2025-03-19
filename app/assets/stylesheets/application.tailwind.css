@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Arena Shooter Styles */
+@import url('./arena_shooter.css');
+
 /* Highlight.js Theme: GitHub */
 .hljs {
   color: #24292e;

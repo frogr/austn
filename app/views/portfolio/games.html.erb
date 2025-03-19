@@ -1,0 +1,15 @@
+<div class="container mx-auto px-6 py-12">
+  <h1 class="text-4xl font-bold mb-8">Games</h1>
+  
+  <div data-react-component="GamesGrid" data-props="<%= { 
+    games: [
+      {
+        title: 'Arena Shooter',
+        description: 'A TF2-inspired arena shooter built with Three.js and React',
+        imageUrl: 'https://via.placeholder.com/640x360?text=Arena+Shooter',
+        link: '/games/arena-shooter'
+      }
+      # More games can be added here in the future
+    ]
+  }.to_json.html_safe %>"></div>
+</div>

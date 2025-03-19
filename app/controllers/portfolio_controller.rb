@@ -14,4 +14,12 @@ class PortfolioController < ApplicationController
   def fun
     # Fun projects or personal interests
   end
+  
+  def games
+    # Games showcase page
+  end
+  
+  def arena_shooter
+    # TF2-inspired arena shooter game
+  end
 end

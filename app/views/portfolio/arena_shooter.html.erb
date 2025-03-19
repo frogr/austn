@@ -1,0 +1,69 @@
+<div id="arena-shooter-container" data-controller="arena-shooter" class="w-full h-screen">
+  <!-- The game will be rendered in this container -->
+  <div id="game-ui" class="fixed top-0 left-0 w-full h-full pointer-events-none">
+    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white p-4 rounded-lg flex items-center space-x-8">
+      <div id="health-display">
+        <span class="font-bold">Health:</span>
+        <span id="health-value">100</span>
+      </div>
+      <div id="ammo-display">
+        <span class="font-bold">Ammo:</span>
+        <span id="ammo-value">12</span>/<span id="max-ammo-value">12</span>
+      </div>
+    </div>
+    <div id="crosshair" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+      <div class="w-2 h-2 bg-white rounded-full"></div>
+    </div>
+  </div>
+  
+  <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-black z-50">
+    <div class="text-center">
+      <h2 class="text-2xl font-bold text-white mb-4">Loading Game...</h2>
+      <div class="w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
+        <div id="loading-bar" class="h-full bg-yellow-500 w-0 transition-all duration-300"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="game-over-screen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50 hidden">
+    <div class="text-center">
+      <h2 class="text-4xl font-bold text-white mb-4">Game Over</h2>
+      <p id="final-score" class="text-2xl text-white mb-8">Score: 0</p>
+      <button id="restart-button" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded-lg transition-colors">
+        Play Again
+      </button>
+    </div>
+  </div>
+  
+  <div id="start-screen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+    <div class="text-center">
+      <h2 class="text-4xl font-bold text-white mb-4">Arena Shooter</h2>
+      <p class="text-xl text-white mb-8">Click to play</p>
+      <div class="bg-gray-800 p-6 rounded-lg mb-8 max-w-md mx-auto text-left">
+        <h3 class="font-bold text-white mb-2">Controls:</h3>
+        <ul class="text-gray-300 space-y-2">
+          <li><span class="bg-gray-700 px-2 py-1 rounded">W A S D</span> - Move</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">Mouse</span> - Look around</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">Left Click</span> - Shoot</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">R</span> - Reload</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">1-5</span> - Switch weapons</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">ESC</span> - Release mouse cursor</li>
+        </ul>
+        
+        <h3 class="font-bold text-white mt-4 mb-2">Weapons:</h3>
+        <ul class="text-gray-300 space-y-2">
+          <li><span class="bg-gray-700 px-2 py-1 rounded">1</span> - Pistol: Balanced damage and fire rate</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">2</span> - Assault Rifle: Rapid fire, lower damage</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">3</span> - Shotgun: Multiple pellets, close range</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">4</span> - Rocket Launcher: Splash damage, slow</li>
+          <li><span class="bg-gray-700 px-2 py-1 rounded">5</span> - Sniper Rifle: High damage, slow rate of fire</li>
+        </ul>
+      </div>
+      <button id="start-button" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-lg transition-colors text-xl">
+        Start Game
+      </button>
+    </div>
+  </div>
+</div>
+
+<%= javascript_include_tag "arena_shooter" %>

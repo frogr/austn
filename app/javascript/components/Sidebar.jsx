@@ -48,6 +48,14 @@ const Sidebar = () => {
               Fun
             </a>
           </li>
+          <li>
+            <a 
+              href="/games" 
+              className="block py-2 text-white transition-colors hover:text-yellow-300"
+            >
+              Games
+            </a>
+          </li>
         </ul>
       </nav>
       <div className="p-6">
