@@ -557,6 +557,12 @@ document.addEventListener('DOMContentLoaded', () => {
         escMenu.style.display = 'none';
       }
       
+      // Re-initialize the input manager to ensure fresh state for the new level
+      // This addresses the issue with movement not working after level change
+      window.inputManager.dispose();
+      window.inputManager = new InputManager();
+      console.log('Input manager re-initialized for new level');
+      
       // Initialize game world with the selected level type
       const levelType = window.selectedLevel || 'standard';
       console.log(`Creating game world with level type: ${levelType}`);
@@ -631,6 +637,15 @@ document.addEventListener('DOMContentLoaded', () => {
           
           // Start game loop - this will also handle requesting pointer lock
           app.start();
+          
+          // Explicitly log input manager state for debugging
+          console.log('Input manager state:', {
+            pointerLocked: window.inputManager.pointerLocked,
+            moveForward: window.inputManager.moveForward,
+            moveBackward: window.inputManager.moveBackward,
+            moveLeft: window.inputManager.moveLeft, 
+            moveRight: window.inputManager.moveRight
+          });
           
           console.log('Game started with level:', levelType);
         });
@@ -774,6 +789,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       
+      // Re-initialize the input manager to ensure fresh state for the restart
+      // This addresses the issue with movement not working after level change
+      if (window.inputManager) {
+        window.inputManager.dispose();
+        window.inputManager = new InputManager();
+        console.log('Input manager re-initialized for restart');
+      }
+      
       // Longer delay to ensure proper cleanup
       setTimeout(() => {
         window.selectedLevel = currentLevel;
@@ -807,6 +830,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
           console.warn('Failed to clear pointer lock for level select:', e);
         }
+      }
+      
+      // Re-initialize the input manager to ensure fresh state for level selection
+      // This addresses the issue with movement not working after level change
+      if (window.inputManager) {
+        window.inputManager.dispose();
+        window.inputManager = new InputManager();
+        console.log('Input manager re-initialized for level selection');
       }
       
       // Longer delay to ensure proper cleanup
@@ -846,6 +877,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
           console.warn('Failed to clear pointer lock for quit:', e);
         }
+      }
+      
+      // Re-initialize the input manager to ensure fresh state
+      // This addresses the issue with movement not working after game transitions
+      if (window.inputManager) {
+        window.inputManager.dispose();
+        window.inputManager = new InputManager();
+        console.log('Input manager re-initialized for returning to main menu');
       }
       
       // Go back to the start screen
