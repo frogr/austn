@@ -1,21 +1,261 @@
-/* Basic styling for the app */
-body {
-  background-color: #121212;
-  color: #ffffff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  margin: 0;
-  padding: 0;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.5rem;
+  text-align: center;
 }
 
-a {
-  color: #bb86fc;
-  text-decoration: none;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #cc0000aa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #336791aa);
 }
 
-a:hover {
-  text-decoration: underline;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.app-container {
-  min-height: 100vh;
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Terminal and code styling */
+.terminal-output::-webkit-scrollbar {
+  width: 4px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 2px;
+}
+
+.ascii-art {
+  font-family: monospace;
+  white-space: pre;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+/* Matrix animation */
+.matrix-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.matrix-char {
+  position: absolute;
+  color: #39ff14;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  opacity: 0;
+  animation: matrix-drop 2s linear infinite;
+}
+
+@keyframes matrix-drop {
+  0% { 
+    opacity: 1;
+    transform: translateY(-100%);
+  }
+  100% { 
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+/* Analog noise overlay */
+.noise-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.06;
+  z-index: 10;
+}
+
+/* Audio waveform divider */
+.waveform-divider {
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg width='100%25' height='20' viewBox='0 0 1200 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q 25 5, 50 10 T 100 10 T 150 10 T 200 10 T 250 10 T 300 10 T 350 10 T 400 10 T 450 10 T 500 10 T 550 10 T 600 10 T 650 10 T 700 10 T 750 10 T 800 10 T 850 10 T 900 10 T 950 10 T 1000 10 T 1050 10 T 1100 10 T 1150 10 T 1200 10' stroke='%23555' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+  margin: 1.5rem 0;
+  opacity: 0.5;
+}
+
+/* Ruby on Rails and Postgres inspired colors */
+.rails-red {
+  color: #CC0000 !important;
+}
+
+.postgres-blue {
+  color: #336791 !important;
+}
+
+.card-rails {
+  border-color: rgba(204, 0, 0, 0.3) !important;
+}
+
+.card-postgres {
+  border-color: rgba(51, 103, 145, 0.3) !important;
+}
+
+/* Mechanical key styling */
+.mech-key {
+  font-family: 'JetBrains Mono', monospace;
+  padding: 3px 8px;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 3px;
+  box-shadow: 0 2px 0 #111;
+  color: #eee;
+  display: inline-block;
+  margin: 0 2px;
+}
+
+/* Various animation styles */
+/* Analog VU meter animation */
+@keyframes vu-meter {
+  0% { width: 20%; }
+  20% { width: 60%; }
+  40% { width: 40%; }
+  60% { width: 80%; }
+  80% { width: 30%; }
+  100% { width: 50%; }
+}
+
+.vu-meter {
+  height: 4px;
+  background: linear-gradient(90deg, #39ff14, #f3d611, #f33611);
+  animation: vu-meter 4s ease-in-out infinite;
+  border-radius: 2px;
+  margin: 8px 0;
+}
+
+/* Loading bar animation */
+@keyframes loading-bar {
+  0% { width: 0%; background-position: 0% 50%; }
+  50% { width: 100%; background-position: 100% 50%; }
+  100% { width: 0%; background-position: 0% 50%; }
+}
+
+.loading-bar {
+  height: 3px;
+  background: linear-gradient(90deg, #39ff14, #bc13fe, #336791, #CC0000);
+  background-size: 300% 300%;
+  animation: loading-bar 8s ease infinite;
+  border-radius: 2px;
+  margin: 8px 0;
+}
+
+/* Sine wave animation */
+@keyframes sine-wave {
+  0% { 
+    clip-path: path('M0,10 Q5,5 10,10 T20,10 T30,10 T40,10 T50,10 T60,10 T70,10 T80,10 T90,10 T100,10'); 
+  }
+  25% { 
+    clip-path: path('M0,10 Q5,15 10,10 T20,10 T30,10 T40,10 T50,10 T60,10 T70,10 T80,10 T90,10 T100,10'); 
+  }
+  50% { 
+    clip-path: path('M0,10 Q5,10 10,5 T20,10 T30,5 T40,10 T50,15 T60,10 T70,5 T80,10 T90,15 T100,10'); 
+  }
+  75% { 
+    clip-path: path('M0,10 Q5,5 10,15 T20,5 T30,15 T40,5 T50,15 T60,5 T70,15 T80,5 T90,15 T100,10'); 
+  }
+  100% { 
+    clip-path: path('M0,10 Q5,5 10,10 T20,10 T30,10 T40,10 T50,10 T60,10 T70,10 T80,10 T90,10 T100,10'); 
+  }
+}
+
+.sine-wave {
+  background: linear-gradient(90deg, #39ff14, #cc0000);
+  animation: sine-wave 4s ease-in-out infinite;
+  border-radius: 2px;
+  margin: 8px 0;
+}
+
+/* Pulse dot animation */
+@keyframes pulse-dot {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.5; }
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: #39ff14;
+  border-radius: 50%;
+  margin: 8px auto;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Glitchy text effect */
+@keyframes glitch-text {
+  0% { text-shadow: -1px -1px 0 rgba(255,0,0,0.3), 1px 1px 0 rgba(0,255,255,0.3); }
+  25% { text-shadow: 1px -1px 0 rgba(255,0,0,0.3), -1px 1px 0 rgba(0,255,255,0.3); }
+  50% { text-shadow: -1px 1px 0 rgba(255,0,0,0.3), 1px -1px 0 rgba(0,255,255,0.3); }
+  75% { text-shadow: 1px 1px 0 rgba(255,0,0,0.3), -1px -1px 0 rgba(0,255,255,0.3); }
+  100% { text-shadow: -1px -1px 0 rgba(255,0,0,0.3), 1px 1px 0 rgba(0,255,255,0.3); }
+}
+
+.text-glitch:hover {
+  animation: glitch-text 0.3s ease-in-out infinite;
+}
+
+/* Server status pulse animation */
+@keyframes server-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 5px currentColor; }
+  50% { opacity: 0.6; box-shadow: 0 0 10px currentColor; }
+}
+
+.server-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  animation: server-pulse 2s ease-in-out infinite;
+}
+
+.server-online {
+  background-color: #0f9d58;
+}
+
+.server-issue {
+  background-color: #f4b400;
+}
+
+.server-offline {
+  background-color: #db4437;
+}
+
+/* Terminal status indicators that match Tailwind classes */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  animation: server-pulse 2s ease-in-out infinite;
 }

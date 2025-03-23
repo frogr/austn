@@ -24,6 +24,7 @@
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets --loader:.js=jsx",
     "build:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
     "dev": "vite",
+    "dev:vite": "vite",
     "build:vite": "vite build",
     "build:dev": "vite build --mode development"
   },

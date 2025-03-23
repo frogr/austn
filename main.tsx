@@ -1,64 +1,29 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
+import './App.css'
 
-// Error boundary component to catch rendering errors
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean, error: Error | null }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props)
-    this.state = { hasError: false, error: null }
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("React error caught:", error, errorInfo)
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ padding: '20px', color: 'white', backgroundColor: '#333' }}>
-          <h2>Something went wrong.</h2>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            <summary>Error details</summary>
-            {this.state.error && this.state.error.toString()}
-          </details>
-        </div>
-      )
-    }
-
-    return this.props.children
+// Ensure Google Fonts are always loaded even in production
+// as a failsafe in case the HTML head import doesn't work
+const loadFonts = () => {
+  // Check if fonts are already loaded
+  if (!document.querySelector('link[href*="fonts.googleapis.com"]')) {
+    const fontLink = document.createElement('link')
+    fontLink.rel = 'stylesheet'
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Press+Start+2P&display=swap'
+    document.head.appendChild(fontLink)
   }
 }
 
+loadFonts()
+
+// Super-simplified mounting code
 const rootElement = document.getElementById('root')
 
 if (rootElement) {
-  try {
-    ReactDOM.createRoot(rootElement).render(
-      <React.StrictMode>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-      </React.StrictMode>
-    )
-    console.log("React app mounted successfully")
-  } catch (error) {
-    console.error("Failed to mount React app:", error)
-    rootElement.innerHTML = `
-      <div style="padding: 20px; color: white; background-color: #333;">
-        <h2>Failed to load application</h2>
-        <p>Error: ${error instanceof Error ? error.message : String(error)}</p>
-      </div>
-    `
-  }
+  createRoot(rootElement).render(<App />)
+  console.log("React app mounted successfully")
 } else {
   console.error("Could not find root element to mount React application")
 }
