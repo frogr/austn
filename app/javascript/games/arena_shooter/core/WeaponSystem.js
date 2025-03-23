@@ -30,12 +30,13 @@ export class WeaponSystem {
     // Available weapons
     this.weapons = [
       {
+        index: 0,
         name: 'Pistol',
         damage: 25,
         ammo: 12,
         maxAmmo: 12,
         reloadTime: 1.5,
-        fireRate: 0.25, // 4 shots per second
+        fireRate: 0.5, // 2 shots per second (slow)
         automatic: false,
         model: null,
         soundEffects: {
@@ -44,13 +45,15 @@ export class WeaponSystem {
         }
       },
       {
+        index: 1,
         name: 'Assault Rifle',
-        damage: 15,
+        damage: 10, // Lower damage per bullet
         ammo: 30,
         maxAmmo: 30,
         reloadTime: 2.0,
-        fireRate: 0.1, // 10 shots per second
+        fireRate: 0.08, // 12.5 shots per second (fast)
         automatic: true,
+        spread: 0.05, // Built-in inaccuracy
         model: null,
         soundEffects: {
           fire: 'gunshot',
@@ -58,32 +61,34 @@ export class WeaponSystem {
         }
       },
       {
+        index: 2,
         name: 'Shotgun',
-        damage: 8, // Per pellet, fires 8 pellets
-        ammo: 8,
-        maxAmmo: 8,
+        damage: 10, // Per pellet
+        ammo: 6, // Only 6 shells as requested
+        maxAmmo: 6,
         reloadTime: 2.5,
-        fireRate: 0.8, // 1.25 shots per second
-        automatic: false,
-        pellets: 8,
-        spread: 0.1,
-        model: null,
-        soundEffects: {
-          fire: 'gunshot',
-          reload: 'reload'
-        }
-      },
-      {
-        name: 'Rocket Launcher',
-        damage: 100, // Direct hit damage
-        splashDamage: 50, // Splash damage
-        splashRadius: 5, // Splash radius
-        ammo: 4,
-        maxAmmo: 4,
-        reloadTime: 3.0,
         fireRate: 1.0, // 1 shot per second
         automatic: false,
-        projectileSpeed: 50, // Slower moving projectile
+        pellets: 8, // 8 pellets per shot
+        spread: 0.15, // Broad spray pattern
+        model: null,
+        soundEffects: {
+          fire: 'gunshot',
+          reload: 'reload'
+        }
+      },
+      {
+        index: 3,
+        name: 'Rocket Launcher',
+        damage: 50, // Direct hit damage
+        splashDamage: 75, // Splash damage
+        splashRadius: 6, // Splash radius
+        ammo: 6, // 6 rockets as requested
+        maxAmmo: 6,
+        reloadTime: 3.0,
+        fireRate: 1.2, // 0.83 shots per second (slow)
+        automatic: false,
+        projectileSpeed: 40, // Slower moving projectile
         model: null,
         soundEffects: {
           fire: 'gunshot', // Would be rocket sound in a real game
@@ -91,12 +96,13 @@ export class WeaponSystem {
         }
       },
       {
+        index: 4,
         name: 'Sniper Rifle',
-        damage: 100,
+        damage: 150, // High damage
         ammo: 5,
         maxAmmo: 5,
         reloadTime: 2.5,
-        fireRate: 1.5, // 0.67 shots per second
+        fireRate: 2.0, // 0.5 shots per second (very slow)
         automatic: false,
         model: null,
         scopeZoom: 3, // Zoom factor when scoped
@@ -352,7 +358,7 @@ export class WeaponSystem {
    * Equip a weapon
    * @param {number} index - Index of the weapon to equip
    */
-  // Improved equipWeapon method with better error handling
+  // Improved equipWeapon method with better error handling and UI updates
   equipWeapon(index) {
     // Validate index
     if (index < 0 || index >= this.weapons.length) {
@@ -368,10 +374,13 @@ export class WeaponSystem {
       
       // Equip the new weapon
       const weapon = this.weapons[index];
-      console.log('Equipping weapon:', weapon.name);
+      console.log('Equipping weapon:', weapon.name, 'with index:', index);
       
       // Always set weapon directly first as a fallback
       this.player.currentWeapon = weapon;
+      
+      // Store the currently equipped weapon index
+      this.currentWeaponIndex = index;
       
       // Try to use setWeapon method if available
       try {
@@ -393,6 +402,14 @@ export class WeaponSystem {
       if (weapon.model) {
         this.gameWorld.scene.add(weapon.model);
       }
+      
+      // Update weapon selector UI with explicit index
+      if (this.player && this.player.uiManager && typeof this.player.uiManager.updateWeaponSelector === 'function') {
+        console.log(`Calling updateWeaponSelector with index: ${index}, name: ${weapon.name}`);
+        this.player.uiManager.updateWeaponSelector(index, weapon.name);
+      } else {
+        console.warn('Could not update weapon UI - missing UI manager');
+      }
     } catch (error) {
       console.error('Error in equipWeapon:', error);
     }
@@ -406,8 +423,16 @@ export class WeaponSystem {
     // Skip if no weapon, no ammo, or reloading
     if (!weapon || weapon.ammo <= 0 || this.player.isReloading) return;
     
+    // Check if weapon is ready to fire (cooldown)
+    if (weapon.lastFiredTime && performance.now() - weapon.lastFiredTime < weapon.fireRate * 1000) {
+      return;
+    }
+    
     // Decrease ammo
     weapon.ammo--;
+    
+    // Update last fired time
+    weapon.lastFiredTime = performance.now();
     
     // Update UI
     if (this.player.uiManager) {
@@ -422,68 +447,121 @@ export class WeaponSystem {
     const startPosition = cameraPosition.clone().add(cameraDirection.clone().multiplyScalar(0.5));
     
     // Handle different weapon types
-    if (weapon.name === 'Shotgun') {
-      // Shotgun fires multiple pellets with spread
-      for (let i = 0; i < weapon.pellets; i++) {
-        // Apply random spread
-        const spread = weapon.spread;
-        const pelletDirection = cameraDirection.clone();
-        
-        pelletDirection.x += (Math.random() - 0.5) * spread;
-        pelletDirection.y += (Math.random() - 0.5) * spread;
-        pelletDirection.z += (Math.random() - 0.5) * spread;
-        
-        pelletDirection.normalize();
-        
-        // Create projectile
+    switch (weapon.name) {
+      case 'Pistol':
+        // Single accurate shot
         this.gameWorld.createProjectile(
-          startPosition.clone(),
-          pelletDirection,
+          startPosition,
+          cameraDirection,
+          100.0,
+          weapon.damage,
+          1, // Team 1 = player
+          { 
+            type: 'bullet',
+            color: 0xffff00 // Yellow bullet
+          }
+        );
+        break;
+        
+      case 'Assault Rifle':
+        // Fast but inaccurate shots
+        const assaultSpread = 0.05;
+        const rifleDirection = cameraDirection.clone();
+        
+        // Add random spread for assault rifle
+        rifleDirection.x += (Math.random() - 0.5) * assaultSpread;
+        rifleDirection.y += (Math.random() - 0.5) * assaultSpread;
+        rifleDirection.z += (Math.random() - 0.5) * assaultSpread;
+        rifleDirection.normalize();
+        
+        this.gameWorld.createProjectile(
+          startPosition,
+          rifleDirection,
+          120.0,
+          weapon.damage,
+          1, // Team 1 = player
+          { 
+            type: 'bullet',
+            color: 0x00ffff // Cyan bullet
+          }
+        );
+        break;
+        
+      case 'Shotgun':
+        // Broad spray pattern - 8 pellets
+        for (let i = 0; i < 8; i++) {
+          // Apply wider spread for shotgun
+          const shotgunSpread = 0.15;
+          const pelletDirection = cameraDirection.clone();
+          
+          pelletDirection.x += (Math.random() - 0.5) * shotgunSpread;
+          pelletDirection.y += (Math.random() - 0.5) * shotgunSpread;
+          pelletDirection.z += (Math.random() - 0.5) * shotgunSpread;
+          
+          pelletDirection.normalize();
+          
+          // Create projectile
+          this.gameWorld.createProjectile(
+            startPosition.clone(),
+            pelletDirection,
+            100.0,
+            weapon.damage,
+            1, // Team 1 = player
+            { 
+              type: 'bullet',
+              color: 0xff6600, // Orange pellets
+              scale: 0.7 // Smaller pellets
+            }
+          );
+        }
+        break;
+        
+      case 'Rocket Launcher':
+        // Slow projectile with explosion effect
+        this.gameWorld.createProjectile(
+          startPosition,
+          cameraDirection,
+          40.0, // Slower speed
+          weapon.damage,
+          1, // Team 1 = player
+          { 
+            type: 'rocket',
+            splashDamage: weapon.splashDamage || 50,
+            splashRadius: weapon.splashRadius || 5,
+            model: this.createRocketModel(),
+            onImpact: (position) => this.createExplosion(position)
+          }
+        );
+        break;
+        
+      case 'Sniper Rifle':
+        // High damage, penetrating shot
+        this.gameWorld.createProjectile(
+          startPosition,
+          cameraDirection,
+          200.0, // Higher velocity
+          weapon.damage,
+          1, // Team 1 = player
+          { 
+            type: 'bullet',
+            penetrating: true, // Can go through multiple enemies
+            tracer: true, // Visual effect for sniper shots
+            color: 0xff0000, // Red bullet
+            scale: 1.5 // Larger bullet
+          }
+        );
+        break;
+        
+      default:
+        // Fallback for any other weapon
+        this.gameWorld.createProjectile(
+          startPosition,
+          cameraDirection,
           100.0,
           weapon.damage,
           1, // Team 1 = player
           { type: 'bullet' }
         );
-      }
-    } else if (weapon.name === 'Rocket Launcher') {
-      // Rocket launcher - slower projectile with splash damage
-      this.gameWorld.createProjectile(
-        startPosition,
-        cameraDirection,
-        weapon.projectileSpeed || 50.0,
-        weapon.damage,
-        1, // Team 1 = player
-        { 
-          type: 'rocket',
-          splashDamage: weapon.splashDamage || 50,
-          splashRadius: weapon.splashRadius || 5,
-          model: this.createRocketModel()
-        }
-      );
-    } else if (weapon.name === 'Sniper Rifle') {
-      // Sniper rifle - high velocity projectile with damage falloff
-      this.gameWorld.createProjectile(
-        startPosition,
-        cameraDirection,
-        150.0, // Higher velocity
-        weapon.damage,
-        1, // Team 1 = player
-        { 
-          type: 'bullet',
-          penetrating: true, // Can go through multiple enemies
-          tracer: true // Visual effect for sniper shots
-        }
-      );
-    } else {
-      // Standard single projectile
-      this.gameWorld.createProjectile(
-        startPosition,
-        cameraDirection,
-        100.0,
-        weapon.damage,
-        1, // Team 1 = player
-        { type: 'bullet' }
-      );
     }
     
     // Play sound effect
@@ -493,6 +571,101 @@ export class WeaponSystem {
     
     // Create muzzle flash effect
     this.createMuzzleFlash();
+  }
+  
+  /**
+   * Create an explosion effect at the specified position
+   * @param {THREE.Vector3} position - Position for the explosion
+   */
+  createExplosion(position) {
+    if (!position) return;
+    
+    // Create explosion light
+    const explosionLight = new THREE.PointLight(0xff6600, 5, 10);
+    explosionLight.position.copy(position);
+    this.gameWorld.scene.add(explosionLight);
+    
+    // Create explosion particles
+    const explosionGroup = new THREE.Group();
+    explosionGroup.position.copy(position);
+    
+    // Create particles
+    const particleCount = 20;
+    const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+    const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xff6600 });
+    
+    for (let i = 0; i < particleCount; i++) {
+      const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+      
+      // Random position within sphere
+      const radius = Math.random() * 2;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * Math.PI;
+      
+      particle.position.x = radius * Math.sin(phi) * Math.cos(theta);
+      particle.position.y = radius * Math.sin(phi) * Math.sin(theta);
+      particle.position.z = radius * Math.cos(phi);
+      
+      particle.scale.multiplyScalar(Math.random() * 0.5 + 0.5);
+      
+      explosionGroup.add(particle);
+    }
+    
+    this.gameWorld.scene.add(explosionGroup);
+    
+    // Add a shockwave
+    const shockwaveGeometry = new THREE.RingGeometry(0, 0.1, 32);
+    const shockwaveMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0xff9900, 
+      transparent: true, 
+      opacity: 0.7,
+      side: THREE.DoubleSide
+    });
+    
+    const shockwave = new THREE.Mesh(shockwaveGeometry, shockwaveMaterial);
+    shockwave.rotation.x = Math.PI / 2; // Align with ground
+    shockwave.position.copy(position);
+    this.gameWorld.scene.add(shockwave);
+    
+    // Animate explosion
+    let explosionTime = 0;
+    const animateExplosion = () => {
+      explosionTime += 0.05;
+      
+      // Fade light
+      if (explosionLight) {
+        explosionLight.intensity = Math.max(0, 5 - explosionTime * 5);
+      }
+      
+      // Expand and fade shockwave
+      if (shockwave) {
+        shockwave.scale.x = shockwave.scale.y = shockwave.scale.z = explosionTime * 5;
+        shockwave.material.opacity = Math.max(0, 0.7 - explosionTime);
+      }
+      
+      // Move particles outward and fade
+      explosionGroup.children.forEach(particle => {
+        particle.position.multiplyScalar(1.05);
+        if (particle.material.opacity === undefined) {
+          particle.material.transparent = true;
+          particle.material.opacity = 1.0;
+        }
+        particle.material.opacity = Math.max(0, 1 - explosionTime);
+      });
+      
+      // Continue animation or cleanup
+      if (explosionTime < 1) {
+        requestAnimationFrame(animateExplosion);
+      } else {
+        // Cleanup
+        this.gameWorld.scene.remove(explosionLight);
+        this.gameWorld.scene.remove(explosionGroup);
+        this.gameWorld.scene.remove(shockwave);
+      }
+    };
+    
+    // Start animation
+    animateExplosion();
   }
   
   /**

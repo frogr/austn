@@ -252,7 +252,13 @@ export class GameWorld {
         
         // Handle rocket explosion with splash damage
         if (projectile.projectileType === 'rocket' && projectile.splashDamage && projectile.splashRadius) {
-          this.createExplosion(hitPoint, projectile.splashRadius);
+          // Use custom explosion effect if available
+          if (typeof projectile.onImpact === 'function') {
+            projectile.onImpact(hitPoint);
+          } else {
+            this.createExplosion(hitPoint, projectile.splashRadius);
+          }
+          
           this.applyAreaDamage(
             hitPoint, 
             projectile.splashRadius, 
@@ -359,10 +365,17 @@ export class GameWorld {
       // Add a rocket trail effect
       const trailLight = new THREE.PointLight(0xff6600, 2, 5);
       projectile.add(trailLight);
+      
+      // Store callback for explosion effect if provided
+      if (typeof options.onImpact === 'function') {
+        projectile.onImpact = options.onImpact;
+      }
     } else if (projectileType === 'bullet') {
       // Standard bullet projectile
-      const color = team === 1 ? 0x00ffff : 0xff0000;
-      const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+      const color = options.color || (team === 1 ? 0x00ffff : 0xff0000);
+      // Make projectiles smaller (0.05 instead of 0.1)
+      const scale = options.scale || 1.0;
+      const geometry = new THREE.SphereGeometry(0.05 * scale, 8, 8);
       
       // For tracer rounds (sniper rifle), make them longer
       if (options.tracer) {
@@ -372,14 +385,16 @@ export class GameWorld {
       const material = new THREE.MeshBasicMaterial({ 
         color: color,
         emissive: color,
-        emissiveIntensity: 2
+        emissiveIntensity: 1.5,
+        transparent: true,
+        opacity: 0.8
       });
       
       projectile = new THREE.Mesh(geometry, material);
       projectile.position.copy(position);
       
-      // Add a point light to the projectile
-      const light = new THREE.PointLight(color, 1, 5);
+      // Add a point light to the projectile with reduced intensity
+      const light = new THREE.PointLight(color, 0.5, 3);
       light.position.set(0, 0, 0);
       projectile.add(light);
     } else {

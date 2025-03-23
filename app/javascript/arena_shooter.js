@@ -74,6 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <div>WASD: Move</div>
       <div>Mouse: Look</div>
       <div>Click: Shoot</div>
+      <div>R: Reload weapon</div>
+      <div>1-5: Change weapons</div>
       <div>ESC: Release mouse</div>
     `;
     

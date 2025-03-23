@@ -19,6 +19,10 @@ export class Application {
     this.gameWorld.player = this.player;
     this.gameWorld.weaponSystem = this.weaponSystem;
     
+    // Link UI manager to player and weapon system for proper weapon display
+    this.uiManager.player = this.player;
+    this.player.weaponSystem = this.weaponSystem;
+    
     this.isRunning = false;
     this.lastTime = 0;
     this.startTime = 0;
@@ -125,6 +129,27 @@ export class Application {
     this.inputManager.update(clampedDelta);
     this.player.update(clampedDelta);
     this.enemyManager.update(clampedDelta);
+    
+    // Check if player is shooting and fire weapon if needed
+    if (this.inputManager.isShooting && this.weaponSystem) {
+      this.weaponSystem.fireWeapon();
+      console.log('Firing weapon');
+    }
+    
+    // Check if player is reloading
+    if (this.inputManager.isReloading && this.weaponSystem) {
+      this.weaponSystem.reloadWeapon();
+      this.inputManager.isReloading = false; // Reset reload flag after handling
+      console.log('Reloading weapon');
+    }
+    
+    // Handle weapon switching
+    if (this.inputManager.weaponSwitchRequested && this.weaponSystem) {
+      this.weaponSystem.equipWeapon(this.inputManager.weaponSlot);
+      this.inputManager.weaponSwitchRequested = false; // Reset flag after handling
+      console.log(`Switching to weapon slot ${this.inputManager.weaponSlot + 1}`);
+    }
+    
     this.weaponSystem.update(clampedDelta);
     this.gameWorld.update(clampedDelta);
     this.uiManager.update(clampedDelta);

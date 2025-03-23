@@ -20,6 +20,9 @@ export class UIManager {
       this.gameOverScreen.classList.add('hidden');
     }
     
+    // Create weapon selector UI
+    this.createWeaponSelector();
+    
     // Setup start button event listener
     if (this.startButton) {
       console.log('Found start button, attaching click listener');
@@ -35,7 +38,7 @@ export class UIManager {
           instructions.style.color = 'yellow';
           instructions.style.marginTop = '20px';
           instructions.style.fontWeight = 'bold';
-          instructions.innerHTML = 'PRESS W,A,S,D TO MOVE | MOUSE TO LOOK';
+          instructions.innerHTML = 'PRESS W,A,S,D TO MOVE | MOUSE TO LOOK | 1-5 TO CHANGE WEAPONS';
           debugOverlay.appendChild(instructions);
         }
       });
@@ -116,6 +119,169 @@ export class UIManager {
       } else {
         this.ammoDisplay.classList.remove('text-yellow-500');
         this.ammoDisplay.classList.remove('text-red-500');
+      }
+    }
+  }
+  
+  /**
+   * Creates the weapon selector UI
+   */
+  createWeaponSelector() {
+    // Find the game UI container
+    const gameUI = document.getElementById('game-ui');
+    if (!gameUI) {
+      console.warn('Game UI element not found, cannot create weapon selector');
+      return;
+    }
+    
+    // Create weapon selector container
+    const weaponSelector = document.createElement('div');
+    weaponSelector.id = 'weapon-selector';
+    weaponSelector.className = 'weapon-selector';
+    weaponSelector.style.position = 'absolute';
+    weaponSelector.style.left = '20px'; // Position on left side
+    weaponSelector.style.top = '50%'; // Center vertically
+    weaponSelector.style.transform = 'translateY(-50%)';
+    weaponSelector.style.display = 'flex';
+    weaponSelector.style.flexDirection = 'column'; // Stack weapons vertically
+    weaponSelector.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    weaponSelector.style.padding = '5px';
+    weaponSelector.style.borderRadius = '5px';
+    weaponSelector.style.zIndex = '10';
+    
+    // Create weapon slots
+    const weaponNames = ['Pistol', 'Assault Rifle', 'Shotgun', 'Rocket Launcher', 'Sniper Rifle'];
+    
+    for (let i = 0; i < 5; i++) {
+      const weaponSlot = document.createElement('div');
+      weaponSlot.id = `weapon-slot-${i+1}`;
+      weaponSlot.className = 'weapon-slot';
+      weaponSlot.style.width = '130px';
+      weaponSlot.style.height = '30px';
+      weaponSlot.style.margin = '3px 0';
+      weaponSlot.style.display = 'flex';
+      weaponSlot.style.flexDirection = 'row'; // Horizontal layout for each slot
+      weaponSlot.style.alignItems = 'center';
+      weaponSlot.style.justifyContent = 'flex-start'; // Left-align contents
+      weaponSlot.style.border = '2px solid #555';
+      weaponSlot.style.borderRadius = '3px';
+      weaponSlot.style.color = 'white';
+      weaponSlot.style.fontSize = '12px';
+      weaponSlot.style.fontFamily = 'monospace';
+      weaponSlot.style.transition = 'all 0.2s ease';
+      weaponSlot.style.cursor = 'pointer';
+      
+      // Weapon number
+      const slotNumber = document.createElement('div');
+      slotNumber.textContent = `${i+1}`;
+      slotNumber.style.fontSize = '14px';
+      slotNumber.style.fontWeight = 'bold';
+      slotNumber.style.width = '25px';
+      slotNumber.style.height = '25px';
+      slotNumber.style.display = 'flex';
+      slotNumber.style.alignItems = 'center';
+      slotNumber.style.justifyContent = 'center';
+      slotNumber.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+      slotNumber.style.borderRadius = '50%';
+      slotNumber.style.marginLeft = '5px';
+      slotNumber.style.marginRight = '10px';
+      
+      // Weapon name (full name)
+      const slotName = document.createElement('div');
+      slotName.textContent = weaponNames[i];
+      slotName.style.fontSize = '11px';
+      
+      weaponSlot.appendChild(slotNumber);
+      weaponSlot.appendChild(slotName);
+      weaponSelector.appendChild(weaponSlot);
+      
+      // All slots start as inactive
+      weaponSlot.style.backgroundColor = 'transparent';
+      weaponSlot.style.borderColor = '#555';
+      
+      // Don't set any slot as active by default - this will be done by the WeaponSystem
+    }
+    
+    // Add to game UI
+    gameUI.appendChild(weaponSelector);
+    this.weaponSelector = weaponSelector;
+  }
+  
+  /**
+   * Update the weapon selector to highlight the active weapon
+   * @param {number} index - Index of the active weapon (0-based)
+   * @param {string} weaponName - Name of the active weapon
+   */
+  updateWeaponSelector(index, weaponName) {
+    if (!this.weaponSelector) {
+      console.warn('Weapon selector not found');
+      return;
+    }
+    
+    // Debug logs
+    console.log(`Updating weapon UI to highlight weapon index: ${index}, name: ${weaponName}`);
+    
+    // Reset all slots
+    for (let i = 0; i < 5; i++) {
+      const slot = document.getElementById(`weapon-slot-${i+1}`);
+      if (slot) {
+        slot.style.backgroundColor = 'transparent';
+        slot.style.borderColor = '#555';
+      } else {
+        console.warn(`Could not find weapon slot ${i+1}`);
+      }
+    }
+    
+    // Highlight active slot
+    const activeSlot = document.getElementById(`weapon-slot-${index+1}`);
+    if (activeSlot) {
+      activeSlot.style.backgroundColor = '#3366cc';
+      activeSlot.style.borderColor = '#66aaff';
+      console.log(`Highlighted weapon slot ${index+1}`);
+    } else {
+      console.warn(`Could not find active weapon slot ${index+1}`);
+    }
+    
+    // Also add ammo indicator to the weapon slot
+    this.updateAmmoIndicators();
+  }
+  
+  /**
+   * Update ammo indicators in the weapon selector
+   */
+  updateAmmoIndicators() {
+    if (!this.player || !this.player.currentWeapon) return;
+    
+    // Add ammo count to weapon slots
+    for (let i = 0; i < 5; i++) {
+      const slot = document.getElementById(`weapon-slot-${i+1}`);
+      if (slot) {
+        // Find or create ammo indicator
+        let ammoIndicator = slot.querySelector('.ammo-indicator');
+        if (!ammoIndicator) {
+          ammoIndicator = document.createElement('div');
+          ammoIndicator.className = 'ammo-indicator';
+          ammoIndicator.style.fontSize = '10px';
+          ammoIndicator.style.marginLeft = 'auto';
+          ammoIndicator.style.marginRight = '8px';
+          ammoIndicator.style.opacity = '0.8';
+          slot.appendChild(ammoIndicator);
+        }
+        
+        // Get weapon for this slot
+        if (this.player.weaponSystem && this.player.weaponSystem.weapons && this.player.weaponSystem.weapons[i]) {
+          const weapon = this.player.weaponSystem.weapons[i];
+          ammoIndicator.textContent = `${weapon.ammo}/${weapon.maxAmmo}`;
+          
+          // Color based on ammo count
+          if (weapon.ammo === 0) {
+            ammoIndicator.style.color = '#ff6666'; // Red when empty
+          } else if (weapon.ammo < weapon.maxAmmo * 0.25) {
+            ammoIndicator.style.color = '#ffcc00'; // Yellow when low
+          } else {
+            ammoIndicator.style.color = 'white'; // White when normal
+          }
+        }
       }
     }
   }

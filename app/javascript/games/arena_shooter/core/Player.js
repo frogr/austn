@@ -77,26 +77,44 @@ export class Player {
     console.log('Player disposed');
   }
 
-  // Add this method to your Player.js file
+  // Handle weapon equipping
   setWeapon(weapon) {
     this.currentWeapon = weapon;
     
     // Update UI if available
     if (this.uiManager) {
       this.uiManager.updateAmmo(weapon.ammo, weapon.maxAmmo);
+      
+      // Update weapon selector if implemented
+      if (typeof this.uiManager.updateWeaponSelector === 'function') {
+        // Use explicit index from the weapon
+        console.log(`Player.setWeapon: Updating UI for weapon index ${weapon.index}, name: ${weapon.name}`);
+        this.uiManager.updateWeaponSelector(weapon.index, weapon.name);
+      }
+    } else {
+      console.warn('No UI manager available in Player.setWeapon');
     }
     
     console.log(`Equipped weapon: ${weapon.name}`);
   }
 
-  // Also add this method for the reload functionality
+  // Handle weapon reloading
   startReload() {
-    if (this.isReloading) return;
+    // Skip if already reloading or no weapon
+    if (this.isReloading || !this.currentWeapon) return;
+    
+    // Skip if weapon is already full
+    if (this.currentWeapon.ammo >= this.currentWeapon.maxAmmo) return;
     
     this.isReloading = true;
     
     // Get reload time from current weapon
-    const reloadTime = this.currentWeapon ? this.currentWeapon.reloadTime || 1.5 : 1.5;
+    const reloadTime = this.currentWeapon.reloadTime || 1.5;
+    
+    // Show reloading indicator in UI
+    if (this.uiManager && typeof this.uiManager.showReloading === 'function') {
+      this.uiManager.showReloading(true);
+    }
     
     // After reload time, restore ammo
     setTimeout(() => {
@@ -106,6 +124,11 @@ export class Player {
         // Update UI
         if (this.uiManager) {
           this.uiManager.updateAmmo(this.currentWeapon.ammo, this.currentWeapon.maxAmmo);
+          
+          // Hide reloading indicator
+          if (typeof this.uiManager.showReloading === 'function') {
+            this.uiManager.showReloading(false);
+          }
         }
       }
       
