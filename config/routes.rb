@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#hello", as: :dashboard
   post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message
 
+  get '/new', to: 'frontend#show', as: :new_frontend
+  get '/new/*path', to: 'frontend#show'
   # Portfolio as root
   root "portfolio#index"
 end

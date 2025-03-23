@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>New Frontend</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  
+  <!-- Simple React application directly embedded -->
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .app-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    nav {
+      background-color: #222;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 15px;
+      margin: 0;
+      padding: 0;
+    }
+    
+    a {
+      color: #bb86fc;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    main {
+      background-color: #333;
+      padding: 20px;
+      border-radius: 4px;
+    }
+    
+    h1 {
+      color: #fff;
+      font-size: 24px;
+    }
+    
+    h2 {
+      color: #fff;
+      margin-top: 0;
+    }
+    
+    p {
+      color: #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <!-- Fallback content that will be visible without JavaScript -->
+    <div class="app-container">
+      <header style="margin-bottom: 20px">
+        <h1>New Frontend at /new</h1>
+      </header>
+      
+      <nav>
+        <ul>
+          <li><a href="/new">Home</a></li>
+          <li><a href="/new/blog">Blog</a></li>
+          <li><a href="/new/work">Work</a></li>
+          <li><a href="/new/contact">Contact</a></li>
+          <li><a href="/new/fun">Fun</a></li>
+          <li><a href="/new/games">Games</a></li>
+        </ul>
+      </nav>
+      
+      <main>
+        <h2>Welcome to the New Frontend</h2>
+        <p>
+          This is a simple React application served at the /new route. 
+          If you can see this, the setup is working correctly!
+        </p>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    console.log('Static HTML content loaded successfully');
+  </script>
+</body>
+</html>
