@@ -380,276 +380,159 @@ document.addEventListener('DOMContentLoaded', () => {
       levelName.style.fontSize = '18px';
       levelName.style.marginBottom = '12px';
       levelName.style.fontFamily = 'monospace';
-      levelName.style.textAlign = 'center';
       
       const levelDesc = document.createElement('p');
       levelDesc.textContent = level.description;
       levelDesc.style.color = '#ccc';
       levelDesc.style.fontSize = '14px';
-      levelDesc.style.textAlign = 'center';
+      levelDesc.style.fontFamily = 'monospace';
       
-      levelCard.appendChild(levelName);
-      levelCard.appendChild(levelDesc);
-      
-      // Hover effect
-      levelCard.addEventListener('mouseover', () => {
-        levelCard.style.backgroundColor = 'rgba(40, 80, 120, 0.7)';
-        levelCard.style.transform = 'scale(1.05)';
-      });
-      
-      levelCard.addEventListener('mouseout', () => {
-        levelCard.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        levelCard.style.transform = 'scale(1)';
-      });
-      
-      // Select level on click
+      // Add click handler
       levelCard.addEventListener('click', () => {
-        // Highlight selected level
+        // Remove selected state from all cards
         document.querySelectorAll('.level-card').forEach(card => {
-          card.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-          card.style.borderColor = '#666';
+          card.style.border = '3px solid #666';
         });
         
-        levelCard.style.backgroundColor = 'rgba(0, 100, 0, 0.7)';
-        levelCard.style.borderColor = '#6f6';
+        // Set selected state on clicked card
+        levelCard.style.border = '3px solid #6f6';
         
-        // Store selected level
+        // Set selected level
         window.selectedLevel = level.id;
+        console.log(`Selected level: ${level.id}`);
       });
       
+      // Append elements
+      levelCard.appendChild(levelName);
+      levelCard.appendChild(levelDesc);
       levelOptions.appendChild(levelCard);
     });
     
-    // Add elements to container
+    // Append elements
     levelSelectContainer.appendChild(levelSelectHeading);
     levelSelectContainer.appendChild(levelOptions);
     levelSelectContainer.appendChild(startLevelButton);
-    
-    // Add container to modal
     modalOverlay.appendChild(levelSelectContainer);
     
-    // Add modal to page
+    // Add to DOM
     document.body.appendChild(modalOverlay);
     
-    // Set default selected level
-    window.selectedLevel = 'standard';
-    
-    // Define a function to show the level select modal
+    // Add global function to show the level select
     window.showLevelSelect = function() {
+      console.log('Showing level select');
+      // Default selected level
+      window.selectedLevel = 'standard';
+      
+      // Reset selection state of level cards
+      setTimeout(() => {
+        document.querySelectorAll('.level-card').forEach(card => {
+          card.style.border = card.dataset.levelId === 'standard' ? '3px solid #6f6' : '3px solid #666';
+        });
+      }, 10);
+      
+      // Show modal
       modalOverlay.style.display = 'flex';
     };
+    
+    return modalOverlay;
   }
   
-  // Initial game setup - load assets but don't start yet
-  async function startGame() {
+  /**
+   * Start the selected level
+   */
+  function startSelectedLevel() {
     // Show loading screen
     loadingScreen.style.display = 'flex';
     loadingBar.style.width = '0%';
     
-    try {
-      console.log('Starting game initialization...');
-      
-      // Initialize asset manager and load assets
-      window.assetManager = new AssetManager();
-      console.log('Asset manager initialized');
-      
-      try {
-        await window.assetManager.loadAssets((progress) => {
-          loadingBar.style.width = `${progress * 100}%`;
-        });
-        console.log('Assets loaded successfully');
-      } catch (assetError) {
-        console.warn('Some assets failed to load, but continuing with fallbacks:', assetError);
-      }
-      
-      // Initialize core UI and input managers
-      window.inputManager = new InputManager();
-      window.uiManager = new UIManager();
-      console.log('Input and UI managers initialized');
-      
-      // Hide loading screen
-      loadingScreen.style.display = 'none';
-      
-      // Wait for user to click start button, then show level selection
-      window.uiManager.on('gameStart', () => {
-        // Show level selection interface
-        window.showLevelSelect();
-      });
-      
-    } catch (error) {
-      console.error('Fatal error starting game:', error);
-      
-      // Display error message on loading screen
-      loadingBar.style.width = '100%';
-      loadingBar.style.backgroundColor = '#ff3333';
-      
-      const loadingText = document.querySelector('#loading-screen h2');
-      if (loadingText) {
-        loadingText.textContent = 'Error Loading Game';
-      }
-      
-      const errorMessage = document.createElement('p');
-      errorMessage.textContent = 'There was a problem starting the game. Check the console for details.';
-      errorMessage.style.color = 'white';
-      errorMessage.style.marginTop = '16px';
-      
-      const retryButton = document.createElement('button');
-      retryButton.textContent = 'Retry';
-      retryButton.style.marginTop = '16px';
-      retryButton.style.padding = '8px 16px';
-      retryButton.style.backgroundColor = '#ffcc00';
-      retryButton.style.color = 'black';
-      retryButton.style.border = 'none';
-      retryButton.style.borderRadius = '4px';
-      retryButton.style.cursor = 'pointer';
-      
-      retryButton.addEventListener('click', () => {
-        // Remove error message and retry button
-        while (loadingScreen.childNodes.length > 1) {
-          loadingScreen.removeChild(loadingScreen.lastChild);
-        }
-        
-        // Reset loading text and bar
-        if (loadingText) {
-          loadingText.textContent = 'Loading Game...';
-        }
-        loadingBar.style.backgroundColor = '#FFD700';
-        
-        // Retry starting the game
-        startGame();
-      });
-      
-      // Add error message and retry button to loading screen
-      loadingScreen.appendChild(errorMessage);
-      loadingScreen.appendChild(retryButton);
-    }
-  }
-  
-  // Start the game with the selected level
-  async function startSelectedLevel() {
-    // Show loading screen
-    loadingScreen.style.display = 'flex';
-    loadingBar.style.width = '0%';
-    
+    // Set up and initialize the game components
     let app = null;
     
     try {
-      // Ensure any existing game is fully disposed
-      if (window.currentApp) {
-        console.log('Disposing existing game before starting new level');
-        window.currentApp.dispose();
-        window.currentApp = null;
+      console.log(`Starting level: ${window.selectedLevel || 'standard'}`);
+      
+      // Keep asset manager global for reuse across level loads
+      if (!window.assetManager) {
+        window.assetManager = new AssetManager();
       }
       
-      // Ensure no lingering pointer lock which could cause issues
-      if (document.pointerLockElement) {
+      // Keep input manager global for better state management
+      if (!window.inputManager) {
+        window.inputManager = new InputManager();
+      }
+      
+      // Create UI manager (this doesn't have much state so can be recreated)
+      const uiManager = new UIManager();
+      
+      // Initialize loading sequence
+      (async () => {
         try {
-          document.exitPointerLock();
-          console.log('Cleared pointer lock before level initialization');
-        } catch (e) {
-          console.warn('Failed to clear pointer lock:', e);
-        }
-      }
-      
-      // Clear any visible ESC menu
-      const escMenu = document.getElementById('esc-menu');
-      if (escMenu) {
-        escMenu.style.display = 'none';
-      }
-      
-      // Re-initialize the input manager to ensure fresh state for the new level
-      // This addresses the issue with movement not working after level change
-      window.inputManager.dispose();
-      window.inputManager = new InputManager();
-      console.log('Input manager re-initialized for new level');
-      
-      // Initialize game world with the selected level type
-      const levelType = window.selectedLevel || 'standard';
-      console.log(`Creating game world with level type: ${levelType}`);
-      
-      // Show loading progress
-      loadingBar.style.width = '20%';
-      
-      const gameWorld = new GameWorld(window.assetManager);
-      try {
-        await gameWorld.initialize(levelType);
-        console.log(`Game world initialized with level type: ${levelType}`);
-        loadingBar.style.width = '40%';
-      } catch (worldError) {
-        console.warn('Error initializing game world, but continuing:', worldError);
-      }
-      
-      // Initialize player with a safer starting position
-      const player = new Player(gameWorld, window.inputManager, window.uiManager);
-      // Set player position to center of arena, but raised up to avoid collision issues
-      player.camera.position.set(0, 1.7, 0); 
-      console.log('Player initialized at position:', player.camera.position);
-      loadingBar.style.width = '60%';
-      
-      // Initialize enemy manager
-      const enemyManager = new EnemyManager(gameWorld, player);
-      console.log('Enemy manager initialized');
-      
-      // Initialize weapon system
-      const weaponSystem = new WeaponSystem(gameWorld, player, window.assetManager);
-      console.log('Weapon system initialized');
-      loadingBar.style.width = '80%';
-      
-      // Initialize game application
-      app = new Application({
-        container: document.getElementById('arena-shooter-container'),
-        gameWorld,
-        player,
-        enemyManager,
-        weaponSystem,
-        inputManager: window.inputManager,
-        uiManager: window.uiManager,
-        assetManager: window.assetManager
-      });
-      console.log('Game application initialized');
-      loadingBar.style.width = '100%';
-      
-      // Set a global flag so we know we're in a level transition
-      // This helps prevent unwanted ESC menu during loading
-      window.inLevelTransition = true;
-      
-      // Store the app reference globally for restart functionality
-      window.currentApp = app;
-      
-      // Handler for game over events
-      window.uiManager.on('gameOver', (score) => {
-        document.getElementById('final-score').textContent = `Score: ${score}`;
-        gameOverScreen.classList.remove('hidden');
-        if (app) app.stop();
-      });
-      
-      // Use a longer delay to ensure DOM and THREE.js have properly initialized
-      setTimeout(() => {
-        // Hide loading screen
-        loadingScreen.style.display = 'none';
-        
-        // Wait another tick to ensure UI is updated before starting game
-        requestAnimationFrame(() => {
-          console.log("Starting game after level selection");
+          // Load assets if they haven't been loaded already
+          if (!window.assetManager.loaded) {
+            await window.assetManager.loadAssets((progress) => {
+              loadingBar.style.width = `${progress * 100}%`;
+            });
+          } else {
+            // Simulate some loading time for better UX
+            loadingBar.style.width = '100%';
+          }
           
-          // Reset level transition flag
-          window.inLevelTransition = false;
+          // Initialize game world with selected level
+          const gameWorld = new GameWorld(window.assetManager, {
+            level: window.selectedLevel || 'standard'
+          });
+          await gameWorld.initialize();
           
-          // Start game loop - this will also handle requesting pointer lock
-          app.start();
+          // Create player with existing components
+          const player = new Player(gameWorld, window.inputManager, uiManager);
           
-          // Explicitly log input manager state for debugging
-          console.log('Input manager state:', {
-            pointerLocked: window.inputManager.pointerLocked,
-            moveForward: window.inputManager.moveForward,
-            moveBackward: window.inputManager.moveBackward,
-            moveLeft: window.inputManager.moveLeft, 
-            moveRight: window.inputManager.moveRight
+          // Create enemy manager
+          const enemyManager = new EnemyManager(gameWorld, player);
+          
+          // Create weapon system
+          const weaponSystem = new WeaponSystem(gameWorld, player, window.assetManager);
+          
+          // Create game application
+          app = new Application({
+            container: document.getElementById('arena-shooter-container'),
+            gameWorld,
+            player,
+            enemyManager,
+            weaponSystem,
+            inputManager: window.inputManager,
+            uiManager,
+            assetManager: window.assetManager
           });
           
-          console.log('Game started with level:', levelType);
-        });
-      }, 500); // Longer delay for better stability
+          // Store app reference globally
+          window.currentApp = app;
+          
+          // Setup game over handler
+          uiManager.on('gameOver', (score) => {
+            document.getElementById('final-score').textContent = `Score: ${score}`;
+            gameOverScreen.classList.remove('hidden');
+            if (app) app.stop();
+          });
+          
+          // Hide loading screen and show start screen for immediate action
+          loadingScreen.style.display = 'none';
+          
+          // Start the game immediately
+          // We don't need to wait for UI event since player already clicked 'START' on level select
+          setTimeout(() => {
+            // Start game loop
+            app.start();
+            
+            // Request pointer lock
+            setTimeout(() => {
+              window.inputManager.requestPointerLock();
+            }, 500); // Longer delay for better stability
+          });
+        } catch (error) {
+          console.error('Error starting game:', error);
+          throw error; // Rethrow to outer catch block
+        }
+      })();
       
       // Handle window close/navigation
       window.addEventListener('beforeunload', () => {
