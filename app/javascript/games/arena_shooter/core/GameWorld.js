@@ -38,16 +38,20 @@ export class GameWorld {
   
   /**
    * Initialize the game world
+   * @param {string} levelType - The type of level to create ('empty' or 'standard')
    */
-  async initialize() {
+  async initialize(levelType = 'standard') {
     // Add lighting
     this.setupLighting();
     
     // Create the environment
-    this.createEnvironment();
+    this.createEnvironment(levelType);
     
     // Add ambient audio
     this.setupAudio();
+    
+    // Store current level type
+    this.currentLevelType = levelType;
     
     return this;
   }
@@ -95,8 +99,9 @@ export class GameWorld {
   
   /**
    * Create the game environment (arena, floors, walls, etc.)
+   * @param {string} levelType - The type of level to create ('empty' or 'standard')
    */
-  createEnvironment() {
+  createEnvironment(levelType = 'standard') {
     // Create skybox
     if (this.assetManager.textures.has('skybox')) {
       const skyboxTexture = this.assetManager.getAsset('texture', 'skybox');
@@ -112,7 +117,7 @@ export class GameWorld {
       this.scene.add(skybox);
     }
     
-    // Create floor
+    // Create floor (common to all level types)
     const floorGeometry = new THREE.PlaneGeometry(50, 50);
     const floorMaterial = this.assetManager.getAsset('material', 'floor') || 
                          new THREE.MeshStandardMaterial({ color: 0x808080 });
@@ -125,7 +130,12 @@ export class GameWorld {
     this.scene.add(floor);
     this.colliders.push(floor);
     
-    // Create outer walls
+    // If level type is empty, only create floor
+    if (levelType === 'empty') {
+      return;
+    }
+    
+    // Create outer walls (for standard level)
     const wallMaterial = this.assetManager.getAsset('material', 'wall') || 
                         new THREE.MeshStandardMaterial({ color: 0x808080 });
     
@@ -158,13 +168,13 @@ export class GameWorld {
       this.colliders.push(wallMesh);
     });
     
-    // Add some obstacles for cover
+    // Add some obstacles for cover (avoid center where player spawns)
     const obstaclePositions = [
       [5, 1, 5],
       [-5, 1, -5],
       [10, 1, -7],
       [-10, 1, 7],
-      [0, 1.5, 0]
+      [8, 1.5, -3] // Moved from center to avoid player spawn
     ];
     
     obstaclePositions.forEach((pos, index) => {
@@ -187,6 +197,21 @@ export class GameWorld {
       this.colliders.push(obstacle);
       this.objects.push(obstacle);
     });
+  }
+  
+  /**
+   * Clear the current level
+   */
+  clearLevel() {
+    // Remove all objects from the scene except the player
+    for (const object of this.objects) {
+      this.scene.remove(object);
+    }
+    
+    // Clear arrays
+    this.objects = [];
+    this.colliders = [];
+    this.enemies = [];
   }
   
   /**

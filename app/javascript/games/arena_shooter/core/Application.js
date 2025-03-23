@@ -68,19 +68,74 @@ export class Application {
    */
   start() {
     if (!this.isRunning) {
+      // Ensure no conflicting game state
+      if (document.pointerLockElement) {
+        try {
+          document.exitPointerLock();
+          console.log("Cleared existing pointer lock before starting game");
+        } catch (e) {
+          console.warn("Could not clear existing pointer lock:", e);
+        }
+      }
+      
+      console.log("Game starting sequence initiated");
+      
+      // Hide any ESC menu that might be visible
+      const escMenu = document.getElementById('esc-menu');
+      if (escMenu) {
+        escMenu.style.display = 'none';
+      }
+      
+      // Set game state to running
       this.isRunning = true;
       this.lastTime = performance.now();
       this.startTime = performance.now();
       this._promptedPointerLock = false;
+      
+      // Start game loop
       requestAnimationFrame(this.animate);
-      this.enemyManager.startSpawning();
+      
+      // Make sure we don't have any events queued that might trigger the ESC menu
+      // Use a longer delay to ensure DOM has settled
+      setTimeout(() => {
+        console.log("Delayed game start actions executing");
+        
+        // Check if the game is still supposed to be running 
+        // (this prevents issues if the user quickly switched levels)
+        if (!this.isRunning) {
+          console.log("Game no longer running, aborting delayed start actions");
+          return;
+        }
+        
+        // Request pointer lock to enable camera controls
+        if (this.inputManager) {
+          console.log("Requesting pointer lock from Application start");
+          this.inputManager.requestPointerLock();
+        }
+        
+        // Ensure weapon is equipped and visible
+        if (this.weaponSystem) {
+          // Force re-equip the current weapon to ensure model is visible
+          const currentIndex = this.weaponSystem.currentWeaponIndex || 0;
+          this.weaponSystem.equipWeapon(currentIndex);
+          console.log("Equipped starting weapon at index:", currentIndex);
+        }
+        
+        // Start enemy spawning - do this last to ensure player is ready
+        console.log("Starting enemy spawning");
+        this.enemyManager.startSpawning();
+        
+        // Add a final check after everything should be settled
+        setTimeout(() => {
+          if (this.isRunning && this.inputManager && !this.inputManager.pointerLocked) {
+            console.log("Final pointer lock check: still not locked, requesting again");
+            this.inputManager.requestPointerLock();
+          }
+        }, 500);
+        
+      }, 400); // Longer delay for better reliability
       
       console.log("Game started - WASD movement and camera controls active");
-      
-      // Request pointer lock to start the game with mouse controls
-      if (this.inputManager) {
-        setTimeout(() => this.inputManager.requestPointerLock(), 500);
-      }
     }
   }
   

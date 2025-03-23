@@ -62,9 +62,19 @@ export class InputManager {
     
     this.controls.addEventListener('unlock', () => {
       this.pointerLocked = false;
-      const startScreen = document.getElementById('start-screen');
-      if (startScreen) startScreen.style.display = 'flex';
       console.log('Pointer lock released');
+      
+      // Check if game is still running - if so, show ESC menu
+      // Otherwise, we're likely transitioning between game states so don't show anything
+      if (window.currentApp && window.currentApp.isRunning) {
+        const escMenu = document.getElementById('esc-menu');
+        if (escMenu) {
+          escMenu.style.display = 'flex';
+          if (window.currentApp) {
+            window.currentApp.isRunning = false;
+          }
+        }
+      }
     });
     
     return this.controls;
@@ -153,8 +163,58 @@ export class InputManager {
     }
   }
   
+  // Track last time pointer lock was changed to prevent loops
+  lastPointerLockChange = Date.now() - 1000;
+
   onPointerLockChange() {
+    const now = Date.now();
+    const wasLocked = this.pointerLocked;
     this.pointerLocked = document.pointerLockElement !== null;
+    
+    // Debounce pointer lock changes to prevent rapid toggling
+    if (now - this.lastPointerLockChange < 300) {
+      console.log('Ignoring rapid pointer lock change');
+      return;
+    }
+    this.lastPointerLockChange = now;
+    
+    console.log(`Pointer lock changed: ${wasLocked ? 'locked' : 'unlocked'} -> ${this.pointerLocked ? 'locked' : 'unlocked'}`);
+    
+    // If we gained pointer lock, make sure the game is running
+    if (!wasLocked && this.pointerLocked) {
+      // Hide ESC menu if visible
+      const escMenu = document.getElementById('esc-menu');
+      if (escMenu && escMenu.style.display === 'flex') {
+        escMenu.style.display = 'none';
+      }
+      
+      // Resume game if it exists
+      if (window.currentApp) {
+        window.currentApp.isRunning = true;
+        console.log('Pointer lock gained: resuming game');
+      }
+    }
+    
+    // If pointer lock was lost unexpectedly and not due to ESC key
+    if (wasLocked && !this.pointerLocked) {
+      const escMenu = document.getElementById('esc-menu');
+      // Skip ESC menu handling if we're transitioning between game states
+      const isLevelTransition = window.currentApp === null || 
+                               window.currentApp === undefined || 
+                               !window.currentApp.isRunning;
+                               
+      if (escMenu && !isLevelTransition) {
+        const menuAlreadyVisible = escMenu.style.display === 'flex';
+        
+        // Only show menu if it's not already visible and game is running
+        if (!menuAlreadyVisible && window.currentApp && window.currentApp.isRunning) {
+          console.log('Pointer lock lost: Showing ESC menu');
+          escMenu.style.display = 'flex';
+          // Pause the game
+          window.currentApp.isRunning = false;
+        }
+      }
+    }
   }
   
   onMouseDown(event) {
@@ -174,10 +234,83 @@ export class InputManager {
   }
   
   requestPointerLock() {
-    if (this.controls && !this.pointerLocked) {
-      console.log('Requesting pointer lock');
-      this.controls.lock();
+    if (!this.controls) {
+      console.warn('Cannot request pointer lock: controls not initialized');
+      return;
     }
+    
+    console.log('Requesting pointer lock');
+    
+    // Skip redundant locking
+    if (document.pointerLockElement === this.controls.domElement) {
+      console.log('Pointer is already locked to our element');
+      return;
+    }
+    
+    // Make sure any ESC menu is hidden
+    const escMenu = document.getElementById('esc-menu');
+    if (escMenu && escMenu.style.display === 'flex') {
+      escMenu.style.display = 'none';
+    }
+    
+    // First ensure we're not already locked to something else
+    if (document.pointerLockElement) {
+      try {
+        document.exitPointerLock();
+        console.log('Exited existing pointer lock');
+        
+        // Small delay before requesting again
+        setTimeout(() => {
+          try {
+            this.controls.lock();
+            console.log('Requested pointer lock after exiting previous');
+          } catch (e) {
+            console.warn('Error requesting pointer lock after exit:', e);
+          }
+        }, 100); // Longer delay for better reliability
+      } catch (e) {
+        console.warn('Error exiting pointer lock:', e);
+        // Try direct lock anyway
+        try {
+          this.controls.lock();
+        } catch (e2) {
+          console.warn('Failed to directly request lock:', e2);
+        }
+      }
+    } else {
+      // Not locked, so request lock directly
+      try {
+        this.controls.lock();
+        console.log('Directly requested pointer lock');
+      } catch (e) {
+        console.warn('Error directly requesting pointer lock:', e);
+      }
+    }
+    
+    // Add a more robust fallback check in case lock fails
+    setTimeout(() => {
+      if (!this.pointerLocked && this.controls) {
+        console.log('Pointer lock failed on first attempt, trying again...');
+        try {
+          this.controls.lock();
+          console.log('Retry pointer lock requested');
+        } catch (e) {
+          console.warn('Error on retry pointer lock attempt:', e);
+        }
+        
+        // Add a third attempt after a longer delay
+        setTimeout(() => {
+          if (!this.pointerLocked && this.controls) {
+            console.log('Pointer lock still not acquired, final attempt...');
+            try {
+              this.controls.lock();
+            } catch (e) {
+              console.warn('Error on final pointer lock attempt:', e);
+            }
+          }
+        }, 500);
+      }
+    }, 300);
   }
   
   update(deltaTime) {
