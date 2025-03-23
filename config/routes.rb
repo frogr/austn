@@ -15,16 +15,17 @@ Rails.application.routes.draw do
   get "/blog/:slug/content", to: "blog#content", as: :blog_post_content
 
   # Portfolio routes
-  # get "/work", to: "portfolio#work"
-  # get "/contact", to: "portfolio#contact"
-  # get "/fun", to: "portfolio#fun"
-  # get "/games", to: "portfolio#games"
-  # get "/games/arena-shooter", to: "portfolio#arena_shooter"
+  get "/work", to: "portfolio#work"
+  get "/contact", to: "portfolio#contact"
+  get "/fun", to: "portfolio#fun"
+  get "/games", to: "portfolio#games"
+  get "/games/arena-shooter", to: "portfolio#arena_shooter"
+  get "/movement-demo", to: "movement_demo#index"
 
   # Dashboard for development/testing
   get "/dashboard", to: "dashboard#hello", as: :dashboard
   post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message
 
   # Portfolio as root
-  root "portfolio#arena_shooter"
+  root "portfolio#index"
 end

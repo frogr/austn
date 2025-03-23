@@ -10,6 +10,11 @@ import { WeaponSystem } from './games/arena_shooter/core/WeaponSystem';
 
 // Wait for DOM to be loaded
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Arena Shooter initializing - CRITICAL FIX VERSION');
+  
+  // Create debug display
+  createDebugDisplay();
+  
   // Initialize loading screen
   const loadingScreen = document.getElementById('loading-screen');
   const loadingBar = document.getElementById('loading-bar');
@@ -29,6 +34,98 @@ document.addEventListener('DOMContentLoaded', () => {
     startGame();
   });
   
+  // Create a debug display with better visibility for tracking movement and camera issues
+  function createDebugDisplay() {
+    const debugOverlay = document.createElement('div');
+    debugOverlay.id = 'fps-debug-overlay';
+    debugOverlay.style.position = 'fixed';
+    debugOverlay.style.bottom = '10px';
+    debugOverlay.style.right = '10px';
+    debugOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    debugOverlay.style.color = 'lime';
+    debugOverlay.style.padding = '8px';
+    debugOverlay.style.fontFamily = 'monospace';
+    debugOverlay.style.fontSize = '12px';
+    debugOverlay.style.zIndex = '1000';
+    debugOverlay.style.pointerEvents = 'none';
+    debugOverlay.style.borderRadius = '4px';
+    debugOverlay.style.maxWidth = '300px';
+    debugOverlay.textContent = 'FPS: --';
+    
+    // Add FPS counter to the page
+    document.body.appendChild(debugOverlay);
+    
+    // Add control hints overlay
+    const controlsOverlay = document.createElement('div');
+    controlsOverlay.id = 'controls-overlay';
+    controlsOverlay.style.position = 'fixed';
+    controlsOverlay.style.top = '10px';
+    controlsOverlay.style.left = '10px';
+    controlsOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    controlsOverlay.style.color = 'white';
+    controlsOverlay.style.padding = '10px';
+    controlsOverlay.style.fontFamily = 'monospace';
+    controlsOverlay.style.fontSize = '12px';
+    controlsOverlay.style.zIndex = '1000';
+    controlsOverlay.style.pointerEvents = 'none';
+    controlsOverlay.style.borderRadius = '4px';
+    controlsOverlay.innerHTML = `
+      <div style="font-weight: bold; margin-bottom: 5px; color: lime;">CONTROLS</div>
+      <div>WASD: Move</div>
+      <div>Mouse: Look</div>
+      <div>Click: Shoot</div>
+      <div>ESC: Release mouse</div>
+    `;
+    
+    document.body.appendChild(controlsOverlay);
+    
+    // Update FPS display
+    let lastTime = performance.now();
+    let frames = 0;
+    
+    function updateFPS() {
+      if (!window.currentApp) return;
+      
+      frames++;
+      
+      const now = performance.now();
+      const elapsed = now - lastTime;
+      
+      // Update FPS once per second
+      if (elapsed >= 1000) {
+        const fps = Math.round(frames * 1000 / elapsed);
+        debugOverlay.textContent = `FPS: ${fps}`;
+        
+        // Add player info if available
+        const player = window.currentApp.player;
+        const inputManager = window.currentApp.inputManager;
+        
+        if (player && player.camera) {
+          const pos = player.camera.position;
+          debugOverlay.textContent += `\nPos: ${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}`;
+          
+          if (player.velocity) {
+            const vel = player.velocity;
+            const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+            debugOverlay.textContent += `\nSpeed: ${speed.toFixed(1)} m/s`;
+          }
+        }
+        
+        if (inputManager) {
+          debugOverlay.textContent += `\nPointer lock: ${inputManager.pointerLocked ? 'ACTIVE' : 'INACTIVE'}`;
+        }
+        
+        lastTime = now;
+        frames = 0;
+      }
+      
+      requestAnimationFrame(updateFPS);
+    }
+    
+    // Start the FPS counter
+    updateFPS();
+  }
+
   async function startGame() {
     // Show loading screen
     loadingScreen.style.display = 'flex';
@@ -100,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Wait for user to click start button before starting the game
       uiManager.on('gameStart', () => {
         // Request pointer lock to enable camera controls
-        inputManager.requestPointerLock();
+        inputManager.handleClick();
         
         // Start game loop
         app.start();

@@ -21,6 +21,8 @@ export class Application {
     
     this.isRunning = false;
     this.lastTime = 0;
+    this.startTime = 0;
+    this._promptedPointerLock = false;
     this.stats = null;
     
     // Initialize the renderer and scene
@@ -64,8 +66,17 @@ export class Application {
     if (!this.isRunning) {
       this.isRunning = true;
       this.lastTime = performance.now();
+      this.startTime = performance.now();
+      this._promptedPointerLock = false;
       requestAnimationFrame(this.animate);
       this.enemyManager.startSpawning();
+      
+      console.log("Game started - WASD movement and camera controls active");
+      
+      // Request pointer lock to start the game with mouse controls
+      if (this.inputManager) {
+        setTimeout(() => this.inputManager.requestPointerLock(), 500);
+      }
     }
   }
   
@@ -91,6 +102,24 @@ export class Application {
     
     // Clamp deltaTime to prevent large jumps
     const clampedDelta = Math.min(deltaTime, 0.1);
+    
+    // Log frame rate occasionally
+    if (Math.random() < 0.01) { // Log every ~100 frames
+      console.log(`FPS: ${(1 / clampedDelta).toFixed(1)}, Delta: ${(clampedDelta * 1000).toFixed(2)}ms`);
+      console.log(`Player position: ${this.player.camera.position.x.toFixed(2)}, ${this.player.camera.position.y.toFixed(2)}, ${this.player.camera.position.z.toFixed(2)}`);
+      console.log(`Pointer locked: ${this.inputManager.pointerLocked}`);
+    }
+    
+    // After 5 seconds, request pointer lock if not already locked
+    if (time - this.startTime > 5000 && !this.inputManager.pointerLocked && !this._promptedPointerLock) {
+      console.log("Prompting for pointer lock after 5 seconds");
+      this._promptedPointerLock = true;
+      
+      // Show a UI message to click for controls
+      if (this.uiManager) {
+        this.uiManager.showMessage("Click anywhere to enable mouse controls", 3000);
+      }
+    }
     
     // Update all game systems
     this.inputManager.update(clampedDelta);

@@ -3,6 +3,8 @@
  */
 export class UIManager {
   constructor() {
+    console.log('UIManager initializing - FIXED VERSION');
+    
     // UI elements
     this.healthDisplay = document.getElementById('health-value');
     this.ammoDisplay = document.getElementById('ammo-value');
@@ -20,10 +22,26 @@ export class UIManager {
     
     // Setup start button event listener
     if (this.startButton) {
+      console.log('Found start button, attaching click listener');
       this.startButton.addEventListener('click', () => {
+        console.log('Start button clicked');
         this.hideStartScreen();
         this.emit('gameStart');
+        
+        // Add WASD instructions to the debug overlay
+        const debugOverlay = document.getElementById('debug-overlay');
+        if (debugOverlay) {
+          const instructions = document.createElement('div');
+          instructions.style.color = 'yellow';
+          instructions.style.marginTop = '20px';
+          instructions.style.fontWeight = 'bold';
+          instructions.innerHTML = 'PRESS W,A,S,D TO MOVE | MOUSE TO LOOK';
+          debugOverlay.appendChild(instructions);
+        }
       });
+    } else {
+      console.warn('Start button not found, will try again later');
+      setTimeout(() => this.setupStartButton(), 1000);
     }
     
     // Game state
@@ -31,6 +49,23 @@ export class UIManager {
     
     // Event listeners
     this.eventListeners = new Map();
+  }
+  
+  /**
+   * Delayed setup for start button (if not found initially)
+   */
+  setupStartButton() {
+    this.startButton = document.getElementById('start-button');
+    if (this.startButton) {
+      console.log('Start button found on retry, attaching click listener');
+      this.startButton.addEventListener('click', () => {
+        console.log('Start button clicked');
+        this.hideStartScreen();
+        this.emit('gameStart');
+      });
+    } else {
+      console.warn('Start button still not found after retry');
+    }
   }
   
   /**

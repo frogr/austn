@@ -9,6 +9,24 @@ export class WeaponSystem {
     this.player = player;
     this.assetManager = assetManager;
     
+    // Check if player exists and has required methods
+    if (!player) {
+      console.error('Player object is null or undefined in WeaponSystem constructor');
+      return;
+    }
+    
+    // Add setWeapon method to player if missing
+    if (typeof this.player.setWeapon !== 'function') {
+      console.warn('Adding setWeapon method to player');
+      this.player.setWeapon = (weapon) => {
+        this.player.currentWeapon = weapon;
+        if (this.player.uiManager) {
+          this.player.uiManager.updateAmmo(weapon.ammo, weapon.maxAmmo);
+        }
+        console.log(`Equipped weapon: ${weapon.name}`);
+      };
+    }
+    
     // Available weapons
     this.weapons = [
       {
@@ -334,6 +352,7 @@ export class WeaponSystem {
    * Equip a weapon
    * @param {number} index - Index of the weapon to equip
    */
+  // Improved equipWeapon method with better error handling
   equipWeapon(index) {
     // Validate index
     if (index < 0 || index >= this.weapons.length) {
@@ -341,26 +360,43 @@ export class WeaponSystem {
       return;
     }
     
-    // Remove current weapon model from scene if there is one
-    if (this.player.currentWeapon && this.player.currentWeapon.model) {
-      this.gameWorld.scene.remove(this.player.currentWeapon.model);
-    }
-    
-    // Equip the new weapon
-    const weapon = this.weapons[index];
-    this.player.setWeapon(weapon);
-    
-    // Add the weapon model to the scene
-    if (weapon.model) {
-      this.gameWorld.scene.add(weapon.model);
-    }
-    
-    // Update UI
-    if (this.player.uiManager) {
-      this.player.uiManager.updateAmmo(weapon.ammo, weapon.maxAmmo);
+    try {
+      // Remove current weapon model from scene if there is one
+      if (this.player.currentWeapon && this.player.currentWeapon.model) {
+        this.gameWorld.scene.remove(this.player.currentWeapon.model);
+      }
+      
+      // Equip the new weapon
+      const weapon = this.weapons[index];
+      console.log('Equipping weapon:', weapon.name);
+      
+      // Always set weapon directly first as a fallback
+      this.player.currentWeapon = weapon;
+      
+      // Try to use setWeapon method if available
+      try {
+        if (typeof this.player.setWeapon === 'function') {
+          this.player.setWeapon(weapon);
+        } else {
+          // Update UI if available
+          if (this.player.uiManager) {
+            this.player.uiManager.updateAmmo(weapon.ammo, weapon.maxAmmo);
+          }
+          console.log(`Equipped weapon: ${weapon.name} (direct assignment)`);
+        }
+      } catch (e) {
+        console.warn('Error calling player.setWeapon:', e);
+        // Already set the weapon directly above, so we can continue
+      }
+      
+      // Add the weapon model to the scene
+      if (weapon.model) {
+        this.gameWorld.scene.add(weapon.model);
+      }
+    } catch (error) {
+      console.error('Error in equipWeapon:', error);
     }
   }
-  
   /**
    * Fire the current weapon
    */
@@ -514,18 +550,81 @@ export class WeaponSystem {
   /**
    * Reload the current weapon
    */
+  // Improved reloadWeapon method with better error handling
   reloadWeapon() {
-    const weapon = this.player.currentWeapon;
-    
-    // Skip if no weapon or already full
-    if (!weapon || weapon.ammo >= weapon.maxAmmo) return;
-    
-    // Start reloading
-    this.player.startReload();
-    
-    // Play reload sound
-    if (weapon.soundEffects && weapon.soundEffects.reload) {
-      this.playSound(weapon.soundEffects.reload);
+    try {
+      const weapon = this.player.currentWeapon;
+      
+      // Skip if no weapon or already full
+      if (!weapon || weapon.ammo >= weapon.maxAmmo) return;
+      
+      // Add startReload method to player if missing
+      if (typeof this.player.startReload !== 'function') {
+        this.player.startReload = () => {
+          if (this.player.isReloading) return;
+          
+          this.player.isReloading = true;
+          
+          // Get reload time from current weapon
+          const reloadTime = this.player.currentWeapon ? this.player.currentWeapon.reloadTime || 1.5 : 1.5;
+          
+          // After reload time, restore ammo
+          setTimeout(() => {
+            if (this.player.currentWeapon) {
+              this.player.currentWeapon.ammo = this.player.currentWeapon.maxAmmo;
+              
+              // Update UI
+              if (this.player.uiManager) {
+                this.player.uiManager.updateAmmo(this.player.currentWeapon.ammo, this.player.currentWeapon.maxAmmo);
+              }
+            }
+            
+            this.player.isReloading = false;
+            console.log('Reload complete');
+          }, reloadTime * 1000);
+          
+          console.log('Started reloading');
+        };
+      }
+      
+      try {
+        // Try to use player's startReload method
+        this.player.startReload();
+      } catch (e) {
+        console.warn('Error calling startReload:', e);
+        
+        // Fallback: handle reloading directly
+        if (this.player.isReloading) return;
+        
+        this.player.isReloading = true;
+        
+        // Get reload time from weapon
+        const reloadTime = weapon.reloadTime || 1.5;
+        
+        // After reload time, restore ammo
+        setTimeout(() => {
+          if (weapon) {
+            weapon.ammo = weapon.maxAmmo;
+            
+            // Update UI
+            if (this.player.uiManager) {
+              this.player.uiManager.updateAmmo(weapon.ammo, weapon.maxAmmo);
+            }
+          }
+          
+          this.player.isReloading = false;
+          console.log('Reload complete');
+        }, reloadTime * 1000);
+        
+        console.log('Started reloading (fallback)');
+      }
+      
+      // Play reload sound
+      if (weapon.soundEffects && weapon.soundEffects.reload) {
+        this.playSound(weapon.soundEffects.reload);
+      }
+    } catch (error) {
+      console.error('Error in reloadWeapon:', error);
     }
   }
   

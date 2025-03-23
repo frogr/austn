@@ -1,0 +1,95 @@
+# Backend Development Guidelines
+
+## Ruby on Rails Architecture
+
+- Follow MVC architecture strictly
+- Use RESTful resource routing when appropriate
+- Implement concerns for shared functionality
+- Use service objects for complex business logic
+- Follow the Rails way unless there's a compelling reason not to
+
+## Controller Standards
+
+- Keep controllers thin
+- Handle only HTTP requests and responses
+- Move business logic to models or service objects
+- Use strong parameters for mass assignment protection
+- Return appropriate HTTP status codes
+
+## Model Design
+
+- Follow single responsibility principle
+- Use appropriate ActiveRecord callbacks
+- Implement validations at the model level
+- Use scopes for common queries
+- Keep complex queries in the model, not controllers
+- Use proper associations (has_many, belongs_to, etc.)
+
+## Database Guidelines
+
+- Use migrations for all schema changes
+- Write reversible migrations
+- Add appropriate indexes for commonly queried columns
+- Use foreign key constraints
+- Follow naming conventions (plural table names, singular model names)
+- Keep migrations small and focused
+
+## API Design
+
+- Use JSON as the default format
+- Version your APIs (v1, v2, etc.)
+- Use proper HTTP verbs (GET, POST, PUT, DELETE)
+- Return consistent error formats
+- Implement proper authentication and authorization
+- Document all API endpoints
+
+## Security Guidelines
+
+- Use Devise or other established gems for authentication
+- Implement proper authorization with Pundit or CanCanCan
+- Protect against CSRF, XSS, and SQL injection
+- Use HTTPS in all environments
+- Never expose sensitive data in logs or responses
+- Follow OWASP security best practices
+
+## Performance Considerations
+
+- Use eager loading to avoid N+1 queries
+- Implement database indexes strategically
+- Use fragment caching for view components
+- Consider using Redis for caching
+- Optimize database queries for performance
+- Use background jobs for resource-intensive operations
+
+## Testing Standards
+
+- Write model tests for validations and business logic
+- Write controller tests for request/response cycles
+- Use factories instead of fixtures
+- Test edge cases and error conditions
+- Aim for high test coverage on critical paths
+
+## Error Handling
+
+- Use custom error classes for domain-specific errors
+- Implement proper logging for errors
+- Return appropriate error responses to clients
+- Handle exceptions at the appropriate level
+
+## Code Style & Conventions
+
+- Follow the Ruby Style Guide
+- Use 2-space indentation
+- Keep methods small and focused
+- Use meaningful variable and method names
+- Document complex methods and algorithms
+- Use snake_case for variables and methods
+- Use CamelCase for classes and modules
+
+## Third-Party Integrations
+
+- Use appropriate gems for common integrations
+- Wrap external APIs in service objects
+- Implement proper error handling for external services
+- Add retry logic for flaky services
+- Use environment variables for configuration

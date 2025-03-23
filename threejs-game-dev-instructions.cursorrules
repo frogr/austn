@@ -1,0 +1,232 @@
+# ThreeJS Game Development Guidelines
+
+## Project Architecture
+
+- Use modular architecture with clear separation of concerns
+- Implement core engine components:
+  - `Application` - Main entry point and game loop
+  - `InputManager` - Handle keyboard and mouse input
+  - `AssetManager` - Load and manage 3D models, textures, audio
+  - `GameWorld` - Manage scene, lighting, and physical world
+  - `UIManager` - Handle UI interactions and HUD
+  - `Player` - Player character controller and camera
+  - `EntityManager` - Manage game entities (enemies, pickups)
+  - `PhysicsSystem` - Handle collisions and physics
+
+## Input System
+
+### Keyboard Input
+
+- Track key states in real-time (not just events)
+- Use standardized key codes (KeyW, KeyA, KeyS, KeyD)
+- Handle both keydown and keyup events
+- Implement key mapping configuration
+- Example:
+
+```javascript
+// Store key states in an object
+this.keyState = {};
+
+// Update key states on events
+document.addEventListener('keydown', (e) => {
+  this.keyState[e.code] = true;
+});
+
+document.addEventListener('keyup', (e) => {
+  this.keyState[e.code] = false;
+});
+
+// Access key state in game loop
+if (this.keyState['KeyW']) {
+  // Move forward
+}
+```
+
+### Mouse Input for FPS Camera
+
+- Use Pointer Lock API for FPS mouse control
+- Track mouse movement deltas, not absolute position
+- Apply sensitivity scaling to mouse input
+- Reset mouse movement after applying to camera
+- Example:
+
+```javascript
+// Request pointer lock on container click
+container.addEventListener('click', () => {
+  container.requestPointerLock();
+});
+
+// Track pointer lock state
+document.addEventListener('pointerlockchange', () => {
+  this.pointerLocked = document.pointerLockElement === container;
+});
+
+// Track mouse movement when pointer is locked
+document.addEventListener('mousemove', (e) => {
+  if (this.pointerLocked) {
+    this.mouseMovement.x = e.movementX || 0;
+    this.mouseMovement.y = e.movementY || 0;
+  }
+});
+```
+
+## Camera Controls
+
+- Set proper camera rotation order for FPS controls:
+  ```javascript
+  camera.rotation.order = 'YXZ'; // Critical for FPS camera
+  ```
+- Implement yaw (left/right) rotation around Y-axis
+- Implement pitch (up/down) rotation around X-axis
+- Clamp vertical rotation to prevent camera flipping
+- Example:
+
+```javascript
+// Apply mouse movement to camera rotation
+const sensitivity = 0.002;
+
+// Horizontal rotation (yaw)
+this.rotation.y -= mouseMovement.x * sensitivity;
+
+// Vertical rotation (pitch) with clamping
+this.rotation.x -= mouseMovement.y * sensitivity;
+this.rotation.x = Math.max(-Math.PI/2 + 0.01, Math.min(Math.PI/2 - 0.01, this.rotation.x));
+
+// Apply rotation to camera
+camera.rotation.copy(this.rotation);
+```
+
+## Character Movement
+
+- Calculate movement direction based on input
+- Normalize movement vector to prevent faster diagonal movement
+- Transform movement vector to camera orientation
+- Apply movement with time-based speed
+- Example:
+
+```javascript
+// Get input direction
+const moveX = (keyState['KeyD'] ? 1 : 0) - (keyState['KeyA'] ? 1 : 0);
+const moveZ = (keyState['KeyS'] ? 1 : 0) - (keyState['KeyW'] ? 1 : 0);
+
+// Create and normalize movement vector
+const moveDir = new THREE.Vector3(moveX, 0, moveZ);
+if (moveDir.length() > 1) moveDir.normalize();
+
+// Get forward and right vectors from camera
+const forward = new THREE.Vector3(0, 0, 1).applyEuler(new THREE.Euler(0, rotation.y, 0));
+const right = new THREE.Vector3(1, 0, 0).applyEuler(new THREE.Euler(0, rotation.y, 0));
+
+// Calculate world movement direction
+const worldDir = new THREE.Vector3();
+worldDir.addScaledVector(forward, -moveDir.z);
+worldDir.addScaledVector(right, moveDir.x);
+worldDir.normalize();
+
+// Apply movement
+position.addScaledVector(worldDir, moveSpeed * deltaTime);
+```
+
+## Game Loop
+
+- Use requestAnimationFrame for the game loop
+- Calculate delta time between frames
+- Clamp delta time to prevent "time jumps"
+- Update all game systems with delta time
+- Example:
+
+```javascript
+const now = performance.now();
+const deltaTime = Math.min((now - lastTime) / 1000, 0.1); // Seconds, clamped to 100ms
+lastTime = now;
+
+// Update game systems
+inputManager.update();
+player.update(deltaTime);
+enemyManager.update(deltaTime);
+physics.update(deltaTime);
+renderer.render(scene, camera);
+```
+
+## Asset Management
+
+- Implement async loading with promises
+- Show loading progress to the user
+- Use a central registry for assets
+- Preload critical assets before game start
+- Example:
+
+```javascript
+async loadAssets(onProgress) {
+  const total = this.assetList.length;
+  let loaded = 0;
+  
+  // Create load promises for all assets
+  const promises = this.assetList.map(asset => {
+    return this.loadAsset(asset).then(() => {
+      loaded++;
+      onProgress(loaded / total);
+    });
+  });
+  
+  // Wait for all assets to load
+  await Promise.all(promises);
+}
+```
+
+## Performance Optimization
+
+- Use object pooling for frequently created/destroyed objects
+- Implement level of detail (LOD) for complex models
+- Use frustum culling for off-screen objects
+- Batch similar meshes where possible
+- Use instancing for repeated geometry
+- Optimize lighting with baked shadows
+- Minimize draw calls by combining materials
+- Use sprite sheets for particles and effects
+
+## Debugging Tools
+
+- Implement FPS counter and performance monitors
+- Add debug mode with visual helpers
+- Use THREE.js inspector in development
+- Implement console commands for testing
+- Add visual debugging for physics and collisions
+- Example:
+
+```javascript
+// FPS counter
+let frames = 0;
+let lastFpsTime = 0;
+
+function updateFps(now) {
+  frames++;
+  if (now >= lastFpsTime + 1000) {
+    const fps = frames * 1000 / (now - lastFpsTime);
+    debugText.textContent = `FPS: ${Math.round(fps)}`;
+    frames = 0;
+    lastFpsTime = now;
+  }
+}
+```
+
+## Best Practices
+
+- Pre-compute and cache values where possible
+- Use Object3D hierarchy for logical grouping
+- Implement proper disposal of resources (geometries, materials, textures)
+- Use raycasting for interaction and collision detection
+- Separate game logic from rendering
+- Implement proper event handling with custom events
+- Use quaternions for smooth rotations
+- Avoid unnecessary matrix computations
+
+## Common Pitfalls to Avoid
+
+- Not normalizing movement vectors (causing faster diagonal movement)
+- Incorrect camera rotation order (use YXZ for FPS camera)
+- Not applying delta time to movement (causing inconsistent speeds)
+- Memory leaks from not disposing unused resources
+- Excessive draw calls from too many materials
+- Not handling window resize for responsive canvas
+- Missing pointer lock implementation for FPS controls
