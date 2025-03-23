@@ -32,7 +32,7 @@ export class WeaponSystem {
       {
         index: 0,
         name: 'Pistol',
-        damage: 25,
+        damage: 33.4, // 3 shots to do 100 damage
         ammo: 12,
         maxAmmo: 12,
         reloadTime: 1.5,
@@ -47,7 +47,7 @@ export class WeaponSystem {
       {
         index: 1,
         name: 'Assault Rifle',
-        damage: 10, // Lower damage per bullet
+        damage: 20, // 5 shots to do 100 damage
         ammo: 30,
         maxAmmo: 30,
         reloadTime: 2.0,
@@ -63,7 +63,7 @@ export class WeaponSystem {
       {
         index: 2,
         name: 'Shotgun',
-        damage: 10, // Per pellet
+        damage: 12.5, // 8 pellets * 12.5 = 100 damage per shot
         ammo: 6, // Only 6 shells as requested
         maxAmmo: 6,
         reloadTime: 2.5,
@@ -80,8 +80,8 @@ export class WeaponSystem {
       {
         index: 3,
         name: 'Rocket Launcher',
-        damage: 50, // Direct hit damage
-        splashDamage: 75, // Splash damage
+        damage: 50, // Direct hit damage = 50
+        splashDamage: 50, // Splash damage = 50
         splashRadius: 6, // Splash radius
         ammo: 6, // 6 rockets as requested
         maxAmmo: 6,
@@ -98,7 +98,7 @@ export class WeaponSystem {
       {
         index: 4,
         name: 'Sniper Rifle',
-        damage: 150, // High damage
+        damage: 50, // 50 damage per shot
         ammo: 5,
         maxAmmo: 5,
         reloadTime: 2.5,

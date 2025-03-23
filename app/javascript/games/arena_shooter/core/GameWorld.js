@@ -699,6 +699,8 @@ export class GameWorld {
           // Apply damage to the enemy
           if (typeof enemy.takeDamage === 'function') {
             enemy.takeDamage(actualDamage, position);
+          } else {
+            console.warn('Enemy does not have takeDamage method');
           }
         }
       }
