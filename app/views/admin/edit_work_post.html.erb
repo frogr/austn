@@ -1,0 +1,46 @@
+<div class="card">
+  <h1 class="text-2xl font-bold mb-6">Edit Work Post</h1>
+  
+  <%= form_with(model: @work_post, url: admin_update_work_post_path(@work_post), method: :patch, local: true) do |form| %>
+    <% if @work_post.errors.any? %>
+      <div class="bg-red-100 p-4 rounded-md mb-6">
+        <h2 class="text-red-800 font-bold mb-2"><%= pluralize(@work_post.errors.count, "error") %> prohibited this work post from being saved:</h2>
+        <ul class="list-disc pl-5">
+          <% @work_post.errors.full_messages.each do |message| %>
+            <li class="text-red-700"><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    
+    <div class="form-group">
+      <%= form.label :title, class: "form-label" %>
+      <%= form.text_field :title, class: "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :description, class: "form-label" %>
+      <%= form.text_area :description, rows: 5, class: "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :image_url, class: "form-label" %>
+      <%= form.text_field :image_url, class: "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :tags, "Tags (comma separated)", class: "form-label" %>
+      <%= form.text_field :tags, value: @work_post.tags&.join(", "), class: "form-control" %>
+    </div>
+    
+    <div class="form-group checkbox-group">
+      <%= form.check_box :featured, class: "checkbox" %>
+      <%= form.label :featured, class: "form-label mb-0" %>
+    </div>
+    
+    <div class="flex mt-6">
+      <%= form.submit "Update Work Post", class: "btn btn-primary mr-2" %>
+      <%= link_to "Cancel", admin_work_posts_path, class: "btn bg-gray-200 text-gray-800 hover:bg-gray-300" %>
+    </div>
+  <% end %>
+</div>

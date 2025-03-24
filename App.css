@@ -54,32 +54,9 @@
   line-height: 1;
 }
 
-/* Matrix animation */
+/* Matrix animation - kept for reference but not used in new design */
 .matrix-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.matrix-char {
-  position: absolute;
-  color: #39ff14;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  opacity: 0;
-  animation: matrix-drop 2s linear infinite;
-}
-
-@keyframes matrix-drop {
-  0% { 
-    opacity: 1;
-    transform: translateY(-100%);
-  }
-  100% { 
-    opacity: 0;
-    transform: translateY(100%);
-  }
+  display: none;
 }
 
 /* Analog noise overlay */
@@ -229,6 +206,7 @@
   50% { opacity: 0.6; box-shadow: 0 0 10px currentColor; }
 }
 
+/* Server status indicators */
 .server-status {
   width: 8px;
   height: 8px;
@@ -258,4 +236,100 @@
   display: inline-block;
   margin-right: 6px;
   animation: server-pulse 2s ease-in-out infinite;
+}
+
+/* Terminal window macOS style */
+.terminal-header {
+  height: 24px;
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #444;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.terminal-dot-red {
+  background-color: #ff5f56;
+}
+
+.terminal-dot-yellow {
+  background-color: #ffbd2e;
+}
+
+.terminal-dot-green {
+  background-color: #27c93f;
+}
+
+.terminal-title {
+  color: #aaa;
+  font-size: 12px;
+  margin-left: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* MacOS window styling for bento boxes */
+.macos-window {
+  border-radius: 6px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.macos-header {
+  height: 26px;
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+  border-bottom: 1px solid #444;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.macos-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.macos-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.macos-button-close {
+  background-color: #ff5f56;
+  border: 1px solid #e0443e;
+}
+
+.macos-button-minimize {
+  background-color: #ffbd2e;
+  border: 1px solid #dea123;
+}
+
+.macos-button-expand {
+  background-color: #27c93f;
+  border: 1px solid #1aab29;
+}
+
+.macos-content {
+  padding: 10px;
+  background-color: rgba(30, 30, 30, 0.8);
+}
+
+/* Blink animation (caret) */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }

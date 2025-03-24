@@ -1,7 +1,8 @@
-
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import GamesGrid from '../components/GamesGrid';
+import type { Game } from '../components/GamesGrid';
 
 // Simple Memory Game
 const MemoryGame = () => {
@@ -137,7 +138,72 @@ const MemoryGame = () => {
   );
 };
 
+// Type for API response
+interface GamePost {
+  id: number;
+  title: string;
+  description: string;
+  slug: string;
+  image_url: string;
+  link: string;
+  featured: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 const Games = () => {
+  const [gameProjects, setGameProjects] = useState<Game[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/game_posts.json');
+        
+        if (!response.ok) {
+          throw new Error(`Error fetching games: ${response.statusText}`);
+        }
+        
+        const data: GamePost[] = await response.json();
+        
+        // Transform the API data to match our Game interface
+        const formattedGames: Game[] = data.map(game => ({
+          title: game.title,
+          description: game.description,
+          imageUrl: game.image_url,
+          link: game.link
+        }));
+        
+        setGameProjects(formattedGames);
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch games:', err);
+        setError('Failed to load games. Please try again later.');
+        setLoading(false);
+        
+        // Fallback data in case API fails
+        setGameProjects([
+          {
+            title: "Arena Shooter",
+            description: "Fast-paced 2D arena shooter with enemies, power-ups, and high scores.",
+            imageUrl: "/assets/images/games/arena-shooter.jpg",
+            link: "/portfolio/arena_shooter",
+          },
+          {
+            title: "Platformer",
+            description: "Classic side-scrolling platformer with collectibles and obstacles.",
+            imageUrl: "/assets/images/games/platformer.jpg",
+            link: "#",
+          }
+        ]);
+      }
+    };
+
+    fetchGames();
+  }, []);
+
   return (
     <div className="min-h-screen pt-24 px-6 md:px-12 lg:px-24 pb-12 animate-page-transition">
       <Link to="/" className="inline-flex items-center text-sm mb-8 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full shadow hover:shadow-md transition-all">
@@ -148,23 +214,42 @@ const Games = () => {
       <div className="mb-12 text-center">
         <h1 className="font-pixel text-3xl mb-4 text-retro-purple">Games</h1>
         <p className="text-gray-600 max-w-xl mx-auto">
-          Take a break and have some fun with these mini-games
+          Check out my game development projects and have some fun with mini-games
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <MemoryGame />
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 text-retro-purple">Game Projects</h2>
         
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20">
-          <h3 className="text-xl font-bold mb-6 text-retro-purple">More Games Coming Soon!</h3>
-          <div className="h-64 flex items-center justify-center">
-            <div className="text-center">
-              <div className="inline-block mb-4 w-16 h-16 border-4 border-retro-purple border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-gray-600">Stay tuned for additional mini-games...</p>
+        {loading ? (
+          <div className="flex justify-center items-center h-48">
+            <div className="inline-block w-12 h-12 border-4 border-retro-purple border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : error ? (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center">
+            <p className="text-red-500">{error}</p>
+          </div>
+        ) : (
+          <GamesGrid games={gameProjects} />
+        )}
+      </section>
+      
+      <section>
+        <h2 className="text-2xl font-bold mb-6 text-retro-purple">Mini Games</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <MemoryGame />
+          
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-md border border-white/20">
+            <h3 className="text-xl font-bold mb-6 text-retro-purple">More Games Coming Soon!</h3>
+            <div className="h-64 flex items-center justify-center">
+              <div className="text-center">
+                <div className="inline-block mb-4 w-16 h-16 border-4 border-retro-purple border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-gray-600">Stay tuned for additional mini-games...</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -72,31 +72,29 @@ const BentoBox = ({
       transition-all duration-300 ease-out
       ${gradient ? 'bg-cyber-gradient bg-opacity-20' : 'bg-terminal-dark bg-opacity-80 backdrop-blur-sm'}
       border ${variantClasses[variant]} shadow-lg
-      hover:shadow-[0_0_8px_rgba(155,135,245,0.3)] 
+      hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)] 
       ${variant === 'rails' ? 'hover:shadow-[0_0_8px_rgba(204,0,0,0.3)]' : ''}
       ${variant === 'postgres' ? 'hover:shadow-[0_0_8px_rgba(51,103,145,0.3)]' : ''}
       ${variant === 'code' ? 'hover:shadow-[0_0_8px_rgba(57,255,20,0.3)]' : ''}
-      group
+      group rounded-lg
       ${sizeClasses[size]}
       ${className}
+      macos-window
     `}
-    style={{
-      clipPath: 'polygon(0% 0%, 100% 0%, 100% 95%, 98% 100%, 0% 100%)'
-    }}
     >
       {/* Noise overlay */}
       <div className="absolute inset-0 noise-overlay"></div>
       
-      {/* Terminal title bar */}
-      {terminal && (
+      {/* macOS window title bar for non-terminal boxes */}
+      {!terminal && heading && (
         <div className="absolute top-0 left-0 right-0 h-6 bg-terminal-gray flex items-center px-2 border-b border-gray-700">
           <div className="flex space-x-1.5">
-            <div className="w-2.5 h-2.5 rounded-sm bg-terminal-error"></div>
-            <div className="w-2.5 h-2.5 rounded-sm bg-terminal-warning"></div>
-            <div className="w-2.5 h-2.5 rounded-sm bg-terminal-success"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-terminal-error"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-terminal-warning"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-terminal-success"></div>
           </div>
           <div className="text-center text-xs text-gray-400 flex-grow font-mono">
-            {heading ? heading : 'terminal'}
+            {heading.toLowerCase()}
           </div>
         </div>
       )}
@@ -116,15 +114,8 @@ const BentoBox = ({
       </div>
       
       {/* Content */}
-      <div className={`h-full flex flex-col ${terminal ? 'pt-6' : ''}`}>
-        {!terminal && heading && (
-          <h3 className="text-lg font-bold mb-1 font-mono group-hover:text-neon-purple text-glitch transition-colors duration-300" data-text={heading}>
-            {heading}
-            {variant === 'rails' && <span className="rails-red">_</span>}
-            {variant === 'postgres' && <span className="postgres-blue">_</span>}
-            {variant === 'code' && <span className="text-neon-green">_</span>}
-          </h3>
-        )}
+      <div className={`h-full flex flex-col ${!terminal && heading ? 'pt-6' : ''}`}>
+        {/* Heading is now in the title bar */}
         {subheading && (
           <p className="text-sm text-gray-400 mb-2 font-mono">{subheading}</p>
         )}

@@ -1,0 +1,36 @@
+<div class="card">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Blog Posts</h1>
+    <a href="#" class="btn btn-primary">Add New Post</a>
+  </div>
+  
+  <% if @blog_posts.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @blog_posts.each do |blog_post| %>
+          <tr>
+            <td><%= blog_post.title %></td>
+            <td><%= blog_post.slug %></td>
+            <td><%= blog_post.created_at.strftime("%b %d, %Y") %></td>
+            <td>
+              <a href="#" class="text-blue-600 hover:underline mr-2">Edit</a>
+              <button class="text-red-600 hover:underline bg-transparent border-0 p-0 cursor-pointer">Delete</button>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No blog posts found.</p>
+  <% end %>
+  
+  <p class="mt-6 text-gray-600">Note: Blog post management features are coming soon.</p>
+</div>

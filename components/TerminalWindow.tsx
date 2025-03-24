@@ -121,10 +121,21 @@ const TerminalWindow = ({
   }, [history, currentCommand]);
   
   return (
-    <div className="flex flex-col h-full w-full terminal-container font-mono text-xs bg-terminal-dark overflow-hidden" style={{ height }}>
+    <div className="flex flex-col h-full w-full terminal-container font-mono text-xs bg-terminal-dark overflow-hidden rounded-md border border-gray-700" style={{ height }}>
+      {/* Terminal header with macOS buttons */}
+      <div className="flex items-center px-3 py-2 bg-terminal-gray border-b border-gray-700">
+        <div className="flex space-x-1.5">
+          <div className="w-3 h-3 rounded-full bg-terminal-error"></div>
+          <div className="w-3 h-3 rounded-full bg-terminal-warning"></div>
+          <div className="w-3 h-3 rounded-full bg-terminal-success"></div>
+        </div>
+        <div className="ml-2 text-xs text-gray-400">
+          {theme === 'rails' ? 'rails console' : theme === 'postgres' ? 'psql shell' : 'bash'}
+        </div>
+      </div>
       <div 
         ref={outputRef}
-        className="terminal-output flex-grow overflow-y-auto p-2 space-y-1 scrollbar-thin scrollbar-thumb-gray-700"
+        className="terminal-output flex-grow overflow-y-auto p-3 space-y-1 scrollbar-thin scrollbar-thumb-gray-700"
       >
         {history.map((item, i) => (
           <div key={i} className="terminal-line">
@@ -159,7 +170,7 @@ const TerminalWindow = ({
       </div>
       
       {/* Terminal status bar */}
-      <div className="terminal-status-bar flex justify-between items-center text-xs text-gray-500 border-t border-gray-800 px-2 py-1">
+      <div className="terminal-status-bar flex justify-between items-center text-xs text-gray-500 border-t border-gray-800 px-3 py-1.5">
         <div>session: {theme === 'rails' ? 'rails' : theme === 'postgres' ? 'psql' : 'bash'}</div>
         <div>utf-8</div>
         <div>exit: ctrl+d</div>

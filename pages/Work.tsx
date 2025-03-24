@@ -1,38 +1,77 @@
-
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import WorkGrid from '../components/WorkGrid';
+import { WorkCardProps } from '../components/WorkCard';
+
+// Type for API response
+interface WorkPost {
+  id: number;
+  title: string;
+  description: string;
+  slug: string;
+  image_url: string;
+  tags: string[];
+  featured: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 const Work = () => {
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce Redesign",
-      description: "A complete overhaul of an online store with improved UX and conversion rates.",
-      tags: ["React", "Node.js", "Tailwind CSS"],
-      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
-    },
-    {
-      id: 2,
-      title: "Health App Dashboard",
-      description: "An intuitive dashboard for a health tracking application with data visualization.",
-      tags: ["Vue.js", "D3.js", "Firebase"],
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
-    },
-    {
-      id: 3,
-      title: "Financial Analytics Platform",
-      description: "A comprehensive platform for financial data analysis and reporting.",
-      tags: ["TypeScript", "React", "MongoDB"],
-      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5"
-    },
-    {
-      id: 4,
-      title: "Travel Blog",
-      description: "A responsive travel blog with dynamic content and interactive maps.",
-      tags: ["WordPress", "PHP", "JavaScript"],
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7"
-    }
-  ];
+  const [projects, setProjects] = useState<WorkCardProps[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchWorkPosts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/work_posts.json');
+        
+        if (!response.ok) {
+          throw new Error(`Error fetching work posts: ${response.statusText}`);
+        }
+        
+        const data: WorkPost[] = await response.json();
+        
+        // Transform the API data to match our WorkCardProps interface
+        const formattedProjects: WorkCardProps[] = data.map((post, index) => ({
+          id: post.id,
+          title: post.title,
+          description: post.description,
+          tags: post.tags,
+          image: post.image_url
+        }));
+        
+        setProjects(formattedProjects);
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch work posts:', err);
+        setError('Failed to load work projects. Please try again later.');
+        setLoading(false);
+        
+        // Fallback data in case API fails
+        setProjects([
+          {
+            id: 1,
+            title: "E-commerce Redesign",
+            description: "A complete overhaul of an online store with improved UX and conversion rates.",
+            tags: ["React", "Node.js", "Tailwind CSS"],
+            image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+          },
+          {
+            id: 2,
+            title: "Health App Dashboard",
+            description: "An intuitive dashboard for a health tracking application with data visualization.",
+            tags: ["Vue.js", "D3.js", "Firebase"],
+            image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+          }
+        ]);
+      }
+    };
+
+    fetchWorkPosts();
+  }, []);
 
   return (
     <div className="min-h-screen pt-24 px-6 md:px-12 lg:px-24 pb-12 animate-page-transition">
@@ -48,39 +87,17 @@ const Work = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {projects.map((project) => (
-          <div 
-            key={project.id} 
-            className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-md border border-white/20 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group"
-          >
-            <div className="relative h-48 overflow-hidden">
-              <img 
-                src={project.image} 
-                alt={project.title} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-            <div className="p-6">
-              <h2 className="text-xl font-bold mb-2 group-hover:text-retro-purple transition-colors">{project.title}</h2>
-              <p className="text-gray-600 mb-4">{project.description}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.tags.map((tag) => (
-                  <span key={tag} className="bg-retro-cream text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="flex justify-end">
-                <button className="text-retro-purple font-medium text-sm flex items-center gap-1 hover:underline">
-                  View project details
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center items-center h-48">
+          <div className="inline-block w-12 h-12 border-4 border-retro-purple border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : error ? (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center">
+          <p className="text-red-500">{error}</p>
+        </div>
+      ) : (
+        <WorkGrid projects={projects} />
+      )}
     </div>
   );
 };

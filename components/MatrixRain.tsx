@@ -95,12 +95,8 @@ const MatrixRain = ({ intensity = 'light', color = '#39ff14' }: MatrixRainProps)
     };
   }, [intensity, color]);
   
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full -z-10 opacity-10 pointer-events-none"
-    />
-  );
+  // Matrix effect is completely disabled
+  return null;
 };
 
 export default MatrixRain;

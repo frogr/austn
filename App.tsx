@@ -10,31 +10,29 @@ import Contact from "./pages/Contact";
 import Fun from "./pages/Fun";
 import Games from "./pages/Games";
 import NotFound from "./pages/NotFound";
-import PixelCursor from "./components/PixelCursor";
 
 // Background texture overlay
 const BackgroundTexture = () => (
   <div className="fixed inset-0 z-[-1] pointer-events-none">
     <div className="absolute inset-0 bg-terminal-black"></div>
     <div className="absolute inset-0 noise-overlay opacity-15"></div>
-    <div className="absolute inset-0 bg-matrix-pattern" style={{
-      backgroundSize: '20px 20px',
-      backgroundPosition: '0 0, 10px 10px',
-      // Fallback in case tailwind class doesn't apply
+    <div className="absolute inset-0" style={{
       backgroundImage: `
-        radial-gradient(rgba(75, 0, 130, 0.03) 1px, transparent 0),
-        radial-gradient(rgba(75, 0, 130, 0.03) 1px, transparent 0)
-      `
+        radial-gradient(rgba(75, 0, 130, 0.075) 1px, transparent 0),
+        radial-gradient(rgba(75, 0, 130, 0.075) 1px, transparent 0)
+      `,
+      backgroundSize: '30px 30px',
+      backgroundPosition: '0 0, 15px 15px'
     }}></div>
+    <div className="absolute inset-0 bg-matrix-pattern bg-[30px_30px]"></div>
   </div>
 );
 
-// Simple App component without complex providers for initial testing
+// App component with cleaner design
 const App = () => (
   <React.Fragment>
     <BrowserRouter basename="/new">
       <BackgroundTexture />
-      <PixelCursor />
       <Navigation />
       <Routes>
         <Route path="/" element={<Index />} />

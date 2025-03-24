@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Portfolio Admin</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <style>
+    .admin-sidebar {
+      width: 250px;
+      min-height: 100vh;
+      background-color: #2d3748;
+      color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+    .admin-content {
+      margin-left: 250px;
+      padding: 2rem;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.75rem 1.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+    }
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-weight: bold;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #4338ca;
+    }
+    .btn-danger {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+    }
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+    .card {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+      font-weight: 600;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    .form-control {
+      display: block;
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.25rem;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+    }
+    .checkbox {
+      margin-right: 0.5rem;
+    }
+    .flash {
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0.25rem;
+    }
+    .flash-notice {
+      background-color: #10b981;
+      color: white;
+    }
+    .flash-alert {
+      background-color: #ef4444;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-sidebar">
+    <div class="p-4">
+      <h1 class="text-xl font-bold">Admin Panel</h1>
+    </div>
+    <nav>
+      <%= link_to "Dashboard", "/admin", class: "nav-link #{request.path == '/admin' ? 'active' : ''}" %>
+      <%= link_to "Blog Posts", "/admin/blog-posts", class: "nav-link #{request.path == '/admin/blog-posts' ? 'active' : ''}" %>
+      <%= link_to "Game Posts", "/admin/game-posts", class: "nav-link #{request.path == '/admin/game-posts' ? 'active' : ''}" %>
+      <%= link_to "Work Posts", "/admin/work-posts", class: "nav-link #{request.path == '/admin/work-posts' ? 'active' : ''}" %>
+      <%= link_to "View Site", root_path, class: "nav-link", target: "_blank" %>
+    </nav>
+  </div>
+
+  <div class="admin-content">
+    <% if notice %>
+      <div class="flash flash-notice"><%= notice %></div>
+    <% end %>
+    
+    <% if alert %>
+      <div class="flash flash-alert"><%= alert %></div>
+    <% end %>
+    
+    <%= yield %>
+  </div>
+</body>
+</html>

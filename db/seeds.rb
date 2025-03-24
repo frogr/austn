@@ -89,3 +89,85 @@ end
 MARKDOWN
   post.published_at = Time.current
 end
+
+# Create sample game posts
+puts "Creating game posts..."
+[
+  {
+    title: "Arena Shooter",
+    description: "Fast-paced 2D arena shooter with enemies, power-ups, and high scores.",
+    image_url: "/assets/images/games/arena-shooter.jpg",
+    link: "/portfolio/arena_shooter",
+    featured: true
+  },
+  {
+    title: "Platformer",
+    description: "Classic side-scrolling platformer with collectibles and obstacles.",
+    image_url: "/assets/images/games/platformer.jpg",
+    link: "#",
+    featured: false
+  },
+  {
+    title: "Puzzle Game",
+    description: "Brain-teasing puzzle game with multiple levels of difficulty.",
+    image_url: "/assets/images/games/puzzle.jpg",
+    link: "#",
+    featured: false
+  },
+  {
+    title: "RPG Adventure",
+    description: "Story-driven RPG with character progression and turn-based combat.",
+    image_url: "/assets/images/games/rpg.jpg",
+    link: "#",
+    featured: false
+  }
+].each do |game_data|
+  GamePost.find_or_create_by!(title: game_data[:title]) do |game|
+    game.description = game_data[:description]
+    game.image_url = game_data[:image_url]
+    game.link = game_data[:link]
+    game.featured = game_data[:featured]
+  end
+end
+
+# Create sample work posts
+puts "Creating work posts..."
+[
+  {
+    title: "E-commerce Redesign",
+    description: "A complete overhaul of an online store with improved UX and conversion rates.",
+    image_url: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+    tags: ["React", "Node.js", "Tailwind CSS"],
+    featured: true
+  },
+  {
+    title: "Health App Dashboard",
+    description: "An intuitive dashboard for a health tracking application with data visualization.",
+    image_url: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+    tags: ["Vue.js", "D3.js", "Firebase"],
+    featured: true
+  },
+  {
+    title: "Financial Analytics Platform",
+    description: "A comprehensive platform for financial data analysis and reporting.",
+    image_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+    tags: ["TypeScript", "React", "MongoDB"],
+    featured: false
+  },
+  {
+    title: "Travel Blog",
+    description: "A responsive travel blog with dynamic content and interactive maps.",
+    image_url: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+    tags: ["WordPress", "PHP", "JavaScript"],
+    featured: false
+  }
+].each do |work_data|
+  WorkPost.find_or_create_by!(title: work_data[:title]) do |work|
+    work.description = work_data[:description]
+    work.image_url = work_data[:image_url]
+    work.tags = work_data[:tags]
+    work.featured = work_data[:featured]
+  end
+end
+
+puts "Seed data created successfully!"

@@ -28,7 +28,18 @@ const CodeSnippet = ({ children, language = 'typescript', customCode = false, th
                       'text-[#6a9955]';
   
   return (
-    <div className={`code-snippet w-full h-full overflow-auto ${themeClasses[theme]} border rounded-none`}>
+    <div className={`code-snippet w-full h-full overflow-auto ${themeClasses[theme]} border rounded-md`}>
+      {/* MacOS window decorations */}
+      <div className="flex items-center px-3 py-2 bg-terminal-gray border-b border-gray-700">
+        <div className="flex space-x-1.5">
+          <div className="w-3 h-3 rounded-full bg-terminal-error"></div>
+          <div className="w-3 h-3 rounded-full bg-terminal-warning"></div>
+          <div className="w-3 h-3 rounded-full bg-terminal-success"></div>
+        </div>
+        <div className="ml-2 font-mono text-xs text-gray-400">
+          skills.{language}
+        </div>
+      </div>
       {/* Line numbers column */}
       <div className="flex">
         <div className="text-gray-500 text-right pr-2 select-none border-r border-gray-700 font-mono text-xs">
