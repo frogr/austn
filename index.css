@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 10% 10%;
+    --foreground: 220 20% 98%;
+
+    --card: 220 14% 13%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 220 12% 15%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 260 80% 70%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 155 70% 50%;
+    --secondary-foreground: 220 10% 10%;
+
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 10% 70%;
+
+    --accent: 330 80% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 16%;
+    --ring: 260 80% 70%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 220 12% 15%;
+    --sidebar-foreground: 220 20% 98%;
+    --sidebar-primary: 260 80% 70%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 20%;
+    --sidebar-accent-foreground: 220 20% 98%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 260 80% 70%;
+  }
+
+  /* Custom colors for the tech theme */
+  --neon-green: #39ff14;
+  --neon-purple: #bc13fe;
+  --neon-blue: #0ff0fc;
+  --terminal-black: #121212;
+  --terminal-dark: #1a1a1a;
+  --terminal-gray: #2a2a2a;
+  --terminal-text: #d0d0d0;
+  --terminal-success: #0f9d58;
+  --terminal-error: #db4437;
+  --terminal-warning: #f4b400;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-terminal-black text-terminal-text min-h-screen;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-image: 
+      radial-gradient(rgba(75, 0, 130, 0.075) 1px, transparent 0),
+      radial-gradient(rgba(75, 0, 130, 0.075) 1px, transparent 0);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+  }
+  
+  /* Custom scrollbar for terminal feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(30, 30, 30, 0.8);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(155, 135, 245, 0.7);
+    border-radius: 2px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(155, 135, 245, 0.9);
+  }
+  
+  /* Pixel-like rendering for specific elements */
+  .pixel-crisp {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* Custom selection color */
+  ::selection {
+    background-color: rgba(155, 135, 245, 0.3);
+    color: white;
+  }
+
+  /* Monospace font for code elements */
+  code, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  /* Terminal text */
+  .terminal-text {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--terminal-text);
+  }
+  
+  .terminal-success {
+    color: var(--terminal-success);
+  }
+  
+  .terminal-error {
+    color: var(--terminal-error);
+  }
+  
+  .terminal-warning {
+    color: var(--terminal-warning);
+  }
+}
+
+@layer utilities {
+  /* Horizontal flip animation for cards */
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  
+  /* Terminal blinking cursor */
+  .cursor-blink::after {
+    content: "▋";
+    animation: blink 1s step-end infinite;
+  }
+  
+  /* Blink animation keyframes */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
+  /* Glitch effect */
+  .glitch-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .glitch-effect::before,
+  .glitch-effect::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+  
+  .glitch-effect:hover::before {
+    opacity: 0.8;
+    animation: glitch-anim-1 0.4s linear alternate-reverse;
+    text-shadow: -2px 0 #ff00ff;
+    clip: rect(44px, 450px, 56px, 0);
+    transform: skew(0.5deg);
+  }
+  
+  .glitch-effect:hover::after {
+    opacity: 0.8;
+    animation: glitch-anim-2 0.3s linear alternate-reverse;
+    text-shadow: 2px 0 #00ffff;
+    clip: rect(44px, 450px, 46px, 0);
+    transform: skew(-0.5deg);
+  }
+  
+  /* Code snippet styling */
+  .code-snippet {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    overflow-x: auto;
+    color: #d4d4d4;
+  }
+  
+  .code-keyword {
+    color: #569cd6;
+  }
+  
+  .code-string {
+    color: #ce9178;
+  }
+  
+  .code-comment {
+    color: #6a9955;
+  }
+  
+  .code-property {
+    color: #9cdcfe;
+  }
+  
+  /* Status indicators */
+  .status-online {
+    @apply bg-terminal-success;
+    box-shadow: 0 0 10px var(--terminal-success);
+  }
+  
+  .status-offline {
+    @apply bg-terminal-error;
+  }
+  
+  .status-warning {
+    @apply bg-terminal-warning;
+  }
+  
+  /* Matrix rain effect - disabled */
+  @keyframes matrix-rain {
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Glitch animations */
+  @keyframes glitch-anim-1 {
+    0% {
+      clip: rect(36px, 450px, 92px, 0);
+    }
+    20% {
+      clip: rect(6px, 450px, 48px, 0);
+    }
+    40% {
+      clip: rect(77px, 450px, 5px, 0);
+    }
+    60% {
+      clip: rect(89px, 450px, 79px, 0);
+    }
+    80% {
+      clip: rect(7px, 450px, 93px, 0);
+    }
+    100% {
+      clip: rect(80px, 450px, 7px, 0);
+    }
+  }
+  
+  @keyframes glitch-anim-2 {
+    0% {
+      clip: rect(18px, 450px, 11px, 0);
+    }
+    20% {
+      clip: rect(65px, 450px, 37px, 0);
+    }
+    40% {
+      clip: rect(97px, 450px, 33px, 0);
+    }
+    60% {
+      clip: rect(46px, 450px, 30px, 0);
+    }
+    80% {
+      clip: rect(61px, 450px, 76px, 0);
+    }
+    100% {
+      clip: rect(99px, 450px, 13px, 0);
+    }
+  }
+}
+
+/* Adding a noise overlay */
+.noise-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}

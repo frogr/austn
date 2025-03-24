@@ -1,0 +1,36 @@
+<div class="card">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Game Posts</h1>
+    <%= link_to "Add New Game", admin_new_game_post_path, class: "btn btn-primary" %>
+  </div>
+  
+  <% if @game_posts.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Featured</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @game_posts.each do |game_post| %>
+          <tr>
+            <td><%= game_post.title %></td>
+            <td><%= truncate(game_post.description, length: 50) %></td>
+            <td><%= game_post.featured ? "Yes" : "No" %></td>
+            <td><%= game_post.created_at.strftime("%b %d, %Y") %></td>
+            <td>
+              <%= link_to "Edit", admin_edit_game_post_path(game_post), class: "text-blue-600 hover:underline mr-2" %>
+              <%= button_to "Delete", admin_destroy_game_post_path(game_post), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:underline bg-transparent border-0 p-0 cursor-pointer" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No game posts found. <%= link_to "Create your first game post", admin_new_game_post_path, class: "text-blue-600 hover:underline" %>.</p>
+  <% end %>
+</div>

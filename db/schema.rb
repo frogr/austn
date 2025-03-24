@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_09_000001) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_24_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,6 +24,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_09_000001) do
     t.datetime "updated_at", null: false
     t.index ["published_at"], name: "index_blog_posts_on_published_at"
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
+  end
+
+  create_table "game_posts", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description", null: false
+    t.string "slug", null: false
+    t.string "image_url", null: false
+    t.string "link", null: false
+    t.boolean "featured", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_game_posts_on_slug", unique: true
   end
 
   create_table "service_statuses", force: :cascade do |t|
@@ -41,5 +53,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_09_000001) do
     t.text "details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "work_posts", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description", null: false
+    t.string "slug", null: false
+    t.string "image_url", null: false
+    t.string "tags", default: [], null: false, array: true
+    t.boolean "featured", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_work_posts_on_slug", unique: true
   end
 end

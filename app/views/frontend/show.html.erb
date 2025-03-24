@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Austin French - Backend Developer</title>
+  <meta name="description" content="Austin French's Portfolio - Backend Developer & System Architect">
+  <meta name="author" content="Austin French">
+  
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <style>
+    /* Base Tailwind classes */
+    .fixed { position: fixed; }
+    .absolute { position: absolute; }
+    .relative { position: relative; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .z-\[-1\] { z-index: -1; }
+    .pointer-events-none { pointer-events: none; }
+    .min-h-screen { min-height: 100vh; }
+    .flex { display: flex; }
+    .grid { display: grid; }
+    .hidden { display: none; }
+    .h-full { height: 100%; }
+    .w-full { width: 100%; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+    .text-center { text-align: center; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .text-white { color: white; }
+    .text-gray-400 { color: #9CA3AF; }
+    .bg-terminal-black { background-color: #121212; }
+    .opacity-15 { opacity: 0.15; }
+    .transition-opacity { transition-property: opacity; }
+    .duration-1000 { transition-duration: 1000ms; }
+    .opacity-0 { opacity: 0; }
+    .opacity-100 { opacity: 1; }
+    
+    /* Terminal colors */
+    .text-neon-green { color: #39ff14; }
+    .rails-red { color: #CC0000 !important; }
+    .postgres-blue { color: #336791 !important; }
+    .terminal-text { color: #d0d0d0; }
+    
+    /* Critical component styles */
+    .noise-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.06;
+      z-index: 10;
+    }
+    
+    /* Animation */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    
+    .animate-blink {
+      animation: blink 1s step-end infinite;
+    }
+    
+    /* Loading animation */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+    
+    .loading-text {
+      color: #9b87f5;
+      margin-bottom: 16px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .loading-bar {
+      width: 200px;
+      height: 6px;
+      background-color: #2a2a2a;
+      margin: 20px 0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .loading-progress {
+      height: 100%;
+      background-color: #9b87f5;
+      animation: loading 1.5s infinite ease-in-out;
+    }
+    
+    @keyframes loading {
+      0% { width: 0%; }
+      50% { width: 50%; }
+      100% { width: 100%; }
+    }
+    
+    /* Media queries */
+    @media (min-width: 768px) {
+      .md\:px-4 { padding-left: 1rem; padding-right: 1rem; }
+      .md\:col-span-2 { grid-column: span 2 / span 2; }
+      .md\:col-span-3 { grid-column: span 3 / span 3; }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    
+    @media (min-width: 1024px) {
+      .lg\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .lg\:col-span-4 { grid-column: span 4 / span 4; }
+      .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body class="bg-terminal-black text-terminal-text">
+  <div id="root">
+    <!-- Fallback content that will be visible without JavaScript -->
+    <div class="loading-container">
+      <h1 class="loading-text">Loading Frontend...</h1>
+      <p>If you're seeing this message for a long time, JavaScript might be disabled in your browser.</p>
+      <div class="loading-bar">
+        <div class="loading-progress"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module">
+    // Function to discover Vite's dev server port
+    const findViteServer = async () => {
+      const defaultPort = 5173;
+      
+      // Helper function for checking a port with timeout
+      const checkPort = async (port) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 300);
+        
+        try {
+          const response = await fetch(`http://localhost:${port}/@vite/client`, { 
+            method: 'HEAD',
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          return response.ok;
+        } catch (e) {
+          clearTimeout(timeoutId);
+          return false;
+        }
+      };
+      
+      // Try the default port first
+      if (await checkPort(defaultPort)) {
+        return defaultPort;
+      }
+      
+      console.log('Vite not available on default port, trying alternatives...');
+      
+      // Try some alternative ports
+      for (const port of [5174, 5175, 5176, 5177]) {
+        if (await checkPort(port)) {
+          console.log(`Found Vite on port ${port}`);
+          return port;
+        }
+        console.log(`Port ${port} not available`);
+      }
+      
+      console.error('Could not find Vite dev server');
+      return defaultPort; // Fall back to default
+    };
+    
+    const initVite = async () => {
+      const port = await findViteServer();
+      const baseUrl = `http://localhost:${port}`;
+      
+      // Dynamically load the Vite app
+      const refreshModule = await import(`${baseUrl}/@react-refresh`);
+      const RefreshRuntime = refreshModule.default;
+      
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+      
+      // Import the CSS files in the correct order
+      const indexCssLink = document.createElement('link');
+      indexCssLink.rel = 'stylesheet';
+      indexCssLink.href = `${baseUrl}/index.css`;
+      document.head.appendChild(indexCssLink);
+      
+      const appCssLink = document.createElement('link');
+      appCssLink.rel = 'stylesheet';
+      appCssLink.href = `${baseUrl}/App.css`;
+      document.head.appendChild(appCssLink);
+      
+      // Import the main entry with a slight delay to ensure CSS is loaded
+      setTimeout(() => {
+        import(`${baseUrl}/main.tsx`);
+      }, 150);
+    };
+    
+    initVite().catch(error => {
+      console.error('Failed to initialize Vite:', error);
+      document.querySelector('.loading-text').textContent = 'Failed to load frontend';
+      const errorMessage = document.createElement('p');
+      errorMessage.textContent = 'There was an error loading the application. Please check the console for details.';
+      document.querySelector('.loading-container').appendChild(errorMessage);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<div class="card">
+  <h1 class="text-2xl font-bold mb-6">New Game Post</h1>
+  
+  <%= form_with(model: @game_post, url: admin_create_game_post_path, local: true) do |form| %>
+    <% if @game_post.errors.any? %>
+      <div class="bg-red-100 p-4 rounded-md mb-6">
+        <h2 class="text-red-800 font-bold mb-2"><%= pluralize(@game_post.errors.count, "error") %> prohibited this game post from being saved:</h2>
+        <ul class="list-disc pl-5">
+          <% @game_post.errors.full_messages.each do |message| %>
+            <li class="text-red-700"><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    
+    <div class="form-group">
+      <%= form.label :title, class: "form-label" %>
+      <%= form.text_field :title, class: "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :description, class: "form-label" %>
+      <%= form.text_area :description, rows: 5, class: "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :image_url, class: "form-label" %>
+      <%= form.text_field :image_url, class: "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :link, class: "form-label" %>
+      <%= form.text_field :link, class: "form-control" %>
+    </div>
+    
+    <div class="form-group checkbox-group">
+      <%= form.check_box :featured, class: "checkbox" %>
+      <%= form.label :featured, class: "form-label mb-0" %>
+    </div>
+    
+    <div class="flex mt-6">
+      <%= form.submit "Create Game Post", class: "btn btn-primary mr-2" %>
+      <%= link_to "Cancel", admin_game_posts_path, class: "btn bg-gray-200 text-gray-800 hover:bg-gray-300" %>
+    </div>
+  <% end %>
+</div>
