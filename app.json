@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "postdeploy": "bundle exec rails runner 'PostDeployJob.perform_now'"
+  }
+}
