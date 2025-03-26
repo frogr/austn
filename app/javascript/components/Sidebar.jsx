@@ -2,12 +2,12 @@ import React from 'react'
 
 const Sidebar = () => {
   return (
-    <div className="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white flex flex-col sidebar">
-      <div className="p-6">
+    <div className="fixed inset-y-0 left-0 w-56 bg-gray-800 text-white flex flex-col sidebar">
+      <div className="p-5">
         <h1 className="text-2xl font-bold">Austn</h1>
       </div>
-      <nav className="flex-1 px-6 py-4">
-        <ul className="space-y-6">
+      <nav className="flex-1 px-5 py-3">
+        <ul className="space-y-5">
           <li>
             <a 
               href="/" 
@@ -58,7 +58,7 @@ const Sidebar = () => {
           </li>
         </ul>
       </nav>
-      <div className="p-6">
+      <div className="p-5">
         <div className="text-sm text-gray-400">&copy; 2025 Austn</div>
       </div>
     </div>

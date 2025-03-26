@@ -1,4 +1,4 @@
-<div class="container mx-auto px-4 py-8">
+<div class="w-full max-w-4xl">
   <div class="mb-6">
     <%= link_to "← Back to blog", blog_path, class: "text-blue-600 hover:underline" %>
   </div>
@@ -14,7 +14,7 @@
       <% end %>
     </header>
 
-    <div class="prose-container max-w-none">   
+    <div class="prose-container max-w-full">   
       <% content_json = @blog_post.content.to_json %>
       <div 
         id="markdown-container"
