@@ -14,12 +14,20 @@
       <% end %>
     </header>
 
-    <div class="prose-container max-w-full">   
-      <% content_json = @blog_post.content.to_json %>
+    <div class="prose-container max-w-full">
+      <% 
+        # Store content as a hidden JSON element that can be safely accessed
+        content_id = "blog-content-#{@blog_post.id}" 
+      %>
+      
+      <script id="<%= content_id %>" type="application/json">
+        <%= raw @blog_post.content.to_json %>
+      </script>
+      
       <div 
         id="markdown-container"
         data-react-component="MarkdownRenderer" 
-        data-props='<%= raw({ content: @blog_post.content }.to_json) %>'
+        data-props='<%= raw({ useElementId: content_id }.to_json) %>'
       ></div>
     </div>
   </article>

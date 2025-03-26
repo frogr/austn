@@ -5,14 +5,16 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import HelloWorld from './components/HelloWorld'
 import Sidebar from './components/Sidebar'
-import { MarkdownRenderer } from './components/markdown'
+import { MarkdownRenderer as MarkdownRendererNew } from './components/markdown'
+import MarkdownRenderer from './components/MarkdownRenderer'
 import GameCard from './components/GameCard'
 import GamesGrid from './components/GamesGrid'
 
 const COMPONENTS = {
   'HelloWorld': HelloWorld,
   'Sidebar': Sidebar,
-  'MarkdownRenderer': MarkdownRenderer,
+  'MarkdownRenderer': MarkdownRenderer, // Use the direct component that's expected by blog/show.html.erb
+  'MarkDownRenderer': MarkdownRendererNew, // Keep this for backward compatibility
   'GameCard': GameCard,
   'GamesGrid': GamesGrid
 }

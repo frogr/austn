@@ -14,7 +14,7 @@ Eventually I will write an in-depth article about how I built this website, but 
 A thousand miles in the sky, this website is a simple React on Rails app. I manage it with Hatchbox on my personal DigitalOcean instance.
 
 On the other end, I write in Obsidian:
-![[obsidian_notes.png]]
+![Obsidian Notes Screenshot](https://media.cleanshot.cloud/media/116489/NVsgdzyNI6fp5ckJPvNo9ZiNcPMDARGIQOhmVaXK.jpeg?Expires=1742991391&Signature=OoAhVHykvx276sSDPZDbVwfxAIayHQsR8d4wj16okBVEWV9Qb5NR~dWcMe0dbju2vmk-k3kvSc-898grQjQYrU-hm5T1wdJPGPHqu6gKetw6fT-6YafVyR~4M7TOkxmUHy0lQUemY1eM2l~OgAQZDKWvD-TRh~a6mhVZvZb2cW8yvk5Me-e148RuYaP5Wl1KHTXPVEPHSwZ5xaXqYRhZcWR~uSvCOTtg2AjB0REBSIngcNuynQ8KJFVGV3KVh4wxbh522HXiu1K-1LG2FNIiCeXi97a3gHf9I8mWCg6KoDJ951Ie0TuQX1XecFP9oPz-uMg80RxrB2rsVhFWGVf~XQ__&Key-Pair-Id=K269JMAT9ZF4GZ)
 
 
 Then I use this script to automatically check for new markdown files upon deploy:
@@ -104,8 +104,8 @@ class ImportObsidianNotesJob < ApplicationJob
     [ frontmatter, markdown_content ]
   end
 end
-
 ```
+
 Note this has two branches of logic: Locally, we're pulling directly from Obsidian and creating markdown files. Then, in production we're reading from those files to generate BlogPosts that show up at `austn.net/blog`
 
 
@@ -147,5 +147,8 @@ But also:
 
 We also have quotes! And **bold** and *italics*!
 
+
 Heh. Thanks for reading.
+
+
 Austin
