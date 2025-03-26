@@ -5,6 +5,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import HelloWorld from './components/HelloWorld'
 import Sidebar from './components/Sidebar'
+import WorkExperience from "./components/WorkExperience"
 import { MarkdownRenderer as MarkdownRendererNew } from './components/markdown'
 import MarkdownRenderer from './components/MarkdownRenderer'
 import GameCard from './components/GameCard'
@@ -16,7 +17,8 @@ const COMPONENTS = {
   'MarkdownRenderer': MarkdownRenderer, // Use the direct component that's expected by blog/show.html.erb
   'MarkDownRenderer': MarkdownRendererNew, // Keep this for backward compatibility
   'GameCard': GameCard,
-  'GamesGrid': GamesGrid
+  'GamesGrid': GamesGrid,
+  'WorkExperience': WorkExperience
 }
 
 // Store our roots so we can track which elements have been initialized
