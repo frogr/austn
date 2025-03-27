@@ -1,34 +1,37 @@
-<div class="w-full max-w-4xl">
-  <div class="mb-6">
-    <%= link_to "← Back to blog", blog_path, class: "text-blue-600 hover:underline" %>
-  </div>
-
-  <article>
-    <header class="mb-8">
-      <h1 class="text-4xl font-bold mb-4"><%= @blog_post.title %></h1>
-      
-      <% if @blog_post.published_at %>
-        <div class="text-gray-600">
-          Published on <%= @blog_post.published_at.strftime("%B %d, %Y") %>
-        </div>
-      <% end %>
-    </header>
-
-    <div class="prose-container max-w-full">
-      <% 
-        # Store content as a hidden JSON element that can be safely accessed
-        content_id = "blog-content-#{@blog_post.id}" 
-      %>
-      
-      <script id="<%= content_id %>" type="application/json">
-        <%= raw @blog_post.content.to_json %>
-      </script>
-      
-      <div 
-        id="markdown-container"
-        data-react-component="MarkdownRenderer" 
-        data-props='<%= raw({ useElementId: content_id }.to_json) %>'
-      ></div>
+<div class="bg-black text-white min-h-screen">
+  <div class="max-w-4xl mx-auto py-8 px-4 ml-16" id="page-content">
+    <div class="mb-6">
+      <%= link_to "← Back to blog", blog_path, class: "text-yellow-400 hover:underline" %>
     </div>
-  </article>
+
+    <article>
+      <header class="mb-8">
+        <h1 class="text-4xl font-bold mb-4"><%= @blog_post.title %></h1>
+        
+        <% if @blog_post.published_at %>
+          <div class="text-gray-400">
+            Published on <%= @blog_post.published_at.strftime("%B %d, %Y") %>
+          </div>
+        <% end %>
+      </header>
+
+      <div class="prose-container max-w-full">
+        <% 
+          # Store content as a hidden JSON element that can be safely accessed
+          content_id = "blog-content-#{@blog_post.id}" 
+        %>
+        
+        <script id="<%= content_id %>" type="application/json">
+          <%= raw @blog_post.content.to_json %>
+        </script>
+        
+        <div 
+          id="markdown-container"
+          class="prose prose-invert dark-code-theme"
+          data-react-component="MarkdownRenderer" 
+          data-props='<%= raw({ useElementId: content_id }.to_json) %>'
+        ></div>
+      </div>
+    </article>
+  </div>
 </div>

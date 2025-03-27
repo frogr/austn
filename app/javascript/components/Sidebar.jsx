@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   
   // Dispatch custom events when sidebar state changes
   useEffect(() => {
@@ -12,7 +12,7 @@ const Sidebar = () => {
   }, [collapsed]);
   
   return (
-    <div className={`fixed inset-y-0 left-0 ${collapsed ? 'w-16' : 'w-56'} bg-gray-800 text-white flex flex-col sidebar z-50 transition-all duration-300`}>
+    <div className={`fixed inset-y-0 left-0 ${collapsed ? 'w-16' : 'w-56'} bg-gray-800 text-white flex flex-col sidebar z-10 transition-all duration-300`}>
       <div className="p-5 flex justify-between items-center">
         <h1 className={`text-2xl font-bold ${collapsed ? 'hidden' : 'block'}`}>Austn</h1>
         <button 

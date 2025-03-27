@@ -35,7 +35,7 @@ const AboutMe = () => {
 
   return (
     <div className="bg-black text-white w-full h-screen overflow-y-auto absolute top-0 left-0 right-0 bottom-0">
-      <main className="py-6 px-6 ml-[4rem] transition-all duration-300" id="about-me-content">
+      <main className="py-6 px-6 ml-16 transition-all duration-300" id="about-me-content">
         <div className="max-w-4xl mx-auto">
           {/* Domain name header */}
           <div className="text-center text-2xl font-mono mb-12 border border-gray-700 rounded-md p-4">
