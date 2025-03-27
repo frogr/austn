@@ -31,9 +31,12 @@
     <!-- Sidebar React Component -->
     <div data-react-component="Sidebar"></div>
     
-    <!-- Main content with padding for sidebar -->
-    <main class="ml-56 min-h-screen p-6">
+    <!-- No need for sidebar margin, we'll handle that in components -->
+    <main class="min-h-screen">
       <%= yield %>
     </main>
+    
+    <!-- Material Icons for sidebar -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </body>
 </html>

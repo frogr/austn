@@ -10,6 +10,7 @@ import { MarkdownRenderer as MarkdownRendererNew } from './components/markdown'
 import MarkdownRenderer from './components/MarkdownRenderer'
 import GameCard from './components/GameCard'
 import GamesGrid from './components/GamesGrid'
+import AboutMe from './components/AboutMe'
 
 const COMPONENTS = {
   'HelloWorld': HelloWorld,
@@ -18,11 +19,19 @@ const COMPONENTS = {
   'MarkDownRenderer': MarkdownRendererNew, // Keep this for backward compatibility
   'GameCard': GameCard,
   'GamesGrid': GamesGrid,
-  'WorkExperience': WorkExperience
+  'WorkExperience': WorkExperience,
+  'AboutMe': AboutMe
 }
 
 // Store our roots so we can track which elements have been initialized
 const roots = new Map()
+
+// Custom event to communicate between components
+window.sidebarEvents = {
+  TOGGLE: 'sidebar:toggle',
+  COLLAPSED: 'sidebar:collapsed',
+  EXPANDED: 'sidebar:expanded'
+};
 
 document.addEventListener("turbo:load", () => {
   const reactComponents = document.querySelectorAll("[data-react-component]")
@@ -59,6 +68,25 @@ document.addEventListener("turbo:load", () => {
           const existingRoot = roots.get(component)
           existingRoot.render(<Component {...props} />)
           console.log(`Re-rendered ${componentName} with props:`, props)
+        }
+        
+        // Setup sidebar event listeners for AboutMe content
+        if (componentName === 'Sidebar') {
+          document.addEventListener(window.sidebarEvents.COLLAPSED, () => {
+            const aboutContent = document.getElementById('about-me-content');
+            if (aboutContent) {
+              aboutContent.classList.remove('ml-[4rem]');
+              aboutContent.classList.add('ml-16');
+            }
+          });
+          
+          document.addEventListener(window.sidebarEvents.EXPANDED, () => {
+            const aboutContent = document.getElementById('about-me-content');
+            if (aboutContent) {
+              aboutContent.classList.remove('ml-16');
+              aboutContent.classList.add('ml-[4rem]');
+            }
+          });
         }
       } catch (e) {
         console.error(`Error rendering ${componentName}:`, e)
