@@ -76,35 +76,35 @@ const WorkExperience = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">My Professional Journey</h1>
-      <p className="text-lg mb-8">
+      <h1 className="text-3xl font-bold mb-6 text-white">My Professional Journey</h1>
+      <p className="text-lg mb-8 text-gray-300">
         I'm a Ruby on Rails developer with expertise in building robust backend systems, mentoring teams, and delivering high-value features.
         Below are highlights from my professional experience:
       </p>
       
       <div className="grid grid-cols-1 gap-6">
         {jobs.map((job) => (
-          <div key={job.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div key={job.id} className="dark-card overflow-hidden">
             <div 
               className="p-6 cursor-pointer flex justify-between items-center"
               onClick={() => toggleExpand(job.id)}
             >
               <div>
-                <h2 className="text-xl font-semibold">{job.company}</h2>
-                <p className="text-gray-600">{job.position}</p>
+                <h2 className="text-xl font-semibold text-white">{job.company}</h2>
+                <p className="text-gray-300">{job.position}</p>
               </div>
               <div className="text-right">
-                <p className="text-gray-600">{job.period}</p>
-                <p className="text-gray-500">{job.location}</p>
+                <p className="text-gray-300">{job.period}</p>
+                <p className="text-gray-400">{job.location}</p>
               </div>
             </div>
             
             {expandedJob === job.id && (
               <div className="px-6 pb-6">
-                <p className="mb-4">{job.description}</p>
+                <p className="mb-4 text-gray-300">{job.description}</p>
                 
-                <h3 className="font-semibold mb-2">Key Achievements:</h3>
-                <ul className="list-disc pl-5 mb-4">
+                <h3 className="font-semibold mb-2 text-white">Key Achievements:</h3>
+                <ul className="list-disc pl-5 mb-4 text-gray-300">
                   {job.highlights.map((highlight, index) => (
                     <li key={index} className="mb-1">{highlight}</li>
                   ))}
@@ -112,7 +112,7 @@ const WorkExperience = () => {
                 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {job.technologies.map((tech, index) => (
-                    <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                    <span key={index} className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">
                       {tech}
                     </span>
                   ))}
@@ -123,23 +123,23 @@ const WorkExperience = () => {
         ))}
       </div>
       
-      <div className="mt-8 p-6 bg-gray-50 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Technical Skills</h2>
+      <div className="mt-8 p-6 dark-card">
+        <h2 className="text-xl font-semibold mb-4 text-white">Technical Skills</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h3 className="font-medium mb-2">Languages</h3>
+            <h3 className="font-medium mb-2 text-white">Languages</h3>
             <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Ruby</span>
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">JavaScript</span>
+              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Ruby</span>
+              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">JavaScript</span>
             </div>
           </div>
           <div>
-            <h3 className="font-medium mb-2">Frameworks/Libraries</h3>
+            <h3 className="font-medium mb-2 text-white">Frameworks/Libraries</h3>
             <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Rails</span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">React</span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Node</span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Express</span>
+              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Rails</span>
+              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">React</span>
+              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Node</span>
+              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Express</span>
             </div>
           </div>
         </div>
