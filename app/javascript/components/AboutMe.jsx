@@ -3,7 +3,7 @@ import React from 'react';
 const AboutMe = () => {
   // Placeholder data - replace with your actual data
   const skills = [
-    { name: 'Frontend Development' },
+    { name: 'Full Stack Web Development' },
     { name: 'React.js' },
     { name: 'Ruby on Rails' },
   ];
@@ -39,18 +39,18 @@ const AboutMe = () => {
         <div className="max-w-4xl mx-auto">
           {/* Domain name header */}
           <div className="text-center text-2xl font-mono mb-12 border border-gray-700 rounded-md p-4">
-            Austin.net
+            austn.net
           </div>
           
           {/* Hero Section */}
           <div className="border border-gray-700 rounded-md p-8 mb-12">
             <div className="flex flex-col items-center text-center">
               <div className="w-32 h-32 rounded-full bg-gray-800 flex items-center justify-center mb-6">
-                <span className="text-5xl">A</span>
+                <img src="https://media.cleanshot.cloud/media/116489/cGiRbWkYvgyqOEu4m9Zxp4TU472lZC5ndogFSrMu.jpeg?Expires=1743156553&Signature=qEerqoPdxQHg0ga5v0VZQJwtHjYbfPXpQ~R2dgLr39Hfdl7EtoipnDdbXojmePDPB96bRXb-X3dIAeMndhC5WGCLNPBSqvbAKelOPPRlN7~CjuK3w197j4tRt68Nb~IxMJQjWPdYy5l1McT9aVoNzMnRv8iOsSPw-US7RlQhyiHkdaVhmjoKUbdJVLKEiZyF0fln0w6kS~ZCcjcc0OpwjVmx2inRR9TtPOlCnUlQIWrbKkxR2Dii4l0dnCZH7ZD4RqUf4q4edb48Xis91UHzWBJXLobNraIoLnG~553CFPpgRjXzZlhLsV2rVtrq8XA8aB195ElcBtP-6Y96b6pXcQ__&Key-Pair-Id=K269JMAT9ZF4GZ"></img>
               </div>
               
-              <h1 className="text-4xl font-bold mb-4">Austin</h1>
-              <p className="text-xl text-gray-300 mb-6">Full-Stack Developer & Designer</p>
+              <h1 className="text-4xl font-bold mb-4">Austin!</h1>
+              <p className="text-xl text-gray-300 mb-6">Software Engineer</p>
               
               <div className="flex flex-wrap justify-center gap-2">
                 {skills.map((skill) => (

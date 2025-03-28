@@ -80,6 +80,10 @@ document.addEventListener("turbo:load", () => {
           try {
             props = JSON.parse(propsStr)
             console.log(`Successfully parsed props for ${componentName}:`, Object.keys(props))
+            // More detailed logging for GamesGrid component
+            if (componentName === 'GamesGrid') {
+              console.log('GamesGrid props detail:', JSON.stringify(props, null, 2))
+            }
           } catch (e) {
             console.error(`Error parsing props for ${componentName}:`, e)
             console.log('Raw props string:', propsStr)
