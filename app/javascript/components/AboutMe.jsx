@@ -4,16 +4,16 @@ const AboutMe = () => {
   // Placeholder data - replace with your actual data
   const skills = [
     { name: 'Full Stack Web Development' },
-    { name: 'React.js' },
     { name: 'Ruby on Rails' },
+    { name: 'React.js' },
   ];
 
   const featuredPost = {
-    title: 'Building Modern Web Applications with React on Rails',
-    excerpt: 'A deep dive into how to leverage the power of React with Ruby on Rails for modern web development.',
-    image: 'https://example.com/placeholder.jpg', // Replace with your image URL
-    url: '/blog/featured-post',
-    date: 'March 15, 2025',
+    title: 'Hello world!',
+    excerpt: 'First post generated with homemade ruby on rails Obsidian plugin!',
+    image: 'https://media.cleanshot.cloud/media/116489/jFVa66sEMBOAQsH2J7UZEvwSsrFvsjylRHKQswIl.jpeg?Expires=1743158668&Signature=Ij2a3Fn41ty2S~Luq9VTc2ah11E8GEZ8irCF70v6TkL~bHhqYlnbdk221Hb2cofDLVk3Gr0IebSIAFbm6NuteYVqGSAmikWlhliUp~MzSU3IpwA4dDa3F5LoVMbLo5iKvlxi7Yxs9uXNmxwbsSM2pZ0~Em8ziQTGubZS-R338mslML45hiWw1gbOy8HPSUe1eblsLML9bFCflIJ0jIBeHHlmsdz~lmfcdXlxFfKusZtqmePxKfWrssmJlyYdzIoIZIOz-XN2TB1WF0tHcINwzSHVz7gjWLI923jYPYSi7PdQIaQC2jSxeDlcx5PcpLbuC4l~1SbF-wpBugxnLzcsVw__&Key-Pair-Id=K269JMAT9ZF4GZ', // Replace with your image URL
+    url: '/blog/hello-world',
+    date: 'March 25, 2025',
   };
 
   const favoriteItems = [
@@ -78,9 +78,8 @@ const AboutMe = () => {
             <div className="flex flex-col md:flex-row gap-6">
               <div className="md:w-1/3">
                 <div className="aspect-video bg-gray-800 rounded-md overflow-hidden">
-                  {/* Replace with actual image */}
                   <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-gray-500">Featured Image</span>
+                    <img src={`${featuredPost.image}`}></img>
                   </div>
                 </div>
               </div>
