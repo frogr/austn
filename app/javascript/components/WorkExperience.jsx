@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { ThemeContext } from './ThemeProvider';
 
 const WorkExperience = () => {
   const [expandedJob, setExpandedJob] = useState(null);
+  
+  // Get theme context if available
+  let theme = 'dark'; // Default to dark if context not available
+  try {
+    const themeContext = useContext(ThemeContext);
+    if (themeContext) {
+      theme = themeContext.theme;
+    }
+  } catch (e) {
+    console.log('ThemeContext not available, using default theme');
+  }
+  
+  const isDark = theme === 'dark';
 
   const jobs = [
     {
@@ -76,35 +90,35 @@ const WorkExperience = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-white">My Professional Journey</h1>
-      <p className="text-lg mb-8 text-gray-300">
+      <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>My Professional Journey</h1>
+      <p className="text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>
         I'm a Ruby on Rails developer with expertise in building robust backend systems, mentoring teams, and delivering high-value features.
         Below are highlights from my professional experience:
       </p>
       
       <div className="grid grid-cols-1 gap-6">
         {jobs.map((job) => (
-          <div key={job.id} className="dark-card overflow-hidden">
+          <div key={job.id} className="theme-card overflow-hidden">
             <div 
               className="p-6 cursor-pointer flex justify-between items-center"
               onClick={() => toggleExpand(job.id)}
             >
               <div>
-                <h2 className="text-xl font-semibold text-white">{job.company}</h2>
-                <p className="text-gray-300">{job.position}</p>
+                <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>{job.company}</h2>
+                <p style={{ color: 'var(--text-secondary)' }}>{job.position}</p>
               </div>
               <div className="text-right">
-                <p className="text-gray-300">{job.period}</p>
-                <p className="text-gray-400">{job.location}</p>
+                <p style={{ color: 'var(--text-secondary)' }}>{job.period}</p>
+                <p style={{ color: 'var(--text-muted)' }}>{job.location}</p>
               </div>
             </div>
             
             {expandedJob === job.id && (
               <div className="px-6 pb-6">
-                <p className="mb-4 text-gray-300">{job.description}</p>
+                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{job.description}</p>
                 
-                <h3 className="font-semibold mb-2 text-white">Key Achievements:</h3>
-                <ul className="list-disc pl-5 mb-4 text-gray-300">
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Key Achievements:</h3>
+                <ul className="list-disc pl-5 mb-4" style={{ color: 'var(--text-secondary)' }}>
                   {job.highlights.map((highlight, index) => (
                     <li key={index} className="mb-1">{highlight}</li>
                   ))}
@@ -112,7 +126,14 @@ const WorkExperience = () => {
                 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {job.technologies.map((tech, index) => (
-                    <span key={index} className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">
+                    <span 
+                      key={index} 
+                      className="px-3 py-1 rounded-full text-sm"
+                      style={{ 
+                        backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                        color: 'var(--accent-color)' 
+                      }}
+                    >
                       {tech}
                     </span>
                   ))}
@@ -123,23 +144,59 @@ const WorkExperience = () => {
         ))}
       </div>
       
-      <div className="mt-8 p-6 dark-card">
-        <h2 className="text-xl font-semibold mb-4 text-white">Technical Skills</h2>
+      <div className="mt-8 p-6 theme-card">
+        <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Technical Skills</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h3 className="font-medium mb-2 text-white">Languages</h3>
+            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Languages</h3>
             <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Ruby</span>
-              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">JavaScript</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >Ruby</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >JavaScript</span>
             </div>
           </div>
           <div>
-            <h3 className="font-medium mb-2 text-white">Frameworks/Libraries</h3>
+            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Frameworks/Libraries</h3>
             <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Rails</span>
-              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">React</span>
-              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Node</span>
-              <span className="px-3 py-1 bg-gray-700 text-yellow-300 rounded-full text-sm">Express</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >Rails</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >React</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >Node</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >Express</span>
             </div>
           </div>
         </div>

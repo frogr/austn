@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { ThemeContext } from './ThemeProvider'
 
 /**
  * GameCard component for displaying a game in the games list
@@ -6,8 +7,24 @@ import React from 'react'
 const GameCard = ({ title, description, imageUrl, link }) => {
   console.log('GameCard rendering:', { title, imageUrl, link });
   
+  // Get theme context if available
+  let theme = 'dark'; // Default to dark if context not available
+  try {
+    const themeContext = useContext(ThemeContext);
+    if (themeContext) {
+      theme = themeContext.theme;
+    }
+  } catch (e) {
+    console.log('ThemeContext not available, using default theme');
+  }
+  
+  const isDark = theme === 'dark';
+  
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+    <div 
+      className="rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+      style={{ backgroundColor: 'var(--bg-card)' }}
+    >
       <div className="relative pb-[56.25%]">
         <img 
           src={imageUrl || "https://via.placeholder.com/640x360?text=Game+Preview"} 
@@ -16,11 +33,11 @@ const GameCard = ({ title, description, imageUrl, link }) => {
         />
       </div>
       <div className="p-6">
-        <h2 className="text-2xl font-bold mb-2">{title}</h2>
-        <p className="text-gray-400 mb-4">{description}</p>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{title}</h2>
+        <p style={{ color: 'var(--text-muted)' }} className="mb-4">{description}</p>
         <a 
           href={link} 
-          className="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition-colors"
+          className="inline-block theme-button font-bold py-2 px-4 rounded transition-colors"
         >
           Play Now
         </a>

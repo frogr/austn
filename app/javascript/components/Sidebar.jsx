@@ -1,7 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import { ThemeContext } from './ThemeProvider'
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
+  
+  // Track theme state with useState
+  const [themeState, setThemeState] = useState('dark');
+  
+  // Update theme state when document classes change
+  useEffect(() => {
+    const updateThemeFromDOM = () => {
+      const root = document.documentElement;
+      const isLightTheme = root.classList.contains('light-theme');
+      setThemeState(isLightTheme ? 'light' : 'dark');
+    };
+    
+    // Check immediately
+    updateThemeFromDOM();
+    
+    // Create a MutationObserver to watch for class changes on the document root
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          updateThemeFromDOM();
+        }
+      });
+    });
+    
+    // Start observing
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  // Determine styles based on theme
+  const isDark = themeState === 'dark';
   
   // Dispatch custom events when sidebar state changes
   useEffect(() => {
@@ -12,12 +45,19 @@ const Sidebar = () => {
   }, [collapsed]);
   
   return (
-    <div className={`fixed inset-y-0 left-0 ${collapsed ? 'w-16' : 'w-56'} bg-gray-800 text-white flex flex-col sidebar z-10 transition-all duration-300`}>
+    <div 
+      className={`fixed inset-y-0 left-0 ${collapsed ? 'w-16' : 'w-56'} flex flex-col sidebar z-10 transition-all duration-300`}
+      style={{ 
+        backgroundColor: isDark ? '#1f2937' : '#e5e7eb',
+        color: isDark ? '#ffffff' : '#1a202c'
+      }}
+    >
       <div className="p-5 flex justify-between items-center">
         <h1 className={`text-2xl font-bold ${collapsed ? 'hidden' : 'block'}`}>Austn</h1>
         <button 
           onClick={() => setCollapsed(!collapsed)}
-          className="text-white hover:text-yellow-300 focus:outline-none"
+          style={{ color: isDark ? '#ffffff' : '#1a202c' }}
+          className="focus:outline-none"
         >
           {collapsed ? '→' : '←'}
         </button>
@@ -27,7 +67,8 @@ const Sidebar = () => {
           <li>
             <a 
               href="/" 
-              className="block py-2 text-white transition-colors hover:text-yellow-300 flex items-center"
+              className="block py-2 flex items-center"
+              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
             >
               <span className="material-icons mr-2">home</span>
               {!collapsed && <span>Home</span>}
@@ -36,7 +77,8 @@ const Sidebar = () => {
           <li>
             <a 
               href="/blog" 
-              className="block py-2 text-white transition-colors hover:text-yellow-300 flex items-center"
+              className="block py-2 flex items-center"
+              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
             >
               <span className="material-icons mr-2">article</span>
               {!collapsed && <span>Blog</span>}
@@ -45,7 +87,8 @@ const Sidebar = () => {
           <li>
             <a 
               href="/work" 
-              className="block py-2 text-white transition-colors hover:text-yellow-300 flex items-center"
+              className="block py-2 flex items-center"
+              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
             >
               <span className="material-icons mr-2">work</span>
               {!collapsed && <span>Work</span>}
@@ -54,7 +97,8 @@ const Sidebar = () => {
           <li>
             <a 
               href="/contact" 
-              className="block py-2 text-white transition-colors hover:text-yellow-300 flex items-center"
+              className="block py-2 flex items-center"
+              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
             >
               <span className="material-icons mr-2">mail</span>
               {!collapsed && <span>Contact</span>}
@@ -63,7 +107,8 @@ const Sidebar = () => {
           <li>
             <a 
               href="/fun" 
-              className="block py-2 text-white transition-colors hover:text-yellow-300 flex items-center"
+              className="block py-2 flex items-center"
+              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
             >
               <span className="material-icons mr-2">emoji_emotions</span>
               {!collapsed && <span>Fun</span>}
@@ -72,7 +117,8 @@ const Sidebar = () => {
           <li>
             <a 
               href="/games" 
-              className="block py-2 text-white transition-colors hover:text-yellow-300 flex items-center"
+              className="block py-2 flex items-center"
+              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
             >
               <span className="material-icons mr-2">sports_esports</span>
               {!collapsed && <span>Games</span>}
@@ -81,7 +127,12 @@ const Sidebar = () => {
         </ul>
       </nav>
       <div className="p-5">
-        <div className={`text-sm text-gray-400 ${collapsed ? 'hidden' : 'block'}`}>&copy; 2025 Austn</div>
+        <div 
+          className={`text-sm ${collapsed ? 'hidden' : 'block'}`}
+          style={{ color: isDark ? '#9ca3af' : '#4b5563' }}
+        >
+          &copy; 2025 Austn
+        </div>
       </div>
     </div>
   )

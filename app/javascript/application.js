@@ -3,6 +3,7 @@ import "@hotwired/stimulus"
 import "./controllers"
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { createPortal } from 'react-dom'
 import HelloWorld from './components/HelloWorld'
 import Sidebar from './components/Sidebar'
 import WorkExperience from "./components/WorkExperience"
@@ -11,7 +12,9 @@ import MarkdownRenderer from './components/MarkdownRenderer'
 import GameCard from './components/GameCard'
 import GamesGrid from './components/GamesGrid'
 import AboutMe from './components/AboutMe'
-import DarkModeLayout from './components/DarkModeLayout'
+import ThemeLayout from './components/DarkModeLayout' // Renamed but kept same file
+import ThemeProvider from './components/ThemeProvider'
+import ThemeToggle from './components/ThemeToggle'
 
 const COMPONENTS = {
   'HelloWorld': HelloWorld,
@@ -22,7 +25,10 @@ const COMPONENTS = {
   'GamesGrid': GamesGrid,
   'WorkExperience': WorkExperience,
   'AboutMe': AboutMe,
-  'DarkModeLayout': DarkModeLayout
+  'ThemeLayout': ThemeLayout, // New name
+  'DarkModeLayout': ThemeLayout, // For backwards compatibility 
+  'ThemeProvider': ThemeProvider,
+  'ThemeToggle': ThemeToggle
 }
 
 // Store our roots so we can track which elements have been initialized
@@ -63,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener("turbo:load", () => {
-  const reactComponents = document.querySelectorAll("[data-react-component]")
+    const reactComponents = document.querySelectorAll("[data-react-component]")
   
   reactComponents.forEach(component => {
     const componentName = component.dataset.reactComponent

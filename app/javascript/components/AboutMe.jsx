@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { ThemeContext } from './ThemeProvider';
 
 const AboutMe = () => {
+  // Get theme context if available
+  let theme = 'dark'; // Default to dark if context not available
+  try {
+    const themeContext = useContext(ThemeContext);
+    if (themeContext) {
+      theme = themeContext.theme;
+    }
+  } catch (e) {
+    console.log('ThemeContext not available, using default theme');
+  }
+  
+  const isDark = theme === 'dark';
   // Placeholder data - replace with your actual data
   const skills = [
     { name: 'Full Stack Web Development' },
@@ -11,7 +24,7 @@ const AboutMe = () => {
   const featuredPost = {
     title: 'Hello world!',
     excerpt: 'First post generated with homemade ruby on rails Obsidian plugin!',
-    image: 'https://media.cleanshot.cloud/media/116489/jFVa66sEMBOAQsH2J7UZEvwSsrFvsjylRHKQswIl.jpeg?Expires=1743158668&Signature=Ij2a3Fn41ty2S~Luq9VTc2ah11E8GEZ8irCF70v6TkL~bHhqYlnbdk221Hb2cofDLVk3Gr0IebSIAFbm6NuteYVqGSAmikWlhliUp~MzSU3IpwA4dDa3F5LoVMbLo5iKvlxi7Yxs9uXNmxwbsSM2pZ0~Em8ziQTGubZS-R338mslML45hiWw1gbOy8HPSUe1eblsLML9bFCflIJ0jIBeHHlmsdz~lmfcdXlxFfKusZtqmePxKfWrssmJlyYdzIoIZIOz-XN2TB1WF0tHcINwzSHVz7gjWLI923jYPYSi7PdQIaQC2jSxeDlcx5PcpLbuC4l~1SbF-wpBugxnLzcsVw__&Key-Pair-Id=K269JMAT9ZF4GZ', // Replace with your image URL
+    image: 'https://i.ibb.co/sd9h4Wk1/Chat-GPT-Image-Mar-27-2025-09-44-04-PM.png',
     url: '/blog/hello-world',
     date: 'March 25, 2025',
   };
@@ -34,27 +47,43 @@ const AboutMe = () => {
   ];
 
   return (
-    <div className="bg-black text-white w-full h-screen overflow-y-auto absolute top-0 left-0 right-0 bottom-0">
+    <div 
+      className="w-full h-screen overflow-y-auto absolute top-0 left-0 right-0 bottom-0"
+      style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+    >
       <main className="py-6 px-6 ml-16 transition-all duration-300" id="about-me-content">
         <div className="max-w-4xl mx-auto">
           {/* Domain name header */}
-          <div className="text-center text-2xl font-mono mb-12 border border-gray-700 rounded-md p-4">
+          <div 
+            className="text-center text-2xl font-mono mb-12 rounded-md p-4"
+            style={{ border: `1px solid var(--border-color)` }}
+          >
             austn.net
           </div>
           
           {/* Hero Section */}
-          <div className="border border-gray-700 rounded-md p-8 mb-12">
+          <div 
+            className="rounded-md p-8 mb-12"
+            style={{ border: `1px solid var(--border-color)` }}
+          >
             <div className="flex flex-col items-center text-center">
-              <div className="w-32 h-32 rounded-full bg-gray-800 flex items-center justify-center mb-6">
-                <img src="https://media.cleanshot.cloud/media/116489/cGiRbWkYvgyqOEu4m9Zxp4TU472lZC5ndogFSrMu.jpeg?Expires=1743156553&Signature=qEerqoPdxQHg0ga5v0VZQJwtHjYbfPXpQ~R2dgLr39Hfdl7EtoipnDdbXojmePDPB96bRXb-X3dIAeMndhC5WGCLNPBSqvbAKelOPPRlN7~CjuK3w197j4tRt68Nb~IxMJQjWPdYy5l1McT9aVoNzMnRv8iOsSPw-US7RlQhyiHkdaVhmjoKUbdJVLKEiZyF0fln0w6kS~ZCcjcc0OpwjVmx2inRR9TtPOlCnUlQIWrbKkxR2Dii4l0dnCZH7ZD4RqUf4q4edb48Xis91UHzWBJXLobNraIoLnG~553CFPpgRjXzZlhLsV2rVtrq8XA8aB195ElcBtP-6Y96b6pXcQ__&Key-Pair-Id=K269JMAT9ZF4GZ"></img>
+              <div 
+                className="w-32 h-32 rounded-full flex items-center justify-center mb-6"
+                style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
+              >
+                <img src="https://i.ibb.co/TBvNqtT1/Chat-GPT-Image-Mar-27-2025-09-07-30-PM.png" alt="Chat-GPT-Image-Mar-27-2025-09-07-30-PM" border="0" />
               </div>
               
               <h1 className="text-4xl font-bold mb-4">Austin!</h1>
-              <p className="text-xl text-gray-300 mb-6">Software Engineer</p>
+              <p className="text-xl mb-6" style={{ color: 'var(--text-secondary)' }}>Software Engineer</p>
               
               <div className="flex flex-wrap justify-center gap-2">
                 {skills.map((skill) => (
-                  <span key={skill.name} className="px-3 py-1 rounded-full text-sm bg-gray-800">
+                  <span 
+                    key={skill.name} 
+                    className="px-3 py-1 rounded-full text-sm"
+                    style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
+                  >
                     {skill.name}
                   </span>
                 ))}
@@ -63,9 +92,12 @@ const AboutMe = () => {
           </div>
           
           {/* About Me Section */}
-          <div className="border border-gray-700 rounded-md p-8 mb-12">
+          <div 
+            className="rounded-md p-8 mb-12"
+            style={{ border: `1px solid var(--border-color)` }}
+          >
             <h2 className="text-2xl font-semibold mb-6">About Me</h2>
-            <p className="text-gray-300">
+            <p style={{ color: 'var(--text-secondary)' }}>
               I'm a passionate full-stack developer with expertise in React and Ruby on Rails. 
               With over 5 years of experience building web applications, I focus on creating 
               intuitive, performant user experiences with clean, maintainable code.
@@ -73,11 +105,17 @@ const AboutMe = () => {
           </div>
           
           {/* Featured Post */}
-          <div className="border border-gray-700 rounded-md p-8 mb-12">
+          <div 
+            className="rounded-md p-8 mb-12"
+            style={{ border: `1px solid var(--border-color)` }}
+          >
             <h2 className="text-2xl font-semibold mb-6">Featured Post</h2>
             <div className="flex flex-col md:flex-row gap-6">
               <div className="md:w-1/3">
-                <div className="aspect-video bg-gray-800 rounded-md overflow-hidden">
+                <div 
+                  className="aspect-video rounded-md overflow-hidden"
+                  style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
+                >
                   <div className="w-full h-full flex items-center justify-center">
                     <img src={`${featuredPost.image}`}></img>
                   </div>
@@ -86,11 +124,11 @@ const AboutMe = () => {
               
               <div className="md:w-2/3">
                 <h3 className="text-xl font-medium mb-2">{featuredPost.title}</h3>
-                <p className="text-sm text-gray-500 mb-4">{featuredPost.date}</p>
-                <p className="text-gray-300 mb-4">{featuredPost.excerpt}</p>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>{featuredPost.date}</p>
+                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{featuredPost.excerpt}</p>
                 <a 
                   href={featuredPost.url} 
-                  className="inline-flex items-center px-4 py-2 border border-gray-700 rounded-md hover:bg-gray-800 transition-colors"
+                  className="theme-button inline-flex items-center px-4 py-2 rounded-md transition-colors"
                 >
                   Read More
                   <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -102,7 +140,10 @@ const AboutMe = () => {
           </div>
           
           {/* Favorite Items */}
-          <div className="border border-gray-700 rounded-md p-8 mb-12">
+          <div 
+            className="rounded-md p-8 mb-12"
+            style={{ border: `1px solid var(--border-color)` }}
+          >
             <h2 className="text-2xl font-semibold mb-6">My Favorite Things</h2>
             
             {favoriteItems.map((category) => (
@@ -115,15 +156,22 @@ const AboutMe = () => {
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-start p-4 rounded-md border border-gray-700 hover:bg-gray-800 transition-all"
+                      className="group flex items-start p-4 rounded-md transition-all"
+                      style={{ 
+                        border: `1px solid var(--border-color)`,
+                        '&:hover': { backgroundColor: 'var(--bg-secondary)' }
+                      }}
                     >
-                      <div className="mr-4 w-12 h-12 bg-gray-800 rounded-md flex items-center justify-center">
+                      <div 
+                        className="mr-4 w-12 h-12 rounded-md flex items-center justify-center"
+                        style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
+                      >
                         {/* Replace with actual image */}
-                        <span className="text-gray-500 text-xs">{item.name.substring(0, 2)}</span>
+                        <span style={{ color: 'var(--text-muted)' }} className="text-xs">{item.name.substring(0, 2)}</span>
                       </div>
                       <div>
-                        <h4 className="font-medium group-hover:text-white transition-colors">{item.name}</h4>
-                        <p className="text-sm text-gray-500">{item.description}</p>
+                        <h4 className="font-medium">{item.name}</h4>
+                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
                       </div>
                     </a>
                   ))}

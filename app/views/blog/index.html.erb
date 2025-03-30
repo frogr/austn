@@ -1,28 +1,28 @@
-<div class="bg-black text-white min-h-screen">
+<div style="background-color: var(--bg-primary); color: var(--text-primary);" class="min-h-screen">
   <div class="max-w-4xl mx-auto py-8 px-4 ml-16" id="page-content">
     <h1 class="text-3xl font-bold mb-8">Blog</h1>
     
     <div class="space-y-8">
       <% if @blog_posts.any? %>
         <% @blog_posts.each do |post| %>
-          <article class="border-b border-gray-700 pb-6 mb-6">
+          <article style="border-color: var(--border-color);" class="border-b pb-6 mb-6">
             <h2 class="text-2xl font-semibold mb-2">
-              <%= link_to post.title, blog_post_path(post.slug), class: "hover:text-yellow-300" %>
+              <%= link_to post.title, blog_post_path(post.slug), class: "theme-link" %>
             </h2>
             
-            <div class="text-gray-400 mb-4">
+            <div style="color: var(--text-muted);" class="mb-4">
               <%= post.published_at.strftime("%B %d, %Y") if post.published_at %>
             </div>
             
-            <div class="prose prose-invert">
+            <div class="prose">
               <%= truncate(post.content, length: 300) %>
             </div>
             
-            <%= link_to "Read more", blog_post_path(post.slug), class: "mt-4 inline-block text-yellow-400 hover:underline" %>
+            <%= link_to "Read more", blog_post_path(post.slug), class: "mt-4 inline-block theme-link" %>
           </article>
         <% end %>
       <% else %>
-        <p class="text-gray-400">No blog posts found.</p>
+        <p style="color: var(--text-muted);">No blog posts found.</p>
       <% end %>
     </div>
   </div>
