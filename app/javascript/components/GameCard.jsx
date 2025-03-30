@@ -4,6 +4,7 @@ import ResponsiveImage from './ResponsiveImage'
 
 /**
  * GameCard component for displaying a game in the games list
+ * Enhanced with glass morphism effect
  */
 const GameCard = ({ title, description, imageUrl, link }) => {
   console.log('GameCard rendering:', { title, imageUrl, link });
@@ -21,30 +22,52 @@ const GameCard = ({ title, description, imageUrl, link }) => {
   
   const isDark = theme === 'dark';
   
+  // Mock stats data for demo
+  const stats = [
+    { value: '2.4K', label: 'Players' },
+    { value: '4.8', label: 'Rating' },
+    { value: '10+', label: 'Levels' }
+  ];
+  
   return (
-    <div 
-      className="rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105 w-[400px] mx-auto"
-      style={{ backgroundColor: 'var(--bg-card)' }}
-    >
-      <div className="relative pb-[56.25%]">
-        <ResponsiveImage
-          src={imageUrl || "https://via.placeholder.com/640x360?text=Game+Preview"} 
-          alt={title} 
-          className="absolute h-full w-full" 
-          width={640}
-          height={360}
-          objectFit="contain"
-        />
-      </div>
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{title}</h2>
-        <p style={{ color: 'var(--text-muted)' }} className="mb-4">{description}</p>
-        <a 
-          href={link} 
-          className="inline-block theme-button font-bold py-2 px-4 rounded transition-colors"
-        >
-          Play Now
-        </a>
+    <div className="game-card glass-morphism">
+      {/* Decorative elements for glassmorphism effect */}
+      <div className="decorative-element decorative-element-1"></div>
+      <div className="decorative-element decorative-element-2"></div>
+      
+      <div className="game-card-content">
+        <div className="game-image-container">
+          <ResponsiveImage
+            src={imageUrl || "https://via.placeholder.com/640x360?text=Game+Preview"} 
+            alt={title} 
+            className="absolute h-full w-full" 
+            width={640}
+            height={360}
+            objectFit="contain"
+          />
+        </div>
+        
+        <div className="p-6">
+          <h2 className="game-title">{title}</h2>
+          <p className="game-description">{description}</p>
+          
+          {/* Stats section to utilize empty space */}
+          <div className="game-stats">
+            {stats.map((stat, index) => (
+              <div key={index} className="stat-item">
+                <span className="stat-value">{stat.value}</span>
+                <span className="stat-label">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+          
+          <a 
+            href={link} 
+            className="play-button"
+          >
+            Play Now
+          </a>
+        </div>
       </div>
     </div>
   )

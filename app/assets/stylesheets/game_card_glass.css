@@ -1,0 +1,281 @@
+/* Glass Morphism Styles - Used for game cards and other elements */
+
+/* Base glass morphism styles that can be applied to different elements */
+.glass-morphism {
+  background: rgba(30, 41, 59, 0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+}
+
+/* Glass morphism hover effects */
+.glass-morphism:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Glass panel for sections and content blocks */
+.glass-panel {
+  background: rgba(30, 41, 59, 0.75) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Glass morphism for buttons */
+.glass-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(5px) !important;
+  border-radius: 50px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 0.75rem 1.5rem !important;
+  color: white !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Light theme variations */
+:root.light-theme .glass-morphism {
+  background: rgba(249, 250, 251, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+:root.light-theme .glass-panel {
+  background: rgba(249, 250, 251, 0.75) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+:root.light-theme .glass-button {
+  background: rgba(0, 0, 0, 0.07) !important;
+  color: #111827 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+:root.light-theme .glass-button:hover {
+  background: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Game card specific styling */
+.game-card {
+  width: 400px;
+  margin: 0 auto;
+}
+
+/* Add subtle hover effect */
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Background gradient effect */
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  z-index: 0;
+}
+
+/* Decorative accent elements */
+.game-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 70%
+  );
+  z-index: 0;
+}
+
+/* Game card content layout */
+.game-card-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 1rem;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Game image container */
+.game-image-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  width: 100%;
+}
+
+/* Game title enhancement */
+.game-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, #fff, #ccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+/* Game description enhancement */
+.game-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+/* Play button enhancement */
+.play-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  color: white;
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: fit-content;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.play-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Add decorative elements to utilize empty space */
+.decorative-element {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(15px);
+  z-index: 0;
+}
+
+.decorative-element-1 {
+  width: 150px;
+  height: 150px;
+  right: -30px;
+  top: -30px;
+  background: linear-gradient(45deg, rgba(255, 100, 50, 0.2), rgba(255, 50, 100, 0.1));
+  animation: float 15s ease-in-out infinite;
+}
+
+.decorative-element-2 {
+  width: 100px;
+  height: 100px;
+  left: 20%;
+  bottom: -20px;
+  background: linear-gradient(45deg, rgba(50, 100, 255, 0.15), rgba(100, 50, 255, 0.1));
+  animation: float 12s ease-in-out infinite reverse;
+}
+
+/* Game stats section to fill empty space */
+.game-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.stat-item:hover .stat-value {
+  color: #ff6b4a;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Theme-aware adjustments */
+:root.light-theme .game-card {
+  background: rgba(249, 250, 251, 0.85);
+}
+
+:root.light-theme .game-title {
+  background: linear-gradient(90deg, #111827, #4b5563);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:root.light-theme .game-description {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+:root.light-theme .play-button {
+  background: rgba(0, 0, 0, 0.07);
+  color: #111827;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+:root.light-theme .play-button:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+:root.light-theme .stat-value {
+  color: #111827;
+}
+
+:root.light-theme .stat-label {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+:root.light-theme .stat-item:hover .stat-value {
+  color: #ff6b4a;
+}

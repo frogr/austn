@@ -98,7 +98,15 @@ const WorkExperience = () => {
       
       <div className="grid grid-cols-1 gap-6">
         {jobs.map((job) => (
-          <div key={job.id} className="theme-card overflow-hidden">
+          <div key={job.id} className="theme-card glass-morphism overflow-hidden relative">
+            {/* Decorative elements for glass effect */}
+            <div 
+              className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-xl"
+              style={{ 
+                background: 'rgba(100, 150, 255, 0.1)', 
+                animation: 'pulse-slow 12s infinite, float 15s ease-in-out infinite'  
+              }}
+            ></div>
             <div 
               className="p-6 cursor-pointer flex justify-between items-center"
               onClick={() => toggleExpand(job.id)}
@@ -144,7 +152,17 @@ const WorkExperience = () => {
         ))}
       </div>
       
-      <div className="mt-8 p-6 theme-card">
+      <div className="mt-8 p-6 theme-card glass-panel relative">
+        {/* Subtle decorative accent for glass panel */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-md z-0">
+          <div 
+            className="absolute -bottom-20 -right-20 w-40 h-40 rounded-full blur-lg"
+            style={{ 
+              background: 'rgba(130, 80, 220, 0.05)',
+              animation: 'pulse-slow 15s infinite'
+            }}
+          ></div>
+        </div>
         <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Technical Skills</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
