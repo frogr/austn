@@ -36,6 +36,31 @@ const Sidebar = () => {
   // Determine styles based on theme
   const isDark = themeState === 'dark';
   
+  // Check for mobile device
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    
+    // Check on initial load
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // On mobile, ensure sidebar is collapsed
+  useEffect(() => {
+    if (isMobile && !collapsed) {
+      setCollapsed(true);
+    }
+  }, [isMobile]);
+  
   // Dispatch custom events when sidebar state changes
   useEffect(() => {
     const event = new CustomEvent(

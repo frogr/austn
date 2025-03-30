@@ -35,18 +35,83 @@
     <!-- Global theme provider -->
     <div id="theme-root" data-react-component="ThemeProvider"></div>
     
-    <!-- Sidebar React Component -->
-    <div data-react-component="Sidebar"></div>
+    <!-- Material Icons for sidebar -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+      /* Grid layout for sidebar and content */
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      
+      .app-container {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        min-height: 100vh;
+      }
+      
+      /* Sidebar positioning and z-index */
+      .sidebar {
+        z-index: 30;
+      }
+      
+      /* Smooth transitions on content area */
+      main.content-area,
+      #page-content, 
+      #about-me-content,
+      .ml-16 {
+        transition: margin-left 0.3s ease;
+      }
+      
+      /* Handle sidebar open/closed states */
+      .sidebar.w-16 ~ main.content-area {
+        margin-left: 4rem;
+      }
+      
+      .sidebar.w-56 ~ main.content-area {
+        margin-left: 14rem;
+      }
+      
+      /* Small devices (phones) */
+      @media (max-width: 767px) {
+        /* Force sidebar to stay collapsed on small screens */
+        .sidebar {
+          width: 4rem !important;
+          max-width: 4rem !important;
+          min-width: 4rem !important;
+        }
+        
+        /* Force content to adjust */
+        main.content-area {
+          margin-left: 4rem !important;
+        }
+        
+        /* Add some padding for readability */
+        #page-content {
+          padding-left: 0.5rem;
+          padding-right: 0.5rem;
+        }
+        
+        /* Fix mobile spacing */
+        .ml-16 {
+          margin-left: 4rem !important;
+        }
+      }
+    </style>
+    
+    <div class="app-container">
+      <!-- Sidebar React Component -->
+      <div data-react-component="Sidebar"></div>
+      
+      <!-- Content area -->
+      <main class="min-h-screen code-theme content-area">
+        <%= yield %>
+      </main>
+    </div>
     
     <!-- Theme Toggle Button -->
     <div class="fixed top-4 right-4 z-50" data-react-component="ThemeToggle"></div>
-    
-    <!-- No need for sidebar margin, we'll handle that in components -->
-    <main class="min-h-screen code-theme">
-      <%= yield %>
-    </main>
-    
-    <!-- Material Icons for sidebar -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </body>
 </html>

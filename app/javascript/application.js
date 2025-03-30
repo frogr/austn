@@ -41,32 +41,7 @@ window.sidebarEvents = {
   EXPANDED: 'sidebar:expanded'
 };
 
-// Add event listener to update all pages when sidebar state changes
-document.addEventListener('DOMContentLoaded', () => {
-  const updatePageContent = (collapsed) => {
-    const pageContent = document.getElementById('page-content');
-    if (pageContent) {
-      if (collapsed) {
-        pageContent.classList.remove('ml-56');
-        pageContent.classList.add('ml-16');
-      } else {
-        pageContent.classList.remove('ml-16');
-        pageContent.classList.add('ml-56');
-      }
-    }
-  };
-  
-  // Set initial state to collapsed on page load
-  updatePageContent(true);
-
-  document.addEventListener(window.sidebarEvents.COLLAPSED, () => {
-    updatePageContent(true);
-  });
-
-  document.addEventListener(window.sidebarEvents.EXPANDED, () => {
-    updatePageContent(false);
-  });
-});
+// No need for margin adjustments with grid layout
 
 document.addEventListener("turbo:load", () => {
     const reactComponents = document.querySelectorAll("[data-react-component]")
@@ -109,24 +84,7 @@ document.addEventListener("turbo:load", () => {
           console.log(`Re-rendered ${componentName} with props:`, props)
         }
         
-        // Setup sidebar event listeners for AboutMe content
-        if (componentName === 'Sidebar') {
-          document.addEventListener(window.sidebarEvents.COLLAPSED, () => {
-            const aboutContent = document.getElementById('about-me-content');
-            if (aboutContent) {
-              aboutContent.classList.remove('ml-56');
-              aboutContent.classList.add('ml-16');
-            }
-          });
-          
-          document.addEventListener(window.sidebarEvents.EXPANDED, () => {
-            const aboutContent = document.getElementById('about-me-content');
-            if (aboutContent) {
-              aboutContent.classList.remove('ml-16');
-              aboutContent.classList.add('ml-56');
-            }
-          });
-        }
+        // No need for margin adjustments with grid layout
       } catch (e) {
         console.error(`Error rendering ${componentName}:`, e)
       }
