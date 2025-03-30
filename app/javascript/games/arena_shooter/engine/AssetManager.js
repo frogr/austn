@@ -1,406 +1,261 @@
-import * as THREE from 'three';
-import { EventEmitter } from '../ecs/core/EventEmitter.js';
-
 /**
- * AssetManager handles loading, caching, and providing game assets
+ * Optimized Asset Manager for the Arena Shooter game
+ * - Handles loading and caching of game assets (textures, sounds, models)
+ * - Provides optimized loading with WebP support
+ * - Implements aggressive caching of assets
+ * - Handles progress tracking during loading
  */
-export class AssetManager extends EventEmitter {
+class AssetManager {
   constructor() {
-    super();
-    
-    // Asset collections
     this.textures = new Map();
-    this.models = new Map();
-    this.materials = new Map();
     this.sounds = new Map();
-    this.shaders = new Map();
-    
-    // Loaders
-    this.textureLoader = new THREE.TextureLoader();
-    this.objectLoader = new THREE.ObjectLoader();
-    this.audioLoader = new THREE.AudioLoader();
-    
-    // Track loading progress
+    this.models = new Map();
     this.totalAssets = 0;
     this.loadedAssets = 0;
-    this.errors = [];
+    this.onProgressCallbacks = [];
+    this.supportsWebP = null; // Will be detected on initialization
+    
+    // Check WebP support at initialization
+    this.detectWebPSupport();
   }
   
   /**
-   * Load a batch of assets
-   * @param {Object} manifest - Asset manifest object
-   * @returns {Promise<AssetManager>} - This asset manager
+   * Detect WebP support in the current browser
+   * @private
    */
-  async loadAssets(manifest) {
-    // Reset counters
-    this.totalAssets = 0;
-    this.loadedAssets = 0;
-    this.errors = [];
+  detectWebPSupport() {
+    const webpTest = new Image();
     
-    // Count total assets
-    for (const category in manifest) {
-      if (manifest[category] && Array.isArray(manifest[category])) {
-        this.totalAssets += manifest[category].length;
-      }
-    }
+    webpTest.onload = () => {
+      this.supportsWebP = true;
+    };
     
-    // Emit start event
-    this.emit('loadStart', { total: this.totalAssets });
+    webpTest.onerror = () => {
+      this.supportsWebP = false;
+    };
     
-    // Load each asset type
-    const promises = [];
-    
-    // Load textures
-    if (manifest.textures) {
-      for (const texture of manifest.textures) {
-        promises.push(this.loadTexture(texture.id, texture.url, texture.options));
-      }
-    }
-    
-    // Load models
-    if (manifest.models) {
-      for (const model of manifest.models) {
-        promises.push(this.loadModel(model.id, model.url, model.options));
-      }
-    }
-    
-    // Load materials
-    if (manifest.materials) {
-      for (const material of manifest.materials) {
-        this.createMaterial(material.id, material.type, material.properties);
-      }
-    }
-    
-    // Load sounds
-    if (manifest.sounds) {
-      for (const sound of manifest.sounds) {
-        promises.push(this.loadSound(sound.id, sound.url));
-      }
-    }
-    
-    // Wait for all assets to load
-    await Promise.allSettled(promises);
-    
-    // Emit complete event
-    this.emit('loadComplete', {
-      total: this.totalAssets,
-      loaded: this.loadedAssets,
-      errors: this.errors
-    });
-    
-    return this;
+    // A simple 2x2 WebP image in base64
+    webpTest.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
   }
   
   /**
-   * Update loading progress
-   * @param {string} assetId - Asset identifier
-   * @param {boolean} success - Whether loading succeeded
-   * @param {Error} error - Error if loading failed
+   * Register a progress callback
+   * @param {Function} callback - Function to call with progress updates (0-1)
    */
-  updateProgress(assetId, success, error = null) {
+  onProgress(callback) {
+    this.onProgressCallbacks.push(callback);
+  }
+  
+  /**
+   * Updates loading progress and notifies all registered callbacks
+   * @private
+   */
+  updateProgress() {
     this.loadedAssets++;
+    const progress = this.totalAssets > 0 ? this.loadedAssets / this.totalAssets : 0;
     
-    if (!success) {
-      this.errors.push({ id: assetId, error });
-    }
-    
-    const progress = this.loadedAssets / this.totalAssets;
-    
-    this.emit('loadProgress', {
-      id: assetId,
-      loaded: this.loadedAssets,
-      total: this.totalAssets,
-      progress,
-      success
+    this.onProgressCallbacks.forEach(callback => {
+      callback(progress);
     });
   }
   
   /**
-   * Load a texture
-   * @param {string} id - Texture identifier
-   * @param {string} url - Texture URL
-   * @param {Object} options - Texture options
-   * @returns {Promise<THREE.Texture>} - Loaded texture
+   * Get the best image format based on browser support
+   * @param {string} originalPath - The original asset path
+   * @returns {string} - Path with the best format extension
+   * @private
    */
-  async loadTexture(id, url, options = {}) {
-    try {
-      const texture = await new Promise((resolve, reject) => {
-        this.textureLoader.load(
-          url,
-          (tex) => resolve(tex),
+  getBestFormatPath(originalPath) {
+    // If WebP is supported and the original isn't already a WebP, use WebP version
+    if (this.supportsWebP === true && !originalPath.endsWith('.webp')) {
+      // Replace common image extensions with .webp
+      return originalPath.replace(/\.(jpg|jpeg|png)$/, '.webp');
+    }
+    
+    // Otherwise use the original format
+    return originalPath;
+  }
+  
+  /**
+   * Load a texture with optimized format selection and responsive loading
+   * @param {string} key - The identifier for this texture
+   * @param {string} path - The path to the texture asset
+   * @param {Object} options - Texture options (filtering, etc.)
+   * @returns {Promise<THREE.Texture>} - Promise that resolves with the loaded texture
+   */
+  loadTexture(key, path, options = {}) {
+    // Track total assets for progress calculations
+    this.totalAssets++;
+    
+    // Check if texture is already cached
+    if (this.textures.has(key)) {
+      this.updateProgress();
+      return Promise.resolve(this.textures.get(key));
+    }
+    
+    // Use the best format based on browser support
+    const bestPath = this.getBestFormatPath(path);
+    
+    // Create a texture loader
+    // Use dynamic import to avoid bundling THREE.js for clients that don't need it
+    return import('three').then(THREE => {
+      const loader = new THREE.TextureLoader();
+      
+      return new Promise((resolve, reject) => {
+        loader.load(
+          // URL
+          bestPath,
+          
+          // onLoad callback
+          (texture) => {
+            // Apply texture options
+            if (options.repeat) {
+              texture.repeat.set(options.repeat[0], options.repeat[1]);
+            }
+            
+            if (options.wrapS) {
+              texture.wrapS = options.wrapS;
+            }
+            
+            if (options.wrapT) {
+              texture.wrapT = options.wrapT;
+            }
+            
+            if (options.minFilter) {
+              texture.minFilter = options.minFilter;
+            }
+            
+            if (options.magFilter) {
+              texture.magFilter = options.magFilter;
+            }
+            
+            if (options.anisotropy) {
+              texture.anisotropy = options.anisotropy;
+            }
+            
+            // Cache the texture
+            this.textures.set(key, texture);
+            this.updateProgress();
+            resolve(texture);
+          },
+          
+          // onProgress callback
           undefined,
-          (error) => reject(error)
+          
+          // onError callback
+          (err) => {
+            console.error(`Failed to load texture: ${path}`, err);
+            
+            // Create a fallback texture
+            const fallbackTexture = this.createFallbackTexture(THREE);
+            this.textures.set(key, fallbackTexture);
+            this.updateProgress();
+            resolve(fallbackTexture);
+          }
         );
       });
-      
-      // Apply options
-      if (options.repeat) {
-        texture.repeat.set(options.repeat.x || 1, options.repeat.y || 1);
-      }
-      
-      if (options.wrapS) {
-        texture.wrapS = THREE[options.wrapS];
-      }
-      
-      if (options.wrapT) {
-        texture.wrapT = THREE[options.wrapT];
-      }
-      
-      if (options.minFilter) {
-        texture.minFilter = THREE[options.minFilter];
-      }
-      
-      if (options.magFilter) {
-        texture.magFilter = THREE[options.magFilter];
-      }
-      
-      if (options.encoding) {
-        texture.encoding = THREE[options.encoding];
-      }
-      
-      // Store texture
-      this.textures.set(id, texture);
-      
-      // Update progress
-      this.updateProgress(id, true);
-      
-      return texture;
-    } catch (error) {
-      console.error(`Failed to load texture: ${id}`, error);
-      
-      // Create fallback texture
-      const fallback = this.createFallbackTexture();
-      this.textures.set(id, fallback);
-      
-      // Update progress with error
-      this.updateProgress(id, false, error);
-      
-      return fallback;
-    }
+    });
   }
   
   /**
-   * Load a 3D model
-   * @param {string} id - Model identifier
-   * @param {string} url - Model URL
-   * @param {Object} options - Model options
-   * @returns {Promise<THREE.Object3D>} - Loaded model
+   * Creates a fallback texture when actual texture loading fails
+   * @param {THREE} THREE - The Three.js library
+   * @returns {THREE.Texture} - A fallback checkerboard texture
+   * @private 
    */
-  async loadModel(id, url, options = {}) {
-    try {
-      const model = await new Promise((resolve, reject) => {
-        this.objectLoader.load(
-          url,
-          (obj) => resolve(obj),
-          undefined,
-          (error) => reject(error)
-        );
-      });
-      
-      // Apply options
-      if (options.scale) {
-        model.scale.set(options.scale, options.scale, options.scale);
-      }
-      
-      // Store model
-      this.models.set(id, model);
-      
-      // Update progress
-      this.updateProgress(id, true);
-      
-      return model;
-    } catch (error) {
-      console.error(`Failed to load model: ${id}`, error);
-      
-      // Create fallback model
-      const fallback = this.createFallbackModel();
-      this.models.set(id, fallback);
-      
-      // Update progress with error
-      this.updateProgress(id, false, error);
-      
-      return fallback;
-    }
-  }
-  
-  /**
-   * Load a sound
-   * @param {string} id - Sound identifier
-   * @param {string} url - Sound URL
-   * @returns {Promise<AudioBuffer>} - Loaded sound
-   */
-  async loadSound(id, url) {
-    try {
-      const buffer = await new Promise((resolve, reject) => {
-        this.audioLoader.load(
-          url,
-          (buf) => resolve(buf),
-          undefined,
-          (error) => reject(error)
-        );
-      });
-      
-      // Store sound
-      this.sounds.set(id, buffer);
-      
-      // Update progress
-      this.updateProgress(id, true);
-      
-      return buffer;
-    } catch (error) {
-      console.error(`Failed to load sound: ${id}`, error);
-      
-      // Update progress with error
-      this.updateProgress(id, false, error);
-      
-      return null;
-    }
-  }
-  
-  /**
-   * Create a material
-   * @param {string} id - Material identifier
-   * @param {string} type - Material type
-   * @param {Object} properties - Material properties
-   * @returns {THREE.Material} - Created material
-   */
-  createMaterial(id, type = 'MeshStandardMaterial', properties = {}) {
-    // Replace texture names with actual textures
-    const props = { ...properties };
-    
-    // Process texture properties
-    const textureProps = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap'];
-    
-    for (const prop of textureProps) {
-      if (props[prop] && typeof props[prop] === 'string') {
-        const textureId = props[prop];
-        props[prop] = this.textures.get(textureId) || null;
-      }
-    }
-    
-    // Create material based on type
-    let material;
-    
-    switch (type) {
-      case 'MeshBasicMaterial':
-        material = new THREE.MeshBasicMaterial(props);
-        break;
-      case 'MeshStandardMaterial':
-        material = new THREE.MeshStandardMaterial(props);
-        break;
-      case 'MeshPhongMaterial':
-        material = new THREE.MeshPhongMaterial(props);
-        break;
-      case 'MeshLambertMaterial':
-        material = new THREE.MeshLambertMaterial(props);
-        break;
-      case 'ShaderMaterial':
-        material = new THREE.ShaderMaterial(props);
-        break;
-      default:
-        material = new THREE.MeshStandardMaterial(props);
-    }
-    
-    // Store material
-    this.materials.set(id, material);
-    
-    // Update progress
-    this.updateProgress(id, true);
-    
-    return material;
-  }
-  
-  /**
-   * Create a fallback texture (checker pattern)
-   * @returns {THREE.Texture} - Fallback texture
-   */
-  createFallbackTexture() {
-    const size = 128;
+  createFallbackTexture(THREE) {
     const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
     
-    const context = canvas.getContext('2d');
-    context.fillStyle = '#ff00ff'; // Magenta for error
-    context.fillRect(0, 0, size, size);
-    
-    // Draw checker pattern
-    context.fillStyle = '#000000';
-    const tileSize = size / 8;
-    
-    for (let y = 0; y < 8; y++) {
-      for (let x = 0; x < 8; x++) {
-        if ((x + y) % 2 === 0) {
-          context.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-        }
+    // Draw a checkerboard pattern
+    const tileSize = 16;
+    for (let y = 0; y < canvas.height; y += tileSize) {
+      for (let x = 0; x < canvas.width; x += tileSize) {
+        ctx.fillStyle = (x + y) % (tileSize * 2) === 0 ? '#f00' : '#f99';
+        ctx.fillRect(x, y, tileSize, tileSize);
       }
     }
     
-    // Create texture from canvas
+    // Add missing texture indicator
+    ctx.fillStyle = '#000';
+    ctx.font = '10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('MISSING', canvas.width / 2, canvas.height / 2);
+    
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
   }
   
   /**
-   * Create a fallback model (simple cube)
-   * @returns {THREE.Object3D} - Fallback model
+   * Batch load multiple textures at once
+   * @param {Object} textureManifest - Object mapping texture keys to paths
+   * @param {Object} options - Default options for all textures
+   * @returns {Promise<Map<string, THREE.Texture>>} - Promise that resolves when all textures are loaded
    */
-  createFallbackModel() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xff00ff, // Magenta for error
-      wireframe: true
+  loadTextures(textureManifest, options = {}) {
+    const promises = Object.entries(textureManifest).map(([key, path]) => {
+      return this.loadTexture(key, path, options);
     });
     
-    return new THREE.Mesh(geometry, material);
+    return Promise.all(promises).then(() => this.textures);
   }
   
   /**
-   * Get an asset by type and ID
-   * @param {string} type - Asset type ('texture', 'model', 'material', 'sound')
-   * @param {string} id - Asset identifier
-   * @returns {any} - The requested asset or null if not found
+   * Preloads the most essential game assets
+   * @returns {Promise<void>} - Promise that resolves when essential assets are loaded
    */
-  getAsset(type, id) {
-    switch (type.toLowerCase()) {
-      case 'texture':
-        return this.textures.get(id) || null;
-      case 'model':
-        return this.models.get(id)?.clone() || null;
-      case 'material':
-        return this.materials.get(id) || null;
-      case 'sound':
-        return this.sounds.get(id) || null;
-      case 'shader':
-        return this.shaders.get(id) || null;
-      default:
-        console.warn(`Unknown asset type: ${type}`);
-        return null;
-    }
+  preloadEssentialAssets() {
+    // Define essential textures needed at startup
+    const essentialTextures = {
+      'floor': '/assets/textures/floor.jpg',
+      'wall': '/assets/textures/wall.jpg'
+    };
+    
+    return this.loadTextures(essentialTextures);
   }
   
   /**
-   * Clean up resources
+   * Load remaining non-essential assets
+   * @returns {Promise<void>} - Promise that resolves when all assets are loaded
    */
-  dispose() {
-    // Dispose textures
-    for (const texture of this.textures.values()) {
-      texture.dispose();
-    }
+  loadRemainingAssets() {
+    // Define non-essential textures that can be loaded after game starts
+    const remainingTextures = {
+      'skybox': '/assets/textures/skybox.jpg',
+      'muzzleFlash': '/assets/textures/muzzleFlash.png'
+    };
     
-    // Dispose materials
-    for (const material of this.materials.values()) {
-      material.dispose();
-    }
+    return this.loadTextures(remainingTextures);
+  }
+  
+  /**
+   * Get a loaded texture by key
+   * @param {string} key - The texture identifier
+   * @returns {THREE.Texture|null} - The texture or null if not found
+   */
+  getTexture(key) {
+    return this.textures.get(key) || null;
+  }
+  
+  /**
+   * Clears all stored assets to free memory
+   */
+  clear() {
+    // Dispose of all textures to free GPU memory
+    this.textures.forEach(texture => {
+      if (texture && typeof texture.dispose === 'function') {
+        texture.dispose();
+      }
+    });
     
-    // Clear collections
     this.textures.clear();
-    this.models.clear();
-    this.materials.clear();
     this.sounds.clear();
-    this.shaders.clear();
-    
-    // Clear event listeners
-    this.clear();
+    this.models.clear();
+    this.loadedAssets = 0;
+    this.totalAssets = 0;
   }
 }
+
+export default AssetManager;

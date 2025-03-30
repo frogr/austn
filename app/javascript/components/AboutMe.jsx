@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from './ThemeProvider';
+import ResponsiveImage from './ResponsiveImage';
 
 const AboutMe = () => {
   // Get theme context if available
@@ -71,7 +72,14 @@ const AboutMe = () => {
                 className="w-32 h-32 rounded-full flex items-center justify-center mb-6"
                 style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
               >
-                <img src="https://i.ibb.co/TBvNqtT1/Chat-GPT-Image-Mar-27-2025-09-07-30-PM.png" alt="Chat-GPT-Image-Mar-27-2025-09-07-30-PM" border="0" />
+                <ResponsiveImage
+                  src="https://i.ibb.co/TBvNqtT1/Chat-GPT-Image-Mar-27-2025-09-07-30-PM.png" 
+                  alt="Austin's profile picture" 
+                  width={128} 
+                  height={128} 
+                  className="rounded-full w-24 h-24"
+                  objectFit="cover"
+                />
               </div>
               
               <h1 className="text-4xl font-bold mb-4">Austin!</h1>
@@ -117,7 +125,14 @@ const AboutMe = () => {
                   style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
                 >
                   <div className="w-full h-full flex items-center justify-center">
-                    <img src={`${featuredPost.image}`}></img>
+                    <ResponsiveImage
+                      src={featuredPost.image}
+                      alt={featuredPost.title}
+                      width={480}
+                      height={270}
+                      className="w-full h-full"
+                      objectFit="cover"
+                    />
                   </div>
                 </div>
               </div>

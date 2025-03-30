@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import { ThemeContext } from './ThemeProvider'
+import ResponsiveImage from './ResponsiveImage'
 
 /**
  * GameCard component for displaying a game in the games list
@@ -22,14 +23,17 @@ const GameCard = ({ title, description, imageUrl, link }) => {
   
   return (
     <div 
-      className="rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+      className="rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105 w-[400px] mx-auto"
       style={{ backgroundColor: 'var(--bg-card)' }}
     >
       <div className="relative pb-[56.25%]">
-        <img 
+        <ResponsiveImage
           src={imageUrl || "https://via.placeholder.com/640x360?text=Game+Preview"} 
           alt={title} 
-          className="absolute h-full w-full object-cover" 
+          className="absolute h-full w-full" 
+          width={640}
+          height={360}
+          objectFit="contain"
         />
       </div>
       <div className="p-6">

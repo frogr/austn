@@ -1,24 +1,54 @@
-# README
+# Austn.net
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Personal website and portfolio built with Ruby on Rails and React.
 
-Things you may want to cover:
+## Development
 
-* Ruby version
+- Development server: `bin/dev` (starts Rails server with Foreman)
+- Build JS: `yarn build` (esbuild)
+- Build CSS: `yarn build:css` (Tailwind)
+- Tests: `bin/rails test` (run all tests)
+- Single test: `bin/rails test TEST=path/to/test.rb:line_number`
+- Lint Ruby: `bin/rubocop`
 
-* System dependencies
+## Image Optimization
 
-* Configuration
+The site includes comprehensive image optimization features:
 
-* Database creation
+### For Developers
 
-* Database initialization
+- React components:
+  - `ResponsiveImage`: A component that handles WebP support, lazy loading, and proper sizing
+  - Use it in JSX: `<ResponsiveImage src="/path/to/image.jpg" alt="Description" width={640} height={360} />`
 
-* How to run the test suite
+- Rails helpers:
+  - `responsive_image_tag`: Creates a responsive image tag with WebP support
+  - `responsive_bg_image`: Creates a CSS background style with WebP fallback
 
-* Services (job queues, cache servers, search engines, etc.)
+### Rake Tasks
 
-* Deployment instructions
+The following Rake tasks are available for image optimization:
 
-* ...
+```
+# Convert images to WebP format (while preserving originals)
+bin/rails images:convert_to_webp
+
+# Resize and optimize all images
+bin/rails images:optimize
+```
+
+### Game Assets
+
+The arena shooter game includes optimized asset loading:
+- Automatically uses WebP when supported
+- Implements progressive loading (essential assets first)
+- Provides fallbacks for unsupported formats
+- Reduces GPU memory usage
+
+## Features
+
+- Dark/light theme support
+- Responsive design
+- React components
+- WebGL-based games
+- Blog with Markdown support
