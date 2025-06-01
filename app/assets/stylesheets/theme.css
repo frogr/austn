@@ -11,19 +11,33 @@
   --border-color: #374151; /* gray-700 */
   --accent-color: #eab308; /* yellow-500 */
   --accent-hover: #facc15; /* yellow-400 */
+  --pill-bg: #374151; /* gray-700 */
+  --pill-text: #eab308; /* yellow-500 */
+  --pill-bg-active: #eab308; /* yellow-500 */
+  --pill-text-active: #000000;
+  --glass-accent-1: rgba(100, 150, 255, 0.1);
+  --glass-accent-2: rgba(130, 80, 220, 0.05);
 }
 
 /* CSS Variables - Light Theme */
 :root.light-theme {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f3f4f6; /* gray-100 */
-  --bg-card: #f9fafb; /* gray-50 */
-  --text-primary: #111827; /* gray-900 */
-  --text-secondary: #4b5563; /* gray-600 */
-  --text-muted: #6b7280; /* gray-500 */
-  --border-color: #e5e7eb; /* gray-200 */
-  --accent-color: #eab308; /* yellow-500 */
-  --accent-hover: #d97706; /* yellow-600 */
+  --bg-primary: #eae4cf;         /* toned down from f4f1e6 */
+  --bg-secondary: #e3dbc1;       /* less light, more warm fade */
+  --bg-card: #f2ecda;            /* card paper tone */
+  --text-primary: #3a372f;       /* inkier, softened */
+  --text-secondary: #5e5746;
+  --text-muted: #807b70;
+  --border-color: #d0c8b4;       /* subtle sepia-gray */
+  --accent-color: #c28b00;
+  --accent-hover: #a77400;
+  --pill-bg: #e5ddc7;
+  --pill-text: #a77400;
+  --pill-bg-active: #c28b00;
+  --pill-text-active: #f2ecda;
+  --glass-accent-1: rgba(160, 140, 100, 0.05);
+  --glass-accent-2: rgba(140, 110, 80, 0.03);
+  --sidebar-bg: #e8e1ca;
+  --sidebar-text: #3a372f;
 }
 
 /* Set dark theme as default */
@@ -37,6 +51,12 @@
   --border-color: #374151;
   --accent-color: #eab308;
   --accent-hover: #facc15;
+  --pill-bg: #374151;
+  --pill-text: #eab308;
+  --pill-bg-active: #eab308;
+  --pill-text-active: #000000;
+  --glass-accent-1: rgba(100, 150, 255, 0.1);
+  --glass-accent-2: rgba(130, 80, 220, 0.05);
 }
 
 /* Card Styles */
@@ -73,6 +93,71 @@
 .theme-link:hover {
   color: var(--accent-hover);
   text-decoration: underline;
+}
+
+/* Pill Styles */
+.theme-pill {
+  background-color: var(--pill-bg);
+  color: var(--pill-text);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.theme-pill.active {
+  background-color: var(--pill-bg-active);
+  color: var(--pill-text-active);
+}
+
+.theme-pill:hover {
+  opacity: 0.9;
+}
+
+/* Glass Effect Utilities */
+.glass-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-effect::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--glass-accent-1);
+  filter: blur(15px);
+  animation: pulse-slow 12s infinite, float 15s ease-in-out infinite;
+  z-index: 0;
+}
+
+.glass-effect::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--glass-accent-2);
+  filter: blur(20px);
+  animation: pulse-slow 15s infinite reverse;
+  z-index: 0;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-10px) translateX(5px); }
+  50% { transform: translateY(0) translateX(10px); }
+  75% { transform: translateY(10px) translateX(5px); }
 }
 
 /* Legacy classes for backward compatibility */

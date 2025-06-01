@@ -4,18 +4,14 @@ import { ThemeContext } from './ThemeProvider';
 const WorkExperience = () => {
   const [expandedJob, setExpandedJob] = useState(null);
   
-  // Get theme context if available
-  let theme = 'dark'; // Default to dark if context not available
+  // Use ThemeContext via useContext hook
   try {
-    const themeContext = useContext(ThemeContext);
-    if (themeContext) {
-      theme = themeContext.theme;
-    }
+    // This component uses CSS variables so we don't need to track theme state
+    // Just ensure ThemeContext is properly initialized
+    useContext(ThemeContext);
   } catch (e) {
     console.log('ThemeContext not available, using default theme');
   }
-  
-  const isDark = theme === 'dark';
 
   const jobs = [
     {
@@ -98,15 +94,7 @@ const WorkExperience = () => {
       
       <div className="grid grid-cols-1 gap-6">
         {jobs.map((job) => (
-          <div key={job.id} className="theme-card glass-morphism overflow-hidden relative">
-            {/* Decorative elements for glass effect */}
-            <div 
-              className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-xl"
-              style={{ 
-                background: 'rgba(100, 150, 255, 0.1)', 
-                animation: 'pulse-slow 12s infinite, float 15s ease-in-out infinite'  
-              }}
-            ></div>
+          <div key={job.id} className="theme-card glass-effect overflow-hidden relative">
             <div 
               className="p-6 cursor-pointer flex justify-between items-center"
               onClick={() => toggleExpand(job.id)}
@@ -136,11 +124,7 @@ const WorkExperience = () => {
                   {job.technologies.map((tech, index) => (
                     <span 
                       key={index} 
-                      className="px-3 py-1 rounded-full text-sm"
-                      style={{ 
-                        backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                        color: 'var(--accent-color)' 
-                      }}
+                      className="theme-pill"
                     >
                       {tech}
                     </span>
@@ -152,69 +136,23 @@ const WorkExperience = () => {
         ))}
       </div>
       
-      <div className="mt-8 p-6 theme-card glass-panel relative">
-        {/* Subtle decorative accent for glass panel */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-md z-0">
-          <div 
-            className="absolute -bottom-20 -right-20 w-40 h-40 rounded-full blur-lg"
-            style={{ 
-              background: 'rgba(130, 80, 220, 0.05)',
-              animation: 'pulse-slow 15s infinite'
-            }}
-          ></div>
-        </div>
+      <div className="mt-8 p-6 theme-card glass-effect relative">
         <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Technical Skills</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Languages</h3>
             <div className="flex flex-wrap gap-2">
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Ruby</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >JavaScript</span>
+              <span className="theme-pill">Ruby</span>
+              <span className="theme-pill">JavaScript</span>
             </div>
           </div>
           <div>
             <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Frameworks/Libraries</h3>
             <div className="flex flex-wrap gap-2">
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Rails</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >React</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Node</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Express</span>
+              <span className="theme-pill">Rails</span>
+              <span className="theme-pill">React</span>
+              <span className="theme-pill">Node</span>
+              <span className="theme-pill">Express</span>
             </div>
           </div>
         </div>
