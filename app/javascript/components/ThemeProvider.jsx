@@ -1,11 +1,13 @@
 import React, { createContext, useState, useEffect } from 'react';
 
-// Create the Theme Context as a global variable to access it anywhere
-window.ThemeContextValue = {
-  theme: 'dark',
-  setTheme: () => {},
-  toggleTheme: () => {}
-};
+// Initialize the global context
+if (!window.ThemeContextValue) {
+  window.ThemeContextValue = {
+    theme: 'dark',
+    setTheme: () => {},
+    toggleTheme: () => {}
+  };
+}
 
 const ThemeContextValue = window.ThemeContextValue;
 
@@ -39,6 +41,19 @@ const ThemeProvider = ({ initialTheme = 'dark' }) => {
     
     // Update the global ThemeContextValue object
     ThemeContextValue.theme = theme;
+
+    // Setup storage event listener to sync theme across tabs
+    const handleStorageChange = (e) => {
+      if (e.key === 'theme' && e.newValue !== theme) {
+        setTheme(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [theme]);
   
   // Toggle between light and dark themes
@@ -50,8 +65,9 @@ const ThemeProvider = ({ initialTheme = 'dark' }) => {
   
   // Update the global context methods
   useEffect(() => {
-    ThemeContextValue.setTheme = setTheme;
-    ThemeContextValue.toggleTheme = toggleTheme;
+    // Define the methods directly on the global object
+    window.ThemeContextValue.setTheme = setTheme;
+    window.ThemeContextValue.toggleTheme = toggleTheme;
   }, [toggleTheme]);
   
   // This component doesn't need to render anything visible

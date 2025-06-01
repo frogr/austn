@@ -12,7 +12,9 @@ import MarkdownRenderer from './components/MarkdownRenderer'
 import GameCard from './components/GameCard'
 import GamesGrid from './components/GamesGrid'
 import AboutMe from './components/AboutMe'
-import ThemeLayout from './components/DarkModeLayout' // Renamed but kept same file
+import ContactInfo from './components/ContactInfo'
+import FunProjects from './components/FunProjects'
+import ThemeLayout from './components/ThemeLayout' // Use the new ThemeLayout component
 import ThemeProvider from './components/ThemeProvider'
 import ThemeToggle from './components/ThemeToggle'
 
@@ -25,6 +27,8 @@ const COMPONENTS = {
   'GamesGrid': GamesGrid,
   'WorkExperience': WorkExperience,
   'AboutMe': AboutMe,
+  'ContactInfo': ContactInfo,
+  'FunProjects': FunProjects,
   'ThemeLayout': ThemeLayout, // New name
   'DarkModeLayout': ThemeLayout, // For backwards compatibility 
   'ThemeProvider': ThemeProvider,
@@ -43,8 +47,32 @@ window.sidebarEvents = {
 
 // No need for margin adjustments with grid layout
 
+// Create a global ThemeProvider instance that exists outside
+// of the component lifecycle to ensure theme is applied immediately
+const initializeThemeProvider = () => {
+  // Check if we already have a ThemeProvider
+  if (!window.themeProviderRoot) {
+    // Create a div to hold the ThemeProvider
+    const themeProviderContainer = document.createElement('div')
+    themeProviderContainer.id = 'theme-provider-root'
+    document.body.appendChild(themeProviderContainer)
+    
+    // Create the root and render the ThemeProvider
+    const themeProviderRoot = createRoot(themeProviderContainer)
+    themeProviderRoot.render(<ThemeProvider />)
+    window.themeProviderRoot = themeProviderRoot
+    console.log('Global ThemeProvider initialized')
+  }
+}
+
+// Initialize ThemeProvider immediately
+initializeThemeProvider()
+
 document.addEventListener("turbo:load", () => {
-    const reactComponents = document.querySelectorAll("[data-react-component]")
+  // Ensure ThemeProvider is initialized on each page load
+  initializeThemeProvider()
+  
+  const reactComponents = document.querySelectorAll("[data-react-component]")
   
   reactComponents.forEach(component => {
     const componentName = component.dataset.reactComponent
@@ -69,6 +97,12 @@ document.addEventListener("turbo:load", () => {
             console.error(`Error parsing props for ${componentName}:`, e)
             console.log('Raw props string:', propsStr)
           }
+        }
+        
+        // Skip rendering another ThemeProvider since we have a global one
+        if (componentName === 'ThemeProvider') {
+          console.log('Skipping additional ThemeProvider render because we have a global one')
+          return
         }
         
         // Check if we already have a root for this container
