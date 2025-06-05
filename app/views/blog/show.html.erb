@@ -1,16 +1,36 @@
-<div style="background-color: var(--bg-primary); color: var(--text-primary);" class="min-h-screen">
-  <div class="max-w-4xl mx-auto py-8 px-4 ml-16" id="page-content">
-    <div class="mb-6">
-      <%= link_to "← Back to blog", blog_path, class: "theme-link" %>
+<div class="min-h-screen pt-20 pb-12 relative overflow-hidden" style="background-color: var(--bg-primary);">
+  <!-- Animated gradient background -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-40 -left-40 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl" 
+         style="background: var(--gradient-cool); animation: float 15s ease-in-out infinite;"></div>
+    <div class="absolute bottom-40 -right-40 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl" 
+         style="background: var(--gradient-primary); animation: float 20s ease-in-out infinite reverse;"></div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <!-- Back link with hover effect -->
+    <div class="mb-8">
+      <%= link_to blog_path, class: "inline-flex items-center gap-2 btn btn-secondary group" do %>
+        <span class="material-icons transform group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        <span>Back to Blog</span>
+      <% end %>
     </div>
 
-    <article>
-      <header class="mb-8">
-        <h1 class="text-4xl font-bold mb-4"><%= @blog_post.title %></h1>
+    <article class="glass-thick rounded-3xl p-8 md:p-12 relative overflow-hidden"
+             style="animation: fadeIn 0.8s ease-out;">
+      <!-- Gradient accent decoration -->
+      <div class="absolute -top-20 -right-20 w-40 h-40 opacity-20"
+           style="background: var(--gradient-accent); filter: blur(80px);"></div>
+      <header class="mb-8 relative">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent"
+            style="background-image: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          <%= @blog_post.title %>
+        </h1>
         
         <% if @blog_post.published_at %>
-          <div style="color: var(--text-muted);">
-            Published on <%= @blog_post.published_at.strftime("%B %d, %Y") %>
+          <div class="flex items-center gap-2" style="color: var(--text-muted);">
+            <span class="material-icons text-sm" style="color: var(--accent-secondary);">schedule</span>
+            <%= @blog_post.published_at.strftime("%B %d, %Y") %>
           </div>
         <% end %>
       </header>
@@ -28,10 +48,45 @@
         <div 
           id="markdown-container"
           class="prose code-theme"
+          style="color: var(--text-secondary);"
           data-react-component="MarkdownRenderer" 
           data-props='<%= raw({ useElementId: content_id }.to_json) %>'
         ></div>
       </div>
     </article>
+    
+    <!-- Related posts or CTA -->
+    <div class="mt-12 text-center">
+      <div class="glass-thick rounded-2xl p-8 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10"
+             style="background: var(--gradient-mesh);"></div>
+        <div class="relative z-10">
+          <h3 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">Enjoyed this post?</h3>
+          <p class="mb-6" style="color: var(--text-secondary);">Check out more articles or get in touch</p>
+          <div class="flex gap-4 justify-center flex-wrap">
+            <%= link_to blog_path, class: "btn btn-gradient-cool" do %>
+              <span class="material-icons">article</span>
+              More Articles
+            <% end %>
+            <%= link_to "/#contact", class: "btn btn-secondary" do %>
+              <span class="material-icons">mail</span>
+              Contact Me
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </div>

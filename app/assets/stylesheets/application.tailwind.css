@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Apple-style Typography */
+@layer base {
+  html {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", 
+                 "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+}
+
 /* Arena Shooter Styles */
 @import url('./arena_shooter.css');
 
