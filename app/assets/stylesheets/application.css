@@ -411,6 +411,20 @@
   text-decoration: underline;
 }
 
+/* Blog post clickable container */
+a.block:hover {
+  text-decoration: none !important;
+}
+
+/* Game card clickable container */
+a.no-underline {
+  text-decoration: none !important;
+}
+
+a.no-underline:hover {
+  text-decoration: none !important;
+}
+
 /* Images */
 .markdown-content img {
   max-width: 100%;

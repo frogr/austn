@@ -71,7 +71,7 @@ const Sidebar = () => {
   
   return (
     <div 
-      className={`fixed inset-y-0 left-0 ${collapsed ? 'w-16' : 'w-56'} flex flex-col sidebar z-10 transition-all duration-300`}
+      className={`fixed inset-y-0 left-0 ${collapsed ? 'w-16' : 'w-56'} flex flex-col sidebar z-[100] transition-all duration-300`}
       style={{ 
         backgroundColor: isDark ? '#1f2937' : '#e5e7eb',
         color: isDark ? '#ffffff' : '#1a202c'

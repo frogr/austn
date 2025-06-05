@@ -30,46 +30,45 @@ const GameCard = ({ title, description, imageUrl, link }) => {
   ];
   
   return (
-    <div className="game-card glass-morphism">
-      {/* Decorative elements for glassmorphism effect */}
-      <div className="decorative-element decorative-element-1"></div>
-      <div className="decorative-element decorative-element-2"></div>
-      
-      <div className="game-card-content">
-        <div className="game-image-container">
-          <ResponsiveImage
-            src={imageUrl || "https://via.placeholder.com/640x360?text=Game+Preview"} 
-            alt={title} 
-            className="absolute h-full w-full" 
-            width={640}
-            height={360}
-            objectFit="contain"
-          />
-        </div>
+    <a href={link} className="block no-underline">
+      <div className="game-card glass-morphism cursor-pointer transform transition-transform hover:translate-y-[-4px]">
+        {/* Decorative elements for glassmorphism effect */}
+        <div className="decorative-element decorative-element-1"></div>
+        <div className="decorative-element decorative-element-2"></div>
         
-        <div className="p-6">
-          <h2 className="game-title">{title}</h2>
-          <p className="game-description">{description}</p>
-          
-          {/* Stats section to utilize empty space */}
-          <div className="game-stats">
-            {stats.map((stat, index) => (
-              <div key={index} className="stat-item">
-                <span className="stat-value">{stat.value}</span>
-                <span className="stat-label">{stat.label}</span>
-              </div>
-            ))}
+        <div className="game-card-content">
+          <div className="game-image-container">
+            <ResponsiveImage
+              src={imageUrl || "https://via.placeholder.com/640x360?text=Game+Preview"} 
+              alt={title} 
+              className="absolute h-full w-full" 
+              width={640}
+              height={360}
+              objectFit="contain"
+            />
           </div>
           
-          <a 
-            href={link} 
-            className="play-button"
-          >
-            Play Now
-          </a>
+          <div className="p-6">
+            <h2 className="game-title">{title}</h2>
+            <p className="game-description">{description}</p>
+            
+            {/* Stats section to utilize empty space */}
+            <div className="game-stats">
+              {stats.map((stat, index) => (
+                <div key={index} className="stat-item">
+                  <span className="stat-value">{stat.value}</span>
+                  <span className="stat-label">{stat.label}</span>
+                </div>
+              ))}
+            </div>
+            
+            <span className="play-button">
+              Play Now
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    </a>
   )
 }
 
