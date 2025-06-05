@@ -14,12 +14,17 @@ Rails.application.routes.draw do
   get "/blog/:slug", to: "blog#show", as: :blog_post
   get "/blog/:slug/content", to: "blog#content", as: :blog_post_content
 
-  # Portfolio routes
-  get "/work", to: "portfolio#work"
-  get "/contact", to: "portfolio#contact"
-  get "/fun", to: "portfolio#fun"
-  get "/games", to: "portfolio#games"
+  # Portfolio routes - Simplified structure
+  get "/projects", to: "portfolio#projects"
   get "/games/arena-shooter", to: "portfolio#arena_shooter"
+  
+  # Legacy routes - redirect to new structure
+  get "/work", to: redirect("/")
+  get "/contact", to: redirect("/#contact")
+  get "/fun", to: redirect("/projects")
+  get "/games", to: redirect("/projects")
+  
+  # Movement demo
   get "/movement-demo", to: "movement_demo#index"
 
   # Dashboard for development/testing

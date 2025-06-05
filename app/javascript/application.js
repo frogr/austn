@@ -6,12 +6,15 @@ import { createRoot } from 'react-dom/client'
 import { createPortal } from 'react-dom'
 import HelloWorld from './components/HelloWorld'
 import Sidebar from './components/Sidebar'
+import AppleSidebar from './components/AppleSidebar'
 import WorkExperience from "./components/WorkExperience"
 import { MarkdownRenderer as MarkdownRendererNew } from './components/markdown'
 import MarkdownRenderer from './components/MarkdownRenderer'
 import GameCard from './components/GameCard'
 import GamesGrid from './components/GamesGrid'
 import AboutMe from './components/AboutMe'
+import BentoHome from './components/BentoHome'
+import Projects from './components/Projects'
 import ThemeLayout from './components/DarkModeLayout' // Renamed but kept same file
 import ThemeProvider from './components/ThemeProvider'
 import ThemeToggle from './components/ThemeToggle'
@@ -19,12 +22,15 @@ import ThemeToggle from './components/ThemeToggle'
 const COMPONENTS = {
   'HelloWorld': HelloWorld,
   'Sidebar': Sidebar,
+  'AppleSidebar': AppleSidebar,
   'MarkdownRenderer': MarkdownRenderer, // Use the direct component that's expected by blog/show.html.erb
   'MarkDownRenderer': MarkdownRendererNew, // Keep this for backward compatibility
   'GameCard': GameCard,
   'GamesGrid': GamesGrid,
   'WorkExperience': WorkExperience,
   'AboutMe': AboutMe,
+  'BentoHome': BentoHome,
+  'Projects': Projects,
   'ThemeLayout': ThemeLayout, // New name
   'DarkModeLayout': ThemeLayout, // For backwards compatibility 
   'ThemeProvider': ThemeProvider,

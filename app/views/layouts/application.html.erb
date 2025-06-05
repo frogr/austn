@@ -40,71 +40,42 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
-      /* Grid layout for sidebar and content */
+      /* Modern layout for Apple-style sidebar */
       body {
         margin: 0;
         padding: 0;
         min-height: 100vh;
+        overflow-x: hidden;
       }
       
       .app-container {
-        display: grid;
-        grid-template-columns: auto 1fr;
+        display: flex;
         min-height: 100vh;
       }
       
-      /* Sidebar positioning and z-index */
-      .sidebar {
-        z-index: 30;
+      /* Content area adjusts based on sidebar state */
+      main.content-area {
+        flex: 1;
+        margin-left: 5rem; /* Default collapsed sidebar width */
+        transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       }
       
-      /* Smooth transitions on content area */
-      main.content-area,
-      #page-content, 
-      #about-me-content,
-      .ml-16 {
-        transition: margin-left 0.3s ease;
-      }
-      
-      /* Handle sidebar open/closed states */
-      .sidebar.w-16 ~ main.content-area {
-        margin-left: 4rem;
-      }
-      
-      .sidebar.w-56 ~ main.content-area {
-        margin-left: 14rem;
+      /* When sidebar is expanded */
+      body.sidebar-expanded main.content-area {
+        margin-left: 16rem;
       }
       
       /* Small devices (phones) */
       @media (max-width: 767px) {
-        /* Force sidebar to stay collapsed on small screens */
-        .sidebar {
-          width: 4rem !important;
-          max-width: 4rem !important;
-          min-width: 4rem !important;
-        }
-        
-        /* Force content to adjust */
         main.content-area {
-          margin-left: 4rem !important;
-        }
-        
-        /* Add some padding for readability */
-        #page-content {
-          padding-left: 0.5rem;
-          padding-right: 0.5rem;
-        }
-        
-        /* Fix mobile spacing */
-        .ml-16 {
-          margin-left: 4rem !important;
+          margin-left: 5rem !important;
         }
       }
     </style>
     
     <div class="app-container">
       <!-- Sidebar React Component -->
-      <div data-react-component="Sidebar"></div>
+      <div data-react-component="AppleSidebar"></div>
       
       <!-- Content area -->
       <main class="min-h-screen code-theme content-area">
@@ -112,7 +83,5 @@
       </main>
     </div>
     
-    <!-- Theme Toggle Button -->
-    <div class="fixed top-4 right-4 z-50" data-react-component="ThemeToggle"></div>
   </body>
 </html>

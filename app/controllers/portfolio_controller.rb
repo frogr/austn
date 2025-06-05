@@ -1,22 +1,10 @@
 class PortfolioController < ApplicationController
   def index
-    # Hero page showing Austin's portfolio
+    # Hero page with bento box layout
   end
 
-  def work
-    # Portfolio/work showcase page
-  end
-
-  def contact
-    # Contact information page
-  end
-
-  def fun
-    # Fun projects or personal interests
-  end
-  
-  def games
-    # Games showcase page
+  def projects
+    # Projects showcase including games and other work
   end
   
   def arena_shooter
