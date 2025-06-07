@@ -55,31 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add FPS counter to the page
     document.body.appendChild(debugOverlay);
     
-    // Add control hints overlay
-    const controlsOverlay = document.createElement('div');
-    controlsOverlay.id = 'controls-overlay';
-    controlsOverlay.style.position = 'fixed';
-    controlsOverlay.style.top = '10px';
-    controlsOverlay.style.left = '10px';
-    controlsOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    controlsOverlay.style.color = 'white';
-    controlsOverlay.style.padding = '10px';
-    controlsOverlay.style.fontFamily = 'monospace';
-    controlsOverlay.style.fontSize = '12px';
-    controlsOverlay.style.zIndex = '1000';
-    controlsOverlay.style.pointerEvents = 'none';
-    controlsOverlay.style.borderRadius = '4px';
-    controlsOverlay.innerHTML = `
-      <div style="font-weight: bold; margin-bottom: 5px; color: lime;">CONTROLS</div>
-      <div>WASD: Move</div>
-      <div>Mouse: Look</div>
-      <div>Click: Shoot</div>
-      <div>R: Reload weapon</div>
-      <div>1-5: Change weapons</div>
-      <div>ESC: Release mouse</div>
-    `;
-    
-    document.body.appendChild(controlsOverlay);
+    // Controls overlay removed - already shown in start screen
     
     // Update FPS display
     let lastTime = performance.now();
@@ -626,20 +602,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Hide menu first
       escMenuContainer.style.display = 'none';
       
-      // With a small delay to ensure UI updates
-      setTimeout(() => {
-        // Set game to running state
-        if (window.currentApp) {
-          window.currentApp.isRunning = true;
-          console.log('Game set to running state');
-        }
-        
-        // Request pointer lock AFTER setting game to running
-        if (window.inputManager) {
-          console.log('Requesting pointer lock after resume');
-          window.inputManager.requestPointerLock();
-        }
-      }, 100);
+      // Set game to running state and restart animation loop
+      if (window.currentApp) {
+        window.currentApp.isRunning = true;
+        console.log('Game set to running state');
+        // Restart the animation loop since it stops when isRunning is false
+        requestAnimationFrame(window.currentApp.animate);
+      }
+      
+      // Request pointer lock using the inputManager's method which has retry logic
+      if (window.inputManager && window.inputManager.requestPointerLock) {
+        console.log('Requesting pointer lock from resume button');
+        window.inputManager.requestPointerLock();
+      }
     });
     
     // Create restart button
@@ -831,8 +806,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let escKeyLastPressed = 0;
     const escKeyHandler = (event) => {
       if (event.code === 'Escape') {
-        // Prevent default to avoid conflicting with browser behavior
+        // Prevent default and stop propagation to avoid conflicts
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         
         // Skip ESC handling if we're in level transition
         if (window.inLevelTransition === true) {
@@ -867,9 +844,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (window.currentApp && window.currentApp.isRunning && !isMenuVisible) {
           // If game is running and menu is not visible, show menu
-          console.log('ESC pressed: Showing menu');
+          console.log('ESC pressed: Showing menu (isRunning=true, menuVisible=false)');
           escMenuContainer.style.display = 'flex';
           window.currentApp.isRunning = false;
+          console.log('Game paused, isRunning set to false');
           
           // Ensure pointer is released when showing menu
           if (document.pointerLockElement) {
@@ -884,15 +862,18 @@ document.addEventListener('DOMContentLoaded', () => {
           console.log('ESC pressed: Hiding menu and resuming game');
           escMenuContainer.style.display = 'none';
           
-          // With a short delay to ensure UI updates first
-          setTimeout(() => {
-            // Make sure game is marked as running before requesting lock
-            if (window.currentApp) {
-              window.currentApp.isRunning = true;
-            }
-            // Request pointer lock after game is running
+          // Set game to running state and restart animation loop
+          if (window.currentApp) {
+            window.currentApp.isRunning = true;
+            // Restart the animation loop since it stops when isRunning is false
+            requestAnimationFrame(window.currentApp.animate);
+          }
+          
+          // Request pointer lock using the inputManager's method which has retry logic
+          if (window.inputManager && window.inputManager.requestPointerLock) {
+            console.log('Requesting pointer lock from ESC key');
             window.inputManager.requestPointerLock();
-          }, 100); // Slightly longer delay for better reliability
+          }
         }
       }
     };

@@ -16,8 +16,15 @@ export class MenuState extends State {
     this.menuType = menuType;
     this.stateMachine = stateMachine;
     
-    // Pause game engine if running
-    this.engine.pause();
+    // Only pause game engine if coming from playing state (pause menu)
+    if (prevState && prevState.name === 'playing' && menuType === 'pause') {
+      this.engine.pause();
+      
+      // Unlock pointer when showing pause menu
+      if (this.engine.controls) {
+        this.engine.controls.unlock();
+      }
+    }
     
     // Show the appropriate menu
     this.showMenu(menuType);
@@ -32,6 +39,8 @@ export class MenuState extends State {
     
     // Remove event listeners
     this.removeEventListeners();
+    
+    // Don't unlock pointer here - let the states handle their own pointer lock
   }
   
   update(stateMachine, deltaTime) {
@@ -43,6 +52,12 @@ export class MenuState extends State {
    * @param {string} menuType - Type of menu to show
    */
   showMenu(menuType) {
+    // First hide any existing menus
+    const existingMenus = document.querySelectorAll('[id^="menu-"]');
+    existingMenus.forEach(menu => {
+      menu.style.display = 'none';
+    });
+    
     // Get or create menu element
     let menuElement = document.getElementById(`menu-${menuType}`);
     
@@ -58,8 +73,14 @@ export class MenuState extends State {
    * Hide the current menu
    */
   hideMenu() {
-    const menuElement = document.getElementById(`menu-${this.menuType}`);
+    // Hide all menus to be safe
+    const allMenus = document.querySelectorAll('[id^="menu-"]');
+    allMenus.forEach(menu => {
+      menu.style.display = 'none';
+    });
     
+    // Also specifically hide the current menu
+    const menuElement = document.getElementById(`menu-${this.menuType}`);
     if (menuElement) {
       menuElement.style.display = 'none';
     }
@@ -74,17 +95,21 @@ export class MenuState extends State {
     // Create container
     const container = document.createElement('div');
     container.id = `menu-${menuType}`;
-    container.style.position = 'absolute';
-    container.style.top = '0';
-    container.style.left = '0';
-    container.style.width = '100%';
-    container.style.height = '100%';
-    container.style.display = 'flex';
-    container.style.flexDirection = 'column';
-    container.style.alignItems = 'center';
-    container.style.justifyContent = 'center';
-    container.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    container.style.zIndex = '100';
+    container.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 40px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      min-width: 400px;
+    `;
     
     // Create menu content based on type
     switch (menuType) {
@@ -107,8 +132,13 @@ export class MenuState extends State {
         this.createMainMenu(container);
     }
     
-    // Add to document
-    document.body.appendChild(container);
+    // Add to game container
+    const gameContainer = document.getElementById('arena-shooter-container');
+    if (gameContainer) {
+      gameContainer.appendChild(container);
+    } else {
+      console.error('Game container not found');
+    }
     
     return container;
   }
@@ -216,7 +246,7 @@ export class MenuState extends State {
     
     // Resume button
     const resumeButton = this.createButton('RESUME', () => {
-      this.stateMachine.transitionTo('playing');
+      this.stateMachine.transitionTo('playing', { engine: this.engine });
     });
     buttonsContainer.appendChild(resumeButton);
     

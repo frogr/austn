@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let prevTime = performance.now();
   const velocity = new THREE.Vector3();
   const direction = new THREE.Vector3();
+  let isPaused = false;
   
   // Initialize the demo
   init();
@@ -81,8 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     controls.addEventListener('unlock', () => {
-      startScreen.style.display = 'flex';
       crosshair.style.display = 'none';
+      if (!isPaused) {
+        startScreen.style.display = 'flex';
+      }
       console.log('Controls unlocked');
     });
     
@@ -109,6 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
         case 'ArrowRight':
         case 'KeyD':
           moveRight = true;
+          break;
+        case 'Escape':
+          if (controls.isLocked) {
+            event.preventDefault();
+            togglePause();
+          }
           break;
       }
       console.log(`Key down: ${event.code}, Forward: ${moveForward}`);
@@ -155,6 +164,73 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     console.log("Movement demo initialized");
+    
+    // Create pause menu
+    createPauseMenu();
+  }
+  
+  function createPauseMenu() {
+    const pauseMenu = document.createElement('div');
+    pauseMenu.id = 'pause-menu';
+    pauseMenu.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 40px;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      min-width: 300px;
+    `;
+    
+    const title = document.createElement('h1');
+    title.textContent = 'PAUSED';
+    title.style.cssText = `
+      color: white;
+      font-size: 48px;
+      margin-bottom: 40px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    `;
+    pauseMenu.appendChild(title);
+    
+    const resumeButton = document.createElement('button');
+    resumeButton.textContent = 'Resume';
+    resumeButton.style.cssText = `
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 18px;
+      background: linear-gradient(to bottom, #4e73df, #224abe);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    `;
+    resumeButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      togglePause();
+    });
+    pauseMenu.appendChild(resumeButton);
+    
+    container.appendChild(pauseMenu);
+  }
+  
+  function togglePause() {
+    isPaused = !isPaused;
+    const pauseMenu = document.getElementById('pause-menu');
+    
+    if (isPaused) {
+      pauseMenu.style.display = 'flex';
+      controls.unlock();
+    } else {
+      pauseMenu.style.display = 'none';
+      controls.lock();
+    }
   }
   
   function animate() {

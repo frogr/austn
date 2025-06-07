@@ -30,17 +30,6 @@ export class UIManager {
         console.log('Start button clicked');
         this.hideStartScreen();
         this.emit('gameStart');
-        
-        // Add WASD instructions to the debug overlay
-        const debugOverlay = document.getElementById('debug-overlay');
-        if (debugOverlay) {
-          const instructions = document.createElement('div');
-          instructions.style.color = 'yellow';
-          instructions.style.marginTop = '20px';
-          instructions.style.fontWeight = 'bold';
-          instructions.innerHTML = 'PRESS W,A,S,D TO MOVE | MOUSE TO LOOK | 1-5 TO CHANGE WEAPONS';
-          debugOverlay.appendChild(instructions);
-        }
       });
     } else {
       console.warn('Start button not found, will try again later');

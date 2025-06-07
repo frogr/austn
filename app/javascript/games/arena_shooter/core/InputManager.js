@@ -63,18 +63,7 @@ export class InputManager {
     this.controls.addEventListener('unlock', () => {
       this.pointerLocked = false;
       console.log('Pointer lock released');
-      
-      // Check if game is still running - if so, show ESC menu
-      // Otherwise, we're likely transitioning between game states so don't show anything
-      if (window.currentApp && window.currentApp.isRunning) {
-        const escMenu = document.getElementById('esc-menu');
-        if (escMenu) {
-          escMenu.style.display = 'flex';
-          if (window.currentApp) {
-            window.currentApp.isRunning = false;
-          }
-        }
-      }
+      // Don't auto-pause here - let the user control pausing with ESC
     });
     
     return this.controls;
@@ -197,23 +186,9 @@ export class InputManager {
     
     // If pointer lock was lost unexpectedly and not due to ESC key
     if (wasLocked && !this.pointerLocked) {
-      const escMenu = document.getElementById('esc-menu');
-      // Skip ESC menu handling if we're transitioning between game states
-      const isLevelTransition = window.currentApp === null || 
-                               window.currentApp === undefined || 
-                               !window.currentApp.isRunning;
-                               
-      if (escMenu && !isLevelTransition) {
-        const menuAlreadyVisible = escMenu.style.display === 'flex';
-        
-        // Only show menu if it's not already visible and game is running
-        if (!menuAlreadyVisible && window.currentApp && window.currentApp.isRunning) {
-          console.log('Pointer lock lost: Showing ESC menu');
-          escMenu.style.display = 'flex';
-          // Pause the game
-          window.currentApp.isRunning = false;
-        }
-      }
+      // Don't auto-pause or show ESC menu when pointer lock is lost
+      // This was causing issues with resume functionality
+      console.log('Pointer lock lost - no auto-pause');
     }
   }
   

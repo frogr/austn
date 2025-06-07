@@ -120,16 +120,7 @@ export class ArenaShooterGame {
     });
     
     // Window events
-    window.addEventListener('blur', () => {
-      // Pause game if it loses focus
-      if (this.engine.isRunning && this.stateMachine.currentState &&
-          this.stateMachine.currentState.name === 'playing') {
-        this.stateMachine.transitionTo('menu', { 
-          engine: this.engine,
-          menuType: 'pause'
-        });
-      }
-    });
+    // Removed auto-pause on blur - it was causing issues with game start
     
     // Prevent context menu on right-click
     this.container.addEventListener('contextmenu', (e) => {

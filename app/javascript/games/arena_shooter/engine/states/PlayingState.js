@@ -13,33 +13,39 @@ export class PlayingState extends State {
   onEnter(stateMachine, prevState, params = {}) {
     const { engine, levelId = 'arena' } = params;
     
-    // Store references
-    this.engine = engine;
-    this.world = engine.world;
-    this.entityFactory = engine.entityFactory;
-    this.levelId = levelId;
-    this.stateMachine = stateMachine;
+    // Check if we're resuming from pause
+    const isResumingFromPause = prevState && prevState.name === 'menu' && this.engine;
     
-    // Force resume game engine
-    console.log('Playing state entered, resuming engine...');
-    this.engine.isRunning = true;
-    this.engine.lastFrameTime = performance.now();
-    this.engine.animate();
-    
-    // Lock pointer for controls
-    if (this.engine.controls) {
-      console.log('Locking pointer controls...');
-      this.engine.controls.lock();
+    if (!isResumingFromPause) {
+      // First time entering - initialize everything
+      this.engine = engine;
+      this.world = engine.world;
+      this.entityFactory = engine.entityFactory;
+      this.levelId = levelId;
+      this.stateMachine = stateMachine;
+      
+      // Initialize UI
+      this.initializeUI();
+      
+      // Initialize level
+      this.initializeLevel(levelId);
+      
+      // Set up event listeners
+      this.setupEventListeners();
     }
     
-    // Initialize UI
-    this.initializeUI();
+    // Always resume game engine
+    console.log('Playing state entered, resuming engine...');
+    this.engine.resume();
     
-    // Initialize level
-    this.initializeLevel(levelId);
-    
-    // Set up event listeners
-    this.setupEventListeners();
+    // Lock pointer for controls with a small delay to ensure browser is ready
+    if (this.engine.controls) {
+      if (isResumingFromPause) {
+        console.log('Resuming from pause - pointer lock will be requested on user interaction');
+      } else {
+        console.log('First time playing - pointer lock will be requested on user interaction');
+      }
+    }
   }
   
   onExit(stateMachine, nextState) {
@@ -48,6 +54,12 @@ export class PlayingState extends State {
     
     // Hide gameplay UI
     this.hideUI();
+    
+    // Hide click to resume prompt if it exists
+    const resumePrompt = document.getElementById('click-to-resume');
+    if (resumePrompt) {
+      resumePrompt.style.display = 'none';
+    }
     
     // Unlock pointer if not transitioning to pause menu
     if (nextState.name !== 'menu') {
@@ -1246,19 +1258,39 @@ export class PlayingState extends State {
       });
     }
     
+    // Add click handler to request pointer lock
+    const gameContainer = document.getElementById('arena-shooter-container');
+    if (gameContainer) {
+      this.handleContainerClick = (e) => {
+        // Only lock if we're in playing state and don't have pointer lock
+        if (!document.pointerLockElement) {
+          console.log('Requesting pointer lock on container click');
+          // Try engine controls
+          if (this.engine && this.engine.controls) {
+            this.engine.controls.lock();
+          }
+          // Also try global input manager
+          if (window.inputManager && window.inputManager.requestPointerLock) {
+            window.inputManager.requestPointerLock();
+          }
+        }
+      };
+      gameContainer.addEventListener('click', this.handleContainerClick);
+    }
+    
     // Listen for pointer lock changes
     document.addEventListener('pointerlockchange', this.handlePointerLockChange = () => {
-      if (!document.pointerLockElement && this.engine.isRunning) {
-        // Pointer was unlocked, pause the game
-        this.stateMachine.transitionTo('menu', { menuType: 'pause', engine: this.engine });
-      }
+      // Don't auto-pause on pointer lock loss - let the user control pause with ESC
     });
     
     // Listen for key events
     document.addEventListener('keydown', this.handleKeyDown = (e) => {
       if (e.code === 'Escape') {
+        e.preventDefault();
         // Pause game
-        this.stateMachine.transitionTo('menu', { menuType: 'pause', engine: this.engine });
+        if (this.stateMachine && this.engine) {
+          this.stateMachine.transitionTo('menu', { menuType: 'pause', engine: this.engine });
+        }
       } else if (e.code === 'KeyR') {
         // Reload weapon
         this.reloadWeapon();
@@ -1272,6 +1304,14 @@ export class PlayingState extends State {
   removeEventListeners() {
     document.removeEventListener('pointerlockchange', this.handlePointerLockChange);
     document.removeEventListener('keydown', this.handleKeyDown);
+    
+    // Remove container click listener
+    if (this.handleContainerClick) {
+      const gameContainer = document.getElementById('arena-shooter-container');
+      if (gameContainer) {
+        gameContainer.removeEventListener('click', this.handleContainerClick);
+      }
+    }
     
     // Remove start button listener if it was added
     if (this.handleStartButtonClick) {

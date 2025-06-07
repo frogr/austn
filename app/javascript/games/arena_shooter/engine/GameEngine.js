@@ -236,12 +236,7 @@ export class GameEngine {
         this.inputState.weaponSwitch = parseInt(event.code.charAt(5)) - 1;
         break;
       case 'Escape':
-        // Toggle pause
-        if (this.isRunning) {
-          this.pause();
-        } else {
-          this.resume();
-        }
+        // Don't handle escape here - let the PlayingState handle it
         break;
     }
     
@@ -337,21 +332,12 @@ export class GameEngine {
     const canvas = this.renderer?.domElement;
     if (document.pointerLockElement === canvas) {
       // Pointer is locked on our canvas
-      console.log('Pointer is locked, resuming game engine');
-      this.resume();
-      
-      // If we have a state machine and it's in menu state, transition to playing
-      if (this.stateMachine && this.stateMachine.currentState && this.stateMachine.currentState.name === 'menu') {
-        console.log('Transitioning from menu to playing state');
-        this.stateMachine.transitionTo('playing', {
-          engine: this,
-          levelId: 'arena'
-        });
-      }
+      console.log('Pointer is locked');
+      // Don't automatically resume or transition states - let the state machine handle this
     } else {
       // Pointer is unlocked
-      console.log('Pointer is unlocked, pausing game engine');
-      this.pause();
+      console.log('Pointer is unlocked');
+      // Don't automatically pause - let the state machine handle this
     }
   }
   
