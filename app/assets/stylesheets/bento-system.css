@@ -1,0 +1,270 @@
+/* 
+ * Unified Bento Grid System
+ * This file controls ALL bento layouts across the entire site
+ * Breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl)
+ */
+
+/* ===== BASE BENTO STYLES ===== */
+.bento-container {
+  container-type: inline-size;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.bento-box {
+  background: var(--bg-glass);
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+  
+  /* Text handling */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Hover effects */
+.bento-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+/* ===== BREAKPOINT SYSTEM ===== */
+/* Mobile First Approach */
+
+/* Small (640px+) */
+@media (min-width: 640px) {
+  .bento-container {
+    padding: 0 1.5rem;
+  }
+  
+  .bento-box {
+    padding: 1rem;
+    border-radius: 1.25rem;
+  }
+}
+
+/* Medium (768px+) */
+@media (min-width: 768px) {
+  .bento-container {
+    padding: 0 2rem;
+  }
+  
+  .bento-box {
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+  }
+}
+
+/* Large (1024px+) */
+@media (min-width: 1024px) {
+  .bento-box {
+    padding: 1.5rem;
+  }
+}
+
+/* Extra Large (1280px+) */
+@media (min-width: 1280px) {
+  .bento-container {
+    padding: 0 3rem;
+  }
+  
+  .bento-box {
+    padding: 1.75rem;
+    border-radius: 1.75rem;
+  }
+}
+
+/* ===== GRID LAYOUTS ===== */
+
+/* Home Page Grid */
+.bento-grid-home {
+  display: grid;
+  gap: 1rem;
+  grid-auto-rows: minmax(100px, auto);
+}
+
+/* Projects Page Grid */
+.bento-grid-projects {
+  display: grid;
+  gap: 1rem;
+  grid-auto-rows: 1fr;
+}
+
+/* Default mobile: 1 column */
+.bento-grid-home,
+.bento-grid-projects {
+  grid-template-columns: 1fr;
+}
+
+/* Small (640px+): 2 columns */
+@media (min-width: 640px) {
+  .bento-grid-home {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  
+  .bento-grid-projects {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+/* Medium (768px+): 4/6 columns */
+@media (min-width: 768px) {
+  .bento-grid-home {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .bento-grid-projects {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Large (1024px+): 8/3 columns */
+@media (min-width: 1024px) {
+  .bento-grid-home {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 1.75rem;
+  }
+  
+  .bento-grid-projects {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+  }
+}
+
+/* Extra Large (1280px+): 12/3 columns */
+@media (min-width: 1280px) {
+  .bento-grid-home {
+    grid-template-columns: repeat(12, 1fr);
+    gap: 2rem;
+  }
+  
+  .bento-grid-projects {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* ===== SIZE CLASSES ===== */
+/* Mobile first sizing */
+
+/* Hero - Always full width */
+.bento-hero {
+  grid-column: 1 / -1;
+}
+
+/* Default spans for mobile */
+.bento-small,
+.bento-medium,
+.bento-large,
+.bento-wide,
+.bento-tall {
+  grid-column: 1 / -1;
+}
+
+/* Small (640px+) */
+@media (min-width: 640px) {
+  .bento-hero { grid-column: 1 / -1; }
+  .bento-small { grid-column: span 2; }
+  .bento-medium { grid-column: span 2; }
+  .bento-large { grid-column: span 4; }
+  .bento-wide { grid-column: span 4; }
+  .bento-tall { grid-column: span 2; grid-row: span 2; }
+}
+
+/* Medium (768px+) */
+@media (min-width: 768px) {
+  .bento-hero { grid-column: 1 / -1; }
+  .bento-small { grid-column: span 2; }
+  .bento-medium { grid-column: span 3; }
+  .bento-large { grid-column: span 4; }
+  .bento-wide { grid-column: span 6; }
+  .bento-tall { grid-column: span 3; grid-row: span 2; }
+}
+
+/* Large (1024px+) */
+@media (min-width: 1024px) {
+  .bento-hero { grid-column: 1 / -1; grid-row: span 2; }
+  .bento-small { grid-column: span 2; }
+  .bento-medium { grid-column: span 4; }
+  .bento-large { grid-column: span 6; }
+  .bento-wide { grid-column: span 8; }
+  .bento-tall { grid-column: span 4; grid-row: span 2; }
+}
+
+/* Extra Large (1280px+) */
+@media (min-width: 1280px) {
+  .bento-hero { grid-column: 1 / -1; grid-row: span 2; }
+  .bento-small { grid-column: span 3; }
+  .bento-medium { grid-column: span 4; }
+  .bento-large { grid-column: span 6; }
+  .bento-wide { grid-column: span 8; }
+  .bento-tall { grid-column: span 4; grid-row: span 3; }
+}
+
+/* ===== SPECIAL STYLES ===== */
+
+/* Gradient backgrounds */
+.bento-gradient-1 {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(90, 200, 250, 0.1) 100%);
+}
+
+.bento-gradient-2 {
+  background: linear-gradient(135deg, rgba(191, 90, 242, 0.1) 0%, rgba(94, 92, 230, 0.1) 100%);
+}
+
+.bento-gradient-3 {
+  background: linear-gradient(135deg, rgba(255, 55, 95, 0.1) 0%, rgba(255, 149, 0, 0.1) 100%);
+}
+
+/* Project cards specific */
+.bento-grid-projects .bento-box {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .bento-grid-projects .bento-box {
+    min-height: 350px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bento-grid-projects .bento-box {
+    min-height: 400px;
+  }
+}
+
+/* Ensure consistent hover behavior */
+.bento-grid-projects .bento-box:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Stats boxes */
+.bento-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 120px;
+}
+
+/* Contact box special handling */
+.bento-contact {
+  z-index: 1;
+  overflow: visible;
+}

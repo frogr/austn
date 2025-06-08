@@ -20,6 +20,14 @@
 /* Arena Shooter Styles */
 @import url('./arena_shooter.css');
 
+/* Unified Bento System - MUST COME FIRST */
+@import url('./bento-system.css');
+
+/* Legacy Bento Overrides - TO BE REMOVED */
+@import url('./bento-grid.css');
+@import url('./projects-responsive.css');
+@import url('./projects-grid.css');
+
 /* Highlight.js Theme: GitHub */
 .hljs {
   color: #24292e;

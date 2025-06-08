@@ -1,0 +1,14 @@
+/* 
+ * Legacy Projects Responsive Styles
+ * Most functionality moved to bento-system.css
+ */
+
+/* Decorative elements adjustments */
+@media (max-width: 768px) {
+  .bento-box .absolute.-top-4.-right-4 {
+    width: 60px;
+    height: 60px;
+    top: -0.5rem;
+    right: -0.5rem;
+  }
+}

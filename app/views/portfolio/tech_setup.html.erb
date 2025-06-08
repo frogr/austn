@@ -1,0 +1,220 @@
+<div class="min-h-screen pt-20 pb-12 relative overflow-hidden" style="background-color: var(--bg-primary);">
+  <!-- Animated gradient background -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-40 -left-40 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl" 
+         style="background: var(--gradient-cool); animation: float 15s ease-in-out infinite;"></div>
+    <div class="absolute bottom-40 -right-40 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl" 
+         style="background: var(--gradient-accent); animation: float 20s ease-in-out infinite reverse;"></div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <!-- Back link with hover effect -->
+    <div class="mb-8">
+      <%= link_to root_path, class: "inline-flex items-center gap-2 btn btn-secondary group" do %>
+        <span class="material-icons transform group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        <span>Back to Home</span>
+      <% end %>
+    </div>
+
+    <article class="glass-thick rounded-3xl p-8 md:p-12 relative overflow-hidden"
+             style="animation: fadeIn 0.8s ease-out;">
+      <!-- Gradient accent decoration -->
+      <div class="absolute -top-20 -right-20 w-40 h-40 opacity-20"
+           style="background: var(--gradient-vibrant); filter: blur(80px);"></div>
+      <header class="mb-8 relative">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent"
+            style="background-image: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          My Tech Setup
+        </h1>
+        
+        <p class="text-lg" style="color: var(--text-muted);">
+          The tools and gear that power my daily workflow
+        </p>
+      </header>
+
+      <div class="prose-container max-w-full">
+        <% 
+          # Tech setup content stored as JSON for React markdown component
+          content_id = "tech-setup-content"
+          tech_content = <<~MARKDOWN
+# Hardware
+
+## Primary Machine
+- **MacBook Pro 16"** (2021, M1 Max)
+  - 32GB RAM
+  - 1TB SSD
+  - The beast that handles everything from development to video editing
+
+## Display Setup
+- **LG UltraFine 32"** (32UN880-B)
+  - 4K resolution with excellent color accuracy
+  - Built-in USB-C hub keeps the desk clean
+- **BenQ ScreenBar** - Perfect desk lighting without screen glare
+
+## Input Devices
+- **Keyboard**: ZSA Moonlander Mark I
+  - Ortholinear split design
+  - Kailh Box White switches
+  - Custom QMK firmware for ultimate productivity
+- **Mouse**: Logitech MX Master 3
+  - Seamless multi-device switching
+  - Custom gestures for development workflows
+- **Trackpad**: Apple Magic Trackpad (for gestures)
+
+## Audio
+- **Headphones**: Sony WH-1000XM4
+  - Essential for deep focus sessions
+  - Great for calls and music
+- **Microphone**: Blue Yeti X
+  - Crystal clear audio for meetings and recordings
+- **Speakers**: Audioengine A2+
+  - Compact but impressive sound quality
+
+## Desk & Ergonomics
+- **Desk**: Flexispot E7 Standing Desk
+  - Bamboo top for that natural feel
+  - Programmable height presets
+- **Chair**: Herman Miller Aeron (Remastered)
+  - Worth every penny for all-day comfort
+- **Monitor Arm**: Ergotron LX
+
+# Software
+
+## Development Environment
+
+### Editor & Terminal
+- **Primary Editor**: VS Code
+  - Theme: One Dark Pro
+  - Key extensions: GitHub Copilot, Prettier, ESLint
+- **Terminal**: iTerm2 + Oh My Zsh
+  - Theme: Powerlevel10k
+  - Multiplexer: tmux for session management
+
+### Languages & Frameworks
+- **Ruby**: 3.2.x with rbenv
+  - Rails for web applications
+  - RSpec for testing
+- **JavaScript/TypeScript**: Node.js 20.x
+  - React for frontend
+  - Next.js for full-stack apps
+- **Python**: 3.11 (for scripts and automation)
+- **Go**: For performance-critical services
+
+### Database & Infrastructure
+- **PostgreSQL**: Primary database
+- **Redis**: Caching and queues
+- **Docker**: Local development environments
+- **AWS CLI**: Infrastructure management
+
+## Productivity Tools
+
+### Daily Drivers
+- **Arc Browser**: Spaces keep projects organized
+- **Raycast**: Launcher on steroids
+- **Rectangle**: Window management
+- **1Password**: Security first
+- **Notion**: Knowledge base and project planning
+
+### Development Tools
+- **TablePlus**: Database GUI
+- **Insomnia**: API testing
+- **Charles Proxy**: Network debugging
+- **GitHub Desktop**: Quick commits and PR reviews
+
+### Design & Creative
+- **Figma**: UI/UX design
+- **Pixelmator Pro**: Quick image edits
+- **CleanMyMac X**: System maintenance
+
+### Communication
+- **Slack**: Team collaboration
+- **Discord**: Community engagement
+- **Zoom**: Video calls (when needed)
+- **Spark**: Email client
+
+## CLI Tools & Utilities
+
+### Package Managers
+- **Homebrew**: macOS packages
+- **npm/yarn**: JavaScript packages
+- **pip**: Python packages
+
+### Essential CLI Tools
+- **ripgrep**: Blazing fast search
+- **fzf**: Fuzzy finder for everything
+- **bat**: Better cat with syntax highlighting
+- **exa**: Modern ls replacement
+- **httpie**: User-friendly HTTP client
+- **jq**: JSON processing
+
+### Git Workflow
+- **GitHub CLI**: PRs from terminal
+- **delta**: Beautiful git diffs
+- **lazygit**: Terminal UI for git
+
+## Backup & Sync
+- **Time Machine**: Local backups
+- **Backblaze**: Cloud backup
+- **iCloud**: Settings and documents sync
+- **GitHub**: Code repositories
+
+## Mobile Setup
+- **iPhone 14 Pro**: Primary device
+- **iPad Pro 11"**: Secondary screen and sketching
+- **Apple Watch Series 8**: Health tracking and notifications
+
+---
+
+*This setup evolves constantly as I discover new tools and optimize my workflow. Last updated: #{Date.current.strftime("%B %Y")}*
+          MARKDOWN
+        %>
+        
+        <script id="<%= content_id %>" type="application/json">
+          <%= raw tech_content.to_json %>
+        </script>
+        
+        <div 
+          id="markdown-container"
+          class="prose code-theme"
+          style="color: var(--text-secondary);"
+          data-react-component="MarkdownRenderer" 
+          data-props='<%= raw({ useElementId: content_id }.to_json) %>'
+        ></div>
+      </div>
+    </article>
+    
+    <!-- Related links -->
+    <div class="mt-12 text-center">
+      <div class="glass-thick rounded-2xl p-8 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10"
+             style="background: var(--gradient-mesh);"></div>
+        <div class="relative z-10">
+          <h3 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">Want to know more?</h3>
+          <p class="mb-6" style="color: var(--text-secondary);">Check out my projects or get in touch</p>
+          <div class="flex gap-4 justify-center flex-wrap">
+            <%= link_to "/projects", class: "btn btn-gradient-cool" do %>
+              <span class="material-icons">folder</span>
+              View Projects
+            <% end %>
+            <%= link_to "/#contact", class: "btn btn-secondary" do %>
+              <span class="material-icons">mail</span>
+              Contact Me
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</div>
