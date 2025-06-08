@@ -7,6 +7,11 @@ class PortfolioController < ApplicationController
     # Projects showcase including games and other work
   end
 
+  def project_detail
+    # Individual project detail page
+    @project_id = params[:id]
+  end
+
   def arena_shooter
     # TF2-inspired arena shooter game
   end

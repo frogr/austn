@@ -89,8 +89,8 @@ const AboutMe = () => {
                 />
               </div>
               
-              <h1 className="text-4xl font-bold mb-4">Austin!</h1>
-              <p className="text-xl mb-6" style={{ color: 'var(--text-secondary)' }}>Software Engineer</p>
+              <h1 className="text-4xl font-bold mb-4">Austin French</h1>
+              <p className="text-xl mb-6" style={{ color: 'var(--text-secondary)' }}>Web Developer</p>
               
               <div className="flex flex-wrap justify-center gap-2">
                 {skills.map((skill) => (
@@ -120,9 +120,11 @@ const AboutMe = () => {
             </div>
             <h2 className="text-2xl font-semibold mb-6">About Me</h2>
             <p style={{ color: 'var(--text-secondary)' }}>
-              I'm a passionate full-stack developer with expertise in React and Ruby on Rails. 
-              With over 5 years of experience building web applications, I focus on creating 
-              intuitive, performant user experiences with clean, maintainable code.
+              I'm an experienced web developer with a strong background in Ruby on Rails and JavaScript. 
+              With over 7 years of experience building web applications, I've delivered high-value features 
+              for companies like CompanyCam and CoverMyMeds, generating millions in ARR through technical 
+              innovation and team leadership. I'm passionate about mentoring, clean code, and creating 
+              scalable solutions that drive business growth.
             </p>
           </div>
           

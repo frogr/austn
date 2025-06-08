@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   # Portfolio routes - Simplified structure
   get "/projects", to: "portfolio#projects"
+  get "/projects/:id", to: "portfolio#project_detail", as: :project_detail
   get "/games/arena-shooter", to: "portfolio#arena_shooter"
   get "/tech-setup", to: "portfolio#tech_setup"
 

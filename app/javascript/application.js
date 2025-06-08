@@ -15,6 +15,7 @@ import GamesGrid from './components/GamesGrid'
 import AboutMe from './components/AboutMe'
 import BentoHome from './components/BentoHome'
 import Projects from './components/Projects'
+import ProjectDetail from './components/ProjectDetail'
 import ThemeLayout from './components/DarkModeLayout' // Renamed but kept same file
 import { ThemeProvider, StandaloneThemeProvider, ThemeToggle as NewThemeToggle } from './components/Theme'
 import OldThemeProvider from './components/ThemeProvider'
@@ -32,6 +33,7 @@ const COMPONENTS = {
   'AboutMe': AboutMe,
   'BentoHome': BentoHome,
   'Projects': Projects,
+  'ProjectDetail': ProjectDetail,
   'ThemeLayout': ThemeLayout, // New name
   'DarkModeLayout': ThemeLayout, // For backwards compatibility 
   'ThemeProvider': StandaloneThemeProvider, // Use standalone version
@@ -84,7 +86,7 @@ document.addEventListener("turbo:load", () => {
           roots.set(component, root)
           
           // Wrap components that need theme context
-          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
+          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
           const componentToRender = needsThemeContext.includes(componentName) 
             ? <ThemeProvider><Component {...props} /></ThemeProvider>
             : <Component {...props} />;
@@ -96,7 +98,7 @@ document.addEventListener("turbo:load", () => {
           const existingRoot = roots.get(component)
           
           // Wrap components that need theme context
-          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
+          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
           const componentToRender = needsThemeContext.includes(componentName) 
             ? <ThemeProvider><Component {...props} /></ThemeProvider>
             : <Component {...props} />;

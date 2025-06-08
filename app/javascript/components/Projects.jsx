@@ -8,37 +8,128 @@ const Projects = () => {
   const projects = [
     {
       id: 1,
-      title: 'Arena Shooter',
-      category: 'game',
-      description: 'Fast-paced 3D browser game inspired by Team Fortress 2',
-      technologies: ['Three.js', 'JavaScript', 'WebGL'],
-      link: '/games/arena-shooter',
-      featured: false,
-      image: '🎮',
-      gradient: 'var(--gradient-vibrant)'
+      title: 'This Portfolio',
+      category: 'web',
+      description: 'React + Rails website showcasing my work and projects',
+      technologies: ['React', 'Ruby on Rails', 'Tailwind CSS', 'JavaScript'],
+      link: '/projects/portfolio',
+      featured: true,
+      image: '🌐',
+      gradient: 'var(--gradient-accent)',
+      details: {
+        fullDescription: 'A modern portfolio website built with React and Rails, featuring a responsive design, dark mode support, and interactive project showcases.',
+        highlights: [
+          'Server-side rendering with React on Rails',
+          'Glass morphism design with custom CSS',
+          'Dark/light theme support',
+          'Responsive bento grid layout'
+        ]
+      }
     },
     {
       id: 2,
-      title: 'Enterprise SaaS Platform',
+      title: 'curl.lol',
       category: 'web',
-      description: 'Multi-tenant platform serving 10,000+ daily active users',
-      technologies: ['React', 'Rails', 'AWS', 'PostgreSQL'],
-      featured: false,
-      image: '🚀',
-      gradient: 'var(--gradient-accent)'
+      description: 'URL shortener service with analytics and custom domains',
+      technologies: ['Ruby on Rails', 'PostgreSQL', 'Redis', 'JavaScript'],
+      link: '/projects/curl-lol',
+      externalLink: 'https://curl.lol',
+      featured: true,
+      image: '🔗',
+      gradient: 'var(--gradient-vibrant)',
+      details: {
+        fullDescription: 'A fast and reliable URL shortener service with real-time analytics, custom domain support, and API access for developers.',
+        highlights: [
+          'High-performance URL redirection',
+          'Real-time click analytics',
+          'Custom domain support',
+          'RESTful API for developers'
+        ]
+      }
     },
     {
       id: 3,
-      title: 'Real-time Analytics Dashboard',
+      title: 'Hub',
       category: 'web',
-      description: 'High-performance dashboard with WebSocket live updates',
-      technologies: ['Vue.js', 'Node.js', 'Redis', 'D3.js'],
-      featured: false,
-      image: '📊',
-      gradient: 'var(--gradient-cool)'
+      description: 'SaaS for selling boilerplate React/Rails necessities',
+      technologies: ['React', 'Rails', 'Stripe', 'Docker', 'PostgreSQL'],
+      link: '/projects/hub',
+      featured: true,
+      image: '🚀',
+      gradient: 'var(--gradient-cool)',
+      details: {
+        fullDescription: 'A SaaS platform that helps developers get a jumpstart on their projects by providing production-ready React/Rails boilerplate code with authentication, payments, and more.',
+        highlights: [
+          'Production-ready boilerplate code',
+          'Integrated Stripe payments',
+          'User authentication system',
+          'Docker containerization',
+          'CI/CD pipeline templates'
+        ]
+      }
     },
     {
       id: 4,
+      title: 'Arena Shooter',
+      category: 'game',
+      description: 'Fast-paced 3D browser game with multiplayer support',
+      technologies: ['Three.js', 'JavaScript', 'WebGL', 'WebSockets'],
+      link: '/games/arena-shooter',
+      featured: false,
+      image: '🎮',
+      gradient: 'var(--gradient-primary)',
+      details: {
+        fullDescription: 'A browser-based 3D arena shooter game built with Three.js, featuring smooth gameplay and multiplayer capabilities.',
+        highlights: [
+          'Real-time multiplayer gameplay',
+          '3D graphics with Three.js',
+          'Custom physics engine',
+          'Responsive controls'
+        ]
+      }
+    },
+    {
+      id: 5,
+      title: 'Boys & Girls Club Donation Platform',
+      category: 'web',
+      description: 'Donation system handling $2MM+ in transactions',
+      technologies: ['Node.js', 'Express', 'Stripe', 'Heroku'],
+      link: '/projects/bgca',
+      featured: false,
+      image: '💝',
+      gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
+      details: {
+        fullDescription: 'Built the complete donation infrastructure for the Boys and Girls Club of America 2021 fundraiser, processing over $2 million in donations.',
+        highlights: [
+          'Secure payment processing with Stripe',
+          'High-availability architecture',
+          'Real-time donation tracking',
+          'Custom receipt generation'
+        ]
+      }
+    },
+    {
+      id: 6,
+      title: 'Car Search Aggregator',
+      category: 'web',
+      description: 'Search eBay and Craigslist listings simultaneously',
+      technologies: ['Node.js', 'React', 'Express', 'APIs'],
+      link: '/projects/car-search',
+      featured: false,
+      image: '🚗',
+      gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
+      details: {
+        fullDescription: 'A web application that aggregates car listings from eBay and Craigslist, allowing users to search both platforms within a specified radius.',
+        highlights: [
+          'Integrated eBay and Craigslist APIs',
+          'Location-based search',
+          'Real-time data aggregation',
+          'Responsive React frontend'
+        ]
+      }
+    },
+    {
+      id: 7,
       title: 'Movement Demo',
       category: 'experiment',
       description: 'Smooth character movement system for web games',
@@ -47,26 +138,6 @@ const Projects = () => {
       featured: false,
       image: '🏃',
       gradient: 'var(--gradient-primary)'
-    },
-    {
-      id: 5,
-      title: 'E-commerce Mobile App',
-      category: 'mobile',
-      description: 'React Native app with 50k+ downloads',
-      technologies: ['React Native', 'GraphQL', 'Stripe'],
-      featured: false,
-      image: '📱',
-      gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)'
-    },
-    {
-      id: 6,
-      title: 'AI Content Generator',
-      category: 'ai',
-      description: 'GPT-powered content creation tool for marketers',
-      technologies: ['Python', 'OpenAI API', 'FastAPI'],
-      featured: false,
-      image: '🤖',
-      gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)'
     }
   ];
 
@@ -84,7 +155,7 @@ const Projects = () => {
     : projects.filter(p => p.category === filter);
 
   return (
-    <div className="min-h-screen pt-16 pb-8 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+    <div className="min-h-screen pt-12 pb-6 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Animated gradient background */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 -left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
@@ -94,8 +165,8 @@ const Projects = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header with gradient text */}
-        <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 bg-clip-text text-transparent"
+        <div className="text-center mb-4 md:mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-1 md:mb-2 bg-clip-text text-transparent"
               style={{ backgroundImage: 'var(--gradient-accent)' }}>
             Projects
           </h1>
@@ -105,7 +176,7 @@ const Projects = () => {
         </div>
 
         {/* Filter Pills with gradient active state */}
-        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-6 md:mb-8 px-2">
+        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-4 md:mb-6 px-2">
           {categories.map(cat => (
             <button
               key={cat.value}
@@ -136,7 +207,15 @@ const Projects = () => {
             <div
               key={project.id}
               className="bento-box"
-              onClick={() => project.link && (window.location.href = project.link)}
+              onClick={() => {
+                if (project.link) {
+                  if (window.Turbo) {
+                    window.Turbo.visit(project.link);
+                  } else {
+                    window.location.href = project.link;
+                  }
+                }
+              }}
               style={{
                 animationDelay: `${index * 100}ms`,
                 background: theme === 'dark' 
@@ -158,7 +237,7 @@ const Projects = () => {
 
               <div className="flex flex-col h-full relative z-10">
                 {/* Project Icon with animation */}
-                <div className="text-3xl sm:text-4xl mb-3 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <div className="text-2xl sm:text-3xl mb-2 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                   {project.image}
                 </div>
 
@@ -171,12 +250,12 @@ const Projects = () => {
                   {project.title}
                 </h3>
                 
-                <p className="text-xs sm:text-sm mb-3 flex-grow transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-xs sm:text-sm mb-2 flex-grow transition-colors" style={{ color: 'var(--text-secondary)' }}>
                   {project.description}
                 </p>
 
                 {/* Technologies with glass effect */}
-                <div className="flex flex-wrap gap-1.5 mb-3">
+                <div className="flex flex-wrap gap-1.5 mb-2">
                   {project.technologies.map(tech => (
                     <span
                       key={tech}
@@ -204,8 +283,8 @@ const Projects = () => {
         </div>
 
         {/* Call to Action with gradient background */}
-        <div className="mt-8 sm:mt-12 text-center">
-          <div className="glass-thick rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto relative overflow-hidden">
+        <div className="mt-6 sm:mt-8 text-center">
+          <div className="glass-thick rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 max-w-2xl mx-auto relative overflow-hidden">
             {/* Animated gradient mesh background */}
             <div className="absolute inset-0 opacity-30"
                  style={{ background: 'var(--gradient-mesh)' }}></div>
