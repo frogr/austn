@@ -7,9 +7,9 @@
 /* Dark Theme (Default) */
 :root {
   /* Core Colors */
-  --bg-primary: #000000;
-  --bg-secondary: #0A0A0B;
-  --bg-tertiary: #111113;
+  --bg-primary: #0A0A0F;
+  --bg-secondary: #111118;
+  --bg-tertiary: #18181F;
   
   /* Text Colors */
   --text-primary: #ffffff;
@@ -17,9 +17,9 @@
   --text-muted: rgba(255, 255, 255, 0.6);
   
   /* Glass Effects */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-bg-hover: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-bg-hover: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.12);
   
   /* Accent Colors */
   --accent-primary: #007AFF;
@@ -29,7 +29,7 @@
   --accent-danger: #FF3B30;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
+  --gradient-primary: linear-gradient(135deg, #00D68F 0%, #BF5AF2 100%);
   --gradient-vibrant: linear-gradient(135deg, #FF375F 0%, #FF9500 50%, #FFCC00 100%);
   --gradient-cool: linear-gradient(135deg, #5E5CE6 0%, #64D2FF 100%);
   
@@ -37,7 +37,7 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 30px rgba(0, 122, 255, 0.3);
+  --shadow-glow: 0 0 30px rgba(0, 214, 143, 0.3);
   
   /* Layout */
   --radius-sm: 0.5rem;
@@ -66,25 +66,25 @@
 /* Light Theme */
 :root.light-theme {
   /* Core Colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #F2F2F7;
-  --bg-tertiary: #E5E5EA;
+  --bg-primary: #FAFBFD;
+  --bg-secondary: #F3F4F8;
+  --bg-tertiary: #E9EBF0;
   
   /* Text Colors */
-  --text-primary: #000000;
-  --text-secondary: rgba(0, 0, 0, 0.85);
-  --text-muted: rgba(0, 0, 0, 0.55);
+  --text-primary: #1A1A2E;
+  --text-secondary: rgba(26, 26, 46, 0.85);
+  --text-muted: rgba(26, 26, 46, 0.6);
   
   /* Glass Effects */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-bg-hover: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-bg-hover: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(99, 102, 241, 0.1);
   
   /* Shadows & Effects */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
-  --shadow-glow: 0 0 30px rgba(0, 122, 255, 0.15);
+  --shadow-sm: 0 2px 8px rgba(99, 102, 241, 0.08);
+  --shadow-md: 0 4px 20px rgba(99, 102, 241, 0.1);
+  --shadow-lg: 0 10px 40px rgba(99, 102, 241, 0.15);
+  --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.12);
 }
 
 /* ============================================

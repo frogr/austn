@@ -5,9 +5,9 @@
 :root.dark-theme .code-theme code,
 .dark-code-theme pre,
 .dark-code-theme code {
-  background-color: #1e1e1e !important;
-  color: #d4d4d4 !important;
-  border-color: #333 !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-glass) !important;
 }
 
 :root.dark-theme .code-theme .hljs,
@@ -15,8 +15,8 @@
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  color: #d4d4d4 !important;
-  background: #1e1e1e !important;
+  color: var(--text-primary) !important;
+  background: var(--bg-secondary) !important;
 }
 
 :root.dark-theme .code-theme .hljs-comment,
@@ -97,9 +97,9 @@
 :root.light-theme .code-theme code,
 .light-code-theme pre,
 .light-code-theme code {
-  background-color: #f6f8fa !important;
-  color: #24292e !important;
-  border-color: #e5e7eb !important;
+  background-color: var(--bg-glass-thick) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-glass) !important;
 }
 
 :root.light-theme .code-theme .hljs,
@@ -107,8 +107,8 @@
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  color: #24292e !important;
-  background: #f6f8fa !important;
+  color: var(--text-primary) !important;
+  background: var(--bg-glass-thick) !important;
 }
 
 :root.light-theme .code-theme .hljs-comment,
@@ -176,53 +176,53 @@
 /* Code block header styling */
 :root.dark-theme .code-theme .code-block-header,
 .dark-code-theme .code-block-header {
-  background-color: #252526 !important;
-  color: #d4d4d4 !important;
-  border-bottom: 1px solid #333 !important;
+  background-color: var(--bg-glass-thick) !important;
+  color: var(--text-muted) !important;
+  border-bottom: 1px solid var(--border-glass) !important;
 }
 
 :root.light-theme .code-theme .code-block-header,
 .light-code-theme .code-block-header {
-  background-color: #f0f0f0 !important;
-  color: #24292e !important;
-  border-bottom: 1px solid #e1e4e8 !important;
+  background-color: var(--bg-glass) !important;
+  color: var(--text-muted) !important;
+  border-bottom: 1px solid var(--border-glass) !important;
 }
 
 /* Inline code styling */
 :root.dark-theme .code-theme :not(pre) > code,
 .dark-code-theme :not(pre) > code {
-  background-color: #2d2d2d !important;
-  color: #e6e6e6 !important;
-  border: 1px solid #444 !important;
+  background-color: var(--bg-glass) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-glass) !important;
 }
 
 :root.light-theme .code-theme :not(pre) > code,
 .light-code-theme :not(pre) > code {
-  background-color: #f6f8fa !important;
-  color: #24292e !important;
-  border: 1px solid #e1e4e8 !important;
+  background-color: var(--bg-glass) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-glass) !important;
 }
 
 /* Prose overrides for dark mode */
 :root.dark-theme .prose pre,
 .prose-invert pre {
-  background-color: #1e1e1e !important;
-  color: #d4d4d4 !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
 }
 
 :root.dark-theme .prose code,
 .prose-invert code {
-  color: #d4d4d4 !important;
+  color: var(--text-primary) !important;
 }
 
 /* Prose overrides for light mode */
 :root.light-theme .prose pre {
-  background-color: #f6f8fa !important;
-  color: #24292e !important;
+  background-color: var(--bg-glass-thick) !important;
+  color: var(--text-primary) !important;
 }
 
 :root.light-theme .prose code {
-  color: #24292e !important;
+  color: var(--text-primary) !important;
 }
 
 /* Override any existing styles */
@@ -230,14 +230,14 @@
 :root.dark-theme .prose pre code,
 .prose-invert .hljs,
 .prose-invert pre code {
-  background-color: #1e1e1e !important;
-  color: #d4d4d4 !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
 }
 
 :root.light-theme .prose .hljs,
 :root.light-theme .prose pre code,
 .prose .hljs,
 .prose pre code {
-  background-color: #f6f8fa !important;
-  color: #24292e !important;
+  background-color: var(--bg-glass-thick) !important;
+  color: var(--text-primary) !important;
 }

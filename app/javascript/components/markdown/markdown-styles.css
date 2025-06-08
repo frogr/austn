@@ -3,7 +3,7 @@
 .markdown-content {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
-  color: #333;
+  color: var(--text-primary);
 }
 
 /* Code blocks */
@@ -11,16 +11,18 @@
   margin: 1.5rem 0;
   border-radius: 6px;
   overflow: hidden;
-  background: #f5f5f5;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
 }
 
 .code-block-header {
   padding: 0.5rem 1rem;
-  background: #e0e0e0;
+  background: var(--bg-glass-thick);
   font-family: monospace;
   font-size: 0.875rem;
-  color: #555;
+  color: var(--text-muted);
   text-transform: uppercase;
+  border-bottom: 1px solid var(--border-glass);
 }
 
 .code-block-wrapper pre {
@@ -31,52 +33,82 @@
 
 .inline-code {
   padding: 0.2rem 0.4rem;
-  background: #f5f5f5;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
   border-radius: 3px;
   font-family: monospace;
   font-size: 0.9em;
+  color: var(--text-primary);
 }
 
 /* Blockquotes */
 blockquote {
-  background-color: #f9f9f9;
+  background-color: var(--bg-glass);
+  border-left: 4px solid var(--accent-primary);
   border-radius: 4px;
+  color: var(--text-secondary);
 }
 
 /* Tables */
 table {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-glass);
   border-radius: 4px;
+}
+
+table th {
+  background: var(--bg-glass-thick);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+table td {
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--text-primary);
+}
+
+table tr:hover {
+  background: var(--bg-glass);
 }
 
 /* Lists */
 .markdown-list-disc {
   margin-left: 1rem;
+  color: var(--text-primary);
 }
 
 .markdown-list-decimal {
   margin-left: 1rem;
+  color: var(--text-primary);
 }
 
 /* Links */
 a {
-  color: #1a73e8;
+  color: var(--accent-primary);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 a:hover {
+  color: var(--accent-secondary);
   text-decoration: underline;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
 }
 
 /* Image sizing */
 img {
   max-width: 100%;
   height: auto;
+  border-radius: 6px;
 }
 
 /* Additional spacing between elements */
 p {
   margin-bottom: 1rem;
+  color: var(--text-primary);
 }
 
 /* Responsive adjustments */

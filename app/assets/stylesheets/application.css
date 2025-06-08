@@ -207,7 +207,7 @@
 
 .markdown-content h6 {
   font-size: 1rem;
-  color: #444;
+  color: var(--text-secondary);
 }
 
 /* Paragraphs and text */
@@ -306,25 +306,25 @@
   margin: 1.5em 0;
   border-radius: 6px;
   overflow: hidden;
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--border-glass);
 }
 
 .code-block-header {
-  background-color: #e1e4e8;
-  color: #24292e;
+  background-color: var(--bg-glass-thick);
+  color: var(--text-muted);
   font-size: 0.85em;
   font-weight: 600;
   padding: 0.5em 1em;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   text-transform: uppercase;
-  border-bottom: 1px solid #d1d5db;
+  border-bottom: 1px solid var(--border-glass);
 }
 
 .markdown-content pre {
   padding: 1rem;
   border-radius: 0 0 0.375rem 0.375rem;
   overflow-x: auto;
-  background-color: #f6f8fa;
+  background-color: var(--bg-glass);
   margin: 0; /* No margin because it's inside the wrapper */
   border: none; /* No border because the wrapper has one */
 }
@@ -333,9 +333,10 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.9em;
   padding: 0.2em 0.4em;
-  background-color: #f6f8fa;
+  background-color: var(--bg-glass);
   border-radius: 0.25rem;
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
 }
 
 .markdown-content pre code {
@@ -351,9 +352,9 @@
   padding: 1rem;
   border-radius: 0.375rem;
   overflow-x: auto;
-  background-color: #f6f8fa;
+  background-color: var(--bg-glass);
   margin: 1.25em 0;
-  border: 1px solid #e1e4e8;
+  border: 1px solid var(--border-glass);
 }
 
 /* Tables */
@@ -367,30 +368,33 @@
 
 .markdown-content table th,
 .markdown-content table td {
-  border: 1px solid #dfe2e5;
+  border: 1px solid var(--border-glass);
   padding: 0.6em 1em;
+  color: var(--text-primary);
 }
 
 .markdown-content table th {
   font-weight: 700;
-  background-color: #f6f8fa;
+  background-color: var(--bg-glass-thick);
 }
 
 .markdown-content table tr {
-  background-color: #ffffff;
-  border-top: 1px solid #c6cbd1;
+  background-color: transparent;
+  border-top: 1px solid var(--border-glass);
 }
 
 .markdown-content table tr:nth-child(2n) {
-  background-color: #f6f8fa;
+  background-color: var(--bg-glass);
 }
 
 /* Blockquotes */
 .markdown-content blockquote {
-  border-left: 4px solid #dfe2e5;
+  border-left: 4px solid var(--accent-primary);
   padding: 0 1em;
-  color: #5c6370;
+  color: var(--text-secondary);
   margin: 1.5em 0;
+  background: var(--bg-glass);
+  border-radius: 0.25rem;
 }
 
 .markdown-content blockquote > :first-child {
@@ -403,11 +407,13 @@
 
 /* Links */
 .markdown-content a {
-  color: #0366d6;
+  color: var(--accent-primary);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .markdown-content a:hover {
+  color: var(--accent-secondary);
   text-decoration: underline;
 }
 
@@ -429,9 +435,10 @@ a.no-underline:hover {
 .markdown-content img {
   max-width: 100%;
   box-sizing: content-box;
-  background-color: #fff;
+  background-color: transparent;
   display: block;
   margin: 1.5em 0;
+  border-radius: 0.5rem;
 }
 
 /* Highlight.js Theme: GitHub */
