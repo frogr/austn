@@ -16,7 +16,7 @@ const BentoHome = () => {
       <div className="bento-container bento-grid-home pt-4 md:pt-6 lg:pt-8 relative z-10">
         {/* Hero Section - Full width */}
         <div className="bento-box bento-full bento-gradient-1 flex flex-col justify-center">
-          <div className="w-full max-w-2xl">
+          <div className="w-full max-w-2xl pl-16 md:pl-0">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 bg-clip-text text-transparent"
                 style={{ backgroundImage: 'var(--gradient-accent)' }}>
               Hi, I'm Austin French

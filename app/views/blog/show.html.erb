@@ -1,4 +1,4 @@
-<div class="min-h-screen pt-20 pb-12 relative overflow-hidden" style="background-color: var(--bg-primary);">
+<div class="min-h-screen pt-20 pb-12 relative overflow-x-hidden" style="background-color: var(--bg-primary);">
   <!-- Animated gradient background -->
   <div class="absolute inset-0 opacity-10">
     <div class="absolute top-40 -left-40 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl" 
@@ -16,14 +16,14 @@
       <% end %>
     </div>
 
-    <article class="glass-thick rounded-3xl p-8 md:p-12 relative overflow-hidden"
+    <article class="glass-thick rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 relative overflow-visible"
              style="animation: fadeIn 0.8s ease-out;">
       <!-- Gradient accent decoration -->
       <div class="absolute -top-20 -right-20 w-40 h-40 opacity-20"
            style="background: var(--gradient-accent); filter: blur(80px);"></div>
       <header class="mb-8 relative">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent"
-            style="background-image: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-clip-text text-transparent break-words"
+            style="background-image: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; word-break: break-word;">
           <%= @blog_post.title %>
         </h1>
         
@@ -47,8 +47,8 @@
         
         <div 
           id="markdown-container"
-          class="prose code-theme"
-          style="color: var(--text-secondary);"
+          class="prose code-theme max-w-full"
+          style="color: var(--text-secondary); word-break: break-word; overflow-wrap: anywhere;"
           data-react-component="MarkdownRenderer" 
           data-props='<%= raw({ useElementId: content_id }.to_json) %>'
         ></div>
@@ -57,7 +57,7 @@
     
     <!-- Related posts or CTA -->
     <div class="mt-12 text-center">
-      <div class="glass-thick rounded-2xl p-8 relative overflow-hidden">
+      <div class="glass-thick rounded-2xl p-4 sm:p-6 md:p-8 relative overflow-hidden">
         <div class="absolute inset-0 opacity-10"
              style="background: var(--gradient-mesh);"></div>
         <div class="relative z-10">
@@ -87,6 +87,56 @@
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Ensure responsive layout on mobile */
+    @media (max-width: 767px) {
+      .prose-container {
+        padding: 0;
+        width: 100%;
+      }
+      
+      .prose {
+        max-width: 100%;
+        word-break: break-word;
+      }
+      
+      /* Force all content to wrap */
+      .prose * {
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: anywhere;
+      }
+      
+      /* Ensure code blocks are scrollable */
+      .prose pre {
+        max-width: 100%;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      
+      .prose code {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      
+      .prose img {
+        max-width: 100%;
+        height: auto;
+      }
+      
+      /* Prevent wide tables from breaking layout */
+      .prose table {
+        display: block;
+        overflow-x: auto;
+        max-width: 100%;
+      }
+      
+      /* Ensure long URLs break properly */
+      .prose a {
+        word-break: break-all;
+      }
     }
   </style>
 </div>

@@ -3,6 +3,7 @@ import { useTheme } from './ThemeContext';
 
 const AppleSidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
@@ -11,20 +12,18 @@ const AppleSidebar = () => {
   
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 767);
+      const mobile = window.innerWidth <= 767;
+      setIsMobile(mobile);
+      // Close mobile menu when resizing to desktop
+      if (!mobile) {
+        setMobileMenuOpen(false);
+      }
     };
     
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
-  // On mobile, ensure sidebar is collapsed
-  useEffect(() => {
-    if (isMobile && !collapsed) {
-      setCollapsed(true);
-    }
-  }, [isMobile]);
 
   const navItems = [
     { path: '/', icon: 'home', label: 'Home' },
@@ -38,40 +37,136 @@ const AppleSidebar = () => {
     return false;
   };
 
+  // Separate rendering for mobile
+  if (isMobile) {
+    return (
+      <>
+        {/* Mobile hamburger menu - always visible */}
+        <button 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="fixed top-4 left-4 z-50 p-3 rounded-lg shadow-lg transition-all duration-200"
+          style={{ 
+            backgroundColor: theme === 'dark' ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)'
+          }}
+        >
+          <span className="material-icons" style={{ 
+            color: theme === 'dark' ? '#ffffff' : '#000000',
+            fontSize: '24px'
+          }}>
+            {mobileMenuOpen ? 'close' : 'menu'}
+          </span>
+        </button>
+        
+        {/* Mobile overlay backdrop */}
+        {mobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-30 transition-opacity duration-300"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+        
+        {/* Mobile sidebar */}
+        <div 
+          className={`fixed inset-y-0 left-0 w-64 flex flex-col z-40 transition-transform duration-300 ease-in-out
+            ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          style={{
+            backgroundColor: theme === 'dark' ? 'rgba(20, 20, 20, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRight: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`
+          }}
+        >
+          {/* Header */}
+          <div className="p-6">
+            <h1 className="text-2xl font-bold"
+                style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
+              Austn
+            </h1>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-4">
+            <ul className="space-y-2">
+              {navItems.map((item) => (
+                <li key={item.path}>
+                  <a 
+                    href={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
+                      ${isActive(item.path) ? 'shadow-lg' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                    style={isActive(item.path) 
+                      ? { 
+                          background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+                          color: 'white'
+                        } 
+                      : { 
+                          color: theme === 'dark' ? '#ffffff' : '#000000'
+                        }
+                    }
+                  >
+                    <span className="material-icons" style={{ fontSize: '24px' }}>
+                      {item.icon}
+                    </span>
+                    <span className="font-medium">{item.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Footer */}
+          <div className="p-6">
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all duration-300"
+              style={{
+                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                color: theme === 'dark' ? '#ffffff' : '#000000'
+              }}
+            >
+              <span className="material-icons">
+                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+              <span>{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Desktop sidebar
   return (
     <div 
-      className={`fixed inset-y-0 left-0 ${collapsed ? 'w-20' : 'w-64'} 
-        glass-thick flex flex-col z-50 transition-all duration-500 
-        border-r ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}
+      className={`fixed inset-y-0 left-0 ${collapsed ? 'w-20' : 'w-64'} flex flex-col z-40 transition-all duration-300 ease-in-out`}
+      style={{
+        backgroundColor: theme === 'dark' ? 'rgba(20, 20, 20, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRight: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`
+      }}
     >
       {/* Header */}
-      <div className="p-6 flex justify-between items-center relative">
+      <div className="p-6 flex justify-between items-center">
         <h1 
-          className={`text-2xl font-bold bg-clip-text text-transparent ${collapsed ? 'hidden' : 'block'}`}
-          style={{ 
-            backgroundImage: 'var(--gradient-vibrant)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            animation: 'gradientShift 8s ease infinite'
-          }}
+          className={`text-2xl font-bold ${collapsed ? 'hidden' : 'block'}`}
+          style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}
         >
           Austn
         </h1>
         <button 
           onClick={() => setCollapsed(!collapsed)}
-          className="p-2 rounded-lg hover:bg-glass hover:scale-110 transition-all duration-200 group"
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
         >
-          <span className="material-icons group-hover:rotate-180 transition-transform duration-300" 
-                style={{ color: 'var(--text-primary)' }}>
+          <span className="material-icons" 
+                style={{ color: theme === 'dark' ? '#ffffff' : '#000000' }}>
             {collapsed ? 'menu' : 'menu_open'}
           </span>
         </button>
-        
-        {/* Animated accent */}
-        {!collapsed && (
-          <div className="absolute -bottom-2 left-6 right-6 h-px opacity-30"
-               style={{ background: 'var(--gradient-accent)' }}></div>
-        )}
       </div>
 
       {/* Navigation */}
@@ -81,37 +176,23 @@ const AppleSidebar = () => {
             <li key={item.path}>
               <a 
                 href={item.path}
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-xl
-                  transition-all duration-300 group relative overflow-hidden
-                  ${isActive(item.path) 
-                    ? 'text-white shadow-lg transform scale-105' 
-                    : 'hover:bg-glass hover:scale-105'
-                  }
-                `}
+                className={`flex items-center gap-3 ${collapsed ? 'justify-center px-3' : 'px-4'} py-3 rounded-xl
+                  transition-all duration-300 ${isActive(item.path) ? 'shadow-lg' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                 style={isActive(item.path) 
                   ? { 
-                      background: 'var(--gradient-accent)', 
-                      boxShadow: 'var(--shadow-glow)' 
+                      background: 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)',
+                      color: 'white'
                     } 
                   : { 
-                      color: 'var(--text-primary)' 
+                      color: theme === 'dark' ? '#ffffff' : '#000000'
                     }
                 }
               >
-                {/* Ripple effect on hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500"
-                     style={{ 
-                       background: 'radial-gradient(circle at center, var(--accent-color) 0%, transparent 70%)',
-                       transform: 'scale(0)',
-                       animation: isActive(item.path) ? 'none' : 'ripple 0.6s ease-out'
-                     }}></div>
-                
-                <span className={`material-icons relative z-10 ${isActive(item.path) ? 'animate-pulse' : ''}`}>
+                <span className="material-icons" style={{ fontSize: '24px' }}>
                   {item.icon}
                 </span>
                 {!collapsed && (
-                  <span className="font-medium relative z-10">{item.label}</span>
+                  <span className="font-medium">{item.label}</span>
                 )}
               </a>
             </li>
@@ -121,54 +202,30 @@ const AppleSidebar = () => {
 
       {/* Footer */}
       <div className="p-6">
-        {/* Theme Toggle with gradient */}
         <button
           onClick={toggleTheme}
-          className={`
-            w-full flex items-center justify-center gap-3 px-4 py-3 
-            rounded-xl glass hover:bg-glass-thick group
-            transition-all duration-300 mb-4 relative overflow-hidden
-          `}
+          className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-4 py-3 
+            rounded-xl transition-all duration-300`}
+          style={{
+            backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+            color: theme === 'dark' ? '#ffffff' : '#000000'
+          }}
         >
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity"
-               style={{ background: 'var(--gradient-primary)' }}></div>
-          
-          <span className="material-icons transform group-hover:rotate-180 transition-transform duration-500 relative z-10" 
-                style={{ color: theme === 'dark' ? 'var(--warning-color)' : 'var(--indigo-accent)' }}>
+          <span className="material-icons">
             {theme === 'dark' ? 'light_mode' : 'dark_mode'}
           </span>
           {!collapsed && (
-            <span className="relative z-10" style={{ color: 'var(--text-primary)' }}>
-              {theme === 'dark' ? 'Light' : 'Dark'} Mode
-            </span>
+            <span>{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
           )}
         </button>
 
-        {/* Copyright */}
-        <div 
-          className={`text-xs text-center ${collapsed ? 'hidden' : 'block'}`}
-          style={{ color: 'var(--text-muted)' }}
-        >
-          &copy; 2025 Austn
-        </div>
+        {!collapsed && (
+          <div className="mt-4 text-xs text-center"
+               style={{ color: theme === 'dark' ? '#999' : '#666' }}>
+            &copy; 2025 Austn
+          </div>
+        )}
       </div>
-      
-      <style jsx>{`
-        @keyframes gradientShift {
-          0%, 100% { filter: hue-rotate(0deg); }
-          50% { filter: hue-rotate(30deg); }
-        }
-        @keyframes ripple {
-          from { 
-            transform: scale(0); 
-            opacity: 0.5;
-          }
-          to { 
-            transform: scale(4); 
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };

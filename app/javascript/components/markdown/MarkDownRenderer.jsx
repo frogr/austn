@@ -39,7 +39,7 @@ const MarkdownRenderer = ({ content, slug, useElementId }) => {
   const themeClass = theme === 'dark' ? 'prose-invert' : '';
   
   return (
-    <div className={`markdown-content prose prose-lg max-w-none ${themeClass}`}>
+    <div className={`markdown-content prose prose-lg max-w-none ${themeClass} break-words`}>
       {isDev && <DebugPanel slug={slug} useElementId={useElementId} content={markdownContent} />}
       
       <ReactMarkdown

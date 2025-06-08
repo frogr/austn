@@ -29,6 +29,7 @@
   margin: 0;
   padding: 1rem;
   overflow-x: auto;
+  max-width: 100%;
 }
 
 .inline-code {
@@ -53,6 +54,9 @@ blockquote {
 table {
   border: 1px solid var(--border-glass);
   border-radius: 4px;
+  width: 100%;
+  display: block;
+  overflow-x: auto;
 }
 
 table th {
@@ -115,6 +119,9 @@ p {
 @media (max-width: 640px) {
   .markdown-content {
     font-size: 0.95rem;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   
   h1 {
@@ -127,5 +134,26 @@ p {
   
   h3 {
     font-size: 1.3rem;
+  }
+  
+  /* Ensure code blocks don't overflow */
+  .code-block-wrapper {
+    max-width: 100vw;
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  
+  .code-block-wrapper pre {
+    border-radius: 0;
+  }
+  
+  /* Ensure inline code wraps properly */
+  .inline-code {
+    word-break: break-word;
+  }
+  
+  /* Tables should be scrollable */
+  table {
+    font-size: 0.875rem;
   }
 }
