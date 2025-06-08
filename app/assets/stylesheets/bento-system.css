@@ -1,7 +1,6 @@
 /* 
- * Unified Bento Grid System
- * This file controls ALL bento layouts across the entire site
- * Breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl)
+ * Simplified Bento Grid System
+ * Uses the unified design system for consistency
  */
 
 /* ===== BASE BENTO STYLES ===== */
@@ -14,15 +13,16 @@
 }
 
 .bento-box {
-  background: var(--bg-glass);
-  backdrop-filter: blur(var(--backdrop-blur));
-  -webkit-backdrop-filter: blur(var(--backdrop-blur));
-  border: 1px solid var(--border-glass);
-  border-radius: 1rem;
-  padding: 0.75rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--transition-base);
   overflow: hidden;
   position: relative;
+  color: var(--text-primary);
   
   /* Text handling */
   word-wrap: break-word;
@@ -30,10 +30,20 @@
   hyphens: auto;
 }
 
+/* Ensure text visibility in dark mode */
+.bento-box h1, .bento-box h2, .bento-box h3, 
+.bento-box h4, .bento-box h5, .bento-box h6 {
+  color: var(--text-primary);
+}
+
+.bento-box p, .bento-box span, .bento-box div {
+  color: var(--text-secondary);
+}
+
 /* Hover effects */
 .bento-box:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--shadow-color);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ===== BREAKPOINT SYSTEM ===== */

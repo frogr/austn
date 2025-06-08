@@ -16,8 +16,9 @@ import AboutMe from './components/AboutMe'
 import BentoHome from './components/BentoHome'
 import Projects from './components/Projects'
 import ThemeLayout from './components/DarkModeLayout' // Renamed but kept same file
-import ThemeProvider from './components/ThemeProvider'
-import ThemeToggle from './components/ThemeToggle'
+import { ThemeProvider, StandaloneThemeProvider, ThemeToggle as NewThemeToggle } from './components/Theme'
+import OldThemeProvider from './components/ThemeProvider'
+import OldThemeToggle from './components/ThemeToggle'
 
 const COMPONENTS = {
   'HelloWorld': HelloWorld,
@@ -33,8 +34,8 @@ const COMPONENTS = {
   'Projects': Projects,
   'ThemeLayout': ThemeLayout, // New name
   'DarkModeLayout': ThemeLayout, // For backwards compatibility 
-  'ThemeProvider': ThemeProvider,
-  'ThemeToggle': ThemeToggle
+  'ThemeProvider': StandaloneThemeProvider, // Use standalone version
+  'ThemeToggle': NewThemeToggle // Use new consolidated version
 }
 
 // Store our roots so we can track which elements have been initialized
@@ -81,12 +82,26 @@ document.addEventListener("turbo:load", () => {
         if (!roots.has(component)) {
           const root = createRoot(component)
           roots.set(component, root)
-          root.render(<Component {...props} />)
+          
+          // Wrap components that need theme context
+          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
+          const componentToRender = needsThemeContext.includes(componentName) 
+            ? <ThemeProvider><Component {...props} /></ThemeProvider>
+            : <Component {...props} />;
+          
+          root.render(componentToRender)
           console.log(`Rendered ${componentName} with props:`, props)
         } else {
           // If we do have a root, just re-render it
           const existingRoot = roots.get(component)
-          existingRoot.render(<Component {...props} />)
+          
+          // Wrap components that need theme context
+          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
+          const componentToRender = needsThemeContext.includes(componentName) 
+            ? <ThemeProvider><Component {...props} /></ThemeProvider>
+            : <Component {...props} />;
+          
+          existingRoot.render(componentToRender)
           console.log(`Re-rendered ${componentName} with props:`, props)
         }
         

@@ -18,13 +18,13 @@ Rails.application.routes.draw do
   get "/projects", to: "portfolio#projects"
   get "/games/arena-shooter", to: "portfolio#arena_shooter"
   get "/tech-setup", to: "portfolio#tech_setup"
-  
+
   # Legacy routes - redirect to new structure
   get "/work", to: redirect("/")
   get "/contact", to: redirect("/#contact")
   get "/fun", to: redirect("/projects")
   get "/games", to: redirect("/projects")
-  
+
   # Movement demo
   get "/movement-demo", to: "movement_demo#index"
 

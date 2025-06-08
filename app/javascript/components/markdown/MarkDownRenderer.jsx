@@ -8,7 +8,7 @@ import { useMarkdownContent } from './useMarkdownContent';
 import MarkdownComponents from './MarkdownComponents';
 import DebugPanel from './DebugPanel';
 import './markdown-styles.css';
-import { ThemeContext } from '../ThemeProvider';
+import { ThemeContext } from '../Theme';
 
 const MarkdownRenderer = ({ content, slug, useElementId }) => {
   const { markdownContent, loading, error, contentMeta } = useMarkdownContent({

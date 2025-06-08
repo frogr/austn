@@ -3,7 +3,7 @@ import { useTheme } from './ThemeContext';
 
 const AppleSidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   // Check for mobile device
@@ -123,7 +123,7 @@ const AppleSidebar = () => {
       <div className="p-6">
         {/* Theme Toggle with gradient */}
         <button
-          onClick={() => window.ThemeContextValue.toggleTheme()}
+          onClick={toggleTheme}
           className={`
             w-full flex items-center justify-center gap-3 px-4 py-3 
             rounded-xl glass hover:bg-glass-thick group

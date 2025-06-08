@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { ThemeContext } from './ThemeProvider';
+import { ThemeContext } from './ThemeContext';
 
 const WorkExperience = () => {
   const [expandedJob, setExpandedJob] = useState(null);

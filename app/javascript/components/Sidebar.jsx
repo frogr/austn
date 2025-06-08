@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { ThemeContext } from './ThemeProvider'
+import { ThemeContext } from './ThemeContext'
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
