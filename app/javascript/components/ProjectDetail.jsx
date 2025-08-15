@@ -6,6 +6,34 @@ const ProjectDetail = ({ projectId }) => {
   const isDark = theme === 'dark';
 
   const projects = {
+    'pages-ai': {
+      title: 'Pages AI Assistant',
+      category: 'AI-Powered Feature',
+      description: 'Architected and shipped an AI-powered document generation feature at CompanyCam that uses natural language processing to help contractors create professional documents instantly.',
+      technologies: ['Ruby on Rails', 'OpenAI API', 'React', 'PDF Processing', 'Redis', 'Sidekiq'],
+      image: '🤖',
+      gradient: 'var(--gradient-accent)',
+      highlights: [
+        'Natural language interface for document generation',
+        'Grew adoption from 4% to 11% of active companies',
+        'Achieved 10x PDF file size optimization',
+        'Processing thousands of documents daily',
+        'Integrated OpenAI with existing Rails infrastructure',
+        'Built intelligent template selection system'
+      ],
+      screenshot: null,
+      accomplishments: [
+        'Led the project from conception through production deployment, aligning with executives and product teams',
+        'Optimized PDF generation pipeline, reducing file sizes by 90% while maintaining quality',
+        'Designed an intuitive UI that made AI accessible to non-technical users in construction',
+        'Built comprehensive error handling and fallback systems for AI failures',
+        'Created detailed analytics to track feature adoption and user success metrics'
+      ],
+      challenges: [
+        'Challenge: Making AI responses consistent and reliable for business documents',
+        'Solution: Implemented prompt engineering and validation layers to ensure quality',
+      ]
+    },
     'portfolio': {
       title: 'This Portfolio',
       category: 'Web Application',
@@ -26,7 +54,8 @@ const ProjectDetail = ({ projectId }) => {
         'Implemented a custom theme system with dark/light mode toggle',
         'Created reusable React components for consistent design',
         'Integrated Rails backend with React frontend for optimal performance'
-      ]
+      ],
+      challenges: []
     },
     'curl-lol': {
       title: 'curl.lol',
@@ -49,7 +78,8 @@ const ProjectDetail = ({ projectId }) => {
         'Implemented real-time analytics using Redis for fast data access',
         'Created a RESTful API allowing developers to integrate the service',
         'Added custom domain support for branded short URLs'
-      ]
+      ],
+      challenges: []
     },
     'hub': {
       title: 'Hub',
@@ -71,7 +101,12 @@ const ProjectDetail = ({ projectId }) => {
         'Created a comprehensive boilerplate solution saving developers weeks of setup time',
         'Integrated Stripe for seamless payment processing and subscription management',
         'Built a secure authentication system with JWT tokens and role-based access',
-        'Implemented Docker containerization for easy deployment and scaling'
+        'Implemented Docker containerization for easy deployment and scaling',
+        'Built this 10x faster using Claude as my pair programmer'
+      ],
+      challenges: [
+        'Challenge: Existing boilerplates were either too opinionated or not opinionated enough',
+        'Solution: Created a balanced approach with sensible defaults but easy customization'
       ]
     },
     'bgca': {
@@ -93,7 +128,12 @@ const ProjectDetail = ({ projectId }) => {
         'Successfully processed over $2MM in donations without any downtime',
         'Built a secure payment system compliant with PCI standards',
         'Implemented real-time donation tracking for campaign monitoring',
-        'Created automated receipt generation and email delivery system'
+        'Created automated receipt generation and email delivery system',
+        'Delivered on time despite tight deadline and high-pressure environment'
+      ],
+      challenges: [
+        'Challenge: Zero tolerance for downtime during live fundraising event',
+        'Solution: Built redundant systems and thoroughly tested every edge case',
       ]
     },
     'car-search': {
@@ -116,6 +156,96 @@ const ProjectDetail = ({ projectId }) => {
         'Implemented location-based search with customizable radius',
         'Built efficient data aggregation to handle thousands of listings',
         'Created an intuitive UI for complex search filtering'
+      ],
+      challenges: []
+    },
+    'ai-experiments': {
+      title: 'AI Experiments Lab',
+      category: 'Personal Projects',
+      description: 'A collection of 20+ projects built with Claude as my pair programmer. From CLI tools to web apps, these experiments push the boundaries of what\'s possible with AI-assisted development.',
+      technologies: ['Claude AI', 'OpenAI', 'Python', 'Rails', 'JavaScript', 'RAG Systems'],
+      image: '🧪',
+      gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
+      highlights: [
+        'TodayIn3Minutes - AI-powered news summarizer',
+        'gitRAG - Repository knowledge extraction system',
+        'Overcommunicator - Context-aware communication tool',
+        'Obsidian to Web publishing pipeline',
+        'Multiple game projects using Three.js',
+        'YouTube channel documenting the process'
+      ],
+      screenshot: null,
+      accomplishments: [
+        'Built 20+ functional projects in record time using AI pair programming',
+        'Created practical tools that solve real problems in my workflow',
+        'Documented the entire process on YouTube to teach others',
+        'Proved that AI accelerates development without sacrificing quality',
+        'Developed a repeatable process for AI-assisted rapid prototyping'
+      ],
+      challenges: [
+        'Challenge: Learning new technologies (like Three.js) quickly',
+        'Solution: Used Claude to explain concepts and debug in real-time',
+        'Challenge: Maintaining code quality while moving fast',
+        'Solution: Established patterns and let AI handle boilerplate'
+      ]
+    },
+    'backlit': {
+      title: 'Backlit Platform Suite',
+      category: 'Entertainment Industry',
+      description: 'Long-term contractor building Rails applications for major television events including the Super Bowl, Oscars, and Grammys. Specialized in real-time coordination tools for live productions.',
+      technologies: ['Ruby on Rails', 'Twilio', 'WebSockets', 'PostgreSQL', 'Redis', 'Multi-tenancy'],
+      image: '🎬',
+      gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
+      highlights: [
+        'SMS coordination system for 200+ Oscar nominees',
+        'Multi-tenant platform for talent management',
+        'Real-time communication during live broadcasts',
+        'COVID-compliant venue coordination tools',
+        'Supported Super Bowl, Oscars, and Grammys',
+        'Built Backlit-Pro and Timeslot platforms'
+      ],
+      screenshot: null,
+      accomplishments: [
+        'Built SMS system that successfully coordinated 200+ people at Dolby Theatre during COVID',
+        'Developed platforms used by major television productions without any failures',
+        'Created multi-tenant architecture supporting hundreds of production companies',
+        'Maintained long-term client relationship through consistent delivery',
+        'Handled the pressure of live television events where failure wasn\'t an option'
+      ],
+      challenges: [
+        'Challenge: Coordinating people during COVID restrictions at the Oscars',
+        'Solution: Built SMS-based system with Twilio for contactless coordination',
+        'Challenge: Supporting multiple production companies with different needs',
+        'Solution: Implemented flexible multi-tenant architecture'
+      ]
+    },
+    'minecraft-planner': {
+      title: 'Minecraft Build Planner',
+      category: 'Game Tool',
+      description: 'A Three.js-based tool for planning Minecraft builds in 3D. Built entirely with Claude as my pair programmer while learning Three.js from scratch.',
+      technologies: ['Three.js', 'JavaScript', 'React', 'WebGL'],
+      image: '🎮',
+      gradient: 'linear-gradient(135deg, var(--green-accent) 0%, var(--blue-accent) 100%)',
+      highlights: [
+        '3D visualization of Minecraft builds',
+        'Block placement and removal tools',
+        'Save and load build designs',
+        'Material selection system',
+        'Camera controls for easy navigation',
+        'Export builds as schematics'
+      ],
+      screenshot: null,
+      accomplishments: [
+        'Learned Three.js from zero to functional app in days with AI assistance',
+        'Created intuitive 3D controls for complex building operations',
+        'Built a tool that\'s actually useful for planning Minecraft projects',
+        'Demonstrated how AI can accelerate learning new technologies'
+      ],
+      challenges: [
+        'Challenge: Never worked with 3D graphics before',
+        'Solution: Used Claude to explain concepts and debug rendering issues',
+        'Challenge: Making 3D controls intuitive for users',
+        'Solution: Iterated on UX with AI suggestions until it felt right'
       ]
     }
   };
@@ -221,6 +351,20 @@ const ProjectDetail = ({ projectId }) => {
             ))}
           </div>
         </div>
+
+        {/* Challenges & Solutions */}
+        {project.challenges && project.challenges.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Challenges & Solutions</h2>
+            <div className="space-y-4">
+              {project.challenges.map((item, index) => (
+                <div key={index} className="glass-panel p-6 rounded-lg">
+                  <p style={{ color: 'var(--text-secondary)' }}>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Call to Action */}
         <div className="glass-thick rounded-xl p-8 text-center relative overflow-hidden">
