@@ -8,63 +8,61 @@ const Projects = () => {
   const projects = [
     {
       id: 1,
-      title: 'This Portfolio',
-      category: 'web',
-      description: 'React + Rails website showcasing my work and projects',
-      technologies: ['React', 'Ruby on Rails', 'Tailwind CSS', 'JavaScript'],
-      link: '/projects/portfolio',
+      title: 'Pages AI Assistant',
+      category: 'ai',
+      description: 'Natural language document generation that grew adoption 4% → 11%',
+      technologies: ['OpenAI', 'Rails', 'PDF Processing', 'React'],
+      link: '/projects/pages-ai',
       featured: true,
-      image: '🌐',
+      image: '🤖',
       gradient: 'var(--gradient-accent)',
       details: {
-        fullDescription: 'A modern portfolio website built with React and Rails, featuring a responsive design, dark mode support, and interactive project showcases.',
+        fullDescription: 'Architected and shipped AI-powered document generation at CompanyCam, integrating OpenAI with Rails for natural language processing. Optimized PDF infrastructure achieving 10x size reduction.',
         highlights: [
-          'Server-side rendering with React on Rails',
-          'Glass morphism design with custom CSS',
-          'Dark/light theme support',
-          'Responsive bento grid layout'
+          'Grew feature adoption from 4% to 11% of companies',
+          '10x PDF size optimization',
+          'Thousands of daily document exports',
+          'Natural language UI that users actually understand'
         ]
       }
     },
     {
       id: 2,
-      title: 'curl.lol',
+      title: 'Boys & Girls Club Platform',
       category: 'web',
-      description: 'URL shortener service with analytics and custom domains',
-      technologies: ['Ruby on Rails', 'PostgreSQL', 'Redis', 'JavaScript'],
-      link: '/projects/curl-lol',
-      externalLink: 'https://curl.lol',
+      description: '$2MM+ donation processing system for national fundraiser',
+      technologies: ['Node.js', 'Express', 'Stripe', 'Heroku'],
+      link: '/projects/bgca',
       featured: true,
-      image: '🔗',
+      image: '💝',
       gradient: 'var(--gradient-vibrant)',
       details: {
-        fullDescription: 'A fast and reliable URL shortener service with real-time analytics, custom domain support, and API access for developers.',
+        fullDescription: 'Subcontracted to build critical donation infrastructure for BGCA 2021 fundraiser. Handled payment processing, receipts, and real-time tracking for a high-stakes live event.',
         highlights: [
-          'High-performance URL redirection',
-          'Real-time click analytics',
-          'Custom domain support',
-          'RESTful API for developers'
+          'Processed over $2 million in donations',
+          'Zero downtime during live fundraiser',
+          'Stripe integration with custom receipt generation',
+          'Built under tight deadline, delivered on time'
         ]
       }
     },
     {
       id: 3,
-      title: 'Hub',
+      title: 'Hub - Rails Starter Kit',
       category: 'web',
-      description: 'SaaS for selling boilerplate React/Rails necessities',
-      technologies: ['React', 'Rails', 'Stripe', 'Docker', 'PostgreSQL'],
+      description: 'My opinionated alternative to Jumpstart Pro',
+      technologies: ['Rails 7', 'React', 'Stripe', 'Docker', 'Hotwire'],
       link: '/projects/hub',
       featured: true,
       image: '🚀',
       gradient: 'var(--gradient-cool)',
       details: {
-        fullDescription: 'A SaaS platform that helps developers get a jumpstart on their projects by providing production-ready React/Rails boilerplate code with authentication, payments, and more.',
+        fullDescription: 'Built with Claude as my pair programmer. A production-ready Rails boilerplate with my preferred patterns, because sometimes you need to build things your way.',
         highlights: [
-          'Production-ready boilerplate code',
-          'Integrated Stripe payments',
-          'User authentication system',
-          'Docker containerization',
-          'CI/CD pipeline templates'
+          'Authentication, payments, and multi-tenancy out of the box',
+          'My personal Rails patterns baked in',
+          'Docker-ready with one command deploy',
+          'Built 10x faster using AI pair programming'
         ]
       }
     },
@@ -90,54 +88,66 @@ const Projects = () => {
     },
     {
       id: 5,
-      title: 'Boys & Girls Club Donation Platform',
-      category: 'web',
-      description: 'Donation system handling $2MM+ in transactions',
-      technologies: ['Node.js', 'Express', 'Stripe', 'Heroku'],
-      link: '/projects/bgca',
+      title: 'AI Experiments Lab',
+      category: 'ai',
+      description: '20+ projects built with Claude: TodayIn3Minutes, gitRAG, and more',
+      technologies: ['Claude AI', 'OpenAI', 'Python', 'RAG Systems'],
+      link: '/projects/ai-lab',
       featured: false,
-      image: '💝',
+      image: '🧪',
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
       details: {
-        fullDescription: 'Built the complete donation infrastructure for the Boys and Girls Club of America 2021 fundraiser, processing over $2 million in donations.',
+        fullDescription: 'My personal laboratory for AI-powered development. Building everything from CLI tools to automation scripts, documenting the journey on YouTube.',
         highlights: [
-          'Secure payment processing with Stripe',
-          'High-availability architecture',
-          'Real-time donation tracking',
-          'Custom receipt generation'
+          'TodayIn3Minutes - AI news summarizer',
+          'gitRAG - Repository knowledge system',
+          'Overcommunicator - Because context matters',
+          'YouTube channel documenting the process'
         ]
       }
     },
     {
       id: 6,
-      title: 'Car Search Aggregator',
+      title: 'Backlit Platform Suite',
       category: 'web',
-      description: 'Search eBay and Craigslist listings simultaneously',
-      technologies: ['Node.js', 'React', 'Express', 'APIs'],
-      link: '/projects/car-search',
+      description: 'Rails apps for Super Bowl, Oscars, and Grammys production',
+      technologies: ['Rails', 'Twilio', 'Multi-tenancy', 'SMS'],
+      link: '/projects/backlit',
       featured: false,
-      image: '🚗',
+      image: '🎥',
       gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
       details: {
-        fullDescription: 'A web application that aggregates car listings from eBay and Craigslist, allowing users to search both platforms within a specified radius.',
+        fullDescription: 'Long-term contractor building Rails applications for major television events. Built COVID-compliant coordination system for 200+ Oscar nominees.',
         highlights: [
-          'Integrated eBay and Craigslist APIs',
-          'Location-based search',
-          'Real-time data aggregation',
-          'Responsive React frontend'
+          'SMS system coordinating 200+ people at Dolby Theatre',
+          'Multi-tenant platform for entertainment industry',
+          'Supported Super Bowl, Oscars, Grammys broadcasts',
+          'Real-time event coordination tools'
         ]
       }
     },
     {
       id: 7,
-      title: 'Movement Demo',
+      title: 'curl.lol',
       category: 'experiment',
-      description: 'Smooth character movement system for web games',
-      technologies: ['JavaScript', 'Canvas API'],
-      link: '/movement-demo',
+      description: 'URL shortener with analytics - because why not?',
+      technologies: ['Rails', 'Redis', 'PostgreSQL'],
+      link: '/projects/curl-lol',
+      externalLink: 'https://curl.lol',
       featured: false,
-      image: '🏃',
+      image: '🔗',
       gradient: 'var(--gradient-primary)'
+    },
+    {
+      id: 8,
+      title: 'Minecraft Build Planner',
+      category: 'game',
+      description: 'Three.js tool for planning builds - built with Claude',
+      technologies: ['Three.js', 'JavaScript', 'Claude AI'],
+      link: '/projects/minecraft-planner',
+      featured: false,
+      image: '🎮',
+      gradient: 'linear-gradient(135deg, var(--green-accent) 0%, var(--blue-accent) 100%)'
     }
   ];
 
@@ -145,7 +155,6 @@ const Projects = () => {
     { value: 'all', label: 'All Projects' },
     { value: 'web', label: 'Web Apps' },
     { value: 'game', label: 'Games' },
-    { value: 'mobile', label: 'Mobile' },
     { value: 'ai', label: 'AI/ML' },
     { value: 'experiment', label: 'Experiments' }
   ];
@@ -171,7 +180,7 @@ const Projects = () => {
             Projects
           </h1>
           <p className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4" style={{ color: 'var(--text-secondary)' }}>
-            A collection of my work spanning web applications, games, and experiments
+            From AI assistants to donation platforms - things I've shipped that actually matter
           </p>
         </div>
 
@@ -295,7 +304,7 @@ const Projects = () => {
                 Have a project in mind?
               </h2>
               <p className="mb-4 sm:mb-6 text-sm sm:text-base px-4" style={{ color: 'var(--text-secondary)' }}>
-                I'm always interested in hearing about new opportunities and challenges.
+                I love working with teams that care about craft and humans in equal measure.
               </p>
               <a href="/#contact" className="btn btn-gradient-vibrant transform hover:scale-105 transition-all text-xs sm:text-sm">
                 <span className="material-icons text-lg sm:text-base">send</span>

@@ -22,7 +22,7 @@ const BentoHome = () => {
               Hi, I'm Austin French
             </h1>
             <p className="text-sm sm:text-base md:text-lg mb-3" style={{ color: 'var(--text-secondary)' }}>
-              Web Developer | Ruby on Rails Expert | Building scalable solutions that drive growth
+              Senior Backend Engineer | AI Experimentalist | Teaching code & shipping features with a human touch
             </p>
             <div className="flex gap-2 sm:gap-3 flex-wrap">
               <a href="/projects" className="btn btn-primary text-sm">
@@ -46,21 +46,21 @@ const BentoHome = () => {
                 <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent-color)' }}></span>
                 Frontend
               </h4>
-              <p className="text-xs pl-3 mt-0.5">React, JS, Tailwind</p>
+              <p className="text-xs pl-3 mt-0.5">React, Three.js, Design Systems</p>
             </div>
             <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
               <h4 className="font-medium flex items-center gap-1 text-xs">
                 <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--purple-accent)' }}></span>
                 Backend
               </h4>
-              <p className="text-xs pl-3 mt-0.5">Rails, Node, PostgreSQL</p>
+              <p className="text-xs pl-3 mt-0.5">Rails, Ruby, API Architecture</p>
             </div>
             <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
               <h4 className="font-medium flex items-center gap-1 text-xs">
                 <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--teal-accent)' }}></span>
                 Cloud & DevOps
               </h4>
-              <p className="text-xs pl-3 mt-0.5">AWS, Docker, Heroku</p>
+              <p className="text-xs pl-3 mt-0.5">AI/Claude, OpenAI, RAG Systems</p>
             </div>
           </div>
         </div>
@@ -69,18 +69,18 @@ const BentoHome = () => {
         <div className="bento-box bento-2x1">
           <h3 className="font-semibold mb-2">Recent Work</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a href="/projects/bgca" className="apple-card group p-2 block hover:scale-105 transition-transform">
-              <h4 className="text-sm font-semibold mb-1">$2MM+ Platform</h4>
-              <p className="text-xs mb-1">Boys & Girls Club donation system</p>
+            <a href="/projects/pages-ai" className="apple-card group p-2 block hover:scale-105 transition-transform">
+              <h4 className="text-sm font-semibold mb-1">Pages AI Assistant</h4>
+              <p className="text-xs mb-1">11% adoption, 10x PDF optimization</p>
               <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                Node.js • Stripe
+                OpenAI • Rails • PDF
               </span>
             </a>
-            <a href="/projects/curl-lol" className="apple-card group p-2 block hover:scale-105 transition-transform">
-              <h4 className="text-sm font-semibold mb-1">curl.lol</h4>
-              <p className="text-xs mb-1">URL shortener with analytics</p>
+            <a href="/projects/bgca" className="apple-card group p-2 block hover:scale-105 transition-transform">
+              <h4 className="text-sm font-semibold mb-1">$2MM+ Donation Platform</h4>
+              <p className="text-xs mb-1">Boys & Girls Club fundraiser</p>
               <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                Rails • Redis
+                Stripe • Node.js • Heroku
               </span>
             </a>
           </div>
@@ -90,9 +90,9 @@ const BentoHome = () => {
         <div className="bento-box bento-1x1">
           <h3 className="font-semibold mb-1">Latest Blog</h3>
           <article className="space-y-1">
-            <h4 className="text-sm font-semibold line-clamp-1">Hello World!</h4>
+            <h4 className="text-sm font-semibold line-clamp-1">AI-Powered Development</h4>
             <p className="text-xs line-clamp-2" style={{ color: 'var(--text-muted)' }}>
-              First post generated with homemade Ruby on Rails Obsidian plugin!
+              How I'm using Claude to ship 20+ projects faster than ever
             </p>
             <a href="/blog" className="apple-link text-xs inline-flex items-center group">
               Read more 
@@ -109,7 +109,7 @@ const BentoHome = () => {
           <div className="flex items-center gap-2 mb-1">
             <span className="material-icons text-sm" style={{ color: 'var(--text-muted)' }}>computer</span>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Hardware & software tools
+              My eccentric but effective dev setup
             </p>
           </div>
           <a href="/tech-setup" className="apple-link text-xs inline-flex items-center group">
@@ -127,22 +127,22 @@ const BentoHome = () => {
               <div className="text-lg sm:text-xl font-bold" 
                    style={{ background: 'var(--gradient-vibrant)', 
                            WebkitBackgroundClip: 'text',
-                           WebkitTextFillColor: 'transparent' }}>7+</div>
-              <div className="text-xs">Years</div>
+                           WebkitTextFillColor: 'transparent' }}>6+</div>
+              <div className="text-xs">Years Shipping</div>
             </div>
             <div className="stat-item flex flex-col justify-center items-center">
               <div className="text-lg sm:text-xl font-bold" 
                    style={{ background: 'var(--gradient-accent)', 
                            WebkitBackgroundClip: 'text',
-                           WebkitTextFillColor: 'transparent' }}>$10MM+</div>
-              <div className="text-xs">Revenue</div>
+                           WebkitTextFillColor: 'transparent' }}>20+</div>
+              <div className="text-xs">AI Projects</div>
             </div>
             <div className="stat-item flex flex-col justify-center items-center">
               <div className="text-lg sm:text-xl font-bold" 
                    style={{ background: 'var(--gradient-cool)', 
                            WebkitBackgroundClip: 'text',
                            WebkitTextFillColor: 'transparent' }}>100%</div>
-              <div className="text-xs">Satisfaction</div>
+              <div className="text-xs">Student Success</div>
             </div>
           </div>
         </div>
@@ -153,24 +153,24 @@ const BentoHome = () => {
           <div className="space-y-2 flex-1 overflow-auto">
             <a href="/projects/hub" className="apple-card group p-2 block hover:scale-102 transition-transform">
               <h4 className="text-sm font-semibold mb-1">
-                🚀 Hub - React/Rails SaaS
+                🚀 Hub - Rails Starter Kit
               </h4>
               <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
-                Production-ready boilerplate platform
+                Everything I'd throw in a new Rails project today
               </p>
               <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                React • Rails • Stripe • Docker
+                Rails • React • Stripe • My Opinions
               </span>
             </a>
-            <a href="/projects/portfolio" className="apple-card group p-2 block hover:scale-102 transition-transform">
+            <a href="/projects/ai-experiments" className="apple-card group p-2 block hover:scale-102 transition-transform">
               <h4 className="text-sm font-semibold mb-1">
-                🌐 This Portfolio Site
+                🤖 AI Experiment Lab
               </h4>
               <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
-                Modern portfolio with dark mode
+                TodayIn3Minutes, gitRAG & more
               </p>
               <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                React • Rails • Tailwind • SSR
+                Claude • OpenAI • RAG • YouTube
               </span>
             </a>
           </div>
@@ -188,7 +188,7 @@ const BentoHome = () => {
             <div className="flex-1">
               <h3 className="font-semibold mb-1">Arena Shooter</h3>
               <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                Fast-paced 3D browser game
+                Three.js game built with Claude
               </p>
               <a href="/games/arena-shooter" className="btn btn-gradient-vibrant text-xs py-1.5">
                 <span className="material-icons text-sm">sports_esports</span>
@@ -202,32 +202,6 @@ const BentoHome = () => {
           </div>
         </div>
 
-        {/* Latest Activity - 1x1 */}
-        <div className="bento-box bento-1x1">
-          <h3 className="font-semibold mb-1">Activity</h3>
-          <div className="space-y-1">
-            <div className="flex items-start gap-2">
-              <span className="material-icons text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>code</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium truncate">Pushed to portfolio</p>
-                <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>Updated components</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="material-icons text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>star</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium truncate">Starred rails/rails</p>
-                <p className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>Ruby on Rails</p>
-              </div>
-            </div>
-          </div>
-          <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" 
-             className="apple-link text-xs inline-flex items-center group mt-2">
-            GitHub
-            <span className="material-icons text-sm ml-1">open_in_new</span>
-          </a>
-        </div>
-
         {/* Contact CTA - 1x1 */}
         <div id="contact" className="bento-box bento-1x1 bento-contact relative"
              style={{ 
@@ -236,7 +210,7 @@ const BentoHome = () => {
           <div className="relative z-10">
             <h3 className="font-semibold mb-1">Let's Connect</h3>
             <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-              Have a project in mind?
+              Let's build something meaningful
             </p>
             <div className="space-y-1">
               <a href="mailto:hi@austn.net" 

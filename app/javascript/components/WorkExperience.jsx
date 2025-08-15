@@ -21,16 +21,17 @@ const WorkExperience = () => {
     {
       id: 1,
       company: "CompanyCam",
-      position: "Software Engineer",
-      period: "Nov 2023 - Current (April 2025)",
+      position: "Backend Engineer",
+      period: "Nov 2023 - Aug 2025",
       location: "Remote",
-      description: "Working on the Workflows and Outputs teams to deliver key features and build team capacity.",
+      description: "Building AI features and workflows",
       highlights: [
-        "Worked on the Workflows team to deliver key pieces of work: Report Share Links, Project Page share links, DocRaptor PDF API endpoints, and more",
-        "Built out the Outputs team as the sole backend engineer, with a focus on hiring/onboarding new folks",
-        "Consistently demonstrated Show Up values through key initiatives like the Engineering Book Club, where we reviewed Fowler's Refactoring and Metz's POODR"
+        "Shipped Pages AI Assistant: OpenAI integration that grew adoption 4% → 11% while optimizing PDFs by 10x",
+        "Led cross-functional initiatives from executive alignment to production, supporting 101% to 104% NRR growth",
+        "Built Outputs team as sole backend engineer - hired, onboarded, and created a culture of shipping",
+        "Co-founded 'Backend Experiments' for technical debt reduction",
       ],
-      technologies: ["Ruby", "Rails", "Backend Development", "Team Building"]
+      technologies: ["Rails", "OpenAI API", "PDF Processing", "Team Leadership"]
     },
     {
       id: 2,
@@ -38,30 +39,31 @@ const WorkExperience = () => {
       position: "Software Engineer",
       period: "July 2021 - October 2023",
       location: "Remote",
-      description: "Worked in the Program Launch BU to launch pharmaceutical brands and improve platform capabilities.",
+      description: "Launched pharmaceutical brands and turned a CSM into a developer - both equally rewarding.",
       highlights: [
-        "Worked in the Program Launch BU to launch eight brands into CoverMyMeds, increasing the amount of pharmaceutical brands on our platform by 30% and delivering on sales generating >$10MM in ARR",
-        "Developed VEST Framework and reporting system for collecting Technical Debt encountered by members of our Product and Engineering team",
-        "Onboarded five new developers, caught them up to speed about our system, team processes, and set up their local machines remotely",
-        "Mentored a non-technical CMM employee, teaching basic HTML, CSS, JS, and Ruby to build skills required to land first job as an associate developer at CMM",
-        "Tech Lead for Spravato, Renflexis, and Ontruant launches",
-        "Responsible for the refactoring of CoverMyMeds' Loyaltyscript client, making it easier to launch new brands' Copay and Adherence programs and improving automation across the board"
+        "Launched 9 pharmaceutical brands, increasing platform coverage by 40% and generating >$10MM ARR",
+        "Tech Lead for Spravato, Renflexis, and Ontruzant - because someone has to make pharma software interesting",
+        "Created VEST Framework for tracking tech debt (finally made it visible and actionable)",
+        "Mentored a CSM into their first dev role - taught HTML to Ruby, proved anyone can code with the right teacher",
+        "Refactored Loyaltyscript client, cutting setup effort by 3 cards per brand (the little wins matter)",
+        "Onboarded 5 developers remotely - turned Zoom onboarding into an art form"
       ],
-      technologies: ["Ruby", "Rails", "Technical Leadership", "Mentoring"]
+      technologies: ["Rails", "Technical Leadership", "Mentoring", "Legacy Refactoring"]
     },
     {
       id: 3,
       company: "Backlit",
-      position: "Web Developer",
-      period: "December 2020 - April 2021",
+      position: "Web Development Contractor",
+      period: "Oct 2018 - Apr 2019, Dec 2020 - Apr 2021, Oct 2023 - Mar 2025",
       location: "Remote",
-      description: "Developed enhancements/features for Ruby on Rails applications used by television clients.",
+      description: "The person they call when the Super Bowl, Oscars, or Grammys need Rails magic.",
       highlights: [
-        "Continued developing enhancements/features for our Ruby on Rails application used by television clients",
-        "Spearheaded the construction of our new SaaS platform: Backlit-Pro, a Rails application that allows performers to build searchable user profiles and producers to build projects with multi-tenancy support",
-        "Built an SMS contact-book tool used to direct 200+ Oscars nominees and production staff in and out of the Dolby theater in order to remain COVID-19 compliant. Written using Ruby on Rails and used Twilio to send the texts"
+        "Built SMS system coordinating 200+ Oscar nominees at Dolby Theatre during COVID (Twilio + Rails + prayers)",
+        "Developed Backlit-Pro and Timeslot: multi-tenant platforms for entertainment industry",
+        "Supported Super Bowl Halftime Show, Oscars, and Grammys broadcasts (yes, that Super Bowl)",
+        "Long-term trusted contractor - they keep calling me back for the important stuff"
       ],
-      technologies: ["Ruby on Rails", "Twilio", "SaaS", "Multi-tenancy"]
+      technologies: ["Rails", "Twilio", "Multi-tenancy", "High-stakes Events"]
     },
     {
       id: 4,
@@ -81,54 +83,49 @@ const WorkExperience = () => {
     },
     {
       id: 5,
-      company: "Backlit",
-      position: "Web Developer",
-      period: "October 2018 - April 2019",
-      location: "Remote",
-      description: "Sole developer for flagship Ruby on Rails product used by television clients.",
-      highlights: [
-        "Sole developer dedicated to developing features, enhancements, and bug fixes for our flagship Ruby on Rails product used by television clients like the Superbowl and ABC television"
-      ],
-      technologies: ["Ruby on Rails", "Full Stack Development"]
-    },
-    {
-      id: 6,
-      company: "Lambda School AKA BloomTech",
+      company: "Lambda School (now BloomTech)",
       position: "Teaching Assistant",
       period: "March 2018 - August 2018",
       location: "Remote",
-      description: "Leveraged passion for teaching to lead students in small classroom environments.",
+      description: "Where I discovered teaching code is as rewarding as writing it.",
       highlights: [
-        "Leveraged my passion for teaching to lead 9 students in a small classroom environment",
-        "Had 1:1 interviews with each student every week, leading to a 100% course completion rate",
-        "Gave solution lectures and reviewed pull requests daily"
+        "Led 9 students to 100% course completion (still my proudest metric)",
+        "Weekly 1:1s with each student - because learning to code is personal",
+        "Daily solution lectures and PR reviews - turned code review into a teaching moment",
+        "Proved that with enough care, anyone can learn to code"
       ],
-      technologies: ["Teaching", "Mentoring", "Code Review"]
+      technologies: ["Teaching", "Mentoring", "JavaScript", "React"]
+    },
+    {
+      id: 6,
+      company: "AI-Powered Rapid Development",
+      position: "Builder",
+      period: "2024 - Current",
+      location: "My Home Office",
+      description: "Building 20+ projects with Claude & Claude Code",
+      highlights: [
+        "Built Hub (Rails boilerplate), austn.net, URL shortener, game trackers with AI assistance",
+        "Created arena shooter and Minecraft planner using Three.js - learned 3D on the fly with Claude",
+        "Developing TodayIn3Minutes, gitRAG, Overcommunicator - tools that automate my life",
+        "YouTube channel documenting the journey - teaching others to leverage AI",
+        "Proved that AI doesn't replace developers, it makes us 10x more ambitious"
+      ],
+      technologies: ["Claude AI", "Rails", "Three.js", "RAG Systems"]
     },
     {
       id: 7,
-      company: "Scrimbox",
-      position: "Junior Web Developer",
-      period: "April 2017 - September 2017",
-      location: "Remote",
-      description: "Worked with MEAN stack for production gaming application.",
-      highlights: [
-        "Worked within the MEAN stack for a production gaming application and Wordpress for minor website edits"
-      ],
-      technologies: ["MEAN Stack", "MongoDB", "Express", "Angular", "Node.js", "WordPress"]
-    },
-    {
-      id: 8,
-      company: "Boys and Girls Club of America",
+      company: "Boys & Girls Club of America",
       position: "Contract Developer",
       period: "2021",
-      location: "Project",
-      description: "Built donation functionality handling over $2MM in transactions for major nonprofit.",
+      location: "Remote (High-stakes Project)",
+      description: "When $2MM is on the line, they called me.",
       highlights: [
-        "Subcontracted by a previous employer to build out the \"Donate Now\" functionality for the Boys and Girls Club of America 2021 fundraiser donation page, handling over $2MM dollars in transactions",
-        "Used NodeJS and Express to build a Stripe Integration along with a webserver to build and serve the content to the frontend, with Heroku for deployment"
+        "Built 'Donate Now' functionality processing $2MM+ for national fundraiser",
+        "Zero downtime during live event - because failure wasn't an option",
+        "Node.js + Express + Stripe + lots of testing = happy donors",
+        "Delivered on time, on budget, and with my sanity intact (mostly)"
       ],
-      technologies: ["NodeJS", "Express", "Stripe", "Heroku"]
+      technologies: ["Node.js", "Express", "Stripe", "Heroku"]
     }
   ];
 
@@ -142,11 +139,12 @@ const WorkExperience = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Austin French - Web Developer</h1>
+      <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Austin French - Senior Backend Engineer</h1>
       <div className="mb-8" style={{ color: 'var(--text-secondary)' }}>
-        <p className="mb-2">Turlock, California | (209) 447-9691 | austindanielfrench@gmail.com</p>
+        <p className="mb-2">Turlock, California | hi@austn.net | github.com/frogr</p>
         <p className="text-lg">
-          Experienced Ruby on Rails developer with expertise in building robust backend systems, mentoring teams, and delivering high-value features.
+          I ship features that matter, mentor humans not resources, and believe the best code tells a story. 
+          Currently obsessed with AI-powered development and making complex systems feel human.
         </p>
       </div>
       
@@ -217,10 +215,10 @@ const WorkExperience = () => {
             }}
           ></div>
         </div>
-        <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Technical Skills</h2>
+        <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>The Tools I Actually Use</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Languages</h3>
+            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Daily Drivers</h3>
             <div className="flex flex-wrap gap-2">
               <span 
                 className="px-3 py-1 rounded-full text-sm"
@@ -228,7 +226,7 @@ const WorkExperience = () => {
                   backgroundColor: isDark ? '#374151' : '#f3f4f6', 
                   color: 'var(--accent-color)' 
                 }}
-              >Ruby</span>
+              >Ruby (my first love)</span>
               <span 
                 className="px-3 py-1 rounded-full text-sm"
                 style={{ 
@@ -236,10 +234,17 @@ const WorkExperience = () => {
                   color: 'var(--accent-color)' 
                 }}
               >JavaScript</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >Python (for AI stuff)</span>
             </div>
           </div>
           <div>
-            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Libraries/Frameworks</h3>
+            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Frameworks & Philosophy</h3>
             <div className="flex flex-wrap gap-2">
               <span 
                 className="px-3 py-1 rounded-full text-sm"
@@ -247,7 +252,7 @@ const WorkExperience = () => {
                   backgroundColor: isDark ? '#374151' : '#f3f4f6', 
                   color: 'var(--accent-color)' 
                 }}
-              >Rails</span>
+              >Rails (the majestic monolith)</span>
               <span 
                 className="px-3 py-1 rounded-full text-sm"
                 style={{ 
@@ -261,33 +266,47 @@ const WorkExperience = () => {
                   backgroundColor: isDark ? '#374151' : '#f3f4f6', 
                   color: 'var(--accent-color)' 
                 }}
-              >Node</span>
+              >Three.js</span>
               <span 
                 className="px-3 py-1 rounded-full text-sm"
                 style={{ 
                   backgroundColor: isDark ? '#374151' : '#f3f4f6', 
                   color: 'var(--accent-color)' 
                 }}
-              >Express</span>
+              >POODR principles</span>
               <span 
                 className="px-3 py-1 rounded-full text-sm"
                 style={{ 
                   backgroundColor: isDark ? '#374151' : '#f3f4f6', 
                   color: 'var(--accent-color)' 
                 }}
-              >REST API design</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >OOP design</span>
+              >Clean architecture</span>
             </div>
           </div>
           <div>
-            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Tools/Databases</h3>
+            <h3 className="font-medium mb-2" style={{ color: 'var(--text-primary)' }}>AI & The Future</h3>
             <div className="flex flex-wrap gap-2">
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >Claude (my pair programmer)</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >OpenAI API</span>
+              <span 
+                className="px-3 py-1 rounded-full text-sm"
+                style={{ 
+                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
+                  color: 'var(--accent-color)' 
+                }}
+              >RAG systems</span>
               <span 
                 className="px-3 py-1 rounded-full text-sm"
                 style={{ 
@@ -301,56 +320,14 @@ const WorkExperience = () => {
                   backgroundColor: isDark ? '#374151' : '#f3f4f6', 
                   color: 'var(--accent-color)' 
                 }}
-              >MongoDB</span>
+              >Redis</span>
               <span 
                 className="px-3 py-1 rounded-full text-sm"
                 style={{ 
                   backgroundColor: isDark ? '#374151' : '#f3f4f6', 
                   color: 'var(--accent-color)' 
                 }}
-              >GraphQL</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Git</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Jenkins</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Sentry</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Splunk</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >DataDog</span>
-              <span 
-                className="px-3 py-1 rounded-full text-sm"
-                style={{ 
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6', 
-                  color: 'var(--accent-color)' 
-                }}
-              >Heroku</span>
+              >Docker</span>
             </div>
           </div>
         </div>

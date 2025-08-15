@@ -15,34 +15,35 @@ const AboutMe = () => {
   }
   
   const isDark = theme === 'dark';
-  // Placeholder data - replace with your actual data
   const skills = [
-    { name: 'Full Stack Web Development' },
-    { name: 'Ruby on Rails' },
-    { name: 'React.js' },
+    { name: 'AI-Powered Development' },
+    { name: 'Ruby on Rails Architecture' },
+    { name: 'Teaching & Mentoring' },
   ];
 
   const featuredPost = {
-    title: 'Hello world!',
-    excerpt: 'First post generated with homemade ruby on rails Obsidian plugin!',
+    title: 'Why I Pair Program with Claude',
+    excerpt: 'How AI transformed my development workflow - from idea to production in hours, not weeks. A deep dive into my process.',
     image: 'https://i.ibb.co/sd9h4Wk1/Chat-GPT-Image-Mar-27-2025-09-44-04-PM.png',
-    url: '/blog/hello-world',
-    date: 'March 25, 2025',
+    url: '/blog/ai-pair-programming',
+    date: 'January 2025',
   };
 
   const favoriteItems = [
     {
-      category: 'Development Tools',
+      category: 'Daily Drivers',
       items: [
-        { name: 'VS Code', description: 'My primary code editor', image: 'https://example.com/vscode.png', url: 'https://code.visualstudio.com/' },
-        { name: 'Figma', description: 'Design and prototyping', image: 'https://example.com/figma.png', url: 'https://figma.com/' },
+        { name: 'Claude Code', description: 'My AI pair programmer & daily driver', emoji: '🤖', url: 'https://claude.ai/' },
+        { name: 'Rails', description: 'Still the best framework', emoji: '💎', url: 'https://rubyonrails.org/' },
+        { name: 'Three.js', description: 'For when 2D gets boring', emoji: '🎮', url: 'https://threejs.org/' },
       ],
     },
     {
-      category: 'Learning Resources',
+      category: 'Inspiration Sources',
       items: [
-        { name: 'Frontend Masters', description: 'Advanced web courses', image: 'https://example.com/fem.png', url: 'https://frontendmasters.com/' },
-        { name: 'MDN Web Docs', description: 'Web documentation', image: 'https://example.com/mdn.png', url: 'https://developer.mozilla.org/' },
+        { name: 'Sandi Metz', description: 'POODR changed my life', emoji: '📚', url: 'https://sandimetz.com/' },
+        { name: 'DHH', description: 'Opinionated software', emoji: '🚂', url: 'https://dhh.dk/' },
+        { name: 'IndieHackers', description: 'Building in public', emoji: '🚀', url: 'https://www.indiehackers.com/' },
       ],
     },
   ];
@@ -90,7 +91,7 @@ const AboutMe = () => {
               </div>
               
               <h1 className="text-4xl font-bold mb-4">Austin French</h1>
-              <p className="text-xl mb-6" style={{ color: 'var(--text-secondary)' }}>Web Developer</p>
+              <p className="text-xl mb-6" style={{ color: 'var(--text-secondary)' }}>Senior Backend Engineer</p>
               
               <div className="flex flex-wrap justify-center gap-2">
                 {skills.map((skill) => (
@@ -119,13 +120,23 @@ const AboutMe = () => {
               ></div>
             </div>
             <h2 className="text-2xl font-semibold mb-6">About Me</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>
-              I'm an experienced web developer with a strong background in Ruby on Rails and JavaScript. 
-              With over 7 years of experience building web applications, I've delivered high-value features 
-              for companies like CompanyCam and CoverMyMeds, generating millions in ARR through technical 
-              innovation and team leadership. I'm passionate about mentoring, clean code, and creating 
-              scalable solutions that drive business growth.
-            </p>
+            <div className="space-y-4" style={{ color: 'var(--text-secondary)' }}>
+              <p>
+                My superpower is taking complex technical problems and making them human. Whether it's teaching 
+                9 students at Lambda School, mentoring a CSM into 
+                their first dev role, or architecting AI features that actual humans want to use - I believe 
+                the best code serves people, not just machines.
+              </p>
+              <p>
+                Currently shipping AI-powered features at CompanyCam, where I helped grow our Pages AI adoption 
+                from 4% to 11% by obsessing over the user experience. Before that, I launched 9 pharmaceutical 
+                brands at CoverMyMeds and built a $2MM donation platform for the Boys & Girls Club.
+              </p>
+              <p className="italic">
+                "The best code is no code, the second best is code that writes itself with AI, and the third 
+                best is code that makes someone's day easier."
+              </p>
+            </div>
           </div>
           
           {/* Featured Post */}
@@ -190,7 +201,7 @@ const AboutMe = () => {
                 className="absolute -bottom-20 -right-20 w-40 h-40 rounded-full blur-lg bg-indigo-500/5"
               ></div>
             </div>
-            <h2 className="text-2xl font-semibold mb-6">My Favorite Things</h2>
+            <h2 className="text-2xl font-semibold mb-6">Tools & Inspiration</h2>
             
             {favoriteItems.map((category) => (
               <div key={category.category} className="mb-8 last:mb-0">
@@ -205,11 +216,10 @@ const AboutMe = () => {
                       className="group flex items-start p-4 rounded-md transition-all glass-panel"
                     >
                       <div 
-                        className="mr-4 w-12 h-12 rounded-md flex items-center justify-center"
+                        className="mr-4 w-12 h-12 rounded-md flex items-center justify-center text-xl"
                         style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
                       >
-                        {/* Replace with actual image */}
-                        <span style={{ color: 'var(--text-muted)' }} className="text-xs">{item.name.substring(0, 2)}</span>
+                        {item.emoji}
                       </div>
                       <div>
                         <h4 className="font-medium">{item.name}</h4>

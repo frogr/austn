@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Initial build
+yarn build:css
+
+# Watch for changes in Tailwind-related files
+while true; do
+  # Use fswatch if available, otherwise fall back to sleep loop
+  if command -v fswatch &> /dev/null; then
+    fswatch -1 app/assets/stylesheets/ app/views/ app/javascript/components/ 2>/dev/null
+  else
+    sleep 2
+  fi
+  
+  echo "Rebuilding CSS..."
+  yarn build:css
+done
