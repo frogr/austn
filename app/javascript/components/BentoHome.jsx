@@ -5,33 +5,35 @@ const BentoHome = () => {
   const { theme } = useTheme();
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+    <div className="h-screen relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Animated gradient background */}
-      <div className="absolute inset-0 opacity-30 overflow-hidden">
-        <div className="absolute top-0 -left-4 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-10 sm:left-20 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+      <div className="absolute inset-0 opacity-10 overflow-hidden">
+        <div className="absolute top-0 -left-4 w-48 h-48 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-15 animate-blob"></div>
+        <div className="absolute top-0 -right-4 w-48 h-48 bg-yellow-500 rounded-full mix-blend-multiply filter blur-2xl opacity-15 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-48 h-48 bg-pink-500 rounded-full mix-blend-multiply filter blur-2xl opacity-15 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="bento-container bento-grid-home pt-4 md:pt-6 lg:pt-8 relative z-10">
+      {/* Use the bento grid system that was working */}
+      <div className="bento-container bento-grid-home relative z-10 overflow-y-auto">
+        
         {/* Hero Section - Full width */}
-        <div className="bento-box bento-full bento-gradient-1 flex flex-col justify-center">
-          <div className="w-full max-w-2xl pl-16 md:pl-0">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 bg-clip-text text-transparent"
+        <div className="bento-box bento-full bento-gradient-1 flex items-center py-2">
+          <div className="w-full">
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black mb-0.5 bg-clip-text text-transparent"
                 style={{ backgroundImage: 'var(--gradient-accent)' }}>
               Hi, I'm Austin French
             </h1>
             <p className="text-sm sm:text-base md:text-lg mb-3" style={{ color: 'var(--text-secondary)' }}>
               Senior Backend Engineer | AI Experimentalist | Interested in Education & Presentation
             </p>
-            <div className="flex gap-2 sm:gap-3 flex-wrap">
-              <a href="/projects" className="btn btn-primary text-sm">
-                <span className="material-icons text-base">folder</span>
+            <div className="flex gap-1 flex-wrap">
+              <a href="/projects" className="btn btn-primary text-[10px] sm:text-xs py-1 px-2">
+                <span className="material-icons text-xs">folder</span>
                 <span>View Projects</span>
               </a>
-              <a href="#contact" className="btn btn-secondary text-sm">
-                <span className="material-icons text-base">mail</span>
-                <span>Contact Me</span>
+              <a href="/blog" className="btn btn-secondary text-[10px] sm:text-xs py-1 px-2">
+                <span className="material-icons text-xs">article</span>
+                <span>Read Blog</span>
               </a>
             </div>
           </div>
@@ -76,14 +78,17 @@ const BentoHome = () => {
                 OpenAI • Rails • RubyLLM
               </span>
             </a>
-            <a href="/projects/bgca" className="apple-card group p-2 block hover:scale-105 transition-transform">
-              <h4 className="text-sm font-semibold mb-1">$2MM+ Donation Platform</h4>
-              <p className="text-xs mb-1">Boys & Girls Club fundraiser</p>
-              <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                Stripe • Node.js • Heroku
-              </span>
+            <a href="/projects/bgca" className="block glass-thick rounded-md p-1.5 hover:scale-[1.01] transition-transform">
+              <h4 className="font-semibold text-[10px] sm:text-xs">💝 $2MM+ Platform</h4>
+              <p className="text-[9px] sm:text-[10px] opacity-70">Boys & Girls Club fundraiser</p>
             </a>
           </div>
+          <a href="/projects" className="apple-link text-[10px] sm:text-xs inline-flex items-center group mt-1">
+            View All Projects
+            <span className="material-icons text-sm ml-1 transform group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
+          </a>
         </div>
 
         {/* Blog Preview - 1x1 */}
@@ -100,7 +105,7 @@ const BentoHome = () => {
                 arrow_forward
               </span>
             </a>
-          </article>
+          </div>
         </div>
 
         {/* Tech Setup - 1x1 */}
@@ -112,12 +117,6 @@ const BentoHome = () => {
               Dev setup
             </p>
           </div>
-          <a href="/tech-setup" className="apple-link text-xs inline-flex items-center group">
-            View Setup 
-            <span className="material-icons text-sm ml-1 transform group-hover:translate-x-1 transition-transform">
-              arrow_forward
-            </span>
-          </a>
         </div>
 
         {/* Quick Stats - 3x1 */}
@@ -155,43 +154,36 @@ const BentoHome = () => {
                 Rails • React • Stripe
               </span>
             </a>
-            <a href="/projects/ai-experiments" className="apple-card group p-2 block hover:scale-102 transition-transform">
-              <h4 className="text-sm font-semibold mb-1">
-                🤖 AI Experiment Lab
-              </h4>
-              <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
-                TodayIn3Minutes, gitRAG & more
-              </p>
-              <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                Claude • OpenAI • RAG • YouTube
-              </span>
+            <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" 
+               className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
+              <span className="material-icons text-xs">code</span>
+              <span>GitHub</span>
+            </a>
+            <a href="https://linkedin.com/in/austindanielfrench" target="_blank" rel="noopener noreferrer"
+               className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
+              <span className="material-icons text-xs">business</span>
+              <span>LinkedIn</span>
             </a>
           </div>
-          <a href="/projects" className="apple-link text-xs inline-flex items-center group mt-2">
-            View All
-            <span className="material-icons text-sm ml-1 transform group-hover:translate-x-1 transition-transform">
-              arrow_forward
-            </span>
+        </div>
+
+        {/* Game Preview - 1x1 */}
+        <div className="bento-box bento-1x1 flex flex-col justify-center">
+          <h3 className="font-bold text-xs sm:text-sm mb-0.5">🎮 Arena Shooter</h3>
+          <p className="text-[10px] sm:text-xs opacity-70 mb-1">Three.js game</p>
+          <a href="/games/arena-shooter" className="btn btn-gradient-accent text-[10px] sm:text-xs py-0.5 w-full justify-center">
+            Play Now
           </a>
         </div>
 
-        {/* Featured Game - 2x1 */}
-        <div className="bento-box bento-2x1 relative overflow-visible flex items-center">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full">
-            <div className="flex-1">
-              <h3 className="font-semibold mb-1">Arena Shooter</h3>
-              <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                Three.js game built with Claude
-              </p>
-              <a href="/games/arena-shooter" className="btn btn-gradient-vibrant text-xs py-1.5">
-                <span className="material-icons text-sm">sports_esports</span>
-                Play Now
-              </a>
-            </div>
-            <div className="hidden lg:block flex-shrink-0">
-              <div className="w-16 h-16 rounded-lg animate-pulse"
-                   style={{ background: 'var(--gradient-vibrant)', opacity: 0.3 }}></div>
-            </div>
+        {/* Current Focus - 2x1 */}
+        <div className="bento-box bento-2x1">
+          <h3 className="font-bold text-xs sm:text-sm mb-1">Current Focus</h3>
+          <div className="flex flex-wrap gap-1">
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">🎯 AI Integration</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">📚 Teaching</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">🚀 Open Source</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">🎮 Game Dev</span>
           </div>
         </div>
 
@@ -231,6 +223,7 @@ const BentoHome = () => {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
