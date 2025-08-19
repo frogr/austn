@@ -23,8 +23,8 @@ const BentoHome = () => {
                 style={{ backgroundImage: 'var(--gradient-accent)' }}>
               Hi, I'm Austin French
             </h1>
-            <p className="text-[10px] sm:text-xs md:text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>
-              Senior Backend Engineer | AI Experimentalist
+            <p className="text-sm sm:text-base md:text-lg mb-3" style={{ color: 'var(--text-secondary)' }}>
+              Senior Backend Engineer | AI Experimentalist | Interested in Education & Presentation
             </p>
             <div className="flex gap-1 flex-wrap">
               <a href="/projects" className="btn btn-primary text-[10px] sm:text-xs py-1 px-2">
@@ -39,38 +39,44 @@ const BentoHome = () => {
           </div>
         </div>
 
-        {/* Stats - 3x1 */}
-        <div className="bento-box bento-3x1">
-          <div className="grid grid-cols-3 gap-2 h-full">
-            <div className="flex flex-col justify-center items-center text-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-black bg-clip-text text-transparent"
-                   style={{ backgroundImage: 'var(--gradient-vibrant)' }}>6+</div>
-              <div className="text-[10px] sm:text-xs opacity-70">Years</div>
+        {/* Skills Section - 1x1 */}
+        <div className="bento-box bento-1x1 bento-gradient-2 bento-skills">
+          <h3 className="font-semibold mb-2">Core Skills</h3>
+          <div className="space-y-1 flex-1">
+            <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
+              <h4 className="font-medium flex items-center gap-1 text-xs">
+                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent-color)' }}></span>
+                Frontend
+              </h4>
+              <p className="text-xs pl-3 mt-0.5">TypeScript, React, Three.js</p>
             </div>
-            <div className="flex flex-col justify-center items-center text-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-black bg-clip-text text-transparent"
-                   style={{ backgroundImage: 'var(--gradient-accent)' }}>20+</div>
-              <div className="text-[10px] sm:text-xs opacity-70">AI Projects</div>
+            <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
+              <h4 className="font-medium flex items-center gap-1 text-xs">
+                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--purple-accent)' }}></span>
+                Backend
+              </h4>
+              <p className="text-xs pl-3 mt-0.5">Rails, Ruby, API Design</p>
             </div>
-            <div className="flex flex-col justify-center items-center text-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-black bg-clip-text text-transparent"
-                   style={{ backgroundImage: 'var(--gradient-cool)' }}>100%</div>
-              <div className="text-[10px] sm:text-xs opacity-70">Success</div>
+            <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
+              <h4 className="font-medium flex items-center gap-1 text-xs">
+                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--teal-accent)' }}></span>
+                Cloud & DevOps
+              </h4>
+              <p className="text-xs pl-3 mt-0.5">AI/ML, OpenAI, RAG</p>
             </div>
           </div>
         </div>
 
-        {/* Featured Projects - 2x2 */}
-        <div className="bento-box bento-2x2 bento-gradient-2">
-          <h3 className="font-bold text-xs sm:text-sm mb-1">Featured Projects</h3>
-          <div className="space-y-1">
-            <a href="/projects/pages-ai" className="block glass-thick rounded-md p-1.5 hover:scale-[1.01] transition-transform">
-              <h4 className="font-semibold text-[10px] sm:text-xs">🤖 Pages AI Assistant</h4>
-              <p className="text-[9px] sm:text-[10px] opacity-70">AI-powered docs at CompanyCam</p>
-            </a>
-            <a href="/projects/hub" className="block glass-thick rounded-md p-1.5 hover:scale-[1.01] transition-transform">
-              <h4 className="font-semibold text-[10px] sm:text-xs">🚀 Hub - Rails Starter</h4>
-              <p className="text-[9px] sm:text-[10px] opacity-70">Production-ready boilerplate</p>
+        {/* Recent Work - 2x1 */}
+        <div className="bento-box bento-2x1">
+          <h3 className="font-semibold mb-2">Recent Work</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <a href="/projects/pages-ai" className="apple-card group p-2 block hover:scale-105 transition-transform">
+              <h4 className="text-sm font-semibold mb-1">Pages AI Assistant</h4>
+              <p className="text-xs mb-1">AI chatbot to generate beautiful documents</p>
+              <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
+                OpenAI • Rails • RubyLLM
+              </span>
             </a>
             <a href="/projects/bgca" className="block glass-thick rounded-md p-1.5 hover:scale-[1.01] transition-transform">
               <h4 className="font-semibold text-[10px] sm:text-xs">💝 $2MM+ Platform</h4>
@@ -85,69 +91,68 @@ const BentoHome = () => {
           </a>
         </div>
 
-        {/* Recent Blog Posts - 2x1 */}
-        <div className="bento-box bento-2x1">
-          <h3 className="font-bold text-xs sm:text-sm mb-1">Recent Posts</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
-            <a href="/blog/ai-development" className="block hover:translate-x-0.5 transition-transform">
-              <h4 className="font-semibold text-[10px] sm:text-xs">AI-Powered Development</h4>
-              <p className="text-[9px] sm:text-[10px] opacity-60">Building faster with Claude</p>
-            </a>
-            <a href="/blog/rails-optimization" className="block hover:translate-x-0.5 transition-transform">
-              <h4 className="font-semibold text-[10px] sm:text-xs">Rails Performance Tips</h4>
-              <p className="text-[9px] sm:text-[10px] opacity-60">10x your app speed</p>
-            </a>
-            <a href="/blog/three-js-journey" className="block hover:translate-x-0.5 transition-transform">
-              <h4 className="font-semibold text-[10px] sm:text-xs">Learning Three.js</h4>
-              <p className="text-[9px] sm:text-[10px] opacity-60">From zero to 3D games</p>
-            </a>
-          </div>
-        </div>
-
-        {/* Skills - 1x2 */}
-        <div className="bento-box bento-1x2">
-          <h3 className="font-bold text-xs sm:text-sm mb-1">Skills</h3>
-          <div className="grid grid-cols-2 gap-1 text-[9px] sm:text-[10px]">
-            <div className="glass-thick rounded px-1.5 py-0.5">React</div>
-            <div className="glass-thick rounded px-1.5 py-0.5">Rails</div>
-            <div className="glass-thick rounded px-1.5 py-0.5">Three.js</div>
-            <div className="glass-thick rounded px-1.5 py-0.5">AI/LLMs</div>
-            <div className="glass-thick rounded px-1.5 py-0.5">PostgreSQL</div>
-            <div className="glass-thick rounded px-1.5 py-0.5">Docker</div>
-            <div className="glass-thick rounded px-1.5 py-0.5">TypeScript</div>
-            <div className="glass-thick rounded px-1.5 py-0.5">AWS</div>
-          </div>
-        </div>
-
-        {/* AI Lab - 2x1 */}
-        <div className="bento-box bento-2x1 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10" 
-               style={{ background: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)' }}></div>
-          <div className="relative z-10">
-            <h3 className="font-bold text-xs sm:text-sm mb-0.5">🧪 AI Experiments Lab</h3>
-            <p className="text-[10px] sm:text-xs mb-1 opacity-80">
-              20+ projects built with Claude as my pair programmer
+        {/* Blog Preview - 1x1 */}
+        <div className="bento-box bento-1x1">
+          <h3 className="font-semibold mb-1">Latest Blog</h3>
+          <article className="space-y-1">
+            <h4 className="text-sm font-semibold line-clamp-1">How I use Claude Code</h4>
+            <p className="text-xs line-clamp-2" style={{ color: 'var(--text-muted)' }}>
+              How I've used Claude to ship 20+ projects quickly and securely
             </p>
-            <div className="flex gap-1 flex-wrap">
-              <a href="/projects/ai-experiments" className="btn btn-gradient-vibrant text-[10px] sm:text-xs py-0.5 px-2">
-                Explore Lab
-              </a>
-              <a href="https://youtube.com/@austn" target="_blank" rel="noopener noreferrer" 
-                 className="btn btn-secondary text-[10px] sm:text-xs py-0.5 px-2">
-                <span className="material-icons text-xs">play_circle</span>
-                Watch
-              </a>
+            <a href="/blog" className="apple-link text-xs inline-flex items-center group">
+              Read more 
+              <span className="material-icons text-sm ml-1 transform group-hover:translate-x-1 transition-transform">
+                arrow_forward
+              </span>
+            </a>
+          </div>
+        </div>
+
+        {/* Tech Setup - 1x1 */}
+        <div className="bento-box bento-1x1">
+          <h3 className="font-semibold mb-1">Tech Setup</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="material-icons text-sm" style={{ color: 'var(--text-muted)' }}>computer</span>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Dev setup
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Stats - 3x1 */}
+        <div className="bento-box bento-2x1 bento-stats">
+          <div className="grid grid-cols-3 gap-2 h-full">
+            <div className="stat-item flex flex-col justify-center items-center">
+              <div className="text-lg sm:text-xl font-bold" 
+                   style={{ background: 'var(--gradient-vibrant)', 
+                           WebkitBackgroundClip: 'text',
+                           WebkitTextFillColor: 'transparent' }}>7+</div>
+              <div className="text-xs">Years Shipping</div>
+            </div>
+            <div className="stat-item flex flex-col justify-center items-center">
+              <div className="text-lg sm:text-xl font-bold" 
+                   style={{ background: 'var(--gradient-accent)', 
+                           WebkitBackgroundClip: 'text',
+                           WebkitTextFillColor: 'transparent' }}>20+</div>
+              <div className="text-xs">AI Projects</div>
             </div>
           </div>
         </div>
 
-        {/* Contact - 1x1 */}
-        <div className="bento-box bento-1x1 bento-gradient-3">
-          <h3 className="font-bold text-xs sm:text-sm mb-1">Connect</h3>
-          <div className="space-y-1">
-            <a href="mailto:hi@austn.net" className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
-              <span className="material-icons text-xs">email</span>
-              <span>Email</span>
+        {/* Featured Projects - 2x2 */}
+        <div className="bento-box bento-2x2">
+          <h3 className="font-semibold mb-2">Featured Projects</h3>
+          <div className="space-y-2 flex-1 overflow-auto">
+            <a href="/projects/hub" className="apple-card group p-2 block hover:scale-102 transition-transform">
+              <h4 className="text-sm font-semibold mb-1">
+                🚀 Hub - Rails Starter Kit
+              </h4>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
+                Everything I'd throw in a new Rails project today
+              </p>
+              <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
+                Rails • React • Stripe
+              </span>
             </a>
             <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" 
                className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
@@ -182,19 +187,40 @@ const BentoHome = () => {
           </div>
         </div>
 
-        {/* Mini Projects Grid - 1x1 */}
-        <div className="bento-box bento-1x1">
-          <h3 className="font-bold text-xs sm:text-sm mb-1">Quick Links</h3>
-          <div className="space-y-0.5">
-            <a href="/projects/curl-lol" className="block text-[9px] sm:text-[10px] hover:translate-x-0.5 transition-transform">
-              🔗 curl.lol - URL Shortener
-            </a>
-            <a href="/projects/minecraft-planner" className="block text-[9px] sm:text-[10px] hover:translate-x-0.5 transition-transform">
-              🎮 Minecraft Planner
-            </a>
-            <a href="/projects/backlit" className="block text-[9px] sm:text-[10px] hover:translate-x-0.5 transition-transform">
-              🎬 Backlit Platform
-            </a>
+        {/* Contact CTA - 1x1 */}
+        <div id="contact" className="bento-box bento-1x1 bento-contact relative"
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(191, 90, 242, 0.1) 100%)'
+             }}>
+          <div className="relative z-10">
+            <h3 className="font-semibold mb-1">Let's Connect</h3>
+            <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+              Let's build something important
+            </p>
+            <div className="space-y-1">
+              <a href="mailto:hi@austn.net" 
+                 className="flex items-center gap-2 group transition-all hover:translate-x-1 text-xs"
+                 style={{ color: 'var(--accent-color)' }}>
+                <span className="material-icons group-hover:scale-110 transition-transform text-sm">email</span>
+                <span className="truncate">hi@austn.net</span>
+              </a>
+              <a href="https://github.com/frogr" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="flex items-center gap-2 group transition-all hover:translate-x-1 text-xs"
+                 style={{ color: 'var(--purple-accent)' }}>
+                <span className="material-icons group-hover:scale-110 transition-transform text-sm">code</span>
+                <span>GitHub</span>
+              </a>
+              <a href="https://linkedin.com/in/austindanielfrench" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="flex items-center gap-2 group transition-all hover:translate-x-1 text-xs"
+                 style={{ color: 'var(--indigo-accent)' }}>
+                <span className="material-icons group-hover:scale-110 transition-transform text-sm">business</span>
+                <span>LinkedIn</span>
+              </a>
+            </div>
           </div>
         </div>
 
