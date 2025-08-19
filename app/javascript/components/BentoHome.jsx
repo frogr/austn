@@ -22,7 +22,7 @@ const BentoHome = () => {
               Hi, I'm Austin French
             </h1>
             <p className="text-sm sm:text-base md:text-lg mb-3" style={{ color: 'var(--text-secondary)' }}>
-              Senior Backend Engineer | AI Experimentalist | Teaching code & shipping features with a human touch
+              Senior Backend Engineer | AI Experimentalist | Interested in Education & Presentation
             </p>
             <div className="flex gap-2 sm:gap-3 flex-wrap">
               <a href="/projects" className="btn btn-primary text-sm">
@@ -46,21 +46,21 @@ const BentoHome = () => {
                 <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent-color)' }}></span>
                 Frontend
               </h4>
-              <p className="text-xs pl-3 mt-0.5">React, Three.js, Design Systems</p>
+              <p className="text-xs pl-3 mt-0.5">TypeScript, React, Three.js</p>
             </div>
             <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
               <h4 className="font-medium flex items-center gap-1 text-xs">
                 <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--purple-accent)' }}></span>
                 Backend
               </h4>
-              <p className="text-xs pl-3 mt-0.5">Rails, Ruby, API Architecture</p>
+              <p className="text-xs pl-3 mt-0.5">Rails, Ruby, API Design</p>
             </div>
             <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
               <h4 className="font-medium flex items-center gap-1 text-xs">
                 <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--teal-accent)' }}></span>
                 Cloud & DevOps
               </h4>
-              <p className="text-xs pl-3 mt-0.5">AI/Claude, OpenAI, RAG Systems</p>
+              <p className="text-xs pl-3 mt-0.5">AI/ML, OpenAI, RAG</p>
             </div>
           </div>
         </div>
@@ -71,9 +71,9 @@ const BentoHome = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <a href="/projects/pages-ai" className="apple-card group p-2 block hover:scale-105 transition-transform">
               <h4 className="text-sm font-semibold mb-1">Pages AI Assistant</h4>
-              <p className="text-xs mb-1">11% adoption, 10x PDF optimization</p>
+              <p className="text-xs mb-1">AI chatbot to generate beautiful documents</p>
               <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                OpenAI • Rails • PDF
+                OpenAI • Rails • RubyLLM
               </span>
             </a>
             <a href="/projects/bgca" className="apple-card group p-2 block hover:scale-105 transition-transform">
@@ -90,9 +90,9 @@ const BentoHome = () => {
         <div className="bento-box bento-1x1">
           <h3 className="font-semibold mb-1">Latest Blog</h3>
           <article className="space-y-1">
-            <h4 className="text-sm font-semibold line-clamp-1">AI-Powered Development</h4>
+            <h4 className="text-sm font-semibold line-clamp-1">How I use Claude Code</h4>
             <p className="text-xs line-clamp-2" style={{ color: 'var(--text-muted)' }}>
-              How I'm using Claude to ship 20+ projects faster than ever
+              How I've used Claude to ship 20+ projects quickly and securely
             </p>
             <a href="/blog" className="apple-link text-xs inline-flex items-center group">
               Read more 
@@ -109,7 +109,7 @@ const BentoHome = () => {
           <div className="flex items-center gap-2 mb-1">
             <span className="material-icons text-sm" style={{ color: 'var(--text-muted)' }}>computer</span>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              My eccentric but effective dev setup
+              Dev setup
             </p>
           </div>
           <a href="/tech-setup" className="apple-link text-xs inline-flex items-center group">
@@ -121,13 +121,13 @@ const BentoHome = () => {
         </div>
 
         {/* Quick Stats - 3x1 */}
-        <div className="bento-box bento-3x1 bento-stats">
+        <div className="bento-box bento-2x1 bento-stats">
           <div className="grid grid-cols-3 gap-2 h-full">
             <div className="stat-item flex flex-col justify-center items-center">
               <div className="text-lg sm:text-xl font-bold" 
                    style={{ background: 'var(--gradient-vibrant)', 
                            WebkitBackgroundClip: 'text',
-                           WebkitTextFillColor: 'transparent' }}>6+</div>
+                           WebkitTextFillColor: 'transparent' }}>7+</div>
               <div className="text-xs">Years Shipping</div>
             </div>
             <div className="stat-item flex flex-col justify-center items-center">
@@ -136,13 +136,6 @@ const BentoHome = () => {
                            WebkitBackgroundClip: 'text',
                            WebkitTextFillColor: 'transparent' }}>20+</div>
               <div className="text-xs">AI Projects</div>
-            </div>
-            <div className="stat-item flex flex-col justify-center items-center">
-              <div className="text-lg sm:text-xl font-bold" 
-                   style={{ background: 'var(--gradient-cool)', 
-                           WebkitBackgroundClip: 'text',
-                           WebkitTextFillColor: 'transparent' }}>100%</div>
-              <div className="text-xs">Student Success</div>
             </div>
           </div>
         </div>
@@ -159,7 +152,7 @@ const BentoHome = () => {
                 Everything I'd throw in a new Rails project today
               </p>
               <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                Rails • React • Stripe • My Opinions
+                Rails • React • Stripe
               </span>
             </a>
             <a href="/projects/ai-experiments" className="apple-card group p-2 block hover:scale-102 transition-transform">
@@ -210,7 +203,7 @@ const BentoHome = () => {
           <div className="relative z-10">
             <h3 className="font-semibold mb-1">Let's Connect</h3>
             <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-              Let's build something meaningful
+              Let's build something important
             </p>
             <div className="space-y-1">
               <a href="mailto:hi@austn.net" 
