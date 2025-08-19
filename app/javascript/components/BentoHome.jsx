@@ -70,7 +70,7 @@ const BentoHome = () => {
         {/* Recent Work - 2x1 */}
         <div className="bento-box bento-2x1">
           <h3 className="font-semibold mb-2">Recent Work</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <a href="/projects/pages-ai" className="apple-card group p-2 block hover:scale-105 transition-transform">
               <h4 className="text-sm font-semibold mb-1">Pages AI Assistant</h4>
               <p className="text-xs mb-1">AI chatbot to generate beautiful documents</p>
@@ -81,6 +81,10 @@ const BentoHome = () => {
             <a href="/projects/bgca" className="block glass-thick rounded-md p-1.5 hover:scale-[1.01] transition-transform">
               <h4 className="font-semibold text-[10px] sm:text-xs">💝 $2MM+ Platform</h4>
               <p className="text-[9px] sm:text-[10px] opacity-70">Boys & Girls Club fundraiser</p>
+            </a>
+            <a href="/projects/backlit" className="block glass-thick rounded-md p-1.5 hover:scale-[1.01] transition-transform">
+              <h4 className="font-semibold text-[10px] sm:text-xs">🎥 Backlit Platform</h4>
+              <p className="text-[9px] sm:text-[10px] opacity-70">Production suite for major TV events</p>
             </a>
           </div>
           <a href="/projects" className="apple-link text-[10px] sm:text-xs inline-flex items-center group mt-1">
@@ -109,15 +113,15 @@ const BentoHome = () => {
         </div>
 
         {/* Tech Setup - 1x1 */}
-        <div className="bento-box bento-1x1">
+        <a href="/tech-setup" className="bento-box bento-1x1 block hover:scale-[1.02] transition-transform">
           <h3 className="font-semibold mb-1">Tech Setup</h3>
           <div className="flex items-center gap-2 mb-1">
             <span className="material-icons text-sm" style={{ color: 'var(--text-muted)' }}>computer</span>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Dev setup
+              My dev setup, from hardware to software
             </p>
           </div>
-        </div>
+        </a>
 
         {/* Quick Stats - 3x1 */}
         <div className="bento-box bento-2x1 bento-stats">
@@ -135,6 +139,13 @@ const BentoHome = () => {
                            WebkitBackgroundClip: 'text',
                            WebkitTextFillColor: 'transparent' }}>20+</div>
               <div className="text-xs">AI Projects</div>
+            </div>
+             <div className="stat-item flex flex-col justify-center items-center">
+              <div className="text-lg sm:text-xl font-bold"
+                   style={{ background: 'var(--gradient-cool)',
+                           WebkitBackgroundClip: 'text',
+                           WebkitTextFillColor: 'transparent' }}>15+</div>
+              <div className="text-xs">Open Source</div>
             </div>
           </div>
         </div>
@@ -154,15 +165,29 @@ const BentoHome = () => {
                 Rails • React • Stripe
               </span>
             </a>
-            <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" 
-               className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
-              <span className="material-icons text-xs">code</span>
-              <span>GitHub</span>
+            <a href="/projects/ai-experiments" className="apple-card group p-2 block hover:scale-102 transition-transform">
+              <h4 className="text-sm font-semibold mb-1">
+                🧪 AI Experiments Lab
+              </h4>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
+                20+ projects built with Claude
+              </p>
             </a>
-            <a href="https://linkedin.com/in/austindanielfrench" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
-              <span className="material-icons text-xs">business</span>
-              <span>LinkedIn</span>
+            <a href="/projects/minecraft-planner" className="apple-card group p-2 block hover:scale-102 transition-transform">
+              <h4 className="text-sm font-semibold mb-1">
+                🎮 Minecraft Build Planner
+              </h4>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
+                Three.js tool for planning builds
+              </p>
+            </a>
+             <a href="/projects/curl-lol" className="apple-card group p-2 block hover:scale-102 transition-transform">
+              <h4 className="text-sm font-semibold mb-1">
+                🔗 curl.lol
+              </h4>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
+                URL shortener with analytics
+              </p>
             </a>
           </div>
         </div>
