@@ -92,7 +92,7 @@ const Projects = () => {
       category: 'ai',
       description: '20+ projects built with Claude: TodayIn3Minutes, gitRAG, and more',
       technologies: ['Claude AI', 'OpenAI', 'Python', 'RAG Systems'],
-      link: '/projects/ai-lab',
+      link: '/projects/ai-experiments',
       featured: false,
       image: '🧪',
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
@@ -148,6 +148,28 @@ const Projects = () => {
       featured: false,
       image: '🎮',
       gradient: 'linear-gradient(135deg, var(--green-accent) 0%, var(--blue-accent) 100%)'
+    },
+    {
+      id: 9,
+      title: 'This Portfolio',
+      category: 'web',
+      description: 'The site you are on right now, built with Rails and React',
+      technologies: ['React', 'Ruby on Rails', 'Tailwind CSS', 'JavaScript'],
+      link: '/projects/portfolio',
+      featured: false,
+      image: '🌐',
+      gradient: 'var(--gradient-accent)'
+    },
+    {
+      id: 10,
+      title: 'Car Search Aggregator',
+      category: 'web',
+      description: 'Aggregates car listings from eBay and Craigslist',
+      technologies: ['Node.js', 'React', 'Express', 'APIs', 'MongoDB'],
+      link: '/projects/car-search',
+      featured: false,
+      image: '🚗',
+      gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)'
     }
   ];
 
