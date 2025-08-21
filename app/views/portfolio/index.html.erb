@@ -1,1 +1,5 @@
-<div data-react-component="BentoHome"></div>
+<div data-react-component="BentoHome" 
+     data-props="<%= {
+       latestBlogPosts: @latest_blog_posts.as_json(only: [:id, :title, :slug, :created_at]),
+       featuredProjects: @featured_projects
+     }.to_json %>"></div>

@@ -1,230 +1,347 @@
 import React from 'react';
 import { useTheme } from './ThemeContext';
 
-const BentoHome = () => {
+const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
   const { theme } = useTheme();
 
+  // Format date for blog posts
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
   return (
-    <div className="h-screen relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 opacity-10 overflow-hidden">
-        <div className="absolute top-0 -left-4 w-48 h-48 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-15 animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-48 h-48 bg-yellow-500 rounded-full mix-blend-multiply filter blur-2xl opacity-15 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-48 h-48 bg-pink-500 rounded-full mix-blend-multiply filter blur-2xl opacity-15 animate-blob animation-delay-4000"></div>
+    <div className="h-screen relative overflow-hidden" style={{ 
+      background: 'linear-gradient(180deg, #000000 0%, #0a0a0a 100%)'
+    }}>
+      {/* Beautiful gradient mesh background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-[20%] w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob"></div>
+        <div className="absolute top-[30%] right-[15%] w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 left-[35%] w-96 h-96 bg-pink-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[60%] left-[60%] w-96 h-96 bg-teal-500 rounded-full mix-blend-screen filter blur-[128px] opacity-40 animate-blob animation-delay-6000"></div>
       </div>
 
-      {/* Use the bento grid system that was working */}
+      {/* Compact bento grid with touching boxes */}
       <div className="bento-container bento-grid-home relative z-10 overflow-y-auto">
         
-        {/* Hero Section - Full width */}
-        <div className="bento-box bento-full bento-gradient-1 flex items-center py-2">
+        {/* Hero Section - Full width with gradient text */}
+        <div className="bento-box bento-full flex items-center" 
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(191, 90, 242, 0.05) 100%)',
+               borderTop: 'none',
+               borderLeft: 'none',
+               borderRight: 'none'
+             }}>
           <div className="w-full">
-            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black mb-0.5 bg-clip-text text-transparent"
-                style={{ backgroundImage: 'var(--gradient-accent)' }}>
-              Hi, I'm Austin French
+            <h1 className="font-black mb-2"
+                style={{ 
+                  fontSize: 'clamp(3rem, 8vw, 5rem)',
+                  background: 'linear-gradient(135deg, #007AFF 0%, #BF5AF2 50%, #FF375F 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  letterSpacing: '-0.03em'
+                }}>
+              Austin French
             </h1>
-            <p className="text-sm sm:text-base md:text-lg mb-3" style={{ color: 'var(--text-secondary)' }}>
-              Senior Backend Engineer | AI Experimentalist | Interested in Education & Presentation
+            <p className="text-xl sm:text-2xl md:text-3xl font-medium mb-4" 
+               style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+              Senior Backend Engineer · AI Experimentalist
             </p>
-            <div className="flex gap-1 flex-wrap">
-              <a href="/projects" className="btn btn-primary text-[10px] sm:text-xs py-1 px-2">
-                <span className="material-icons text-xs">folder</span>
+            <div className="flex gap-3 flex-wrap">
+              <a href="/projects" className="btn-primary px-6 py-3 rounded-xl font-semibold text-base 
+                                            inline-flex items-center gap-2 transition-all hover:scale-105"
+                 style={{ 
+                   background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                   boxShadow: '0 4px 24px rgba(0, 122, 255, 0.3)'
+                 }}>
+                <span className="material-icons text-lg">rocket_launch</span>
                 <span>View Projects</span>
               </a>
-              <a href="/blog" className="btn btn-secondary text-[10px] sm:text-xs py-1 px-2">
-                <span className="material-icons text-xs">article</span>
+              <a href="/blog" className="px-6 py-3 rounded-xl font-semibold text-base 
+                                        inline-flex items-center gap-2 transition-all hover:scale-105"
+                 style={{ 
+                   background: 'rgba(255, 255, 255, 0.06)',
+                   backdropFilter: 'blur(20px)',
+                   border: '1px solid rgba(255, 255, 255, 0.1)',
+                   color: 'rgba(255, 255, 255, 0.9)'
+                 }}>
+                <span className="material-icons text-lg">article</span>
                 <span>Read Blog</span>
               </a>
             </div>
           </div>
         </div>
 
-        {/* Skills Section - 1x1 */}
-        <div className="bento-box bento-1x1 bento-gradient-2 bento-skills">
-          <h3 className="font-semibold mb-2">Core Skills</h3>
-          <div className="space-y-1 flex-1">
-            <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
-              <h4 className="font-medium flex items-center gap-1 text-xs">
-                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent-color)' }}></span>
-                Frontend
-              </h4>
-              <p className="text-xs pl-3 mt-0.5">TypeScript, React, Three.js</p>
-            </div>
-            <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
-              <h4 className="font-medium flex items-center gap-1 text-xs">
-                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--purple-accent)' }}></span>
-                Backend
-              </h4>
-              <p className="text-xs pl-3 mt-0.5">Rails, Ruby, API Design</p>
-            </div>
-            <div className="glass-thick rounded-lg skill-item transition-transform hover:scale-105">
-              <h4 className="font-medium flex items-center gap-1 text-xs">
-                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--teal-accent)' }}></span>
-                Cloud & DevOps
-              </h4>
-              <p className="text-xs pl-3 mt-0.5">AI/ML, OpenAI, RAG</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Work - 2x1 */}
-        <div className="bento-box bento-2x1">
-          <h3 className="font-semibold mb-2">Recent Work</h3>
+        {/* Recent Work - 2x1 with glass effect */}
+        <div className="bento-box bento-2x1" 
+             style={{ 
+               background: 'rgba(255, 255, 255, 0.03)',
+               borderLeft: 'none'
+             }}>
+          <h3 className="font-bold text-xl mb-3">Recent Work</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a href="/projects/pages-ai" className="apple-card group p-2 block hover:scale-105 transition-transform">
-              <h4 className="text-sm font-semibold mb-1">Pages AI Assistant</h4>
-              <p className="text-xs mb-1">AI chatbot to generate beautiful documents</p>
-              <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                OpenAI • Rails • RubyLLM
-              </span>
-            </a>
-            <a href="/projects/bgca" className="block glass-thick rounded-md p-1.5 hover:scale-[1.01] transition-transform">
-              <h4 className="font-semibold text-[10px] sm:text-xs">💝 $2MM+ Platform</h4>
-              <p className="text-[9px] sm:text-[10px] opacity-70">Boys & Girls Club fundraiser</p>
-            </a>
+            {featuredProjects.slice(0, 2).map(project => (
+              <a key={project.id} href={`/projects/${project.id}`} 
+                 className="group p-3 block rounded-lg transition-all hover:scale-105"
+                 style={{ 
+                   background: 'rgba(255, 255, 255, 0.04)',
+                   backdropFilter: 'blur(10px)',
+                   border: '1px solid rgba(255, 255, 255, 0.06)'
+                 }}>
+                <div className="flex items-start gap-2">
+                  <span className="text-2xl">{project.image}</span>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-base truncate">{project.title}</h4>
+                    <p className="text-sm opacity-80 line-clamp-1">{project.description}</p>
+                  </div>
+                </div>
+              </a>
+            ))}
           </div>
-          <a href="/projects" className="apple-link text-[10px] sm:text-xs inline-flex items-center group mt-1">
+          <a href="/projects" className="inline-flex items-center gap-1 mt-3 text-sm font-medium transition-all hover:gap-2"
+             style={{ color: '#007AFF' }}>
             View All Projects
-            <span className="material-icons text-sm ml-1 transform group-hover:translate-x-1 transition-transform">
-              arrow_forward
-            </span>
+            <span className="material-icons text-base">arrow_forward</span>
           </a>
         </div>
 
-        {/* Blog Preview - 1x1 */}
-        <div className="bento-box bento-1x1">
-          <h3 className="font-semibold mb-1">Latest Blog</h3>
-          <article className="space-y-1">
-            <h4 className="text-sm font-semibold line-clamp-1">How I use Claude Code</h4>
-            <p className="text-xs line-clamp-2" style={{ color: 'var(--text-muted)' }}>
-              How I've used Claude to ship 20+ projects quickly and securely
-            </p>
-            <a href="/blog" className="apple-link text-xs inline-flex items-center group">
-              Read more 
-              <span className="material-icons text-sm ml-1 transform group-hover:translate-x-1 transition-transform">
-                arrow_forward
-              </span>
-            </a>
-          </article>
-        </div>
-
-        {/* Tech Setup - 1x1 */}
-        <div className="bento-box bento-1x1">
-          <h3 className="font-semibold mb-1">Tech Setup</h3>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="material-icons text-sm" style={{ color: 'var(--text-muted)' }}>computer</span>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Dev setup
-            </p>
-          </div>
-        </div>
-
-        {/* Quick Stats - 3x1 */}
-        <div className="bento-box bento-2x1 bento-stats">
-          <div className="grid grid-cols-2 gap-2 h-full">
-            <div className="stat-item flex flex-col justify-center items-center">
-              <div className="text-lg sm:text-xl font-bold" 
-                   style={{ background: 'var(--gradient-vibrant)', 
-                           WebkitBackgroundClip: 'text',
-                           WebkitTextFillColor: 'transparent' }}>7+</div>
-              <div className="text-xs">Years Shipping</div>
-            </div>
-            <div className="stat-item flex flex-col justify-center items-center">
-              <div className="text-lg sm:text-xl font-bold" 
-                   style={{ background: 'var(--gradient-accent)', 
-                           WebkitBackgroundClip: 'text',
-                           WebkitTextFillColor: 'transparent' }}>20+</div>
-              <div className="text-xs">AI Projects</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Featured Projects - 2x2 */}
-        <div className="bento-box bento-2x2">
-          <h3 className="font-semibold mb-2">Featured Projects</h3>
+        {/* Latest Blog Posts - 2x2 with gradient accent */}
+        <div className="bento-box bento-2x2"
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(191, 90, 242, 0.03) 0%, rgba(255, 55, 95, 0.03) 100%)',
+               borderRight: 'none'
+             }}>
+          <h3 className="font-bold text-xl mb-3">Latest Writing</h3>
           <div className="space-y-2 flex-1 overflow-auto">
-            <a href="/projects/hub" className="apple-card group p-2 block hover:scale-102 transition-transform">
-              <h4 className="text-sm font-semibold mb-1">
-                🚀 Hub - Rails Starter Kit
-              </h4>
-              <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
-                Everything I'd throw in a new Rails project today
-              </p>
-              <span className="text-xs" style={{ color: 'var(--accent-secondary)' }}>
-                Rails • React • Stripe
-              </span>
+            {latestBlogPosts.length > 0 ? (
+              latestBlogPosts.map(post => (
+                <a key={post.id} href={`/blog/${post.slug}`}
+                   className="block p-3 rounded-lg transition-all hover:scale-[1.02]"
+                   style={{ 
+                     background: 'rgba(255, 255, 255, 0.04)',
+                     backdropFilter: 'blur(10px)',
+                     border: '1px solid rgba(255, 255, 255, 0.06)'
+                   }}>
+                  <h4 className="font-semibold text-base line-clamp-1">{post.title}</h4>
+                  <p className="text-sm opacity-70 mt-1">{formatDate(post.created_at)}</p>
+                </a>
+              ))
+            ) : (
+              <div className="space-y-2">
+                <div className="p-3 rounded-lg"
+                     style={{ 
+                       background: 'rgba(255, 255, 255, 0.04)',
+                       backdropFilter: 'blur(10px)',
+                       border: '1px solid rgba(255, 255, 255, 0.06)'
+                     }}>
+                  <h4 className="font-semibold text-base">How I use Claude Code</h4>
+                  <p className="text-sm opacity-70 mt-1">Ship 20+ projects quickly</p>
+                </div>
+                <div className="p-3 rounded-lg"
+                     style={{ 
+                       background: 'rgba(255, 255, 255, 0.04)',
+                       backdropFilter: 'blur(10px)',
+                       border: '1px solid rgba(255, 255, 255, 0.06)'
+                     }}>
+                  <h4 className="font-semibold text-base">Building with AI</h4>
+                  <p className="text-sm opacity-70 mt-1">Lessons from production</p>
+                </div>
+              </div>
+            )}
+            <a href="/blog" className="inline-flex items-center gap-1 mt-2 text-sm font-medium transition-all hover:gap-2"
+               style={{ color: '#BF5AF2' }}>
+              Read All Posts
+              <span className="material-icons text-base">arrow_forward</span>
             </a>
-            <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" 
-               className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
-              <span className="material-icons text-xs">code</span>
+          </div>
+        </div>
+
+        {/* Core Skills - Compact 1x1 with color dots */}
+        <div className="bento-box bento-1x1"
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(0, 214, 143, 0.03) 0%, rgba(100, 210, 255, 0.03) 100%)',
+               borderLeft: 'none'
+             }}>
+          <h3 className="font-bold text-lg mb-3">Core Stack</h3>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full" style={{ background: '#007AFF' }}></span>
+              <span className="font-medium text-sm">Rails, Ruby, APIs</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full" style={{ background: '#BF5AF2' }}></span>
+              <span className="font-medium text-sm">React, TypeScript</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full" style={{ background: '#00D68F' }}></span>
+              <span className="font-medium text-sm">AI/ML, OpenAI</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats - Inline compact 2x1 with gradient numbers */}
+        <div className="bento-box bento-2x1 flex items-center"
+             style={{ 
+               background: 'rgba(255, 255, 255, 0.02)'
+             }}>
+          <div className="flex gap-6 w-full justify-around">
+            <div className="text-center">
+              <div className="font-bold" 
+                   style={{ 
+                     fontSize: '2.5rem',
+                     background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+                     WebkitBackgroundClip: 'text',
+                     WebkitTextFillColor: 'transparent'
+                   }}>7+</div>
+              <div className="text-sm opacity-70">Years</div>
+            </div>
+            <div className="text-center">
+              <div className="font-bold" 
+                   style={{ 
+                     fontSize: '2.5rem',
+                     background: 'linear-gradient(135deg, #BF5AF2 0%, #FF375F 100%)',
+                     WebkitBackgroundClip: 'text',
+                     WebkitTextFillColor: 'transparent'
+                   }}>20+</div>
+              <div className="text-sm opacity-70">AI Projects</div>
+            </div>
+            <div className="text-center">
+              <div className="font-bold" 
+                   style={{ 
+                     fontSize: '2.5rem',
+                     background: 'linear-gradient(135deg, #00D68F 0%, #64D2FF 100%)',
+                     WebkitBackgroundClip: 'text',
+                     WebkitTextFillColor: 'transparent'
+                   }}>$2M+</div>
+              <div className="text-sm opacity-70">Processed</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Featured Projects Grid - 2x2 with glassmorphism */}
+        <div className="bento-box bento-2x2"
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(94, 92, 230, 0.03) 0%, rgba(0, 122, 255, 0.03) 100%)',
+               borderRight: 'none',
+               borderBottom: 'none'
+             }}>
+          <h3 className="font-bold text-xl mb-3">Featured Projects</h3>
+          <div className="grid grid-cols-2 gap-2 flex-1">
+            {featuredProjects.map(project => (
+              <a key={project.id} href={`/projects/${project.id}`} 
+                 className="p-3 rounded-lg hover:scale-105 transition-all flex flex-col"
+                 style={{ 
+                   background: 'rgba(255, 255, 255, 0.04)',
+                   backdropFilter: 'blur(10px)',
+                   border: '1px solid rgba(255, 255, 255, 0.06)'
+                 }}>
+                <span className="text-3xl mb-2">{project.image}</span>
+                <h4 className="font-semibold text-sm line-clamp-1">{project.title}</h4>
+                <div className="flex flex-wrap gap-1 mt-auto">
+                  {project.technologies.slice(0, 2).map(tech => (
+                    <span key={tech} className="text-xs opacity-60">{tech}</span>
+                  ))}
+                </div>
+              </a>
+            ))}
+            <a href="/games/arena-shooter" 
+               className="p-3 rounded-lg hover:scale-105 transition-all flex flex-col"
+               style={{ 
+                 background: 'rgba(255, 255, 255, 0.04)',
+                 backdropFilter: 'blur(10px)',
+                 border: '1px solid rgba(255, 255, 255, 0.06)'
+               }}>
+              <span className="text-3xl mb-2">🎮</span>
+              <h4 className="font-semibold text-sm">Arena Shooter</h4>
+              <span className="text-xs opacity-60">Three.js Game</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Current Focus - Compact 1x1 with pills */}
+        <div className="bento-box bento-1x1"
+             style={{ 
+               background: 'rgba(255, 255, 255, 0.03)',
+               borderLeft: 'none',
+               borderBottom: 'none'
+             }}>
+          <h3 className="font-bold text-lg mb-2">Now</h3>
+          <div className="flex flex-wrap gap-1">
+            <span className="px-3 py-1 rounded-full text-xs font-medium"
+                  style={{ 
+                    background: 'rgba(0, 122, 255, 0.1)',
+                    border: '1px solid rgba(0, 122, 255, 0.2)'
+                  }}>🎯 AI</span>
+            <span className="px-3 py-1 rounded-full text-xs font-medium"
+                  style={{ 
+                    background: 'rgba(191, 90, 242, 0.1)',
+                    border: '1px solid rgba(191, 90, 242, 0.2)'
+                  }}>📚 Teaching</span>
+            <span className="px-3 py-1 rounded-full text-xs font-medium"
+                  style={{ 
+                    background: 'rgba(0, 214, 143, 0.1)',
+                    border: '1px solid rgba(0, 214, 143, 0.2)'
+                  }}>🚀 OSS</span>
+            <span className="px-3 py-1 rounded-full text-xs font-medium"
+                  style={{ 
+                    background: 'rgba(255, 55, 95, 0.1)',
+                    border: '1px solid rgba(255, 55, 95, 0.2)'
+                  }}>🎮 Games</span>
+          </div>
+        </div>
+
+        {/* Contact - Compact 1x1 with hover effects */}
+        <div className="bento-box bento-1x1"
+             style={{ 
+               background: 'linear-gradient(135deg, rgba(255, 149, 0, 0.03) 0%, rgba(255, 55, 95, 0.03) 100%)',
+               borderBottom: 'none'
+             }}>
+          <h3 className="font-bold text-lg mb-3">Connect</h3>
+          <div className="space-y-2">
+            <a href="mailto:hi@austn.net" 
+               className="flex items-center gap-2 group hover:translate-x-1 transition-all text-sm font-medium">
+              <span className="material-icons text-base" style={{ color: '#007AFF' }}>email</span>
+              <span>hi@austn.net</span>
+            </a>
+            <a href="https://github.com/frogr" 
+               target="_blank"
+               rel="noopener noreferrer"
+               className="flex items-center gap-2 group hover:translate-x-1 transition-all text-sm font-medium">
+              <span className="material-icons text-base" style={{ color: '#BF5AF2' }}>code</span>
               <span>GitHub</span>
             </a>
-            <a href="https://linkedin.com/in/austindanielfrench" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-1 text-[10px] sm:text-xs hover:translate-x-0.5 transition-transform">
-              <span className="material-icons text-xs">business</span>
+            <a href="https://linkedin.com/in/austindanielfrench" 
+               target="_blank"
+               rel="noopener noreferrer"
+               className="flex items-center gap-2 group hover:translate-x-1 transition-all text-sm font-medium">
+              <span className="material-icons text-base" style={{ color: '#5E5CE6' }}>business</span>
               <span>LinkedIn</span>
             </a>
           </div>
         </div>
 
-        {/* Game Preview - 1x1 */}
-        <div className="bento-box bento-1x1 flex flex-col justify-center">
-          <h3 className="font-bold text-xs sm:text-sm mb-0.5">🎮 Arena Shooter</h3>
-          <p className="text-[10px] sm:text-xs opacity-70 mb-1">Three.js game</p>
-          <a href="/games/arena-shooter" className="btn btn-gradient-accent text-[10px] sm:text-xs py-0.5 w-full justify-center">
-            Play Now
-          </a>
-        </div>
-
-        {/* Current Focus - 2x1 */}
-        <div className="bento-box bento-2x1">
-          <h3 className="font-bold text-xs sm:text-sm mb-1">Current Focus</h3>
-          <div className="flex flex-wrap gap-1">
-            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">🎯 AI Integration</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">📚 Teaching</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">🚀 Open Source</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] glass-thick">🎮 Game Dev</span>
-          </div>
-        </div>
-
-        {/* Contact CTA - 1x1 */}
-        <div id="contact" className="bento-box bento-1x1 bento-contact relative"
-             style={{ 
-               background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(191, 90, 242, 0.1) 100%)'
-             }}>
-          <div className="relative z-10">
-            <h3 className="font-semibold mb-1">Let's Connect</h3>
-            <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-              Let's build something important
-            </p>
-            <div className="space-y-1">
-              <a href="mailto:hi@austn.net" 
-                 className="flex items-center gap-2 group transition-all hover:translate-x-1 text-xs"
-                 style={{ color: 'var(--accent-color)' }}>
-                <span className="material-icons group-hover:scale-110 transition-transform text-sm">email</span>
-                <span className="truncate">hi@austn.net</span>
-              </a>
-              <a href="https://github.com/frogr" 
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="flex items-center gap-2 group transition-all hover:translate-x-1 text-xs"
-                 style={{ color: 'var(--purple-accent)' }}>
-                <span className="material-icons group-hover:scale-110 transition-transform text-sm">code</span>
-                <span>GitHub</span>
-              </a>
-              <a href="https://linkedin.com/in/austindanielfrench" 
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="flex items-center gap-2 group transition-all hover:translate-x-1 text-xs"
-                 style={{ color: 'var(--indigo-accent)' }}>
-                <span className="material-icons group-hover:scale-110 transition-transform text-sm">business</span>
-                <span>LinkedIn</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
       </div>
+      
+      <style jsx>{`
+        @keyframes blob {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .animate-blob {
+          animation: blob 20s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 5s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 10s;
+        }
+        .animation-delay-6000 {
+          animation-delay: 15s;
+        }
+      `}</style>
     </div>
   );
 };

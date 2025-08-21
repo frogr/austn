@@ -1,6 +1,30 @@
 class PortfolioController < ApplicationController
   def index
     # Hero page with bento box layout
+    @latest_blog_posts = BlogPost.order(created_at: :desc).limit(3)
+    @featured_projects = [
+      {
+        id: 'pages-ai',
+        title: 'Pages AI Assistant',
+        description: 'Natural language document generation that grew adoption 4% → 11%',
+        technologies: ['OpenAI', 'Rails', 'RubyLLM'],
+        image: '🤖'
+      },
+      {
+        id: 'bgca',
+        title: 'Boys & Girls Club Platform',
+        description: '$2MM+ donation processing system',
+        technologies: ['Node.js', 'Stripe', 'Heroku'],
+        image: '💝'
+      },
+      {
+        id: 'hub',
+        title: 'Hub - Rails Starter Kit',
+        description: 'My opinionated alternative to Jumpstart Pro',
+        technologies: ['Rails 7', 'React', 'Docker'],
+        image: '🚀'
+      }
+    ]
   end
 
   def projects
