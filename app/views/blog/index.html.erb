@@ -3,44 +3,146 @@
   <div class="absolute inset-0 opacity-20 pointer-events-none">
     <div class="absolute top-20 left-[20%] w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[128px] opacity-40"></div>
     <div class="absolute top-[40%] right-[15%] w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[128px] opacity-40"></div>
+    <div class="absolute bottom-0 left-[35%] w-96 h-96 bg-pink-500 rounded-full mix-blend-screen filter blur-[128px] opacity-40"></div>
   </div>
   
-  <div class="container relative z-10">
+  <div class="container relative z-10 max-w-7xl mx-auto px-4">
     <!-- Header -->
     <div class="text-center mb-12">
       <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 50%, #FF375F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.03em;">Blog</h1>
       <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Thoughts on development, design, and technology</p>
     </div>
     
-    <!-- Blog Posts -->
-    <div class="grid gap-lg">
-      <% if @blog_posts.any? %>
-        <% @blog_posts.each_with_index do |post, index| %>
-          <%= link_to blog_post_path(post.slug), class: "block" do %>
-            <article class="rounded-2xl p-6 transition-all hover:scale-[1.01] animate-fadeInUp" style="animation-delay: <%= index * 0.1 %>s; background: rgba(255, 255, 255, 0.04); backdrop-filter: saturate(200%) blur(20px); border: 1px solid rgba(255, 255, 255, 0.08);">
-              <h2 class="text-2xl font-bold mb-3"><%= post.title %></h2>
-              
-              <div class="flex items-center gap-xs text-sm text-muted mb-md">
-                <span class="material-icons icon-sm">calendar_today</span>
-                <%= post.published_at.strftime("%B %d, %Y") if post.published_at %>
-              </div>
-              
-              <p class="text-secondary mb-md line-clamp-3">
-                <%= truncate(strip_tags(post.content), length: 200) %>
-              </p>
-              
-              <div class="inline-flex items-center gap-xs text-sm font-medium" style="color: var(--accent-primary);">
-                <span>Read more</span>
-                <span class="material-icons icon-sm">arrow_forward</span>
-              </div>
-            </article>
+    <% if @blog_posts.any? %>
+      <% latest_post = @blog_posts.first %>
+      <% other_posts = @blog_posts[1..-1] || [] %>
+      
+      <!-- Featured Latest Post - Full Width Banner -->
+      <%= link_to blog_post_path(latest_post.slug), class: "block mb-8" do %>
+        <article class="rounded-2xl p-8 md:p-12 transition-all hover:scale-[1.005] relative overflow-hidden group" 
+                 style="background: linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(191, 90, 242, 0.05) 100%); 
+                        backdrop-filter: saturate(200%) blur(20px); 
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        min-height: 300px;">
+          
+          <!-- Gradient decoration -->
+          <div class="absolute top-0 right-0 w-64 h-64 opacity-20 group-hover:opacity-30 transition-opacity"
+               style="background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 100%); 
+                      filter: blur(100px);"></div>
+          
+          <!-- Special decoration badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4"
+               style="background: rgba(255, 255, 255, 0.05); 
+                      border: 1px solid rgba(255, 255, 255, 0.1);">
+            <span class="text-xs font-semibold uppercase tracking-wider" style="color: #BF5AF2;">Latest Post</span>
+          </div>
+          
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 relative z-10"
+              style="background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 100%); 
+                     -webkit-background-clip: text; 
+                     -webkit-text-fill-color: transparent;">
+            <%= latest_post.title %>
+          </h2>
+          
+          <div class="flex items-center gap-2 text-sm mb-4" style="color: var(--text-muted);">
+            <span class="material-icons text-base">calendar_today</span>
+            <%= latest_post.published_at&.strftime("%B %d, %Y") || latest_post.created_at.strftime("%B %d, %Y") %>
+          </div>
+          
+          <p class="text-lg mb-6 line-clamp-3 relative z-10" style="color: var(--text-secondary);">
+            <%= truncate(strip_tags(latest_post.content), length: 300) %>
+          </p>
+          
+          <div class="inline-flex items-center gap-2 text-base font-medium group-hover:gap-3 transition-all" 
+               style="color: #007AFF;">
+            <span>Read Article</span>
+            <span class="material-icons">arrow_forward</span>
+          </div>
+        </article>
+      <% end %>
+      
+      <!-- Grid of Other Posts -->
+      <% if other_posts.any? %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <% other_posts.each_with_index do |post, index| %>
+            <%= link_to blog_post_path(post.slug), class: "block" do %>
+              <article class="rounded-2xl p-6 h-full transition-all hover:scale-[1.02] animate-fadeInUp group flex flex-col" 
+                       style="animation-delay: <%= index * 0.1 %>s; 
+                              background: rgba(255, 255, 255, 0.04); 
+                              backdrop-filter: saturate(200%) blur(20px); 
+                              border: 1px solid rgba(255, 255, 255, 0.08);">
+                
+                <h3 class="text-xl font-bold mb-3 line-clamp-2 group-hover:text-transparent transition-all"
+                    style="color: var(--text-primary);
+                           background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 100%); 
+                           -webkit-background-clip: text;">
+                  <%= post.title %>
+                </h3>
+                
+                <div class="flex items-center gap-2 text-sm mb-3" style="color: var(--text-muted);">
+                  <span class="material-icons text-sm">schedule</span>
+                  <%= post.published_at&.strftime("%B %d, %Y") || post.created_at.strftime("%B %d, %Y") %>
+                </div>
+                
+                <p class="text-sm mb-4 line-clamp-3 flex-grow" style="color: var(--text-secondary);">
+                  <%= truncate(strip_tags(post.content), length: 150) %>
+                </p>
+                
+                <div class="inline-flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all" 
+                     style="color: #BF5AF2;">
+                  <span>Read more</span>
+                  <span class="material-icons text-sm">arrow_forward</span>
+                </div>
+              </article>
+            <% end %>
           <% end %>
-        <% end %>
-      <% else %>
-        <div class="card text-center">
-          <p class="text-lg text-muted">No blog posts yet. Check back soon!</p>
         </div>
       <% end %>
-    </div>
+      
+    <% else %>
+      <!-- Empty State -->
+      <div class="text-center py-20">
+        <div class="rounded-2xl p-12 mx-auto max-w-2xl"
+             style="background: rgba(255, 255, 255, 0.04); 
+                    backdrop-filter: saturate(200%) blur(20px); 
+                    border: 1px solid rgba(255, 255, 255, 0.08);">
+          <span class="material-icons text-6xl mb-4" style="color: #BF5AF2;">article</span>
+          <h2 class="text-2xl font-bold mb-2">No posts yet</h2>
+          <p class="text-lg" style="color: var(--text-muted);">Check back soon for thoughts on development, design, and AI!</p>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
+
+<style>
+  @keyframes fadeInUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
+  .animate-fadeInUp {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

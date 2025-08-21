@@ -6,7 +6,6 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import { useMarkdownContent } from './useMarkdownContent';
 import MarkdownComponents from './MarkdownComponents';
-import DebugPanel from './DebugPanel';
 import './markdown-styles.css';
 import { ThemeContext } from '../Theme';
 
@@ -33,15 +32,11 @@ const MarkdownRenderer = ({ content, slug, useElementId }) => {
   if (error) return <div className="py-4 text-red-500">Error loading content: {error}</div>;
   if (!markdownContent) return <div className="py-4">No content available</div>;
   
-  const isDev = process.env.NODE_ENV !== 'production';
-  
   // Add appropriate classes based on the theme
   const themeClass = theme === 'dark' ? 'prose-invert' : '';
   
   return (
     <div className={`markdown-content prose prose-lg max-w-none ${themeClass} break-words`}>
-      {isDev && <DebugPanel slug={slug} useElementId={useElementId} content={markdownContent} />}
-      
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
