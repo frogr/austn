@@ -163,23 +163,41 @@ const Projects = () => {
     ? projects 
     : projects.filter(p => p.category === filter);
 
+  const isDark = theme === 'dark';
+  
   return (
-    <div className="min-h-screen pt-12 pb-6 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+    <div className="min-h-screen pt-12 pb-6 relative overflow-hidden" 
+         style={{ 
+           background: isDark 
+             ? 'linear-gradient(180deg, #000000 0%, #0a0a0a 100%)'
+             : 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)'
+         }}>
       {/* Animated gradient background */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 -left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-40 -right-20 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-32 left-40 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+      <div className="absolute inset-0" style={{ opacity: isDark ? 0.3 : 0.15 }}>
+        <div className="absolute top-20 -left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob"></div>
+        <div className="absolute top-40 -right-20 w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-32 left-40 w-96 h-96 bg-pink-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-4000"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header with gradient text */}
-        <div className="text-center mb-4 md:mb-6">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-1 md:mb-2 bg-clip-text text-transparent"
-              style={{ backgroundImage: 'var(--gradient-accent)' }}>
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="font-black mb-3"
+              style={{ 
+                fontSize: 'clamp(3rem, 6vw, 4rem)',
+                background: 'linear-gradient(135deg, #007AFF 0%, #BF5AF2 50%, #FF375F 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: '-0.03em'
+              }}>
             Projects
           </h1>
-          <p className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4" style={{ color: 'var(--text-secondary)' }}>
+          <p className="font-medium max-w-2xl mx-auto px-4" 
+             style={{ 
+               fontSize: 'clamp(1.25rem, 2vw, 1.75rem)',
+               color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.85)',
+               letterSpacing: '-0.01em'
+             }}>
             From AI assistants to donation platforms - things I've shipped that actually matter
           </p>
         </div>
@@ -215,7 +233,7 @@ const Projects = () => {
           {filteredProjects.map((project, index) => (
             <div
               key={project.id}
-              className="bento-box"
+              className="group cursor-pointer rounded-2xl p-6 transition-all hover:scale-[1.02]"
               onClick={() => {
                 if (project.link) {
                   if (window.Turbo) {
@@ -227,9 +245,9 @@ const Projects = () => {
               }}
               style={{
                 animationDelay: `${index * 100}ms`,
-                background: theme === 'dark' 
-                  ? 'rgba(255, 255, 255, 0.05)' 
-                  : 'rgba(0, 0, 0, 0.02)'
+                background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
+                backdropFilter: 'saturate(200%) blur(20px)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)'
               }}
             >
               {/* Gradient overlay on hover */}

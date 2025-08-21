@@ -10,12 +10,17 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  // Theme-aware styles
+  const isDark = theme === 'dark';
+  
   return (
     <div className="h-screen relative overflow-hidden" style={{ 
-      background: 'linear-gradient(180deg, #000000 0%, #0a0a0a 100%)'
+      background: isDark 
+        ? 'linear-gradient(180deg, #000000 0%, #0a0a0a 100%)'
+        : 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)'
     }}>
       {/* Beautiful gradient mesh background */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0" style={{ opacity: isDark ? 0.3 : 0.15 }}>
         <div className="absolute top-0 left-[20%] w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob"></div>
         <div className="absolute top-[30%] right-[15%] w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-2000"></div>
         <div className="absolute bottom-0 left-[35%] w-96 h-96 bg-pink-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-4000"></div>
@@ -28,7 +33,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Hero Section - Full width with gradient text */}
         <div className="bento-box bento-full flex items-center" 
              style={{ 
-               background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(191, 90, 242, 0.05) 100%)',
+               background: isDark
+                 ? 'linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(191, 90, 242, 0.05) 100%)'
+                 : 'linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(191, 90, 242, 0.08) 100%)',
                borderTop: 'none',
                borderLeft: 'none',
                borderRight: 'none'
@@ -44,8 +51,12 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
                 }}>
               Austin French
             </h1>
-            <p className="text-xl sm:text-2xl md:text-3xl font-medium mb-4" 
-               style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+            <p className="font-medium mb-4" 
+               style={{ 
+                 fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)',
+                 color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.85)',
+                 letterSpacing: '-0.01em'
+               }}>
               Senior Backend Engineer · AI Experimentalist
             </p>
             <div className="flex gap-3 flex-wrap">
@@ -61,10 +72,10 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               <a href="/blog" className="px-6 py-3 rounded-xl font-semibold text-base 
                                         inline-flex items-center gap-2 transition-all hover:scale-105"
                  style={{ 
-                   background: 'rgba(255, 255, 255, 0.06)',
+                   background: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)',
                    backdropFilter: 'blur(20px)',
-                   border: '1px solid rgba(255, 255, 255, 0.1)',
-                   color: 'rgba(255, 255, 255, 0.9)'
+                   border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+                   color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)'
                  }}>
                 <span className="material-icons text-lg">article</span>
                 <span>Read Blog</span>
@@ -76,7 +87,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Recent Work - 2x1 with glass effect */}
         <div className="bento-box bento-2x1" 
              style={{ 
-               background: 'rgba(255, 255, 255, 0.03)',
+               background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
                borderLeft: 'none'
              }}>
           <h3 className="font-bold text-xl mb-3">Recent Work</h3>
@@ -85,9 +96,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               <a key={project.id} href={`/projects/${project.id}`} 
                  className="group p-3 block rounded-lg transition-all hover:scale-105"
                  style={{ 
-                   background: 'rgba(255, 255, 255, 0.04)',
+                   background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
                    backdropFilter: 'blur(10px)',
-                   border: '1px solid rgba(255, 255, 255, 0.06)'
+                   border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                  }}>
                 <div className="flex items-start gap-2">
                   <span className="text-2xl">{project.image}</span>
@@ -109,7 +120,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Latest Blog Posts - 2x2 with gradient accent */}
         <div className="bento-box bento-2x2"
              style={{ 
-               background: 'linear-gradient(135deg, rgba(191, 90, 242, 0.03) 0%, rgba(255, 55, 95, 0.03) 100%)',
+               background: isDark
+                 ? 'linear-gradient(135deg, rgba(191, 90, 242, 0.03) 0%, rgba(255, 55, 95, 0.03) 100%)'
+                 : 'linear-gradient(135deg, rgba(191, 90, 242, 0.05) 0%, rgba(255, 55, 95, 0.05) 100%)',
                borderRight: 'none'
              }}>
           <h3 className="font-bold text-xl mb-3">Latest Writing</h3>
@@ -119,9 +132,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
                 <a key={post.id} href={`/blog/${post.slug}`}
                    className="block p-3 rounded-lg transition-all hover:scale-[1.02]"
                    style={{ 
-                     background: 'rgba(255, 255, 255, 0.04)',
+                     background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
                      backdropFilter: 'blur(10px)',
-                     border: '1px solid rgba(255, 255, 255, 0.06)'
+                     border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                    }}>
                   <h4 className="font-semibold text-base line-clamp-1">{post.title}</h4>
                   <p className="text-sm opacity-70 mt-1">{formatDate(post.created_at)}</p>
@@ -131,18 +144,18 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               <div className="space-y-2">
                 <div className="p-3 rounded-lg"
                      style={{ 
-                       background: 'rgba(255, 255, 255, 0.04)',
+                       background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
                        backdropFilter: 'blur(10px)',
-                       border: '1px solid rgba(255, 255, 255, 0.06)'
+                       border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                      }}>
                   <h4 className="font-semibold text-base">How I use Claude Code</h4>
                   <p className="text-sm opacity-70 mt-1">Ship 20+ projects quickly</p>
                 </div>
                 <div className="p-3 rounded-lg"
                      style={{ 
-                       background: 'rgba(255, 255, 255, 0.04)',
+                       background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
                        backdropFilter: 'blur(10px)',
-                       border: '1px solid rgba(255, 255, 255, 0.06)'
+                       border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                      }}>
                   <h4 className="font-semibold text-base">Building with AI</h4>
                   <p className="text-sm opacity-70 mt-1">Lessons from production</p>
@@ -160,7 +173,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Core Skills - Compact 1x1 with color dots */}
         <div className="bento-box bento-1x1"
              style={{ 
-               background: 'linear-gradient(135deg, rgba(0, 214, 143, 0.03) 0%, rgba(100, 210, 255, 0.03) 100%)',
+               background: isDark
+                 ? 'linear-gradient(135deg, rgba(0, 214, 143, 0.03) 0%, rgba(100, 210, 255, 0.03) 100%)'
+                 : 'linear-gradient(135deg, rgba(0, 214, 143, 0.05) 0%, rgba(100, 210, 255, 0.05) 100%)',
                borderLeft: 'none'
              }}>
           <h3 className="font-bold text-lg mb-3">Core Stack</h3>
@@ -183,7 +198,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Stats - Inline compact 2x1 with gradient numbers */}
         <div className="bento-box bento-2x1 flex items-center"
              style={{ 
-               background: 'rgba(255, 255, 255, 0.02)'
+               background: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)'
              }}>
           <div className="flex gap-6 w-full justify-around">
             <div className="text-center">
@@ -222,7 +237,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Featured Projects Grid - 2x2 with glassmorphism */}
         <div className="bento-box bento-2x2"
              style={{ 
-               background: 'linear-gradient(135deg, rgba(94, 92, 230, 0.03) 0%, rgba(0, 122, 255, 0.03) 100%)',
+               background: isDark
+                 ? 'linear-gradient(135deg, rgba(94, 92, 230, 0.03) 0%, rgba(0, 122, 255, 0.03) 100%)'
+                 : 'linear-gradient(135deg, rgba(94, 92, 230, 0.05) 0%, rgba(0, 122, 255, 0.05) 100%)',
                borderRight: 'none',
                borderBottom: 'none'
              }}>
@@ -232,9 +249,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               <a key={project.id} href={`/projects/${project.id}`} 
                  className="p-3 rounded-lg hover:scale-105 transition-all flex flex-col"
                  style={{ 
-                   background: 'rgba(255, 255, 255, 0.04)',
+                   background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
                    backdropFilter: 'blur(10px)',
-                   border: '1px solid rgba(255, 255, 255, 0.06)'
+                   border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                  }}>
                 <span className="text-3xl mb-2">{project.image}</span>
                 <h4 className="font-semibold text-sm line-clamp-1">{project.title}</h4>
@@ -248,9 +265,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
             <a href="/games/arena-shooter" 
                className="p-3 rounded-lg hover:scale-105 transition-all flex flex-col"
                style={{ 
-                 background: 'rgba(255, 255, 255, 0.04)',
+                 background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
                  backdropFilter: 'blur(10px)',
-                 border: '1px solid rgba(255, 255, 255, 0.06)'
+                 border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                }}>
               <span className="text-3xl mb-2">🎮</span>
               <h4 className="font-semibold text-sm">Arena Shooter</h4>
@@ -262,7 +279,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Current Focus - Compact 1x1 with pills */}
         <div className="bento-box bento-1x1"
              style={{ 
-               background: 'rgba(255, 255, 255, 0.03)',
+               background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
                borderLeft: 'none',
                borderBottom: 'none'
              }}>
@@ -294,7 +311,9 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* Contact - Compact 1x1 with hover effects */}
         <div className="bento-box bento-1x1"
              style={{ 
-               background: 'linear-gradient(135deg, rgba(255, 149, 0, 0.03) 0%, rgba(255, 55, 95, 0.03) 100%)',
+               background: isDark
+                 ? 'linear-gradient(135deg, rgba(255, 149, 0, 0.03) 0%, rgba(255, 55, 95, 0.03) 100%)'
+                 : 'linear-gradient(135deg, rgba(255, 149, 0, 0.05) 0%, rgba(255, 55, 95, 0.05) 100%)',
                borderBottom: 'none'
              }}>
           <h3 className="font-bold text-lg mb-3">Connect</h3>

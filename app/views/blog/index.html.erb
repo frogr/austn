@@ -1,9 +1,15 @@
-<div class="min-h-screen pt-20 pb-12">
-  <div class="container">
+<div class="min-h-screen pt-20 pb-12" style="background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);">
+  <!-- Animated gradient background -->
+  <div class="absolute inset-0 opacity-20 pointer-events-none">
+    <div class="absolute top-20 left-[20%] w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[128px] opacity-40"></div>
+    <div class="absolute top-[40%] right-[15%] w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[128px] opacity-40"></div>
+  </div>
+  
+  <div class="container relative z-10">
     <!-- Header -->
-    <div class="text-center mb-xl">
-      <h1 class="heading-xl gradient-text mb-sm">Blog</h1>
-      <p class="text-lg text-secondary">Thoughts on development, design, and technology</p>
+    <div class="text-center mb-12">
+      <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 50%, #FF375F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.03em;">Blog</h1>
+      <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Thoughts on development, design, and technology</p>
     </div>
     
     <!-- Blog Posts -->
@@ -11,8 +17,8 @@
       <% if @blog_posts.any? %>
         <% @blog_posts.each_with_index do |post, index| %>
           <%= link_to blog_post_path(post.slug), class: "block" do %>
-            <article class="card card-clickable animate-fadeInUp" style="animation-delay: <%= index * 0.1 %>s;">
-              <h2 class="heading-md mb-sm text-primary"><%= post.title %></h2>
+            <article class="rounded-2xl p-6 transition-all hover:scale-[1.01] animate-fadeInUp" style="animation-delay: <%= index * 0.1 %>s; background: rgba(255, 255, 255, 0.04); backdrop-filter: saturate(200%) blur(20px); border: 1px solid rgba(255, 255, 255, 0.08);">
+              <h2 class="text-2xl font-bold mb-3"><%= post.title %></h2>
               
               <div class="flex items-center gap-xs text-sm text-muted mb-md">
                 <span class="material-icons icon-sm">calendar_today</span>
