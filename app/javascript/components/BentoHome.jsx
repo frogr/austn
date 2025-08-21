@@ -105,7 +105,7 @@ const BentoHome = () => {
                 arrow_forward
               </span>
             </a>
-          </div>
+          </article>
         </div>
 
         {/* Tech Setup - 1x1 */}
@@ -121,7 +121,7 @@ const BentoHome = () => {
 
         {/* Quick Stats - 3x1 */}
         <div className="bento-box bento-2x1 bento-stats">
-          <div className="grid grid-cols-3 gap-2 h-full">
+          <div className="grid grid-cols-2 gap-2 h-full">
             <div className="stat-item flex flex-col justify-center items-center">
               <div className="text-lg sm:text-xl font-bold" 
                    style={{ background: 'var(--gradient-vibrant)', 
