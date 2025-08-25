@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """
-Terminal Agent with clean OOP architecture and task tracking
+Terminal Agent with enhanced UX, streaming responses, and performance tracking
 """
 import json
 import subprocess
 import re
 import os
 import sys
-from typing import Dict, List, Any, Optional, Tuple, Callable
+import time
+import asyncio
+from typing import Dict, List, Any, Optional, Tuple, Callable, Iterator
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from enum import Enum
 import readline
+from collections import deque
 
 from ollama import Client
 from rich.console import Console
@@ -21,9 +24,77 @@ from rich.markdown import Markdown
 from rich.table import Table
 from rich.panel import Panel
 from rich.prompt import Prompt
-from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.live import Live
+from rich.text import Text
 from rich import print as rprint
+
+
+# ============================================================================
+# PERFORMANCE TRACKING
+# ============================================================================
+
+class Timer:
+    """Track execution times"""
+    def __init__(self):
+        self.start_time = None
+        self.lap_times = []
+        
+    def start(self):
+        self.start_time = time.perf_counter()
+        
+    def lap(self, label: str = "") -> float:
+        if self.start_time is None:
+            return 0
+        lap_time = time.perf_counter() - self.start_time
+        self.lap_times.append((label, lap_time))
+        return lap_time
+    
+    def stop(self) -> float:
+        if self.start_time is None:
+            return 0
+        total = time.perf_counter() - self.start_time
+        self.start_time = None
+        return total
+    
+    def get_formatted(self) -> str:
+        if self.start_time:
+            elapsed = time.perf_counter() - self.start_time
+            return f"{elapsed:.1f}s"
+        return "0.0s"
+
+
+class TokenMetrics:
+    """Track token generation metrics"""
+    def __init__(self, window_size: int = 5):
+        self.tokens = deque(maxlen=window_size)
+        self.times = deque(maxlen=window_size)
+        self.total_tokens = 0
+        
+    def add_token(self):
+        self.tokens.append(1)
+        self.times.append(time.perf_counter())
+        self.total_tokens += 1
+        
+    def get_rate(self) -> float:
+        if len(self.times) < 2:
+            return 0
+        time_diff = self.times[-1] - self.times[0]
+        if time_diff <= 0:
+            return 0
+        return len(self.tokens) / time_diff
+    
+    def get_formatted_rate(self) -> str:
+        rate = self.get_rate()
+        if rate > 30:
+            color = "green"
+            emoji = "🟢"
+        elif rate > 15:
+            color = "yellow"
+            emoji = "🟡"
+        else:
+            color = "red"
+            emoji = "🔴"
+        return f"[{color}]{emoji} {rate:.1f} t/s[/{color}]"
 
 
 # ============================================================================
@@ -60,10 +131,8 @@ class TodoList:
     
     def start_task(self, idx: int):
         if 0 <= idx < len(self.tasks):
-            # Mark any current task as pending
             if self.current_task_idx is not None:
                 self.tasks[self.current_task_idx].status = TaskStatus.PENDING
-            
             self.tasks[idx].status = TaskStatus.IN_PROGRESS
             self.current_task_idx = idx
     
@@ -93,6 +162,96 @@ class TodoList:
         if not self.tasks:
             return "No tasks"
         return "\n".join(str(t) for t in self.tasks)
+
+
+# ============================================================================
+# UI COMPONENTS
+# ============================================================================
+
+class StatusBar:
+    """Status bar with git info, timer, and metrics"""
+    def __init__(self, working_dir: Path):
+        self.working_dir = working_dir
+        self.timer = Timer()
+        self.token_metrics = TokenMetrics()
+        self.model_name = ""
+        
+    def get_git_status(self) -> str:
+        """Get current git branch and status"""
+        try:
+            # Get current branch
+            result = subprocess.run(
+                ["git", "branch", "--show-current"],
+                capture_output=True,
+                text=True,
+                cwd=self.working_dir,
+                timeout=1
+            )
+            branch = result.stdout.strip() or "main"
+            
+            # Check if dirty
+            result = subprocess.run(
+                ["git", "status", "--short"],
+                capture_output=True,
+                text=True,
+                cwd=self.working_dir,
+                timeout=1
+            )
+            dirty = "*" if result.stdout.strip() else ""
+            
+            return f"[cyan]{branch}{dirty}[/cyan]"
+        except:
+            return "[dim]no git[/dim]"
+    
+    def get_display(self) -> str:
+        """Get formatted status bar"""
+        # Shorten path
+        path = str(self.working_dir)
+        if len(path) > 30:
+            path = "..." + path[-27:]
+        
+        git = self.get_git_status()
+        timer = f"⏱ {self.timer.get_formatted()}" if self.timer.start_time else ""
+        tokens = self.token_metrics.get_formatted_rate() if self.token_metrics.total_tokens > 0 else ""
+        model = f"[dim]{self.model_name[:15]}[/dim]" if self.model_name else ""
+        
+        parts = [p for p in [f"[bold]{path}[/bold]", git, timer, tokens, model] if p]
+        return " │ ".join(parts)
+
+
+class StreamHandler:
+    """Handle streaming responses from LLM"""
+    def __init__(self, console: Console, token_metrics: TokenMetrics):
+        self.console = console
+        self.token_metrics = token_metrics
+        self.buffer = []
+        self.current_line = ""
+        
+    def process_chunk(self, chunk: Dict) -> str:
+        """Process a streaming chunk"""
+        if 'message' in chunk and 'content' in chunk['message']:
+            content = chunk['message']['content']
+            self.buffer.append(content)
+            self.current_line += content
+            
+            # Track tokens (approximate by words)
+            if content.strip():
+                self.token_metrics.add_token()
+            
+            # Return content for display
+            return content
+        return ""
+    
+    def get_full_response(self) -> str:
+        """Get the complete response"""
+        return ''.join(self.buffer)
+    
+    def reset(self):
+        """Reset for next response"""
+        self.buffer = []
+        self.current_line = ""
+
+
 
 
 # ============================================================================
@@ -526,11 +685,15 @@ class ParameterParser:
 
 class ConversationManager:
     """Manages conversation history"""
-    def __init__(self):
+    def __init__(self, max_history: int = 20):
         self.history: List[Dict[str, str]] = []
+        self.max_history = max_history
     
     def add_message(self, role: str, content: str):
         self.history.append({"role": role, "content": content})
+        # Prune old history to save memory
+        if len(self.history) > self.max_history * 2:
+            self.history = self.history[-self.max_history:]
     
     def get_messages(self, system_prompt: str) -> List[Dict]:
         return [{"role": "system", "content": system_prompt}] + self.history
@@ -544,10 +707,10 @@ class ConversationManager:
 # ============================================================================
 
 class CodeAgent:
-    """Main agent class - simplified and focused"""
-    def __init__(self, model: str = "qwen2.5-coder:7b-instruct-q4_K_M", verbose: bool = True):
+    """Main agent class with enhanced UX"""
+    def __init__(self, model: str = "qwen2.5-coder:7b-instruct-q4_K_M", verbose: bool = True, fast_mode: bool = False):
         self.client = Client()
-        self.model = model
+        self.model = model if not fast_mode else "qwen2.5-coder:3b"  # Use smaller model in fast mode
         self.console = Console()
         self.working_dir = Path.cwd()
         
@@ -556,6 +719,10 @@ class CodeAgent:
         self.conversation = ConversationManager()
         self.todos = TodoList()
         self.thoughts = ThoughtStream(self.console, verbose)
+        
+        # Status tracking
+        self.status_bar = StatusBar(self.working_dir)
+        self.status_bar.model_name = self.model.split(':')[0]
         
         # Register tools
         self._register_tools()
@@ -574,6 +741,7 @@ class CodeAgent:
     def _update_working_dir(self, new_dir: Path):
         """Update working directory for all tools"""
         self.working_dir = new_dir
+        self.status_bar.working_dir = new_dir
         self._register_tools()
     
     def _handle_bash_passthrough(self, command: str) -> str:
@@ -599,13 +767,16 @@ class CodeAgent:
         except Exception as e:
             return f"Error: {e}"
     
-    def chat(self, message: str) -> str:
-        """Process a chat message"""
+    def chat_streaming(self, message: str) -> str:
+        """Process a chat message with streaming response"""
         # Handle bash passthrough
         if message.startswith('!'):
             output = self._handle_bash_passthrough(message)
             self.console.print(output)
             return output
+        
+        # Start timer
+        self.status_bar.timer.start()
         
         # Show current task if any
         current = self.todos.get_current()
@@ -619,13 +790,42 @@ class CodeAgent:
         self.conversation.add_message("user", message)
         messages = self.conversation.get_messages(system_prompt)
         
-        # Get response from LLM
+        # Get streaming response from LLM
         self.thoughts.think("Processing request...")
-        response = self.client.chat(model=self.model, messages=messages)
-        response_text = response['message']['content']
         
-        # Show the raw response for debugging
-        self.thoughts.think(f"{response_text[:200]}")
+        # Initialize stream handler
+        stream_handler = StreamHandler(self.console, self.status_bar.token_metrics)
+        
+        # Stream the response with progressive text display
+        response_text = ""
+        
+        # Get streaming response
+        stream = self.client.chat(
+            model=self.model,
+            messages=messages,
+            stream=True
+        )
+        
+        # Create a live display for streaming text
+        streaming_text = Text()
+        token_display = Text()
+        
+        with Live(streaming_text, console=self.console, refresh_per_second=30) as live:
+            for chunk in stream:
+                content = stream_handler.process_chunk(chunk)
+                if content:
+                    # Add content to the display
+                    streaming_text.append(content)
+                    
+                    # Update with metrics in the corner
+                    if stream_handler.token_metrics.total_tokens > 0:
+                        rate = stream_handler.token_metrics.get_formatted_rate()
+                        token_display = Text(f"\n\n[dim cyan]Streaming: {stream_handler.token_metrics.total_tokens} tokens @ {rate}[/dim cyan]")
+                        live.update(Text.assemble(streaming_text, token_display))
+            
+            response_text = stream_handler.get_full_response()
+            # Clear the metrics display at the end
+            live.update(streaming_text)
         
         # Parse for todos
         self._parse_todos(response_text)
@@ -647,9 +847,37 @@ class CodeAgent:
                 self.conversation.add_message("user", f"Tool results:\n{results}")
             
             messages = self.conversation.get_messages(system_prompt)
-            self.thoughts.think("Analyzing results...")
-            final_response = self.client.chat(model=self.model, messages=messages)
-            response_text = final_response['message']['content']
+            
+            # Get another streaming response
+            stream_handler.reset()
+            
+            stream = self.client.chat(
+                model=self.model,
+                messages=messages,
+                stream=True
+            )
+            
+            # Stream the follow-up response with progressive display
+            self.console.print("\n[dim cyan]Analyzing results...[/dim cyan]")
+            
+            streaming_text = Text()
+            with Live(streaming_text, console=self.console, refresh_per_second=30) as live:
+                for chunk in stream:
+                    content = stream_handler.process_chunk(chunk)
+                    if content:
+                        streaming_text.append(content)
+                        
+                        # Show metrics inline while streaming
+                        if stream_handler.token_metrics.total_tokens > 0 and stream_handler.token_metrics.total_tokens % 10 == 0:
+                            rate = stream_handler.token_metrics.get_formatted_rate()
+                            token_display = Text(f"\n\n[dim cyan]{stream_handler.token_metrics.total_tokens} tokens @ {rate}[/dim cyan]")
+                            live.update(Text.assemble(streaming_text, token_display))
+                        else:
+                            live.update(streaming_text)
+                
+                response_text = stream_handler.get_full_response()
+                # Final update without metrics
+                live.update(streaming_text)
             
             # Check if response has more tool calls (for error recovery)
             retry_calls = ParameterParser.parse_tool_calls(response_text, self.registry)
@@ -659,10 +887,15 @@ class CodeAgent:
                 self.conversation.add_message("assistant", response_text)
                 self.conversation.add_message("user", f"Tool results:\n{retry_results}")
                 messages = self.conversation.get_messages(system_prompt)
+                
+                # Final response after retry (non-streaming for simplicity)
+                stream_handler.reset()
                 final_response = self.client.chat(model=self.model, messages=messages)
                 response_text = final_response['message']['content']
-        else:
-            self.thoughts.think("No tools to execute in response")
+        
+        # Stop timer
+        elapsed = self.status_bar.timer.stop()
+        self.thoughts.think(f"Completed in {elapsed:.1f}s")
         
         self.conversation.add_message("assistant", response_text)
         return response_text
@@ -707,8 +940,15 @@ Current directory: {self.working_dir}{todos_str}"""
     def _execute_tools(self, tool_calls: List[Dict]) -> str:
         """Execute tools and return results"""
         results = []
+        executed = set()  # Track executed tools to prevent duplicates
         
         for call in tool_calls:
+            # Create a unique key for this tool call
+            call_key = f"{call['name']}_{call['start']}"
+            if call_key in executed:
+                continue  # Skip duplicate
+            executed.add(call_key)
+            
             tool = self.registry.get(call['name'])
             if tool:
                 self.thoughts.decide(f"Executing: {call['name']}")
@@ -720,29 +960,51 @@ Current directory: {self.working_dir}{todos_str}"""
                     result = f"Error: {error}"
                     self.thoughts.error(error)
                 else:
+                    # Time tool execution
+                    start = time.perf_counter()
                     result = tool.execute(**call['params'])
+                    elapsed = time.perf_counter() - start
+                    if elapsed > 1:
+                        self.thoughts.think(f"Tool completed in {elapsed:.1f}s")
                 
                 results.append(f"Tool: {call['name']}\nResult: {result}")
         
         return "\n\n".join(results)
     
     def run_interactive(self):
-        """Run interactive terminal session"""
-        self.console.print(Panel.fit(
-            "[bold green]austncoder[/bold green]\n"
-            f"Model: {self.model}\n"
-            "Type 'help' for commands, '!command' for bash passthrough",
+        """Run interactive terminal session with enhanced UI"""
+        # Welcome message
+        welcome_panel = Panel.fit(
+            f"""[bold green]austncoder[/bold green]
+[cyan]Model:[/cyan] {self.model}
+[cyan]Commands:[/cyan] Type 'help' for commands, '!command' for bash""",
             border_style="green"
-        ))
+        )
+        self.console.print(welcome_panel)
         
         readline.parse_and_bind("tab: complete")
         
         while True:
             try:
-                # Show TODO count in prompt
+                # Build prompt with status info
                 todo_count = len(self.todos.get_pending())
                 todo_str = f" [{todo_count} todos]" if todo_count > 0 else ""
-                prompt = f"[{self.working_dir.name}]{todo_str}> "
+                
+                # Get git branch for prompt
+                try:
+                    result = subprocess.run(
+                        ["git", "branch", "--show-current"],
+                        capture_output=True,
+                        text=True,
+                        cwd=self.working_dir,
+                        timeout=1
+                    )
+                    branch = result.stdout.strip()
+                    branch_str = f" ({branch})" if branch else ""
+                except:
+                    branch_str = ""
+                
+                prompt = f"[{self.working_dir.name}{branch_str}]{todo_str}> "
                 
                 user_input = Prompt.ask(prompt)
                 
@@ -751,6 +1013,7 @@ Current directory: {self.working_dir}{todos_str}"""
                 
                 # Handle special commands
                 if user_input.lower() in ['exit', 'quit']:
+                    self.console.print("[yellow]Goodbye! 👋[/yellow]")
                     break
                 elif user_input.lower() == 'help':
                     self._show_help()
@@ -768,14 +1031,23 @@ Current directory: {self.working_dir}{todos_str}"""
                 elif user_input.lower() == 'tools':
                     self._show_tools()
                     continue
+                elif user_input.lower() == 'perf':
+                    self._show_performance()
+                    continue
                 
-                # Process with agent
-                response = self.chat(user_input)
+                # Process with agent (streaming)
+                response = self.chat_streaming(user_input)
                 
-                # Display response
+                # Display final response with performance metrics
+                token_rate = self.status_bar.token_metrics.get_formatted_rate()
+                elapsed = self.status_bar.timer.get_formatted()
+                title = f"[bold green]Response[/bold green]"
+                if token_rate and self.status_bar.token_metrics.total_tokens > 0:
+                    title += f" [dim]({token_rate} in {elapsed})[/dim]"
+                
                 self.console.print(Panel(
                     Markdown(response),
-                    title="[bold green]Response[/bold green]",
+                    title=title,
                     border_style="green"
                 ))
                 
@@ -792,23 +1064,28 @@ Current directory: {self.working_dir}{todos_str}"""
 - **help** - Show this help
 - **tools** - List available tools  
 - **todos** - Show TODO list
+- **perf** - Show performance stats
 - **reset** - Clear conversation
 - **clear** - Clear screen
 - **!command** - Run bash command directly
 - **exit/quit** - Exit
 
+# Keyboard Shortcuts
+
+- **Ctrl+C** - Cancel current operation
+- **Tab** - Auto-complete
+- **↑/↓** - Command history
+
 # Usage
 
-Type your request and I'll help. Examples:
-- "Read the config.json file"
-- "TODO: Refactor the database module"
-- "!ls -la" (direct bash command)
+Type your request and watch the response stream in real-time!
+The status bar shows git info, timer, and token generation speed.
 """
         self.console.print(Markdown(help_text))
     
     def _show_tools(self):
         """Display available tools"""
-        table = Table(title="Available Tools")
+        table = Table(title="Available Tools", show_header=True, header_style="bold cyan")
         table.add_column("Tool", style="cyan")
         table.add_column("Description")
         table.add_column("Parameters", style="green")
@@ -829,23 +1106,40 @@ Type your request and I'll help. Examples:
                 title="[bold cyan]TODO List[/bold cyan]",
                 border_style="cyan"
             ))
+    
+    def _show_performance(self):
+        """Show performance statistics"""
+        perf_text = f"""
+**Performance Statistics**
+
+- Model: {self.model}
+- Total tokens: {self.status_bar.token_metrics.total_tokens}
+- Current rate: {self.status_bar.token_metrics.get_formatted_rate()}
+- Working directory: {self.working_dir}
+"""
+        self.console.print(Panel(
+            Markdown(perf_text),
+            title="[bold magenta]Performance[/bold magenta]",
+            border_style="magenta"
+        ))
 
 
 def main():
     """Main entry point"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Terminal Agent")
+    parser = argparse.ArgumentParser(description="Terminal Agent with Enhanced UX")
     parser.add_argument("--model", default="qwen2.5-coder:7b-instruct-q4_K_M")
     parser.add_argument("--quiet", action="store_true", help="Disable verbose output")
+    parser.add_argument("--fast", action="store_true", help="Use smaller, faster model")
     parser.add_argument("message", nargs="?", help="Single message")
     
     args = parser.parse_args()
     
-    agent = CodeAgent(model=args.model, verbose=not args.quiet)
+    agent = CodeAgent(model=args.model, verbose=not args.quiet, fast_mode=args.fast)
     
     if args.message:
-        response = agent.chat(args.message)
+        response = agent.chat_streaming(args.message)
         print(response)
     else:
         agent.run_interactive()
