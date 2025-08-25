@@ -13,4 +13,4 @@ source venv/bin/activate
 pip install -q ollama rich 2>/dev/null
 
 # Run the agent
-python agent.py "$@"
+python agent/main.py

@@ -42,3 +42,26 @@ node_modules/
 
 # Keep blog post markdown files in version control
 # (No exclusion pattern for content/blog_posts)
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+ENV/
+env/
+.venv
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Local files
+local_secret.txt
