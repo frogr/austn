@@ -22,14 +22,14 @@
   --glass-border: rgba(255, 255, 255, 0.12);
   
   /* Accent Colors */
-  --accent-primary: #007AFF;
-  --accent-secondary: #5AC8FA;
+  --accent-primary: #1DB954;
+  --accent-secondary: #1ED760;
   --accent-success: #34C759;
   --accent-warning: #FF9500;
   --accent-danger: #FF3B30;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #00D68F 0%, #BF5AF2 100%);
+  --gradient-primary: linear-gradient(135deg, #1DB954 0%, #1ED760 100%);
   --gradient-vibrant: linear-gradient(135deg, #FF375F 0%, #FF9500 50%, #FFCC00 100%);
   --gradient-cool: linear-gradient(135deg, #5E5CE6 0%, #64D2FF 100%);
   

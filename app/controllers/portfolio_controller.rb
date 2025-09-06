@@ -8,21 +8,21 @@ class PortfolioController < ApplicationController
         title: 'Pages AI Assistant',
         description: 'Natural language document generation that grew adoption 4% → 11%',
         technologies: ['OpenAI', 'Rails', 'RubyLLM'],
-        image: '🤖'
+        # icon removed (no emojis)
       },
       {
         id: 'bgca',
         title: 'Boys & Girls Club Platform',
         description: '$2MM+ donation processing system',
         technologies: ['Node.js', 'Stripe', 'Heroku'],
-        image: '💝'
+        # icon removed (no emojis)
       },
       {
         id: 'hub',
         title: 'Hub - Rails Starter Kit',
         description: 'My opinionated alternative to Jumpstart Pro',
         technologies: ['Rails 7', 'React', 'Docker'],
-        image: '🚀'
+        # icon removed (no emojis)
       }
     ]
   end

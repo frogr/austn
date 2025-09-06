@@ -14,7 +14,6 @@ const Projects = () => {
       technologies: ['OpenAI', 'Rails', 'PDF Processing', 'React'],
       link: '/projects/pages-ai',
       featured: true,
-      image: '🤖',
       gradient: 'var(--gradient-accent)',
       details: {
         fullDescription: 'Architected and shipped AI-powered document generation at CompanyCam, integrating OpenAI with Rails for natural language processing. Optimized PDF infrastructure achieving 10x size reduction.',
@@ -34,7 +33,6 @@ const Projects = () => {
       technologies: ['Node.js', 'Express', 'Stripe', 'Heroku'],
       link: '/projects/bgca',
       featured: true,
-      image: '💝',
       gradient: 'var(--gradient-vibrant)',
       details: {
         fullDescription: 'Subcontracted to build critical donation infrastructure for BGCA 2021 fundraiser. Handled payment processing, receipts, and real-time tracking for a high-stakes live event.',
@@ -54,7 +52,6 @@ const Projects = () => {
       technologies: ['Rails 7', 'React', 'Stripe', 'Docker', 'Hotwire'],
       link: '/projects/hub',
       featured: true,
-      image: '🚀',
       gradient: 'var(--gradient-cool)',
       details: {
         fullDescription: 'Built with Claude as my pair programmer. A production-ready Rails boilerplate with my preferred patterns, because sometimes you need to build things your way.',
@@ -74,7 +71,6 @@ const Projects = () => {
       technologies: ['Claude AI', 'OpenAI', 'Python', 'RAG Systems'],
       link: '/projects/ai-lab',
       featured: false,
-      image: '🧪',
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
       details: {
         fullDescription: 'My personal laboratory for AI-powered development. Building everything from CLI tools to automation scripts, documenting the journey on YouTube.',
@@ -94,7 +90,6 @@ const Projects = () => {
       technologies: ['Rails', 'Twilio', 'Multi-tenancy', 'SMS'],
       link: '/projects/backlit',
       featured: false,
-      image: '🎥',
       gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
       details: {
         fullDescription: 'Long-term contractor building Rails applications for major television events. Built COVID-compliant coordination system for 200+ Oscar nominees.',
@@ -115,7 +110,6 @@ const Projects = () => {
       link: '/projects/curl-lol',
       externalLink: 'https://curl.lol',
       featured: false,
-      image: '🔗',
       gradient: 'var(--gradient-primary)'
     },
     {
@@ -126,7 +120,6 @@ const Projects = () => {
       technologies: ['Three.js', 'JavaScript', 'Claude AI'],
       link: '/projects/minecraft-planner',
       featured: false,
-      image: '🎮',
       gradient: 'linear-gradient(135deg, var(--green-accent) 0%, var(--blue-accent) 100%)'
     }
   ];
@@ -152,14 +145,12 @@ const Projects = () => {
       <div className="absolute inset-0 opacity-0" aria-hidden="true"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 readable-content">
-        {/* Header with gradient text */}
+        {/* Header with simple solid text */}
         <div className="text-center mb-6 md:mb-8">
           <h1 className="font-black mb-3"
               style={{ 
                 fontSize: 'clamp(3rem, 6vw, 4rem)',
-                background: 'linear-gradient(135deg, #007AFF 0%, #BF5AF2 50%, #FF375F 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)',
                 letterSpacing: '-0.03em'
               }}>
             Projects
@@ -170,7 +161,7 @@ const Projects = () => {
                color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.85)',
                letterSpacing: '-0.01em'
              }}>
-            From AI assistants to donation platforms - things I've shipped that actually matter
+            Significant work shipped
           </p>
         </div>
 
@@ -188,12 +179,8 @@ const Projects = () => {
                 }
               `}
               style={filter === cat.value
-                ? { 
-                    background: 'var(--gradient-accent)',
-                    boxShadow: 'var(--shadow-glow)'
-                  }
-                : { color: 'var(--text-primary)' }
-              }
+                ? { backgroundColor: 'var(--accent-color)', boxShadow: 'var(--shadow-glow)', color: '#000' }
+                : { color: 'var(--text-primary)' }}
             >
               {cat.label}
             </button>
@@ -222,30 +209,14 @@ const Projects = () => {
                 border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)'
               }}
             >
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-[1.5rem]"
-                   style={{ background: project.gradient }}></div>
-
-              {/* Floating gradient orb */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 opacity-20 group-hover:opacity-30 transition-opacity"
-                   style={{ 
-                     background: project.gradient, 
-                     filter: 'blur(40px)',
-                     animation: 'pulse 4s infinite'
-                   }}></div>
+              {/* Decorative overlays removed for simpler look */}
 
               <div className="flex flex-col h-full relative z-10">
-                {/* Project Icon with animation */}
-                <div className="text-2xl sm:text-3xl mb-2 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  {project.image}
-                </div>
+                {/* Emoji icon removed */}
 
                 {/* Project Info */}
-                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 bg-clip-text text-transparent group-hover:text-transparent transition-all"
-                    style={{ 
-                      color: 'var(--text-primary)',
-                      backgroundImage: project.gradient 
-                    }}>
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2"
+                    style={{ color: 'var(--text-primary)' }}>
                   {project.title}
                 </h3>
                 
@@ -281,40 +252,25 @@ const Projects = () => {
           ))}
         </div>
 
-        {/* Call to Action with gradient background */}
+        {/* Call to Action with solid accent */}
         <div className="mt-6 sm:mt-8 text-center">
           <div className="glass-thick rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 max-w-2xl mx-auto relative overflow-hidden">
-            {/* Animated gradient mesh background */}
-            <div className="absolute inset-0 opacity-30"
-                 style={{ background: 'var(--gradient-mesh)' }}></div>
+            {/* Background effect removed */}
             
             <div className="relative z-10">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 bg-clip-text text-transparent"
-                  style={{ backgroundImage: 'var(--gradient-accent)' }}>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3"
+                  style={{ color: 'var(--text-primary)' }}>
                 Have a project in mind?
               </h2>
               <p className="mb-4 sm:mb-6 text-sm sm:text-base px-4" style={{ color: 'var(--text-secondary)' }}>
                 I love working with teams that care about craft and humans in equal measure.
               </p>
-              <a href="/#contact" className="btn btn-gradient-vibrant transform hover:scale-105 transition-all text-xs sm:text-sm">
+              <a href="/#contact" className="transform hover:scale-105 transition-all text-xs sm:text-sm px-4 py-2 rounded-md"
+                 style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
                 <span className="material-icons text-lg sm:text-base">send</span>
                 Get in Touch
               </a>
             </div>
-
-            {/* Floating decorations */}
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full"
-                 style={{ 
-                   background: 'var(--gradient-cool)', 
-                   opacity: 0.2,
-                   filter: 'blur(40px)'
-                 }}></div>
-            <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full"
-                 style={{ 
-                   background: 'var(--gradient-vibrant)', 
-                   opacity: 0.2,
-                   filter: 'blur(40px)'
-                 }}></div>
           </div>
         </div>
       </div>

@@ -33,17 +33,17 @@ const AboutMe = () => {
     {
       category: 'Daily Drivers',
       items: [
-        { name: 'Claude Code', description: 'My AI pair programmer & daily driver', emoji: '🤖', url: 'https://claude.ai/' },
-        { name: 'Rails', description: 'Still the best framework', emoji: '💎', url: 'https://rubyonrails.org/' },
-        { name: 'Three.js', description: 'For when 2D gets boring', emoji: '🎮', url: 'https://threejs.org/' },
+        { name: 'Claude Code', description: 'My AI pair programmer & daily driver', url: 'https://claude.ai/' },
+        { name: 'Rails', description: 'Still the best framework', url: 'https://rubyonrails.org/' },
+        { name: 'Three.js', description: 'For when 2D gets boring', url: 'https://threejs.org/' },
       ],
     },
     {
       category: 'Inspiration Sources',
       items: [
-        { name: 'Sandi Metz', description: 'POODR changed my life', emoji: '📚', url: 'https://sandimetz.com/' },
-        { name: 'DHH', description: 'Opinionated software', emoji: '🚂', url: 'https://dhh.dk/' },
-        { name: 'IndieHackers', description: 'Building in public', emoji: '🚀', url: 'https://www.indiehackers.com/' },
+        { name: 'Sandi Metz', description: 'POODR changed my life', url: 'https://sandimetz.com/' },
+        { name: 'DHH', description: 'Opinionated software', url: 'https://dhh.dk/' },
+        { name: 'IndieHackers', description: 'Building in public', url: 'https://www.indiehackers.com/' },
       ],
     },
   ];
@@ -66,15 +66,7 @@ const AboutMe = () => {
           <div 
             className="rounded-md p-8 mb-12 glass-morphism"
           >
-            {/* Decorative elements to enhance glass effect */}
-            <div 
-              className="absolute w-32 h-32 rounded-full blur-xl -top-10 -right-10 bg-blue-500/10"
-              style={{ animation: 'pulse-slow 8s infinite, float 15s ease-in-out infinite' }}
-            ></div>
-            <div 
-              className="absolute w-24 h-24 rounded-full blur-xl bottom-10 -left-10 bg-purple-500/10"
-              style={{ animation: 'pulse-slow 10s infinite, float 12s ease-in-out infinite reverse' }}
-            ></div>
+            {/* Decorative gradient orbs removed for simpler look */}
             <div className="flex flex-col items-center text-center">
               <div 
                 className="w-32 h-32 rounded-full flex items-center justify-center mb-6"
@@ -215,12 +207,7 @@ const AboutMe = () => {
                       rel="noopener noreferrer"
                       className="group flex items-start p-4 rounded-md transition-all glass-panel"
                     >
-                      <div 
-                        className="mr-4 w-12 h-12 rounded-md flex items-center justify-center text-xl"
-                        style={{ backgroundColor: isDark ? '#374151' : '#f3f4f6' }}
-                      >
-                        {item.emoji}
-                      </div>
+                      {/* Emoji icon removed */}
                       <div>
                         <h4 className="font-medium">{item.name}</h4>
                         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{item.description}</p>

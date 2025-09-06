@@ -63,14 +63,14 @@
         pointer-events: none;
         background: var(--bg-primary);
       }
-      /* Subtle gradient mesh overlay */
+      /* Remove gradient mesh overlay for cleaner, darker backdrop */
       .site-bg::after {
         content: '';
         position: absolute;
         inset: 0;
-        opacity: 0.12;
-        background: var(--gradient-mesh);
-        filter: saturate(120%);
+        opacity: 0;
+        background: none;
+        filter: none;
       }
 
       /* Minimal top nav with centered links */
@@ -123,13 +123,10 @@
       .nav-link:hover::after { transform: scaleX(1); background: var(--glass-border); }
 
       .nav-link.active {
-        color: transparent;
-        background-image: var(--gradient-primary);
-        -webkit-background-clip: text;
-        background-clip: text;
+        color: var(--accent-color);
       }
 
-      .nav-link.active::after { background: var(--gradient-primary); transform: scaleX(1); }
+      .nav-link.active::after { background: var(--accent-color); transform: scaleX(1); }
     </style>
 
     <!-- Top Navigation (centered links only) -->

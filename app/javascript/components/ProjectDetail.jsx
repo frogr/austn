@@ -11,7 +11,6 @@ const ProjectDetail = ({ projectId }) => {
       category: 'AI-Powered Feature',
       description: 'Architected and shipped an AI-powered document generation feature at CompanyCam that uses natural language processing to help contractors create professional documents instantly.',
       technologies: ['Ruby on Rails', 'OpenAI API', 'React', 'PDF Processing', 'Redis', 'Sidekiq'],
-      image: '🤖',
       gradient: 'var(--gradient-accent)',
       highlights: [
         'Natural language interface for document generation',
@@ -25,9 +24,10 @@ const ProjectDetail = ({ projectId }) => {
       accomplishments: [
         'Led the project from conception through production deployment, aligning with executives and product teams',
         'Optimized PDF generation pipeline, reducing file sizes by 90% while maintaining quality',
-        'Designed an intuitive UI that made AI accessible to non-technical users in construction',
+        'Designed a UI that made AI accessible to non-technical users in construction',
         'Built comprehensive error handling and fallback systems for AI failures',
-        'Created detailed analytics to track feature adoption and user success metrics'
+        'Created detailed analytics to track feature adoption and user success metrics',
+        'Mentored 3 developers through code reviews and architectural guidance'
       ],
       challenges: [
         'Challenge: Making AI responses consistent and reliable for business documents',
@@ -39,7 +39,6 @@ const ProjectDetail = ({ projectId }) => {
       category: 'Web Application',
       description: 'A modern portfolio website built with React and Rails, featuring a responsive design, dark mode support, and interactive project showcases.',
       technologies: ['React', 'Ruby on Rails', 'Tailwind CSS', 'JavaScript', 'Glass Morphism CSS'],
-      image: '🌐',
       gradient: 'var(--gradient-accent)',
       highlights: [
         'Server-side rendering with React on Rails',
@@ -62,7 +61,6 @@ const ProjectDetail = ({ projectId }) => {
       category: 'SaaS Application',
       description: 'A fast and reliable URL shortener service with real-time analytics, custom domain support, and API access for developers.',
       technologies: ['Ruby on Rails', 'PostgreSQL', 'Redis', 'JavaScript', 'Sidekiq'],
-      image: '🔗',
       gradient: 'var(--gradient-vibrant)',
       externalLink: 'https://curl.lol',
       highlights: [
@@ -86,7 +84,6 @@ const ProjectDetail = ({ projectId }) => {
       category: 'SaaS Platform',
       description: 'A SaaS platform that helps developers get a jumpstart on their projects by providing production-ready React/Rails boilerplate code with authentication, payments, and more.',
       technologies: ['React', 'Rails', 'Stripe', 'Docker', 'PostgreSQL', 'AWS'],
-      image: '🚀',
       gradient: 'var(--gradient-cool)',
       highlights: [
         'Production-ready boilerplate code',
@@ -114,7 +111,6 @@ const ProjectDetail = ({ projectId }) => {
       category: 'Non-profit Platform',
       description: 'Built the complete donation infrastructure for the Boys and Girls Club of America 2021 fundraiser, processing over $2 million in donations.',
       technologies: ['Node.js', 'Express', 'Stripe', 'Heroku', 'PostgreSQL'],
-      image: '💝',
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
       highlights: [
         'Secure payment processing with Stripe',
@@ -141,7 +137,6 @@ const ProjectDetail = ({ projectId }) => {
       category: 'Web Application',
       description: 'A web application that aggregates car listings from eBay and Craigslist, allowing users to search both platforms within a specified radius.',
       technologies: ['Node.js', 'React', 'Express', 'APIs', 'MongoDB'],
-      image: '🚗',
       gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
       highlights: [
         'Integrated eBay and Craigslist APIs',
@@ -164,7 +159,7 @@ const ProjectDetail = ({ projectId }) => {
       category: 'Personal Projects',
       description: 'A collection of 20+ projects built with Claude as my pair programmer. From CLI tools to web apps, these experiments push the boundaries of what\'s possible with AI-assisted development.',
       technologies: ['Claude AI', 'OpenAI', 'Python', 'Rails', 'JavaScript', 'RAG Systems'],
-      image: '🧪',
+      
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
       highlights: [
         'TodayIn3Minutes - AI-powered news summarizer',
@@ -194,7 +189,7 @@ const ProjectDetail = ({ projectId }) => {
       category: 'Entertainment Industry',
       description: 'Long-term contractor building Rails applications for major television events including the Super Bowl, Oscars, and Grammys. Specialized in real-time coordination tools for live productions.',
       technologies: ['Ruby on Rails', 'Twilio', 'WebSockets', 'PostgreSQL', 'Redis', 'Multi-tenancy'],
-      image: '🎬',
+      
       gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
       highlights: [
         'SMS coordination system for 200+ Oscar nominees',
@@ -224,7 +219,7 @@ const ProjectDetail = ({ projectId }) => {
       category: 'Game Tool',
       description: 'A Three.js-based tool for planning Minecraft builds in 3D. Built entirely with Claude as my pair programmer while learning Three.js from scratch.',
       technologies: ['Three.js', 'JavaScript', 'React', 'WebGL'],
-      image: '🎮',
+      
       gradient: 'linear-gradient(135deg, var(--green-accent) 0%, var(--blue-accent) 100%)',
       highlights: [
         '3D visualization of Minecraft builds',
@@ -275,7 +270,7 @@ const ProjectDetail = ({ projectId }) => {
         {/* Project Header */}
         <div className="mb-12">
           <div className="flex items-start gap-4 mb-6">
-            <div className="text-5xl">{project.image}</div>
+            {/* Emoji icon removed */}
             <div className="flex-1">
               <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 {project.title}

@@ -15,7 +15,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
   
   return (
     <div className="min-h-screen relative" style={{ background: 'transparent' }}>
-      {/* Gradient mesh removed to avoid top color band */}
+      {/* Simplified background; gradients removed */}
 
       {/* Compact bento grid with touching boxes (no internal scroll) */}
       <div className="bento-container bento-grid-home relative z-10">
@@ -34,9 +34,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
             <h1 className="font-black mb-2"
                 style={{ 
                   fontSize: 'clamp(3rem, 8vw, 5rem)',
-                  background: 'linear-gradient(135deg, #007AFF 0%, #BF5AF2 50%, #FF375F 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)',
                   letterSpacing: '-0.03em'
                 }}>
               Austin French
@@ -50,11 +48,12 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               Senior Backend Engineer
             </p>
             <div className="flex gap-3 flex-wrap">
-              <a href="/projects" className="btn-primary px-6 py-3 rounded-xl font-semibold text-base 
+              <a href="/projects" className="px-6 py-3 rounded-xl font-semibold text-base 
                                             inline-flex items-center gap-2 transition-all hover:scale-105"
                  style={{ 
-                   background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                   boxShadow: '0 4px 24px rgba(0, 122, 255, 0.3)'
+                   backgroundColor: 'var(--accent-color)',
+                   color: '#000',
+                   boxShadow: '0 4px 24px rgba(29, 185, 84, 0.35)'
                  }}>
                 <span className="material-icons text-lg">rocket_launch</span>
                 <span>View Projects</span>
@@ -91,7 +90,6 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
                    border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                  }}>
                 <div className="flex items-start gap-2">
-                  <span className="text-2xl">{project.image}</span>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-base truncate">{project.title}</h4>
                     <p className="text-sm opacity-80 line-clamp-1">{project.description}</p>
@@ -101,7 +99,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
             ))}
           </div>
           <a href="/projects" className="inline-flex items-center gap-1 mt-3 text-sm font-medium transition-all hover:gap-2"
-             style={{ color: '#007AFF' }}>
+             style={{ color: 'var(--accent-color)' }}>
             View All Projects
             <span className="material-icons text-base">arrow_forward</span>
           </a>
@@ -153,7 +151,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               </div>
             )}
             <a href="/blog" className="inline-flex items-center gap-1 mt-2 text-sm font-medium transition-all hover:gap-2"
-               style={{ color: '#BF5AF2' }}>
+               style={{ color: 'var(--accent-color)' }}>
               Read All Posts
               <span className="material-icons text-base">arrow_forward</span>
             </a>
@@ -171,15 +169,15 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
           <h3 className="font-bold text-lg mb-3">Core Stack</h3>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full" style={{ background: '#007AFF' }}></span>
+              <span className="w-2 h-2 rounded-full" style={{ background: 'var(--accent-color)' }}></span>
               <span className="font-medium text-sm">Rails, Ruby, APIs</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full" style={{ background: '#BF5AF2' }}></span>
+              <span className="w-2 h-2 rounded-full" style={{ background: 'var(--accent-color)' }}></span>
               <span className="font-medium text-sm">React, TypeScript</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full" style={{ background: '#00D68F' }}></span>
+              <span className="w-2 h-2 rounded-full" style={{ background: 'var(--accent-color)' }}></span>
               <span className="font-medium text-sm">AI/ML, OpenAI</span>
             </div>
           </div>
@@ -192,33 +190,15 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
              }}>
           <div className="flex gap-6 w-full justify-around">
             <div className="text-center">
-              <div className="font-bold" 
-                   style={{ 
-                     fontSize: '2.5rem',
-                     background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-                     WebkitBackgroundClip: 'text',
-                     WebkitTextFillColor: 'transparent'
-                   }}>7+</div>
+              <div className="font-bold" style={{ fontSize: '2.5rem', color: 'var(--accent-color)' }}>7+</div>
               <div className="text-sm opacity-70">Years</div>
             </div>
             <div className="text-center">
-              <div className="font-bold" 
-                   style={{ 
-                     fontSize: '2.5rem',
-                     background: 'linear-gradient(135deg, #BF5AF2 0%, #FF375F 100%)',
-                     WebkitBackgroundClip: 'text',
-                     WebkitTextFillColor: 'transparent'
-                   }}>20+</div>
+              <div className="font-bold" style={{ fontSize: '2.5rem', color: 'var(--accent-color)' }}>20+</div>
               <div className="text-sm opacity-70">AI Projects</div>
             </div>
             <div className="text-center">
-              <div className="font-bold" 
-                   style={{ 
-                     fontSize: '2.5rem',
-                     background: 'linear-gradient(135deg, #00D68F 0%, #64D2FF 100%)',
-                     WebkitBackgroundClip: 'text',
-                     WebkitTextFillColor: 'transparent'
-                   }}>$2M+</div>
+              <div className="font-bold" style={{ fontSize: '2.5rem', color: 'var(--accent-color)' }}>$2M+</div>
               <div className="text-sm opacity-70">Processed</div>
             </div>
           </div>
@@ -243,7 +223,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
                    backdropFilter: 'blur(10px)',
                    border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
                  }}>
-                <span className="text-3xl mb-2">{project.image}</span>
+                {/* Emoji icon removed */}
                 <h4 className="font-semibold text-sm line-clamp-1">{project.title}</h4>
                 <div className="flex flex-wrap gap-1 mt-auto">
                   {project.technologies.slice(0, 2).map(tech => (
@@ -265,25 +245,13 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
           <h3 className="font-bold text-lg mb-2">Now</h3>
           <div className="flex flex-wrap gap-1">
             <span className="px-3 py-1 rounded-full text-xs font-medium"
-                  style={{ 
-                    background: 'rgba(0, 122, 255, 0.1)',
-                    border: '1px solid rgba(0, 122, 255, 0.2)'
-                  }}>🎯 AI</span>
+                  style={{ background: 'rgba(29, 185, 84, 0.12)', border: '1px solid rgba(29, 185, 84, 0.3)' }}>AI</span>
             <span className="px-3 py-1 rounded-full text-xs font-medium"
-                  style={{ 
-                    background: 'rgba(191, 90, 242, 0.1)',
-                    border: '1px solid rgba(191, 90, 242, 0.2)'
-                  }}>📚 Teaching</span>
+                  style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.12)' }}>Teaching</span>
             <span className="px-3 py-1 rounded-full text-xs font-medium"
-                  style={{ 
-                    background: 'rgba(0, 214, 143, 0.1)',
-                    border: '1px solid rgba(0, 214, 143, 0.2)'
-                  }}>🚀 OSS</span>
+                  style={{ background: 'rgba(29, 185, 84, 0.12)', border: '1px solid rgba(29, 185, 84, 0.3)' }}>OSS</span>
             <span className="px-3 py-1 rounded-full text-xs font-medium"
-                  style={{ 
-                    background: 'rgba(255, 55, 95, 0.1)',
-                    border: '1px solid rgba(255, 55, 95, 0.2)'
-                  }}>🎮 Games</span>
+                  style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.12)' }}>Games</span>
           </div>
         </div>
 
@@ -299,21 +267,21 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
           <div className="space-y-2">
             <a href="mailto:hi@austn.net" 
                className="flex items-center gap-2 group hover:translate-x-1 transition-all text-sm font-medium">
-              <span className="material-icons text-base" style={{ color: '#007AFF' }}>email</span>
+              <span className="material-icons text-base" style={{ color: 'var(--accent-color)' }}>email</span>
               <span>hi@austn.net</span>
             </a>
             <a href="https://github.com/frogr" 
                target="_blank"
                rel="noopener noreferrer"
                className="flex items-center gap-2 group hover:translate-x-1 transition-all text-sm font-medium">
-              <span className="material-icons text-base" style={{ color: '#BF5AF2' }}>code</span>
+              <span className="material-icons text-base" style={{ color: 'var(--accent-color)' }}>code</span>
               <span>GitHub</span>
             </a>
             <a href="https://linkedin.com/in/austindanielfrench" 
                target="_blank"
                rel="noopener noreferrer"
                className="flex items-center gap-2 group hover:translate-x-1 transition-all text-sm font-medium">
-              <span className="material-icons text-base" style={{ color: '#5E5CE6' }}>business</span>
+              <span className="material-icons text-base" style={{ color: 'var(--accent-color)' }}>business</span>
               <span>LinkedIn</span>
             </a>
           </div>

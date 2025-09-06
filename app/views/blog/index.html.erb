@@ -5,7 +5,7 @@
   <div class="container relative z-10 max-w-7xl mx-auto px-4">
     <!-- Header -->
     <div class="text-center mb-6 md:mb-8">
-      <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 50%, #FF375F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.03em;">Blog</h1>
+      <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); color: var(--text-primary); letter-spacing: -0.03em;">Blog</h1>
       <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Thoughts on development, design, and technology</p>
     </div>
     
@@ -16,27 +16,22 @@
       <!-- Featured Latest Post - Full Width Banner -->
       <%= link_to blog_post_path(latest_post.slug), class: "block mb-8" do %>
         <article class="rounded-2xl p-8 md:p-12 transition-all hover:scale-[1.005] relative overflow-hidden group" 
-                 style="background: linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(191, 90, 242, 0.05) 100%); 
+                 style="background: rgba(255, 255, 255, 0.04); 
                         backdrop-filter: saturate(200%) blur(20px); 
                         border: 1px solid rgba(255, 255, 255, 0.08);
                         min-height: 300px;">
           
           <!-- Gradient decoration -->
-          <div class="absolute top-0 right-0 w-64 h-64 opacity-20 group-hover:opacity-30 transition-opacity"
-               style="background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 100%); 
-                      filter: blur(100px);"></div>
+          <!-- Decoration removed for simplicity -->
           
           <!-- Special decoration badge -->
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4"
                style="background: rgba(255, 255, 255, 0.05); 
                       border: 1px solid rgba(255, 255, 255, 0.1);">
-            <span class="text-xs font-semibold uppercase tracking-wider" style="color: #BF5AF2;">Latest Post</span>
+            <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--accent-color);">Latest Post</span>
           </div>
           
-          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 relative z-10"
-              style="background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 100%); 
-                     -webkit-background-clip: text; 
-                     -webkit-text-fill-color: transparent;">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 relative z-10" style="color: var(--text-primary);">
             <%= latest_post.title %>
           </h2>
           
@@ -50,7 +45,7 @@
           </p>
           
           <div class="inline-flex items-center gap-2 text-base font-medium group-hover:gap-3 transition-all" 
-               style="color: #007AFF;">
+               style="color: var(--accent-color);">
             <span>Read Article</span>
             <span class="material-icons">arrow_forward</span>
           </div>
@@ -68,10 +63,8 @@
                               backdrop-filter: saturate(200%) blur(20px); 
                               border: 1px solid rgba(255, 255, 255, 0.08);">
                 
-                <h3 class="text-xl font-bold mb-3 line-clamp-2 group-hover:text-transparent transition-all"
-                    style="color: var(--text-primary);
-                           background: linear-gradient(135deg, #007AFF 0%, #BF5AF2 100%); 
-                           -webkit-background-clip: text;">
+                <h3 class="text-xl font-bold mb-3 line-clamp-2"
+                    style="color: var(--text-primary);">
                   <%= post.title %>
                 </h3>
                 
@@ -85,7 +78,7 @@
                 </p>
                 
                 <div class="inline-flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all" 
-                     style="color: #BF5AF2;">
+                     style="color: var(--accent-color);">
                   <span>Read more</span>
                   <span class="material-icons text-sm">arrow_forward</span>
                 </div>
@@ -102,7 +95,7 @@
              style="background: rgba(255, 255, 255, 0.04); 
                     backdrop-filter: saturate(200%) blur(20px); 
                     border: 1px solid rgba(255, 255, 255, 0.08);">
-          <span class="material-icons text-6xl mb-4" style="color: #BF5AF2;">article</span>
+          <span class="material-icons text-6xl mb-4" style="color: var(--accent-color);">article</span>
           <h2 class="text-2xl font-bold mb-2">No posts yet</h2>
           <p class="text-lg" style="color: var(--text-muted);">Check back soon for thoughts on development, design, and AI!</p>
         </div>
