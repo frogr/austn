@@ -17,9 +17,7 @@ import BentoHome from './components/BentoHome'
 import Projects from './components/Projects'
 import ProjectDetail from './components/ProjectDetail'
 import ThemeLayout from './components/DarkModeLayout' // Renamed but kept same file
-import { ThemeProvider, StandaloneThemeProvider, ThemeToggle as NewThemeToggle } from './components/Theme'
-import OldThemeProvider from './components/ThemeProvider'
-import OldThemeToggle from './components/ThemeToggle'
+import { ThemeProvider } from './components/Theme'
 
 const COMPONENTS = {
   'HelloWorld': HelloWorld,
@@ -35,9 +33,7 @@ const COMPONENTS = {
   'Projects': Projects,
   'ProjectDetail': ProjectDetail,
   'ThemeLayout': ThemeLayout, // New name
-  'DarkModeLayout': ThemeLayout, // For backwards compatibility 
-  'ThemeProvider': StandaloneThemeProvider, // Use standalone version
-  'ThemeToggle': NewThemeToggle // Use new consolidated version
+  'DarkModeLayout': ThemeLayout // For backwards compatibility 
 }
 
 // Store our roots so we can track which elements have been initialized

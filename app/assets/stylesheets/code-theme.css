@@ -1,8 +1,8 @@
 /* Theme-based styling for code blocks and syntax highlighting */
 
-/* Dark Theme Code Blocks */
-:root.dark-theme .code-theme pre,
-:root.dark-theme .code-theme code,
+/* Dark-only Code Blocks */
+.code-theme pre,
+.code-theme code,
 .dark-code-theme pre,
 .dark-code-theme code {
   background-color: var(--bg-secondary) !important;
@@ -10,7 +10,7 @@
   border-color: var(--border-glass) !important;
 }
 
-:root.dark-theme .code-theme .hljs,
+.code-theme .hljs,
 .dark-code-theme .hljs {
   display: block;
   overflow-x: auto;
@@ -19,20 +19,20 @@
   background: var(--bg-secondary) !important;
 }
 
-:root.dark-theme .code-theme .hljs-comment,
-:root.dark-theme .code-theme .hljs-quote,
-:root.dark-theme .code-theme .hljs-variable,
+.code-theme .hljs-comment,
+.code-theme .hljs-quote,
+.code-theme .hljs-variable,
 .dark-code-theme .hljs-comment,
 .dark-code-theme .hljs-quote,
 .dark-code-theme .hljs-variable {
   color: #6a9955 !important;
 }
 
-:root.dark-theme .code-theme .hljs-keyword,
-:root.dark-theme .code-theme .hljs-selector-tag,
-:root.dark-theme .code-theme .hljs-built_in,
-:root.dark-theme .code-theme .hljs-name,
-:root.dark-theme .code-theme .hljs-tag,
+.code-theme .hljs-keyword,
+.code-theme .hljs-selector-tag,
+.code-theme .hljs-built_in,
+.code-theme .hljs-name,
+.code-theme .hljs-tag,
 .dark-code-theme .hljs-keyword,
 .dark-code-theme .hljs-selector-tag,
 .dark-code-theme .hljs-built_in,
@@ -41,15 +41,15 @@
   color: #569cd6 !important;
 }
 
-:root.dark-theme .code-theme .hljs-string,
-:root.dark-theme .code-theme .hljs-title,
-:root.dark-theme .code-theme .hljs-section,
-:root.dark-theme .code-theme .hljs-attribute,
-:root.dark-theme .code-theme .hljs-literal,
-:root.dark-theme .code-theme .hljs-template-tag,
-:root.dark-theme .code-theme .hljs-template-variable,
-:root.dark-theme .code-theme .hljs-type,
-:root.dark-theme .code-theme .hljs-addition,
+.code-theme .hljs-string,
+.code-theme .hljs-title,
+.code-theme .hljs-section,
+.code-theme .hljs-attribute,
+.code-theme .hljs-literal,
+.code-theme .hljs-template-tag,
+.code-theme .hljs-template-variable,
+.code-theme .hljs-type,
+.code-theme .hljs-addition,
 .dark-code-theme .hljs-string,
 .dark-code-theme .hljs-title,
 .dark-code-theme .hljs-section,
@@ -62,10 +62,10 @@
   color: #ce9178 !important;
 }
 
-:root.dark-theme .code-theme .hljs-deletion,
-:root.dark-theme .code-theme .hljs-selector-attr,
-:root.dark-theme .code-theme .hljs-selector-pseudo,
-:root.dark-theme .code-theme .hljs-meta,
+.code-theme .hljs-deletion,
+.code-theme .hljs-selector-attr,
+.code-theme .hljs-selector-pseudo,
+.code-theme .hljs-meta,
 .dark-code-theme .hljs-deletion,
 .dark-code-theme .hljs-selector-attr,
 .dark-code-theme .hljs-selector-pseudo,
@@ -73,171 +73,79 @@
   color: #d16969 !important;
 }
 
-:root.dark-theme .code-theme .hljs-doctag,
+.code-theme .hljs-doctag,
 .dark-code-theme .hljs-doctag {
   color: #608b4e !important;
 }
 
-:root.dark-theme .code-theme .hljs-attr,
+.code-theme .hljs-attr,
 .dark-code-theme .hljs-attr {
   color: #9cdcfe !important;
 }
 
-:root.dark-theme .code-theme .hljs-symbol,
-:root.dark-theme .code-theme .hljs-bullet,
-:root.dark-theme .code-theme .hljs-link,
+.code-theme .hljs-symbol,
+.code-theme .hljs-bullet,
+.code-theme .hljs-link,
 .dark-code-theme .hljs-symbol,
 .dark-code-theme .hljs-bullet,
 .dark-code-theme .hljs-link {
   color: #569cd6 !important;
 }
 
-/* Light Theme Code Blocks */
-:root.light-theme .code-theme pre,
-:root.light-theme .code-theme code,
-.light-code-theme pre,
-.light-code-theme code {
-  background-color: var(--bg-glass-thick) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-glass) !important;
-}
-
-:root.light-theme .code-theme .hljs,
-.light-code-theme .hljs {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  color: var(--text-primary) !important;
-  background: var(--bg-glass-thick) !important;
-}
-
-:root.light-theme .code-theme .hljs-comment,
-:root.light-theme .code-theme .hljs-quote,
-:root.light-theme .code-theme .hljs-variable,
-.light-code-theme .hljs-comment,
-.light-code-theme .hljs-quote,
-.light-code-theme .hljs-variable {
-  color: #6a737d !important;
-}
-
-:root.light-theme .code-theme .hljs-keyword,
-:root.light-theme .code-theme .hljs-selector-tag,
-:root.light-theme .code-theme .hljs-built_in,
-:root.light-theme .code-theme .hljs-name,
-:root.light-theme .code-theme .hljs-tag,
-.light-code-theme .hljs-keyword,
-.light-code-theme .hljs-selector-tag,
-.light-code-theme .hljs-built_in,
-.light-code-theme .hljs-name,
-.light-code-theme .hljs-tag {
-  color: #d73a49 !important;
-}
-
-:root.light-theme .code-theme .hljs-string,
-:root.light-theme .code-theme .hljs-title,
-:root.light-theme .code-theme .hljs-section,
-:root.light-theme .code-theme .hljs-attribute,
-:root.light-theme .code-theme .hljs-literal,
-:root.light-theme .code-theme .hljs-template-tag,
-:root.light-theme .code-theme .hljs-template-variable,
-:root.light-theme .code-theme .hljs-type,
-:root.light-theme .code-theme .hljs-addition,
-.light-code-theme .hljs-string,
-.light-code-theme .hljs-title,
-.light-code-theme .hljs-section,
-.light-code-theme .hljs-attribute,
-.light-code-theme .hljs-literal,
-.light-code-theme .hljs-template-tag,
-.light-code-theme .hljs-template-variable,
-.light-code-theme .hljs-type,
-.light-code-theme .hljs-addition {
-  color: #032f62 !important;
-}
-
-:root.light-theme .code-theme .hljs-attr,
-.light-code-theme .hljs-attr {
-  color: #005cc5 !important;
-}
-
-:root.light-theme .code-theme .hljs-doctag,
-.light-code-theme .hljs-doctag {
-  color: #22863a !important;
-}
-
-:root.light-theme .code-theme .hljs-symbol,
-:root.light-theme .code-theme .hljs-bullet,
-:root.light-theme .code-theme .hljs-link,
-.light-code-theme .hljs-symbol,
-.light-code-theme .hljs-bullet,
-.light-code-theme .hljs-link {
-  color: #005cc5 !important;
-}
-
 /* Code block header styling */
-:root.dark-theme .code-theme .code-block-header,
+.code-theme .code-block-header,
 .dark-code-theme .code-block-header {
   background-color: var(--bg-glass-thick) !important;
   color: var(--text-muted) !important;
   border-bottom: 1px solid var(--border-glass) !important;
 }
 
-:root.light-theme .code-theme .code-block-header,
-.light-code-theme .code-block-header {
-  background-color: var(--bg-glass) !important;
-  color: var(--text-muted) !important;
-  border-bottom: 1px solid var(--border-glass) !important;
-}
-
 /* Inline code styling */
-:root.dark-theme .code-theme :not(pre) > code,
+.code-theme :not(pre) > code,
 .dark-code-theme :not(pre) > code {
   background-color: var(--bg-glass) !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border-glass) !important;
 }
 
-:root.light-theme .code-theme :not(pre) > code,
-.light-code-theme :not(pre) > code {
-  background-color: var(--bg-glass) !important;
-  color: var(--text-primary) !important;
-  border: 1px solid var(--border-glass) !important;
-}
-
 /* Prose overrides for dark mode */
-:root.dark-theme .prose pre,
 .prose-invert pre {
   background-color: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
 }
 
-:root.dark-theme .prose code,
 .prose-invert code {
   color: var(--text-primary) !important;
 }
 
 /* Prose overrides for light mode */
-:root.light-theme .prose pre {
-  background-color: var(--bg-glass-thick) !important;
-  color: var(--text-primary) !important;
-}
-
-:root.light-theme .prose code {
-  color: var(--text-primary) !important;
-}
+/* Light prose variants removed */
 
 /* Override any existing styles */
-:root.dark-theme .prose .hljs,
-:root.dark-theme .prose pre code,
 .prose-invert .hljs,
 .prose-invert pre code {
   background-color: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
 }
 
-:root.light-theme .prose .hljs,
-:root.light-theme .prose pre code,
-.prose .hljs,
-.prose pre code {
-  background-color: var(--bg-glass-thick) !important;
+/* Markdown table dark overrides (loaded last to win cascade) */
+.markdown-content table thead,
+.markdown-content table thead tr,
+.markdown-content table thead th,
+.markdown-content.prose table thead,
+.markdown-content.prose table thead tr,
+.markdown-content.prose table thead th,
+.markdown-content.prose-invert table thead,
+.markdown-content.prose-invert table thead tr,
+.markdown-content.prose-invert table thead th,
+.markdown-content table tr:first-child th {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-glass) !important;
+}
+
+.markdown-content table td,
+.markdown-content.prose table td,
+.markdown-content.prose-invert table td {
   color: var(--text-primary) !important;
 }

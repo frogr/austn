@@ -1,40 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { ThemeContext } from './ThemeContext'
+import React, { useState } from 'react'
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
   
-  // Track theme state with useState
-  const [themeState, setThemeState] = useState('dark');
-  
-  // Update theme state when document classes change
-  useEffect(() => {
-    const updateThemeFromDOM = () => {
-      const root = document.documentElement;
-      const isLightTheme = root.classList.contains('light-theme');
-      setThemeState(isLightTheme ? 'light' : 'dark');
-    };
-    
-    // Check immediately
-    updateThemeFromDOM();
-    
-    // Create a MutationObserver to watch for class changes on the document root
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          updateThemeFromDOM();
-        }
-      });
-    });
-    
-    // Start observing
-    observer.observe(document.documentElement, { attributes: true });
-    
-    return () => observer.disconnect();
-  }, []);
-  
-  // Determine styles based on theme
-  const isDark = themeState === 'dark';
+  // Dark-only colors
+  const isDark = true;
   
   // Check for mobile device
   const [isMobile, setIsMobile] = useState(false);
@@ -73,15 +43,15 @@ const Sidebar = () => {
     <div 
       className={`fixed inset-y-0 left-0 ${collapsed ? 'w-16' : 'w-56'} flex flex-col sidebar z-[100] transition-all duration-300`}
       style={{ 
-        backgroundColor: isDark ? '#1f2937' : '#e5e7eb',
-        color: isDark ? '#ffffff' : '#1a202c'
+        backgroundColor: '#1f2937',
+        color: '#ffffff'
       }}
     >
       <div className="p-5 flex justify-between items-center">
         <h1 className={`text-2xl font-bold ${collapsed ? 'hidden' : 'block'}`}>Austn</h1>
         <button 
           onClick={() => setCollapsed(!collapsed)}
-          style={{ color: isDark ? '#ffffff' : '#1a202c' }}
+          style={{ color: '#ffffff' }}
           className="focus:outline-none"
         >
           {collapsed ? '→' : '←'}
@@ -93,7 +63,7 @@ const Sidebar = () => {
             <a 
               href="/" 
               className="block py-2 flex items-center"
-              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
+              style={{ color: '#ffffff' }}
             >
               <span className="material-icons mr-2">home</span>
               {!collapsed && <span>Home</span>}
@@ -103,7 +73,7 @@ const Sidebar = () => {
             <a 
               href="/blog" 
               className="block py-2 flex items-center"
-              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
+              style={{ color: '#ffffff' }}
             >
               <span className="material-icons mr-2">article</span>
               {!collapsed && <span>Blog</span>}
@@ -113,7 +83,7 @@ const Sidebar = () => {
             <a 
               href="/work" 
               className="block py-2 flex items-center"
-              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
+              style={{ color: '#ffffff' }}
             >
               <span className="material-icons mr-2">work</span>
               {!collapsed && <span>Work</span>}
@@ -123,7 +93,7 @@ const Sidebar = () => {
             <a 
               href="/contact" 
               className="block py-2 flex items-center"
-              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
+              style={{ color: '#ffffff' }}
             >
               <span className="material-icons mr-2">mail</span>
               {!collapsed && <span>Contact</span>}
@@ -133,7 +103,7 @@ const Sidebar = () => {
             <a 
               href="/fun" 
               className="block py-2 flex items-center"
-              style={{ color: isDark ? '#ffffff' : '#1f2937' }}
+              style={{ color: '#ffffff' }}
             >
               <span className="material-icons mr-2">emoji_emotions</span>
               {!collapsed && <span>Fun</span>}
@@ -154,7 +124,7 @@ const Sidebar = () => {
       <div className="p-5">
         <div 
           className={`text-sm ${collapsed ? 'hidden' : 'block'}`}
-          style={{ color: isDark ? '#9ca3af' : '#4b5563' }}
+          style={{ color: '#9ca3af' }}
         >
           &copy; 2025 Austn
         </div>

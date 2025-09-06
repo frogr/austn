@@ -57,25 +57,50 @@ table {
   width: 100%;
   display: block;
   overflow-x: auto;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-table th {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-glass);
+/* Ensure readable table headers in dark mode, overriding Tailwind Typography */
+.markdown-content table thead,
+.markdown-content table thead tr,
+.markdown-content table thead th,
+.markdown-content.prose table thead,
+.markdown-content.prose table thead tr,
+.markdown-content.prose table thead th,
+.markdown-content.prose-invert table thead,
+.markdown-content.prose-invert table thead tr,
+.markdown-content.prose-invert table thead th,
+table thead,
+table thead tr,
+table thead th {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-glass) !important;
   font-weight: 600;
   padding: 0.75rem;
   text-align: left;
 }
 
+.markdown-content.prose table td,
+.markdown-content.prose-invert table td,
 table td {
-  border-bottom: 1px solid var(--border-glass);
-  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-glass) !important;
+  color: var(--text-primary) !important;
   padding: 0.75rem;
 }
 
+/* Ensure header cell children inherit readable color */
+.markdown-content table thead th *,
+.markdown-content.prose table thead th *,
+.markdown-content.prose-invert table thead th * {
+  color: var(--text-primary) !important;
+}
+
+.markdown-content.prose table tr:hover,
+.markdown-content.prose-invert table tr:hover,
 table tr:hover {
-  background: var(--bg-glass);
+  background: var(--bg-glass) !important;
 }
 
 /* Lists */

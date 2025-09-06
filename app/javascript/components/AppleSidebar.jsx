@@ -4,7 +4,7 @@ import { useTheme } from './ThemeContext';
 const AppleSidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   // Check for mobile device
@@ -119,21 +119,7 @@ const AppleSidebar = () => {
           </nav>
 
           {/* Footer */}
-          <div className="p-6">
-            <button
-              onClick={toggleTheme}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all duration-300"
-              style={{
-                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                color: theme === 'dark' ? '#ffffff' : '#000000'
-              }}
-            >
-              <span className="material-icons">
-                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-              </span>
-              <span>{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
-            </button>
-          </div>
+          <div className="p-6"></div>
         </div>
       </>
     );
@@ -202,23 +188,6 @@ const AppleSidebar = () => {
 
       {/* Footer */}
       <div className="p-6">
-        <button
-          onClick={toggleTheme}
-          className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-4 py-3 
-            rounded-xl transition-all duration-300`}
-          style={{
-            backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-            color: theme === 'dark' ? '#ffffff' : '#000000'
-          }}
-        >
-          <span className="material-icons">
-            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-          </span>
-          {!collapsed && (
-            <span>{theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
-          )}
-        </button>
-
         {!collapsed && (
           <div className="mt-4 text-xs text-center"
                style={{ color: theme === 'dark' ? '#999' : '#666' }}>

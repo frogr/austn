@@ -48,26 +48,7 @@
   transform: scale(1.05) !important;
 }
 
-/* Light theme variations */
-:root.light-theme .glass-morphism {
-  background: rgba(249, 250, 251, 0.85) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
-}
-
-:root.light-theme .glass-panel {
-  background: rgba(249, 250, 251, 0.75) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
-}
-
-:root.light-theme .glass-button {
-  background: rgba(0, 0, 0, 0.07) !important;
-  color: #111827 !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-}
-
-:root.light-theme .glass-button:hover {
-  background: rgba(0, 0, 0, 0.12) !important;
-}
+/* Light theme variants removed for dark-only */
 
 /* Game card specific styling */
 .game-card {
@@ -242,40 +223,4 @@
   50% { transform: translateY(-10px); }
 }
 
-/* Theme-aware adjustments */
-:root.light-theme .game-card {
-  background: rgba(249, 250, 251, 0.85);
-}
-
-:root.light-theme .game-title {
-  background: linear-gradient(90deg, #111827, #4b5563);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-:root.light-theme .game-description {
-  color: rgba(0, 0, 0, 0.7);
-}
-
-:root.light-theme .play-button {
-  background: rgba(0, 0, 0, 0.07);
-  color: #111827;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-:root.light-theme .play-button:hover {
-  background: rgba(0, 0, 0, 0.12);
-}
-
-:root.light-theme .stat-value {
-  color: #111827;
-}
-
-:root.light-theme .stat-label {
-  color: rgba(0, 0, 0, 0.6);
-}
-
-:root.light-theme .stat-item:hover .stat-value {
-  color: #ff6b4a;
-}
+/* Theme-aware light adjustments removed for dark-only */
