@@ -2,7 +2,8 @@
 
 .markdown-content {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.6;
+  font-size: 1.1rem;
+  line-height: 1.75;
   color: var(--text-primary);
 }
 
@@ -140,14 +141,30 @@ img {
 
 /* Additional spacing between elements */
 p {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   color: var(--text-primary);
+}
+
+/* Heading breathing room */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1.25em;
+  margin-bottom: 0.6em;
+}
+
+.markdown-content li {
+  margin-bottom: 0.6em;
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .markdown-content {
-    font-size: 0.95rem;
+    font-size: 1.15rem;
+    line-height: 1.8;
     overflow-x: hidden;
     word-wrap: break-word;
     overflow-wrap: break-word;

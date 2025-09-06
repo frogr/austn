@@ -329,6 +329,21 @@
   display: block;
 }
 
+/* Slightly increased readability for content areas */
+.readable-content {
+  line-height: 1.7;
+}
+.readable-content p,
+.readable-content li {
+  font-size: 1.05rem;
+}
+@media (max-width: 640px) {
+  .readable-content p,
+  .readable-content li {
+    font-size: 1.075rem;
+  }
+}
+
 /* Stand-alone pre blocks (not inside our wrapper) */
 .markdown-content pre:not(.code-block-wrapper pre) {
   padding: 1rem;

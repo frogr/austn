@@ -1,11 +1,4 @@
-<div class="min-h-screen pt-20 pb-12 relative overflow-x-hidden" style="background-color: var(--bg-primary);">
-  <!-- Animated gradient background -->
-  <div class="absolute inset-0 opacity-10">
-    <div class="absolute top-40 -left-40 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl" 
-         style="background: var(--gradient-cool); animation: float 15s ease-in-out infinite;"></div>
-    <div class="absolute bottom-40 -right-40 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl" 
-         style="background: var(--gradient-primary); animation: float 20s ease-in-out infinite reverse;"></div>
-  </div>
+<div class="min-h-screen pt-16 pb-10 relative overflow-x-hidden" style="background: transparent;">
 
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <!-- Back link with hover effect -->
@@ -47,7 +40,7 @@
         
         <div 
           id="markdown-container"
-          class="prose code-theme max-w-full"
+          class="prose code-theme max-w-full readable-content"
           style="color: var(--text-secondary); word-break: break-word; overflow-wrap: anywhere;"
           data-react-component="MarkdownRenderer" 
           data-props='<%= raw({ useElementId: content_id }.to_json) %>'
@@ -79,11 +72,6 @@
   </div>
 
   <style>
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(30px, -30px) rotate(120deg); }
-      66% { transform: translate(-20px, 20px) rotate(240deg); }
-    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }

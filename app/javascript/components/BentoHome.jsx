@@ -47,7 +47,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
                  color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.85)',
                  letterSpacing: '-0.01em'
                }}>
-              Senior Backend Engineer · AI Experimentalist
+              Senior Backend Engineer
             </p>
             <div className="flex gap-3 flex-wrap">
               <a href="/projects" className="btn-primary px-6 py-3 rounded-xl font-semibold text-base 

@@ -151,7 +151,7 @@ const Projects = () => {
       {/* Background mesh disabled to avoid top band */}
       <div className="absolute inset-0 opacity-0" aria-hidden="true"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 readable-content">
         {/* Header with gradient text */}
         <div className="text-center mb-6 md:mb-8">
           <h1 className="font-black mb-3"

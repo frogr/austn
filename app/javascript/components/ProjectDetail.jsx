@@ -254,22 +254,22 @@ const ProjectDetail = ({ projectId }) => {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Project Not Found</h1>
-          <a href="/projects" className="btn btn-primary">Back to Projects</a>
+          <a href="/projects" className="btn btn-secondary">Back to Projects</a>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pt-16 pb-8" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-16 pb-8" style={{ backgroundColor: 'transparent' }}>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 readable-content">
         {/* Back Button */}
-        <a href="/projects" className="inline-flex items-center gap-2 mb-8 text-sm hover:opacity-80 transition-opacity" style={{ color: 'var(--text-secondary)' }}>
-          <span className="material-icons text-base">arrow_back</span>
-          Back to Projects
+        <a href="/projects" className="inline-flex items-center gap-2 btn btn-secondary group mb-8">
+          <span className="material-icons transform group-hover:-translate-x-1 transition-transform text-base">arrow_back</span>
+          <span>Back to Projects</span>
         </a>
 
         {/* Project Header */}

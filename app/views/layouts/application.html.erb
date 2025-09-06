@@ -33,6 +33,8 @@
   </head>
 
   <body>
+    <!-- Global background layer for all pages -->
+    <div class="site-bg" aria-hidden="true"></div>
     <!-- Dark mode only; theme provider removed -->
     
     <!-- Google Fonts: Inter for modern typography & Material Icons -->
@@ -53,8 +55,26 @@
         -moz-osx-font-smoothing: grayscale;
       }
 
+      /* Global background (unified across all routes) */
+      .site-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: var(--bg-primary);
+      }
+      /* Subtle gradient mesh overlay */
+      .site-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0.12;
+        background: var(--gradient-mesh);
+        filter: saturate(120%);
+      }
+
       /* Minimal top nav with centered links */
-      .site-header { background: transparent; }
+      .site-header { background: transparent; position: relative; z-index: 1; }
 
       .navbar {
         display: flex;
@@ -127,7 +147,7 @@
     </header>
 
     <!-- Content area -->
-    <main class="min-h-screen code-theme">
+    <main class="min-h-screen code-theme" style="position: relative; z-index: 1;">
       <%= yield %>
     </main>
 
