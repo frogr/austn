@@ -89,7 +89,7 @@
   -webkit-backdrop-filter: saturate(200%) blur(20px);
   border: 0.5px solid rgba(255, 255, 255, 0.08);
   border-radius: 0;
-  padding: 0.75rem;
+  padding: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
@@ -109,21 +109,21 @@
 /* Responsive padding - kept minimal */
 @media (min-width: 640px) {
   .bento-box {
-    padding: 1rem;
+    padding: 1.25rem;
     border-radius: 0;
   }
 }
 
 @media (min-width: 768px) {
   .bento-box {
-    padding: 1.25rem;
+    padding: 1.5rem;
     border-radius: 0;
   }
 }
 
 @media (min-width: 1024px) {
   .bento-box {
-    padding: 1.5rem;
+    padding: 1.75rem;
     border-radius: 0;
   }
 }
@@ -297,22 +297,40 @@
 /* ===== CONTENT CONSTRAINTS ===== */
 /* Ensure text remains readable */
 .bento-box h3 {
-  font-size: clamp(0.875rem, 2vw, 1.125rem);
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
   margin-bottom: 0.25rem;
 }
 
 .bento-box h4 {
-  font-size: clamp(0.75rem, 1.6vw, 0.9375rem);
+  font-size: clamp(0.875rem, 1.8vw, 1.0625rem);
   margin-bottom: 0.125rem;
 }
 
 .bento-box p {
-  font-size: clamp(0.75rem, 1.3vw, 0.875rem);
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
   margin-bottom: 0.25rem;
 }
 
 .bento-box .text-xs {
-  font-size: clamp(0.6875rem, 1.1vw, 0.75rem);
+  font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+}
+
+.bento-box .text-sm {
+  font-size: clamp(0.95rem, 1.5vw, 1.0625rem);
+}
+
+/* ===== ROW HEIGHT HELPERS (large screens) ===== */
+@media (min-width: 1024px) {
+  /* Prefer dynamic vars when provided by the home component */
+  .bento-hero { min-height: var(--hero-h, 170px); }
+  .bento-row-medium { min-height: var(--row-medium-h, 300px); }
+  .bento-row-tall { min-height: var(--row-tall-h, 450px); }
+}
+
+/* Ensure paired boxes match height visually */
+.bento-row-medium, .bento-row-tall {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Prevent content overflow */

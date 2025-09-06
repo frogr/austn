@@ -18,11 +18,15 @@ Rails.application.routes.draw do
   get "/projects", to: "portfolio#projects"
   get "/projects/:id", to: "portfolio#project_detail", as: :project_detail
   get "/tech-setup", to: "portfolio#tech_setup"
+  # Simple pages for Engage links
+  get "/fun-links", to: "portfolio#fun_links"
+  get "/reading", to: "portfolio#reading"
+  get "/resources", to: "portfolio#resources"
 
   # Legacy routes - redirect to new structure
   get "/work", to: redirect("/")
   get "/contact", to: redirect("/#contact")
-  get "/fun", to: redirect("/projects")
+  get "/fun", to: redirect("/fun-links")
   get "/games", to: redirect("/projects")
 
   # Movement demo

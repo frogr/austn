@@ -39,4 +39,9 @@ class PortfolioController < ApplicationController
   def tech_setup
     # Tech setup page with hardware and software list
   end
+
+  # Simple static-style pages for Engage links
+  def fun_links; end
+  def reading; end
+  def resources; end
 end
