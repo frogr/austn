@@ -14,21 +14,11 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
   const isDark = theme === 'dark';
   
   return (
-    <div className="h-screen relative overflow-hidden" style={{ 
-      background: isDark 
-        ? 'linear-gradient(180deg, #000000 0%, #0a0a0a 100%)'
-        : 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)'
-    }}>
-      {/* Beautiful gradient mesh background */}
-      <div className="absolute inset-0" style={{ opacity: isDark ? 0.3 : 0.15 }}>
-        <div className="absolute top-0 left-[20%] w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob"></div>
-        <div className="absolute top-[30%] right-[15%] w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-0 left-[35%] w-96 h-96 bg-pink-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-4000"></div>
-        <div className="absolute top-[60%] left-[60%] w-96 h-96 bg-teal-500 rounded-full mix-blend-screen filter blur-[128px] opacity-40 animate-blob animation-delay-6000"></div>
-      </div>
+    <div className="min-h-screen relative" style={{ background: 'transparent' }}>
+      {/* Gradient mesh removed to avoid top color band */}
 
-      {/* Compact bento grid with touching boxes */}
-      <div className="bento-container bento-grid-home relative z-10 overflow-y-auto">
+      {/* Compact bento grid with touching boxes (no internal scroll) */}
+      <div className="bento-container bento-grid-home relative z-10">
         
         {/* Hero Section - Full width with gradient text */}
         <div className="bento-box bento-full flex items-center" 

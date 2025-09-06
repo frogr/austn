@@ -6,7 +6,6 @@ import { createRoot } from 'react-dom/client'
 import { createPortal } from 'react-dom'
 import HelloWorld from './components/HelloWorld'
 import Sidebar from './components/Sidebar'
-import AppleSidebar from './components/AppleSidebar'
 import WorkExperience from "./components/WorkExperience"
 import { MarkdownRenderer as MarkdownRendererNew } from './components/markdown'
 import MarkdownRenderer from './components/MarkdownRenderer'
@@ -22,7 +21,6 @@ import { ThemeProvider } from './components/Theme'
 const COMPONENTS = {
   'HelloWorld': HelloWorld,
   'Sidebar': Sidebar,
-  'AppleSidebar': AppleSidebar,
   'MarkdownRenderer': MarkdownRenderer, // Use the direct component that's expected by blog/show.html.erb
   'MarkDownRenderer': MarkdownRendererNew, // Keep this for backward compatibility
   'GameCard': GameCard,
@@ -82,7 +80,7 @@ document.addEventListener("turbo:load", () => {
           roots.set(component, root)
           
           // Wrap components that need theme context
-          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
+          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
           const componentToRender = needsThemeContext.includes(componentName) 
             ? <ThemeProvider><Component {...props} /></ThemeProvider>
             : <Component {...props} />;
@@ -94,7 +92,7 @@ document.addEventListener("turbo:load", () => {
           const existingRoot = roots.get(component)
           
           // Wrap components that need theme context
-          const needsThemeContext = ['AppleSidebar', 'BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
+          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
           const componentToRender = needsThemeContext.includes(componentName) 
             ? <ThemeProvider><Component {...props} /></ThemeProvider>
             : <Component {...props} />;

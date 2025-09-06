@@ -147,17 +147,9 @@ const Projects = () => {
   
   return (
     <div className="min-h-screen pt-12 pb-6 relative overflow-hidden" 
-         style={{ 
-           background: isDark 
-             ? 'linear-gradient(180deg, #000000 0%, #0a0a0a 100%)'
-             : 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)'
-         }}>
-      {/* Animated gradient background */}
-      <div className="absolute inset-0" style={{ opacity: isDark ? 0.3 : 0.15 }}>
-        <div className="absolute top-20 -left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob"></div>
-        <div className="absolute top-40 -right-20 w-96 h-96 bg-purple-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-32 left-40 w-96 h-96 bg-pink-500 rounded-full mix-blend-screen filter blur-[128px] opacity-50 animate-blob animation-delay-4000"></div>
-      </div>
+         style={{ background: 'transparent' }}>
+      {/* Background mesh disabled to avoid top band */}
+      <div className="absolute inset-0 opacity-0" aria-hidden="true"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header with gradient text */}

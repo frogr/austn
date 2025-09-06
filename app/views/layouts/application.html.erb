@@ -42,7 +42,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
-      /* Modern layout for Apple-style sidebar */
+      /* Base reset */
       body {
         margin: 0;
         padding: 0;
@@ -52,41 +52,84 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      
-      .app-container {
+
+      /* Minimal top nav with centered links */
+      .site-header { background: transparent; }
+
+      .navbar {
         display: flex;
-        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1rem;
       }
-      
-      /* Content area adjusts based on sidebar state */
-      main.content-area {
-        flex: 1;
-        margin-left: 5rem; /* Default collapsed sidebar width */
-        transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem 1rem;
       }
-      
-      /* When sidebar is expanded */
-      body.sidebar-expanded main.content-area {
-        margin-left: 16rem;
+
+      .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 0.25rem 0.4rem;
+        border-radius: 0.4rem;
+        transition: color 150ms ease, background 150ms ease;
+        position: relative;
+        font-weight: 600;
       }
-      
-      /* Small devices (phones) */
-      @media (max-width: 767px) {
-        main.content-area {
-          margin-left: 0 !important;
-        }
+
+      .nav-link:hover {
+        color: var(--text-primary);
       }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0.2rem;
+        right: 0.2rem;
+        bottom: -2px;
+        height: 2px;
+        background: transparent;
+        border-radius: 2px;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 200ms ease;
+      }
+
+      .nav-link:hover::after { transform: scaleX(1); background: var(--glass-border); }
+
+      .nav-link.active {
+        color: transparent;
+        background-image: var(--gradient-primary);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+
+      .nav-link.active::after { background: var(--gradient-primary); transform: scaleX(1); }
     </style>
-    
-    <div class="app-container">
-      <!-- Sidebar React Component -->
-      <div data-react-component="AppleSidebar"></div>
-      
-      <!-- Content area -->
-      <main class="min-h-screen code-theme content-area">
-        <%= yield %>
-      </main>
-    </div>
-    
+
+    <!-- Top Navigation (centered links only) -->
+    <header class="site-header">
+      <div class="container navbar">
+        <nav class="nav-links">
+          <% current_path = request.path %>
+          <% nav_items = [ ['Home','/'], ['Projects','/projects'], ['Blog','/blog'] ] %>
+          <% nav_items.each do |label, path| %>
+            <% active = (path == '/' ? current_path == '/' : current_path.start_with?(path)) %>
+            <%= link_to label, path, class: "nav-link #{active ? 'active' : ''}" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Content area -->
+    <main class="min-h-screen code-theme">
+      <%= yield %>
+    </main>
+
   </body>
 </html>

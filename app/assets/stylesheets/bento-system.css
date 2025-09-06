@@ -10,7 +10,9 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0.125rem;
-  height: 100vh;
+  /* Let content define height to avoid clipping */
+  min-height: 0;
+  height: auto;
   display: flex;
   flex-direction: column;
 }
@@ -22,8 +24,9 @@
   grid-auto-flow: dense;
   grid-auto-rows: minmax(min-content, auto);
   align-items: stretch;
-  flex: 1;
-  overflow: hidden;
+  /* Avoid forcing an internal scroll container */
+  flex: initial;
+  overflow: visible;
 }
 
 /* Mobile: 1 column */
