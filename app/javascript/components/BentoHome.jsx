@@ -262,17 +262,6 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
                 </div>
               </a>
             ))}
-            <a href="/games/arena-shooter" 
-               className="p-3 rounded-lg hover:scale-105 transition-all flex flex-col"
-               style={{ 
-                 background: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.03)',
-                 backdropFilter: 'blur(10px)',
-                 border: isDark ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid rgba(0, 0, 0, 0.06)'
-               }}>
-              <span className="text-3xl mb-2">🎮</span>
-              <h4 className="font-semibold text-sm">Arena Shooter</h4>
-              <span className="text-xs opacity-60">Three.js Game</span>
-            </a>
           </div>
         </div>
 

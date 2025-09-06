@@ -67,26 +67,6 @@ const Projects = () => {
       }
     },
     {
-      id: 4,
-      title: 'Arena Shooter',
-      category: 'game',
-      description: 'Fast-paced 3D browser game with multiplayer support',
-      technologies: ['Three.js', 'JavaScript', 'WebGL', 'WebSockets'],
-      link: '/games/arena-shooter',
-      featured: false,
-      image: '🎮',
-      gradient: 'var(--gradient-primary)',
-      details: {
-        fullDescription: 'A browser-based 3D arena shooter game built with Three.js, featuring smooth gameplay and multiplayer capabilities.',
-        highlights: [
-          'Real-time multiplayer gameplay',
-          '3D graphics with Three.js',
-          'Custom physics engine',
-          'Responsive controls'
-        ]
-      }
-    },
-    {
       id: 5,
       title: 'AI Experiments Lab',
       category: 'ai',

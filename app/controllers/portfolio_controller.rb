@@ -36,10 +36,6 @@ class PortfolioController < ApplicationController
     @project_id = params[:id]
   end
 
-  def arena_shooter
-    # TF2-inspired arena shooter game
-  end
-
   def tech_setup
     # Tech setup page with hardware and software list
   end
