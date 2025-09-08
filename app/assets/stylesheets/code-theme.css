@@ -6,6 +6,9 @@
 .dark-code-theme pre,
 .dark-code-theme code {
   background-color: var(--bg-secondary) !important;
+  background-image: var(--noise-pattern) !important;
+  background-size: var(--noise-size) var(--noise-size) !important;
+  background-repeat: repeat !important;
   color: var(--text-primary) !important;
   border-color: var(--border-glass) !important;
 }
@@ -17,6 +20,9 @@
   padding: 0.5em;
   color: var(--text-primary) !important;
   background: var(--bg-secondary) !important;
+  background-image: var(--noise-pattern) !important;
+  background-size: var(--noise-size) var(--noise-size) !important;
+  background-repeat: repeat !important;
 }
 
 .code-theme .hljs-comment,
@@ -104,6 +110,9 @@
 .code-theme :not(pre) > code,
 .dark-code-theme :not(pre) > code {
   background-color: var(--bg-glass) !important;
+  background-image: var(--noise-pattern) !important;
+  background-size: var(--noise-size) var(--noise-size) !important;
+  background-repeat: repeat !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border-glass) !important;
 }
@@ -111,6 +120,9 @@
 /* Prose overrides for dark mode */
 .prose-invert pre {
   background-color: var(--bg-secondary) !important;
+  background-image: var(--noise-pattern) !important;
+  background-size: var(--noise-size) var(--noise-size) !important;
+  background-repeat: repeat !important;
   color: var(--text-primary) !important;
 }
 
@@ -125,6 +137,9 @@
 .prose-invert .hljs,
 .prose-invert pre code {
   background-color: var(--bg-secondary) !important;
+  background-image: var(--noise-pattern) !important;
+  background-size: var(--noise-size) var(--noise-size) !important;
+  background-repeat: repeat !important;
   color: var(--text-primary) !important;
 }
 

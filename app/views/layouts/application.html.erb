@@ -61,7 +61,11 @@
         inset: 0;
         z-index: 0;
         pointer-events: none;
-        background: var(--bg-primary);
+        background-color: var(--bg-primary);
+        background-image: var(--noise-pattern);
+        background-size: var(--noise-size) var(--noise-size);
+        background-repeat: repeat;
+        background-attachment: fixed;
       }
       /* Remove gradient mesh overlay for cleaner, darker backdrop */
       .site-bg::after {

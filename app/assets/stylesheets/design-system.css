@@ -100,7 +100,9 @@ body {
 
 /* Card Component */
 .card {
-  background: var(--glass-bg);
+  background: var(--glass-bg), var(--noise-pattern);
+  background-repeat: no-repeat, repeat;
+  background-size: auto, var(--noise-size) var(--noise-size);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);

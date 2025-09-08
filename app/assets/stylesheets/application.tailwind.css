@@ -95,7 +95,9 @@
 
 /* ===== BASE BOX STYLES ===== */
 .bento-box {
-  background: var(--glass-bg);
+  background: var(--glass-bg), var(--noise-pattern);
+  background-repeat: no-repeat, repeat;
+  background-size: auto, var(--noise-size) var(--noise-size);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);

@@ -2,8 +2,8 @@
 
 /* CSS Variables - Dark-only */
 :root {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
+  --bg-primary: #121212; /* Darker carbon grey */
+  --bg-secondary: #171717;
   --bg-card: rgba(255, 255, 255, 0.05);
   --bg-card-hover: rgba(255, 255, 255, 0.08);
   --bg-glass: rgba(255, 255, 255, 0.06);
@@ -40,11 +40,17 @@
   --shadow-color: rgba(0, 0, 0, 0.3);
   --shadow-glow: 0 0 40px rgba(29, 185, 84, 0.35);
   --backdrop-blur: 20px;
+  
+  /* Subtle noise texture (SVG data URI) */
+  --noise-size: 120px;
+  --noise-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Glass Morphism Base */
 .glass {
-  background: var(--bg-glass);
+  background: var(--bg-glass), var(--noise-pattern);
+  background-repeat: no-repeat, repeat;
+  background-size: auto, var(--noise-size) var(--noise-size);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border: 1px solid var(--border-glass);
@@ -52,7 +58,9 @@
 }
 
 .glass-thick {
-  background: var(--bg-glass-thick);
+  background: var(--bg-glass-thick), var(--noise-pattern);
+  background-repeat: no-repeat, repeat;
+  background-size: auto, var(--noise-size) var(--noise-size);
   backdrop-filter: saturate(200%) blur(30px);
   -webkit-backdrop-filter: saturate(200%) blur(30px);
   border: 1px solid var(--border-glass);
@@ -66,7 +74,9 @@
 
 /* Apple-style Card */
 .apple-card {
-  background: var(--bg-card);
+  background: var(--bg-card), var(--noise-pattern);
+  background-repeat: no-repeat, repeat;
+  background-size: auto, var(--noise-size) var(--noise-size);
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   padding: 0.75rem;
@@ -343,10 +353,20 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: none;
+  background-image: var(--noise-pattern);
+  background-size: var(--noise-size) var(--noise-size);
+  background-repeat: repeat;
   pointer-events: none;
-  z-index: -1;
-  opacity: 0;
+  z-index: 0;
+}
+
+/* Apply subtle noise to page background */
+body {
+  background-color: var(--bg-primary);
+  background-image: var(--noise-pattern);
+  background-size: var(--noise-size) var(--noise-size);
+  background-repeat: repeat;
+  background-attachment: fixed;
 }
 
 /* Legacy classes for backward compatibility */
