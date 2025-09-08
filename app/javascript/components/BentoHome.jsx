@@ -51,22 +51,20 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
       {/* Compact grid; sections are the focus */}
       <div ref={containerRef} className="bento-container bento-grid-home relative z-10">
         {/* HERO */}
-        <div className="bento-box bento-full bento-hero flex items-center"
+        <div className="bento-box bento-full bento-hero"
              style={{
                background: isDark
                  ? 'linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(191, 90, 242, 0.05) 100%)'
                  : 'linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(191, 90, 242, 0.08) 100%)',
-               borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-               minHeight: 'var(--hero-h, 180px)'
+               borderTop: 'none', borderLeft: 'none', borderRight: 'none'
              }}>
-          <div className="w-full">
-            <h1 className="font-black mb-1" style={{
-              fontSize: 'clamp(3rem, 7.5vw, 5rem)',
-              color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)',
+          <div className="w-full h-full" style={{ display: 'grid', alignContent: 'center', justifyContent: 'start' }}>
+            <h1 className="font-black mb-1 hero-name" style={{
+              fontSize: 'clamp(2.6rem, 9vw, 5rem)',
               letterSpacing: '-0.03em'
             }}>Austin French</h1>
             <p className="font-semibold mb-4" style={{
-              fontSize: 'clamp(1.375rem, 3.2vw, 2.25rem)',
+              fontSize: 'clamp(1.2rem, 4.2vw, 2.25rem)',
               color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)'
             }}>Senior Backend Engineer</p>
             {/* Primary CTAs moved into Engage section below */}
@@ -77,43 +75,43 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
         {/* CONTACT (left half) */}
         <div id="contact" className="bento-box bento-2x1 bento-row-medium" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
           <h3 className="font-extrabold mb-3" style={{ fontSize: 'clamp(1.45rem, 2.2vw, 1.75rem)', color: isDark ? '#fff' : '#000' }}>Engage</h3>
-          <div className="flex flex-wrap gap-6">
-            <a href="/projects" className="inline-flex items-center gap-3 px-5 py-3.5 rounded-md font-semibold"
+          <div className="engage-grid">
+            <a href="/projects" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
                style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
               <span className="material-icons text-lg">rocket_launch</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Projects</span>
             </a>
-            <a href="/blog" className="inline-flex items-center gap-3 px-5 py-3.5 rounded-md font-semibold"
+            <a href="/blog" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
                style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
               <span className="material-icons text-lg">article</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Blog</span>
             </a>
-            <a href="/fun-links" className="inline-flex items-center gap-3 px-5 py-3.5 rounded-md font-semibold"
+            <a href="/fun-links" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
                style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
               <span className="material-icons text-lg">toys</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Fun Links</span>
             </a>
-            <a href="/reading" className="inline-flex items-center gap-3 px-5 py-3.5 rounded-md font-semibold"
+            <a href="/reading" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
                style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
               <span className="material-icons text-lg">menu_book</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Currently Reading</span>
             </a>
-            <a href="/resources" className="inline-flex items-center gap-3 px-5 py-3.5 rounded-md font-semibold"
+            <a href="/resources" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
                style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
               <span className="material-icons text-lg">link</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Useful Resources</span>
             </a>
-            <a href="mailto:hi@austn.net" className="inline-flex items-center gap-3 px-4 py-3.5 rounded-md font-semibold"
+            <a href="mailto:hi@austn.net" className="engage-item gap-3 px-4 py-3.5 rounded-md font-semibold"
                style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
               <span className="material-icons text-lg" style={{ color: 'var(--accent-color)' }}>email</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>hi@austn.net</span>
             </a>
-            <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-4 py-3.5 rounded-md font-semibold"
+            <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" className="engage-item gap-3 px-4 py-3.5 rounded-md font-semibold"
                style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
               <span className="material-icons text-lg" style={{ color: 'var(--accent-color)' }}>code</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>GitHub</span>
             </a>
-            <a href="https://linkedin.com/in/austindanielfrench" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-4 py-3.5 rounded-md font-semibold"
+            <a href="https://linkedin.com/in/austindanielfrench" target="_blank" rel="noopener noreferrer" className="engage-item gap-3 px-4 py-3.5 rounded-md font-semibold"
                style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
               <span className="material-icons text-lg" style={{ color: 'var(--accent-color)' }}>business</span>
               <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>LinkedIn</span>

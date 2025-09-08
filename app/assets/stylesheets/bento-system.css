@@ -319,10 +319,18 @@
   font-size: clamp(0.95rem, 1.5vw, 1.0625rem);
 }
 
-/* ===== ROW HEIGHT HELPERS (large screens) ===== */
+/* ===== ROW HEIGHT HELPERS ===== */
+/* Base mobile/tablet height so hero stays spacious */
+.bento-hero {
+  /* Keep compact on small screens; center content */
+  min-height: clamp(160px, 24vh, 220px);
+  display: flex;
+  align-items: center;
+}
+
 @media (min-width: 1024px) {
   /* Prefer dynamic vars when provided by the home component */
-  .bento-hero { min-height: var(--hero-h, 170px); }
+  .bento-hero { min-height: var(--hero-h, clamp(200px, 30vh, 340px)); }
   .bento-row-medium { min-height: var(--row-medium-h, 300px); }
   .bento-row-tall { min-height: var(--row-tall-h, 450px); }
 }

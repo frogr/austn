@@ -360,6 +360,61 @@ body::before {
   z-index: 0;
 }
 
+/* Home hero animated gradient name */
+@keyframes gradient-pan-slow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-name {
+  /* White → Yellow → Green → Blue → Purple → White */
+  background-image: linear-gradient(
+    120deg,
+    #ffffff 0%,
+    #fff5cc 8%,
+    #ffe680 14%,
+    #c9ffb3 22%,
+    #1ED760 38%,
+    #64D2FF 62%,
+    #8B80FF 74%,
+    #ffffff 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradient-pan-slow 10s ease-in-out infinite;
+  line-height: 1.05;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    0 8px 22px rgba(0, 0, 0, 0.3),
+    0 0 24px rgba(100, 210, 255, 0.18),
+    0 0 36px rgba(191, 90, 242, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-name { animation: none; background-size: 100% 100%; }
+}
+
+/* Engage buttons layout: keep two columns on tablets */
+.engage-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .engage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .engage-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.engage-item { display: flex; width: 100%; align-items: center; justify-content: flex-start; }
+
 /* Apply subtle noise to page background */
 body {
   background-color: var(--bg-primary);
