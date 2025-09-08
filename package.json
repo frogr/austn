@@ -18,7 +18,8 @@
     "tailwindcss": "^4.0.7"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets --loader:.js=jsx",
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --splitting --format=esm --outdir=public/assets --public-path=/assets --entry-names=[name] --chunk-names=chunk-[hash] --loader:.js=jsx",
+    "build:prod": "esbuild app/javascript/*.* --bundle --minify --splitting --format=esm --outdir=public/assets --public-path=/assets --entry-names=[name] --chunk-names=chunk-[hash] --loader:.js=jsx",
     "build:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css"
   },
   "keywords": [],

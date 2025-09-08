@@ -23,5 +23,9 @@ module Austn
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Enable gzip compression for text-based responses (HTML, CSS, JS, JSON, XML)
+    # Insert before sendfile so even static assets get compressed when served by Rails.
+    config.middleware.insert_before Rack::Sendfile, Rack::Deflater
   end
 end

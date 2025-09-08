@@ -1,37 +1,25 @@
 import "@hotwired/turbo-rails"
-import "@hotwired/stimulus"
 import "./controllers"
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { createPortal } from 'react-dom'
-import HelloWorld from './components/HelloWorld'
-import Sidebar from './components/Sidebar'
-import WorkExperience from "./components/WorkExperience"
-import { MarkdownRenderer as MarkdownRendererNew } from './components/markdown'
-import MarkdownRenderer from './components/MarkdownRenderer'
-import GameCard from './components/GameCard'
-import GamesGrid from './components/GamesGrid'
-import AboutMe from './components/AboutMe'
-import BentoHome from './components/BentoHome'
-import Projects from './components/Projects'
-import ProjectDetail from './components/ProjectDetail'
-import ThemeLayout from './components/DarkModeLayout' // Renamed but kept same file
 import { ThemeProvider } from './components/Theme'
 
-const COMPONENTS = {
-  'HelloWorld': HelloWorld,
-  'Sidebar': Sidebar,
-  'MarkdownRenderer': MarkdownRenderer, // Use the direct component that's expected by blog/show.html.erb
-  'MarkDownRenderer': MarkdownRendererNew, // Keep this for backward compatibility
-  'GameCard': GameCard,
-  'GamesGrid': GamesGrid,
-  'WorkExperience': WorkExperience,
-  'AboutMe': AboutMe,
-  'BentoHome': BentoHome,
-  'Projects': Projects,
-  'ProjectDetail': ProjectDetail,
-  'ThemeLayout': ThemeLayout, // New name
-  'DarkModeLayout': ThemeLayout // For backwards compatibility 
+// Lazy-load components to keep the main bundle small.
+// Each component becomes its own chunk and only loads when present in the DOM.
+const COMPONENT_LOADERS = {
+  HelloWorld: () => import('./components/HelloWorld'),
+  Sidebar: () => import('./components/Sidebar'),
+  WorkExperience: () => import('./components/WorkExperience'),
+  MarkdownRenderer: () => import('./components/MarkdownRenderer'),
+  MarkDownRenderer: () => import('./components/markdown/MarkDownRenderer'),
+  GameCard: () => import('./components/GameCard'),
+  GamesGrid: () => import('./components/GamesGrid'),
+  AboutMe: () => import('./components/AboutMe'),
+  BentoHome: () => import('./components/BentoHome'),
+  Projects: () => import('./components/Projects'),
+  ProjectDetail: () => import('./components/ProjectDetail'),
+  ThemeLayout: () => import('./components/DarkModeLayout'),
+  DarkModeLayout: () => import('./components/DarkModeLayout')
 }
 
 // Store our roots so we can track which elements have been initialized
@@ -51,9 +39,8 @@ document.addEventListener("turbo:load", () => {
   
   reactComponents.forEach(component => {
     const componentName = component.dataset.reactComponent
-    const Component = COMPONENTS[componentName]
-    
-    if (Component) {
+    const loader = COMPONENT_LOADERS[componentName]
+    if (loader) {
       try {
         // Get component props if they exist
         const propsStr = component.dataset.props
@@ -74,32 +61,30 @@ document.addEventListener("turbo:load", () => {
           }
         }
         
-        // Check if we already have a root for this container
-        if (!roots.has(component)) {
-          const root = createRoot(component)
-          roots.set(component, root)
-          
-          // Wrap components that need theme context
-          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
-          const componentToRender = needsThemeContext.includes(componentName) 
+        // Dynamically import only when needed
+        loader().then(mod => {
+          const Component = mod.default || mod[componentName]
+          if (!Component) {
+            console.error(`Component module loaded but no export found for ${componentName}`)
+            return
+          }
+
+          // Check if we already have a root for this container
+          if (!roots.has(component)) {
+            const root = createRoot(component)
+            roots.set(component, root)
+          }
+
+          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar']
+          const element = needsThemeContext.includes(componentName)
             ? <ThemeProvider><Component {...props} /></ThemeProvider>
-            : <Component {...props} />;
-          
-          root.render(componentToRender)
+            : <Component {...props} />
+
+          roots.get(component).render(element)
           console.log(`Rendered ${componentName} with props:`, props)
-        } else {
-          // If we do have a root, just re-render it
-          const existingRoot = roots.get(component)
-          
-          // Wrap components that need theme context
-          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar'];
-          const componentToRender = needsThemeContext.includes(componentName) 
-            ? <ThemeProvider><Component {...props} /></ThemeProvider>
-            : <Component {...props} />;
-          
-          existingRoot.render(componentToRender)
-          console.log(`Re-rendered ${componentName} with props:`, props)
-        }
+        }).catch(e => {
+          console.error(`Failed to load component ${componentName}:`, e)
+        })
         
         // No need for margin adjustments with grid layout
       } catch (e) {
