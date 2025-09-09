@@ -13,7 +13,155 @@
         <p class="text-lg" style="color: var(--text-secondary);">Guides, references, and tools worth bookmarking.</p>
       </header>
 
-      <p style="color: var(--text-secondary);">Coming soon.</p>
+      <div class="space-y-8">
+        <section>
+          <h2 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">Rails Resources</h2>
+          <div class="grid gap-6">
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Rails 8 Documentation",
+                    "https://guides.rubyonrails.org/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Still the best place to start when I'm stuck. The guides are actually really well written - I reference the Active Record Query Interface guide at least weekly.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "GoRails",
+                    "https://gorails.com/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Chris Oliver's screencasts have saved me countless hours. When I need to implement something new in Rails, I check here first. His Hotwire content is particularly good.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "The Odin Project - Full Stack Ruby on Rails",
+                    "https://www.theodinproject.com/paths/full-stack-ruby-on-rails",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                I recommend this to anyone learning Rails. Even as an experienced dev, I've picked up tricks from their curriculum. Their approach to teaching is spot-on.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Ruby Weekly",
+                    "https://rubyweekly.com/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Every Thursday in my inbox. It's how I keep up with what's happening in Ruby-land without drowning in Twitter/X.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">System Design & Architecture</h2>
+          <div class="grid gap-6">
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "System Design Primer",
+                    "https://github.com/donnemartin/system-design-primer",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                This repo is my interview prep bible. But honestly, it's also just great for understanding how real systems work at scale. The diagrams alone are worth bookmarking.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "High Scalability",
+                    "http://highscalability.com/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Real architecture breakdowns from actual companies. Reading how Discord handles millions of concurrent users or how Uber rebuilt their payment system - that's the good stuff.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Martin Fowler's Blog",
+                    "https://martinfowler.com/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                When Fowler writes, I read. His posts on microservices and event sourcing shaped how I think about service boundaries. Plus, he explains complex patterns in a way that actually makes sense.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-semibold mb-6" style="color: var(--text-primary);">Development Environment & Tools</h2>
+          
+          <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">My Current Setup (2025)</h3>
+            
+            <div class="mb-6">
+              <h4 class="text-lg font-medium mb-3" style="color: var(--text-primary);">Hardware:</h4>
+              <ul class="list-disc space-y-2 ml-6" style="color: var(--text-secondary);">
+                <li>MacBook Pro 14" M3 Pro - The battery life is insane, I can code all day at a coffee shop</li>
+                <li>LG 34" Ultrawide (34WN80C-B) - Game changer for having multiple files open side-by-side</li>
+                <li>Keychron K2 - Brown switches, not too clicky but satisfying</li>
+                <li>Logitech MX Master 3S - The horizontal scroll wheel is perfect for long code files</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="text-lg font-medium mb-3" style="color: var(--text-primary);">Essential Dev Tools:</h4>
+              <ul class="list-disc space-y-2 ml-6" style="color: var(--text-secondary);">
+                <li>VS Code with vim bindings - Best of both worlds</li>
+                <li>iTerm2 + Oh My Zsh - Can't live without my git branch in the prompt</li>
+                <li>TablePlus - So much better than pgAdmin for database work</li>
+                <li>Insomnia - Cleaner than Postman for API testing</li>
+                <li>Fork - Sometimes you just need a GUI for complex rebases</li>
+                <li>OrbStack - Way faster than Docker Desktop on Mac</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="glass-thin rounded-2xl p-6">
+          <h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">About This Site</h2>
+          <p class="mb-4" style="color: var(--text-secondary);">
+            These are the resources I actually use and reference regularly. As a backend engineer focused on Rails, I'm always looking for ways to level up - whether that's diving deeper into distributed systems, keeping up with Rails 8 features, or just finding fun ways to keep programming interesting outside of work.
+          </p>
+          <p style="color: var(--text-secondary);">
+            If you've got recommendations for resources I should check out, I'd love to hear them. Always looking to expand this list with genuinely useful stuff.
+          </p>
+        </section>
+      </div>
     </article>
   </div>
 </div>

@@ -10,10 +10,74 @@
     <article class="glass-thick rounded-3xl p-8 md:p-12">
       <header class="mb-6">
         <h1 class="text-4xl md:text-5xl font-bold mb-2" style="color: var(--text-primary);">Currently Reading</h1>
-        <p class="text-lg" style="color: var(--text-secondary);">Books, papers, and posts I’m digging into.</p>
       </header>
 
-      <p style="color: var(--text-secondary);">Coming soon.</p>
+      <div class="space-y-6">
+        <section>
+          <div class="grid gap-6">
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Staff Engineer: Leadership beyond the management track", 
+                    "https://www.amazon.com/Staff-Engineer-Leadership-beyond-management/dp/1736417916",
+                    target: "_blank", 
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                I'm diving deep into Will Larson's guide on technical leadership. As someone who's been thinking about the staff engineer path, this book has been eye-opening about how to grow your impact without necessarily going the management route.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "The Rails 8 Way",
+                    "https://leanpub.com/therails8way",
+                    target: "_blank",
+                    rel: "noopener noreferrer", 
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Obie's back with the Rails 8 edition. I'm particularly interested in the Hotwire coverage and how SQLite is becoming a production-ready option. The framework keeps evolving in fascinating ways.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Designing Data-Intensive Applications",
+                    "https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Kleppmann's book is dense but worth it. I'm working through the distributed systems chapters now - it's changing how I think about data consistency and system architecture at scale.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">Fiction & Personal Growth</h2>
+          <div class="grid gap-6">
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "The Ministry of Time",
+                    "https://www.amazon.com/Ministry-Time-Novel-Kaliane-Bradley/dp/1668045141",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Just started this time-travel spy romance that everyone's been raving about. Sometimes you need a good fiction break from all the technical reading. Plus, the BBC is adapting it!
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
     </article>
   </div>
 </div>

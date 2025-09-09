@@ -13,7 +13,115 @@
         <p class="text-lg" style="color: var(--text-secondary);">A curated list of fun, inspiring, or experimental things.</p>
       </header>
 
-      <p style="color: var(--text-secondary);">Coming soon.</p>
+      <div class="space-y-8">
+        <section>
+          <h2 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">Coding Games</h2>
+          <div class="grid gap-6">
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "CodinGame",
+                    "https://www.codingame.com/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                When I need a break from work code, I jump into CodinGame. Nothing like building an AI bot to play games for you. The community solutions are always humbling - there's always a more elegant approach.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "CSS Grid Garden",
+                    "https://cssgridgarden.com/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Yeah, I'm a backend dev, but I still need to wrangle CSS sometimes. This game actually made grid layouts click for me. Way better than reading MDN docs for the hundredth time.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Ruby Warrior",
+                    "https://www.bloc.io/ruby-warrior",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                Program a warrior to fight through a tower using Ruby. It starts simple but gets tricky fast. Great for when you want to practice Ruby fundamentals in a fun way.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Elevator Saga",
+                    "http://play.elevatorsaga.com/",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                This one's addictive. You program elevator logic in JavaScript to move people efficiently. I spent way too long optimizing my solution for level 4. Good practice for thinking about queuing algorithms.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">AI Exploration</h2>
+          <div class="grid gap-6">
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "OpenAI Playground",
+                    "https://platform.openai.com/playground",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                I use this to experiment with different prompts and understand how these models actually work. It's fascinating to tweak the temperature settings and see how it affects outputs.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Hugging Face Spaces",
+                    "https://huggingface.co/spaces",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                The community here is building some wild stuff. I love browsing through the demos - gives me ideas for side projects. The image generation models are particularly fun to play with.
+              </p>
+            </div>
+
+            <div class="glass-thin rounded-2xl p-6 hover:shadow-lg transition-shadow">
+              <h3 class="text-xl font-semibold mb-2">
+                <%= link_to "Replicate",
+                    "https://replicate.com/explore",
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    class: "hover:text-blue-400 transition-colors",
+                    style: "color: var(--text-primary);" %>
+              </h3>
+              <p style="color: var(--text-secondary);">
+                When I want to run ML models without dealing with infrastructure, Replicate is my go-to. Their API is dead simple - perfect for prototyping ideas quickly.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
     </article>
   </div>
 </div>
