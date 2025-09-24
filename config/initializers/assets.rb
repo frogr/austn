@@ -7,10 +7,10 @@ Rails.application.config.assets.version = "1.0"
 # Rails.application.config.assets.paths << Emoji.images_path
 
 # Precompile additional assets
-Rails.application.config.assets.precompile += %w[ 
-  game_card_glass.css 
-  theme.css 
-  code-theme.css 
+Rails.application.config.assets.precompile += %w[
+  game_card_glass.css
+  theme.css
+  code-theme.css
   application.css
   design-system.css
   bento-system.css

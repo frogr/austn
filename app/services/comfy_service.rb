@@ -1,9 +1,9 @@
-require 'httparty'
-require 'base64'
+require "httparty"
+require "base64"
 
 class ComfyService
   include HTTParty
-  base_uri ENV['COMFYUI_URL'] || 'http://100.68.94.33:8188'
+  base_uri ENV["COMFYUI_URL"] || "http://100.68.94.33:8188"
 
   class ComfyError < StandardError; end
 
@@ -12,9 +12,9 @@ class ComfyService
 
     Rails.logger.info "Sending request to ComfyUI at #{base_uri}/prompt"
 
-    response = post('/prompt',
+    response = post("/prompt",
       body: { prompt: workflow }.to_json,
-      headers: { 'Content-Type' => 'application/json' },
+      headers: { "Content-Type" => "application/json" },
       timeout: 30
     )
 
@@ -28,7 +28,7 @@ class ComfyService
 
     # Parse response body if it's a string
     response_data = response.parsed_response || JSON.parse(response.body)
-    prompt_id = response_data['prompt_id']
+    prompt_id = response_data["prompt_id"]
 
     unless prompt_id
       Rails.logger.error "No prompt_id in response: #{response_data.inspect}"
@@ -62,14 +62,14 @@ class ComfyService
       "5" => {
         "inputs" => {
           "text" => prompt,
-          "clip" => ["4", 1]
+          "clip" => [ "4", 1 ]
         },
         "class_type" => "CLIPTextEncode"
       },
       "6" => {
         "inputs" => {
           "text" => negative_prompt || "blurry, out of focus, low quality, pixelated, compression artifacts, jpeg artifacts",
-          "clip" => ["4", 1]
+          "clip" => [ "4", 1 ]
         },
         "class_type" => "CLIPTextEncode"
       },
@@ -81,10 +81,10 @@ class ComfyService
           "sampler_name" => "euler",
           "scheduler" => "normal",
           "denoise" => 1.00,
-          "model" => ["4", 0],
-          "positive" => ["5", 0],
-          "negative" => ["6", 0],
-          "latent_image" => ["7", 0]
+          "model" => [ "4", 0 ],
+          "positive" => [ "5", 0 ],
+          "negative" => [ "6", 0 ],
+          "latent_image" => [ "7", 0 ]
         },
         "class_type" => "KSampler"
       },
@@ -98,15 +98,15 @@ class ComfyService
       },
       "8" => {
         "inputs" => {
-          "samples" => ["3", 0],
-          "vae" => ["4", 2]
+          "samples" => [ "3", 0 ],
+          "vae" => [ "4", 2 ]
         },
         "class_type" => "VAEDecode"
       },
       "9" => {
         "inputs" => {
           "filename_prefix" => "api_#{SecureRandom.hex(4)}",
-          "images" => ["8", 0]
+          "images" => [ "8", 0 ]
         },
         "class_type" => "SaveImage"
       }
@@ -122,13 +122,13 @@ class ComfyService
       if response.success? && response[prompt_id]
         history_entry = response[prompt_id]
 
-        if history_entry['outputs'] && history_entry['outputs']['9']
-          outputs = history_entry['outputs']['9']
-          if outputs['images'] && outputs['images'].any?
+        if history_entry["outputs"] && history_entry["outputs"]["9"]
+          outputs = history_entry["outputs"]["9"]
+          if outputs["images"] && outputs["images"].any?
             # Handle multiple images for batch
-            images = outputs['images'].map do |image_info|
-              filename = image_info['filename']
-              subfolder = image_info['subfolder'] || ''
+            images = outputs["images"].map do |image_info|
+              filename = image_info["filename"]
+              subfolder = image_info["subfolder"] || ""
 
               Rails.logger.info "Image ready: #{filename}"
 
@@ -136,7 +136,7 @@ class ComfyService
                 query: {
                   filename: filename,
                   subfolder: subfolder,
-                  type: 'output'
+                  type: "output"
                 }
               )
 

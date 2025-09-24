@@ -1,13 +1,13 @@
-require 'net/http'
-require 'json'
-require 'uri'
+require "net/http"
+require "json"
+require "uri"
 
 class ChatService
   DEFAULT_MODEL = "qwen/qwen2.5-coder-14b"
 
   def initialize
-    @base_url = ENV.fetch('LMSTUDIO_URL', 'http://100.68.94.33:1234')
-    @endpoint = '/v1/chat/completions'
+    @base_url = ENV.fetch("LMSTUDIO_URL", "http://100.68.94.33:1234")
+    @endpoint = "/v1/chat/completions"
   end
 
   def stream_completion(messages, system_prompt, &block)
@@ -22,8 +22,8 @@ class ChatService
     http.open_timeout = 10
 
     request = Net::HTTP::Post.new(uri.path)
-    request['Content-Type'] = 'application/json'
-    request['Accept'] = 'text/event-stream'
+    request["Content-Type"] = "application/json"
+    request["Accept"] = "text/event-stream"
 
     request_body = {
       model: DEFAULT_MODEL,
@@ -38,7 +38,7 @@ class ChatService
     # Direct streaming with block to avoid read_body being called twice
     buffer = ""
     http.request(request) do |response|
-      if response.code != '200'
+      if response.code != "200"
         yield({ error: "LMStudio returned #{response.code}" })
         return
       end
@@ -83,7 +83,7 @@ class ChatService
     http.open_timeout = 10
 
     request = Net::HTTP::Post.new(uri.path)
-    request['Content-Type'] = 'application/json'
+    request["Content-Type"] = "application/json"
 
     request_payload = {
       model: DEFAULT_MODEL,
@@ -101,7 +101,7 @@ class ChatService
 
     Rails.logger.info "LMStudio responded with code: #{response.code}"
 
-    if response.code == '200'
+    if response.code == "200"
       parsed = JSON.parse(response.body)
       content = parsed.dig("choices", 0, "message", "content")
       Rails.logger.info "Successfully got response: #{content&.first(100)}..."
