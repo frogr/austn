@@ -265,10 +265,10 @@ const Projects = () => {
               <p className="mb-4 sm:mb-6 text-sm sm:text-base px-4" style={{ color: 'var(--text-secondary)' }}>
                 I love working with teams that care about craft and humans in equal measure.
               </p>
-              <a href="/#contact" className="transform hover:scale-105 transition-all text-xs sm:text-sm px-4 py-2 rounded-md"
+              <a href="/#contact" className="inline-flex items-center gap-2 transform hover:scale-105 transition-all text-sm sm:text-base px-6 py-3 rounded-lg font-medium"
                  style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
-                <span className="material-icons text-lg sm:text-base">send</span>
-                Get in Touch
+                <span className="material-icons text-base">send</span>
+                <span>Get in Touch</span>
               </a>
             </div>
           </div>

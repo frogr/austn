@@ -12,11 +12,16 @@ const Chat = () => {
   const eventSourceRef = useRef(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
   }
 
   useEffect(() => {
-    scrollToBottom()
+    // Only scroll when new messages are added, not on initial load
+    if (messages.length > 0) {
+      scrollToBottom()
+    }
   }, [messages])
 
   const clearChat = () => {
@@ -106,71 +111,48 @@ const Chat = () => {
   }
 
   const pollForCompletion = async (jobId) => {
-    const maxAttempts = 60  // Poll for up to 60 seconds
+    const maxAttempts = 60
     let attempts = 0
+
+    const updateLastMessage = (content, error = false) => {
+      setMessages(prev => {
+        const newMessages = [...prev]
+        newMessages[newMessages.length - 1] = {
+          ...newMessages[newMessages.length - 1],
+          content,
+          ...(error && { error: true })
+        }
+        return newMessages
+      })
+      if (error || content) setIsStreaming(false)
+    }
 
     const poll = async () => {
       try {
         const response = await fetch(`/chat/job/${jobId}`)
         const data = await response.json()
 
-        if (data.status === 'completed') {
-          // Update message with content
-          setMessages(prev => {
-            const newMessages = [...prev]
-            newMessages[newMessages.length - 1] = {
-              ...newMessages[newMessages.length - 1],
-              content: data.content
+        switch (data.status) {
+          case 'completed':
+            updateLastMessage(data.content)
+            break
+          case 'failed':
+            updateLastMessage(`Error: ${data.error || 'Job failed'}`, true)
+            break
+          default:
+            if (attempts++ < maxAttempts) {
+              setTimeout(poll, 1000)
+            } else {
+              updateLastMessage('Error: Request timed out', true)
             }
-            return newMessages
-          })
-          setIsStreaming(false)
-        } else if (data.status === 'failed') {
-          // Handle failure
-          setMessages(prev => {
-            const newMessages = [...prev]
-            newMessages[newMessages.length - 1] = {
-              ...newMessages[newMessages.length - 1],
-              content: `Error: ${data.error || 'Job failed'}`,
-              error: true
-            }
-            return newMessages
-          })
-          setIsStreaming(false)
-        } else if (attempts < maxAttempts) {
-          // Continue polling
-          attempts++
-          setTimeout(poll, 1000)  // Poll every second
-        } else {
-          // Timeout
-          setMessages(prev => {
-            const newMessages = [...prev]
-            newMessages[newMessages.length - 1] = {
-              ...newMessages[newMessages.length - 1],
-              content: 'Error: Request timed out',
-              error: true
-            }
-            return newMessages
-          })
-          setIsStreaming(false)
         }
       } catch (error) {
         console.error('Polling error:', error)
-        setMessages(prev => {
-          const newMessages = [...prev]
-          newMessages[newMessages.length - 1] = {
-            ...newMessages[newMessages.length - 1],
-            content: `Error: ${error.message}`,
-            error: true
-          }
-          return newMessages
-        })
-        setIsStreaming(false)
+        updateLastMessage(`Error: ${error.message}`, true)
       }
     }
 
-    // Start polling
-    setTimeout(poll, 500)  // Initial delay before first poll
+    setTimeout(poll, 500)
   }
 
   const handleKeyPress = (e) => {
