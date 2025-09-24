@@ -1,8 +1,18 @@
-require 'sidekiq/web'
+require "sidekiq/web"
 
 Rails.application.routes.draw do
-  # Sidekiq Web UI (consider adding authentication in production)
-  mount Sidekiq::Web => '/sidekiq'
+  # Sidekiq Web UI - Protected with HTTP Basic Auth
+  Sidekiq::Web.use Rack::Auth::Basic do |username, password|
+    # Use environment variables in production, fallback for development
+    expected_username = ENV.fetch("SIDEKIQ_USERNAME", "admin")
+    expected_password = ENV.fetch("SIDEKIQ_PASSWORD", Rails.application.credentials.dig(:sidekiq, :password) || "changeme123")
+
+    # Secure comparison to prevent timing attacks
+    ActiveSupport::SecurityUtils.secure_compare(username, expected_username) &&
+      ActiveSupport::SecurityUtils.secure_compare(password, expected_password)
+  end if Rails.env.production?
+
+  mount Sidekiq::Web => "/sidekiq"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -39,7 +49,6 @@ Rails.application.routes.draw do
 
   # Chat interface for LMStudio integration
   get "/chat", to: "chat#index"
-  post "/chat/stream", to: "chat#stream"  # Legacy endpoint, now async
   post "/chat/async", to: "chat#async_complete"
   get "/chat/job/:id", to: "chat#job_status", as: :chat_job_status
 
@@ -50,14 +59,14 @@ Rails.application.routes.draw do
   # Images gallery
   resources :images do
     collection do
-      get 'ai_generate'
-      post 'generate'
+      get "ai_generate"
+      post "generate"
     end
     member do
-      get 'ai_show'
-      get 'ai_image'
-      get 'ai_data'
-      get 'ai_status'
+      get "ai_show"
+      get "ai_image"
+      get "ai_data"
+      get "ai_status"
     end
   end
 

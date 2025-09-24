@@ -43,8 +43,8 @@ const Chat = () => {
     setMessages([...updatedMessages, assistantMessage])
 
     try {
-      // Use async endpoint by default
-      const response = await fetch('/chat/stream', {
+      // Use async endpoint
+      const response = await fetch('/chat/async', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

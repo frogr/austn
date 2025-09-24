@@ -5,11 +5,6 @@ class ChatController < ApplicationController
     # Render the chat interface view
   end
 
-  def stream
-    # For backward compatibility, redirect to async_complete
-    async_complete
-  end
-
   def complete
     # Legacy synchronous endpoint (kept for compatibility)
     begin
