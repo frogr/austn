@@ -1,10 +1,10 @@
 <%= form_with(model: image) do |form| %>
   <% if image.errors.any? %>
-    <div class="mb-6 p-4 bg-red-900/50 border border-red-600 rounded-lg">
-      <h3 class="text-red-400 font-semibold mb-2">
-        <%= pluralize(image.errors.count, "error") %> prohibited this image from being saved:
+    <div class="mb-4 p-3 rounded" style="background: rgba(255,59,48,0.15); border: 1px solid rgba(255,59,48,0.3);">
+      <h3 class="text-sm font-medium mb-2" style="color: rgba(255,255,255,0.9);">
+        <%= pluralize(image.errors.count, "error") %> prevented saving:
       </h3>
-      <ul class="list-disc list-inside text-red-300">
+      <ul class="list-disc list-inside text-sm" style="color: rgba(255,255,255,0.7);">
         <% image.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -12,58 +12,66 @@
     </div>
   <% end %>
 
-  <div class="space-y-6">
+  <div class="space-y-4">
     <div>
-      <%= form.label :title, class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= form.label :title, class: "block text-sm font-medium mb-2", style: "color: rgba(255,255,255,0.7);" %>
       <%= form.text_field :title,
-                          class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500",
-                          placeholder: "Enter image title" %>
+                          class: "w-full px-3 py-2 rounded text-white focus:outline-none",
+                          style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);",
+                          placeholder: "Image title" %>
     </div>
 
     <div>
-      <%= form.label :description, class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= form.label :description, class: "block text-sm font-medium mb-2", style: "color: rgba(255,255,255,0.7);" %>
       <%= form.text_area :description,
-                         rows: 4,
-                         class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500",
-                         placeholder: "Enter image description (optional)" %>
+                         rows: 3,
+                         class: "w-full px-3 py-2 rounded text-white focus:outline-none resize-none",
+                         style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);",
+                         placeholder: "Description (optional)" %>
     </div>
 
     <div>
-      <%= form.label :file, "Image File", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= form.label :file, "Image File", class: "block text-sm font-medium mb-2", style: "color: rgba(255,255,255,0.7);" %>
       <%= form.file_field :file,
-                          class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500",
+                          class: "w-full px-3 py-2 rounded text-white",
+                          style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);",
                           accept: "image/*" %>
       <% if image.file.attached? %>
         <div class="mt-2">
-          <p class="text-sm text-gray-400 mb-2">Current image:</p>
+          <p class="text-xs mb-2" style="color: rgba(255,255,255,0.5);">Current:</p>
           <%= image_tag image.file.variant(resize_to_limit: [200, 200]),
-                        class: "rounded-lg border border-gray-600" %>
+                        class: "rounded",
+                        style: "border: 1px solid rgba(255,255,255,0.1);" %>
         </div>
       <% end %>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <%= form.label :position, class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= form.label :position, class: "block text-sm font-medium mb-2", style: "color: rgba(255,255,255,0.7);" %>
         <%= form.number_field :position,
-                              class: "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500",
-                              placeholder: "Display order (optional)" %>
+                              class: "w-full px-3 py-2 rounded text-white focus:outline-none",
+                              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);",
+                              placeholder: "0" %>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
+        <label class="block text-sm font-medium mb-2" style="color: rgba(255,255,255,0.7);">Status</label>
         <div class="flex items-center mt-3">
           <%= form.check_box :published,
-                             class: "mr-2 rounded border-gray-600 bg-gray-800 text-blue-600 focus:ring-blue-500" %>
-          <%= form.label :published, "Published", class: "text-gray-300" %>
+                             class: "mr-2 rounded",
+                             style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);" %>
+          <%= form.label :published, "Published", class: "text-sm", style: "color: rgba(255,255,255,0.7);" %>
         </div>
       </div>
     </div>
 
-    <div class="flex gap-3">
-      <%= form.submit class: "px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition cursor-pointer" %>
+    <div class="flex gap-2 pt-2">
+      <%= form.submit class: "px-4 py-2 rounded font-medium transition-all hover:opacity-90 cursor-pointer",
+                      style: "background: var(--accent-color); color: #000;" %>
       <%= link_to "Cancel", images_path,
-                  class: "px-6 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition" %>
+                  class: "px-4 py-2 rounded font-medium transition-all hover:opacity-90",
+                  style: "background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.9);" %>
     </div>
   </div>
 <% end %>

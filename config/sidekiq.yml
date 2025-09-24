@@ -4,9 +4,17 @@
 
 :queues:
   - [critical, 3]
+  - [gpu, 3]  # GPU-intensive tasks (AI chat, image generation)
   - [default, 2]
   - [low, 1]
   - [mailers, 2]
+
+# GPU queue configuration
+# Run a separate Sidekiq process for GPU tasks:
+# bundle exec sidekiq -q gpu -c 1
+gpu_queue:
+  :concurrency: 1  # Only one GPU task at a time
+  :timeout: 300    # 5 minutes for GPU operations
 
 production:
   :concurrency: 10

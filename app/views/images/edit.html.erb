@@ -1,12 +1,14 @@
 <% content_for :title, "Edit Image" %>
 
 <div class="container mx-auto px-4 py-8 max-w-2xl">
-  <div class="mb-6">
-    <%= link_to "← Back", @image, class: "text-blue-400 hover:text-blue-300 transition" %>
+  <div class="mb-4">
+    <%= link_to "← Back", @image,
+                style: "color: rgba(255,255,255,0.6); font-size: 0.875rem;" %>
   </div>
 
-  <div class="glass-card rounded-lg p-6">
-    <h1 class="text-2xl font-bold text-white mb-6">Edit Image</h1>
+  <div class="rounded p-6"
+       style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <h1 class="text-xl font-bold text-white mb-6">Edit Image</h1>
     <%= render "form", image: @image %>
   </div>
 </div>

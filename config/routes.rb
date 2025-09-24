@@ -39,7 +39,9 @@ Rails.application.routes.draw do
 
   # Chat interface for LMStudio integration
   get "/chat", to: "chat#index"
-  post "/chat/stream", to: "chat#stream"
+  post "/chat/stream", to: "chat#stream"  # Legacy endpoint, now async
+  post "/chat/async", to: "chat#async_complete"
+  get "/chat/job/:id", to: "chat#job_status", as: :chat_job_status
 
   # Dashboard for development/testing
   get "/dashboard", to: "dashboard#hello", as: :dashboard
