@@ -12,10 +12,13 @@ class ChatController < ApplicationController
     response.headers["Connection"] = "keep-alive"
 
     begin
-      messages = JSON.parse(params[:messages]) rescue []
-      system_prompt = params[:system_prompt] || "You are a helpful AI assistant."
+      # Parse the JSON body directly since we're sending it as JSON
+      request_body = JSON.parse(request.body.read)
+      messages = request_body["messages"] || []
+      system_prompt = request_body["system_prompt"] || "You are a helpful AI assistant."
 
       Rails.logger.info "Starting chat stream with #{messages.length} messages"
+      Rails.logger.info "Messages: #{messages.inspect}"
 
       # Use the ChatService to make the API call
       chat_service = ChatService.new
