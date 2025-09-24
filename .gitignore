@@ -65,3 +65,5 @@ env/
 
 # Local files
 local_secret.txt
+.env
+.env.development

@@ -32,6 +32,10 @@ Rails.application.routes.draw do
   # Movement demo
   get "/movement-demo", to: "movement_demo#index"
 
+  # Chat interface for LMStudio integration
+  get "/chat", to: "chat#index"
+  post "/chat/stream", to: "chat#stream"
+
   # Dashboard for development/testing
   get "/dashboard", to: "dashboard#hello", as: :dashboard
   post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message

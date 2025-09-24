@@ -19,7 +19,8 @@ const COMPONENT_LOADERS = {
   Projects: () => import('./components/Projects'),
   ProjectDetail: () => import('./components/ProjectDetail'),
   ThemeLayout: () => import('./components/DarkModeLayout'),
-  DarkModeLayout: () => import('./components/DarkModeLayout')
+  DarkModeLayout: () => import('./components/DarkModeLayout'),
+  Chat: () => import('./components/Chat')
 }
 
 // Store our roots so we can track which elements have been initialized
