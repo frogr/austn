@@ -1,4 +1,9 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
+  # Sidekiq Web UI (consider adding authentication in production)
+  mount Sidekiq::Web => '/sidekiq'
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -39,6 +44,9 @@ Rails.application.routes.draw do
   # Dashboard for development/testing
   get "/dashboard", to: "dashboard#hello", as: :dashboard
   post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message
+
+  # Images gallery
+  resources :images
 
   # Portfolio as root
   root "portfolio#index"

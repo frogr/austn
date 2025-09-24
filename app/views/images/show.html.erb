@@ -1,0 +1,42 @@
+<% content_for :title, @image.title %>
+
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="mb-6">
+    <%= link_to "← Back to Images", images_path, class: "text-blue-400 hover:text-blue-300 transition" %>
+  </div>
+
+  <div class="glass-card rounded-lg overflow-hidden">
+    <% if @image.file.attached? %>
+      <div class="aspect-w-16 aspect-h-9">
+        <%= image_tag @image.file, class: "w-full h-auto", loading: "lazy" %>
+      </div>
+    <% end %>
+
+    <div class="p-6">
+      <h1 class="text-3xl font-bold text-white mb-4"><%= @image.title %></h1>
+
+      <% if @image.description.present? %>
+        <div class="prose prose-invert max-w-none mb-6">
+          <p class="text-gray-300"><%= simple_format(@image.description) %></p>
+        </div>
+      <% end %>
+
+      <div class="flex items-center gap-4 text-sm text-gray-400 mb-6">
+        <span>Position: <%= @image.position || "Not set" %></span>
+        <span class="<%= @image.published? ? 'text-green-400' : 'text-yellow-400' %>">
+          <%= @image.published? ? "Published" : "Draft" %>
+        </span>
+        <span>Created: <%= @image.created_at.strftime("%B %d, %Y") %></span>
+      </div>
+
+      <div class="flex gap-3">
+        <%= link_to "Edit", edit_image_path(@image),
+                    class: "px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition" %>
+        <%= link_to "Delete", image_path(@image),
+                    method: :delete,
+                    data: { "turbo-method": :delete, "turbo-confirm": "Are you sure?" },
+                    class: "px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition" %>
+      </div>
+    </div>
+  </div>
+</div>
