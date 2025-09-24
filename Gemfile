@@ -49,6 +49,9 @@ gem "redis", "~> 5.0"
 # Sidekiq for background jobs
 gem "sidekiq", "~> 7.3"
 
+# HTTP client for ComfyUI API
+gem "httparty", "~> 0.22"
+
 # Markdown processing
 gem "redcarpet", "~> 3.5"
 gem "front_matter_parser", "~> 1.0"

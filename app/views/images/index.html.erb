@@ -1,59 +1,59 @@
 <% content_for :title, "Images" %>
 
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-white">Images</h1>
-    <%= link_to "New", new_image_path,
+    <%= link_to "Generate with AI", ai_generate_images_path,
                 class: "px-3 py-1.5 text-sm font-medium rounded transition-all hover:opacity-90",
-                style: "background: var(--accent-color); color: #000;" %>
+                style: "background: linear-gradient(45deg, #10b981, #059669); color: #fff;" %>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    <% @images.each do |image| %>
-      <div class="group rounded overflow-hidden transition-all hover:opacity-90"
-           style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
-        <% if image.file.attached? %>
-          <%= link_to image_path(image) do %>
-            <%= image_tag image.file.variant(resize_to_fill: [300, 300]),
-                          class: "w-full h-48 object-cover",
-                          loading: "lazy" %>
-          <% end %>
-        <% else %>
-          <div class="w-full h-48 flex items-center justify-center"
-               style="background: rgba(255,255,255,0.02);">
-            <span style="color: rgba(255,255,255,0.3);">No image</span>
-          </div>
-        <% end %>
-
-        <div class="p-3">
-          <h3 class="text-sm font-medium text-white mb-1">
-            <%= link_to image.title, image_path(image),
-                        class: "hover:opacity-80 transition" %>
-          </h3>
-
-          <div class="flex justify-between items-center text-xs mt-2">
-            <span style="color: rgba(255,255,255,0.5);">
-              <%= image.published? ? "Published" : "Draft" %>
-            </span>
-            <div class="flex gap-2">
-              <%= link_to "Edit", edit_image_path(image),
-                          style: "color: rgba(255,255,255,0.6);" %>
-              <%= link_to "Delete", image_path(image),
-                          method: :delete,
-                          data: { "turbo-method": :delete, "turbo-confirm": "Delete this image?" },
-                          style: "color: rgba(255,59,48,0.6);" %>
+  <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
+    <% # Display AI-generated images first %>
+    <% @ai_images.each do |ai_image| %>
+      <%= link_to ai_show_image_path(ai_image[:id]),
+                  class: "group block rounded overflow-hidden transition-all hover:scale-105 hover:z-10 relative",
+                  style: "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" do %>
+        <div class="relative" style="padding-bottom: 100%;">
+          <img src="data:image/png;base64,<%= ai_image[:base64] %>"
+               class="absolute inset-0 w-full h-full object-cover"
+               loading="lazy" />
+          <% if ai_image[:batch_size] && ai_image[:batch_size] > 1 %>
+            <div class="absolute top-1 right-1 px-1.5 py-0.5 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                 style="background: rgba(0,0,0,0.7); color: #fff;">
+              <%= ai_image[:batch_size] %> images
             </div>
-          </div>
+          <% end %>
         </div>
-      </div>
+      <% end %>
+    <% end %>
+
+    <% # Display regular uploaded images %>
+    <% @images.each do |image| %>
+      <%= link_to image_path(image),
+                  class: "group block rounded overflow-hidden transition-all hover:scale-105 hover:z-10",
+                  style: "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" do %>
+        <div class="relative" style="padding-bottom: 100%;">
+          <% if image.file.attached? %>
+            <%= image_tag image.file.variant(resize_to_fill: [200, 200]),
+                          class: "absolute inset-0 w-full h-full object-cover",
+                          loading: "lazy" %>
+          <% else %>
+            <div class="absolute inset-0 flex items-center justify-center"
+                 style="background: rgba(255,255,255,0.02);">
+              <span style="color: rgba(255,255,255,0.3);">No image</span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 
-  <% if @images.empty? %>
+  <% if @images.empty? && @ai_images.empty? %>
     <div class="text-center py-12">
       <p style="color: rgba(255,255,255,0.5);" class="mb-4">No images yet</p>
-      <%= link_to "Add your first image", new_image_path,
-                  style: "color: var(--accent-color);" %>
+      <%= link_to "Generate with AI", ai_generate_images_path,
+                  style: "color: #10b981;" %>
     </div>
   <% end %>
 </div>

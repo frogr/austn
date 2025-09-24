@@ -48,7 +48,18 @@ Rails.application.routes.draw do
   post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message
 
   # Images gallery
-  resources :images
+  resources :images do
+    collection do
+      get 'ai_generate'
+      post 'generate'
+    end
+    member do
+      get 'ai_show'
+      get 'ai_image'
+      get 'ai_data'
+      get 'ai_status'
+    end
+  end
 
   # Portfolio as root
   root "portfolio#index"

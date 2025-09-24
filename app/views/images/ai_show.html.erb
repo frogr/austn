@@ -1,0 +1,144 @@
+<%
+  # Data is already loaded in controller
+  @prompt = @image_data['prompt']
+  @base64 = @image_data['base64'] || @image_data['images']&.first  # Handle batch images
+  @created_at = @image_data['created_at']
+  @options = @image_data['options'] || {}
+  @images = @image_data['images'] # For batch support
+%>
+
+<% content_for :title, @prompt %>
+
+<div class="min-h-screen p-2 sm:p-4 md:p-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header with back button -->
+    <div class="flex items-center justify-between mb-4">
+      <%= link_to images_path, class: "flex items-center gap-2 text-gray-400 hover:text-white transition-colors" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span>Back to Gallery</span>
+      <% end %>
+
+      <!-- Actions -->
+    <div class="mt-6">
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "Generate Similar", ai_generate_images_path(prompt: @prompt, seed: @options['seed']),
+                    class: "px-4 py-2 rounded font-medium transition-all hover:opacity-90",
+                    style: "background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);" %>
+
+        <button onclick="copyPrompt()"
+                class="px-4 py-2 rounded font-medium transition-all hover:opacity-90"
+                style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);">
+          Copy Prompt
+        </button>
+      </div>
+    </div>
+    <div>
+      <button onclick="downloadImage()"
+              class="px-4 py-2 rounded font-medium transition-all hover:opacity-90"
+              style="background: linear-gradient(45deg, #10b981, #059669); color: #fff;">
+        Download
+      </button>
+    </div>
+    </div>
+
+    <!-- Metadata -->
+    <div class="mb-6">
+      <div class="rounded-lg p-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <h1 class="text-xl font-bold text-white mb-3"><%= @prompt %></h1>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-sm">
+          <% if @images && @images.is_a?(Array) %>
+            <div>
+              <span style="color: rgba(255,255,255,0.5);">Batch Size:</span>
+              <div class="text-white mt-1"><%= @images.length %> images</div>
+            </div>
+          <% end %>
+
+          <% if @options['negative_prompt'].present? %>
+            <div>
+              <span style="color: rgba(255,255,255,0.5);">Negative Prompt:</span>
+              <div class="text-white mt-1"><%= @options['negative_prompt'] %></div>
+            </div>
+          <% end %>
+
+          <% if @options['seed'].present? %>
+            <div>
+              <span style="color: rgba(255,255,255,0.5);">Seed:</span>
+              <div class="text-white mt-1"><%= @options['seed'] %></div>
+            </div>
+          <% end %>
+
+          <% if @options['image_size'].present? %>
+            <div>
+              <span style="color: rgba(255,255,255,0.5);">Size:</span>
+              <div class="text-white mt-1"><%= @options['image_size'] %> × <%= @options['image_size'] %></div>
+            </div>
+          <% end %>
+
+          <% if @created_at %>
+            <div>
+              <span style="color: rgba(255,255,255,0.5);">Generated:</span>
+              <div class="text-white mt-1"><%= Time.parse(@created_at).strftime("%b %d at %I:%M %p") %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image display -->
+    <% if @images && @images.is_a?(Array) %>
+      <!-- Batch images -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @images.each_with_index do |image_base64, index| %>
+          <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+            <img src="data:image/png;base64,<%= image_base64 %>"
+                 alt="<%= @prompt %> - Image <%= index + 1 %>"
+                 class="w-full h-auto"
+                 data-image-index="<%= index %>" />
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Single image -->
+      <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <img src="data:image/png;base64,<%= @base64 %>"
+             alt="<%= @prompt %>"
+             class="w-full h-auto"
+             id="ai-image" />
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function downloadImage() {
+  <% if @images && @images.is_a?(Array) %>
+    // For batch, download all images
+    <% @images.each_with_index do |_, index| %>
+      setTimeout(() => {
+        const img = document.querySelector('[data-image-index="<%= index %>"]');
+        const link = document.createElement('a');
+        link.href = img.src;
+        link.download = 'ai-generated-<%= @generation_id %>-<%= index + 1 %>.png';
+        link.click();
+      }, <%= index * 500 %>); // Stagger downloads
+    <% end %>
+  <% else %>
+    // Single image
+    const img = document.getElementById('ai-image');
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.download = 'ai-generated-<%= @generation_id %>.png';
+    link.click();
+  <% end %>
+}
+
+function copyPrompt() {
+  const prompt = "<%= j(@prompt) %>";
+  navigator.clipboard.writeText(prompt).then(() => {
+    alert('Prompt copied to clipboard!');
+  });
+}
+</script>

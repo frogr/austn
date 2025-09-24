@@ -1,4 +1,3 @@
 web: bin/rails server
 css: bin/tailwind-watch
-js: yarn build --watch=forever
 worker: bundle exec sidekiq -C config/sidekiq.yml

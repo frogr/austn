@@ -181,12 +181,11 @@ const Chat = () => {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen p-2 sm:p-4 md:p-8">
+      <div className="w-full max-w-4xl mx-auto">
         <div className="glass-card rounded-lg overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
           {/* Header */}
-          <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-            <h1 className="text-2xl font-bold text-white">AI Chat</h1>
+          <div className="px-3 sm:px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
             <div className="flex gap-2">
               <button
                 onClick={() => setShowSystemPrompt(!showSystemPrompt)}
@@ -234,7 +233,7 @@ const Chat = () => {
           )}
 
           {/* Messages */}
-          <div className="h-[500px] overflow-y-auto px-6 py-4 space-y-3">
+          <div className="h-[50vh] sm:h-[60vh] md:h-[500px] overflow-y-auto px-3 sm:px-6 py-4 space-y-3">
             {messages.length === 0 ? (
               <div className="text-center mt-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 <p className="text-lg mb-2">No messages yet</p>
@@ -247,7 +246,7 @@ const Chat = () => {
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className="max-w-[80%] rounded px-3 py-2"
+                    className="max-w-[85%] sm:max-w-[80%] rounded px-3 py-2"
                     style={{
                       background: message.role === 'user'
                         ? 'var(--accent-color)'
@@ -283,14 +282,14 @@ const Chat = () => {
           </div>
 
           {/* Input */}
-          <div className="px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <div className="flex gap-2">
+          <div className="px-3 sm:px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="flex flex-col sm:flex-row gap-2">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="Type a message..."
-                className="flex-1 px-3 py-2 rounded text-white resize-none focus:outline-none"
+                className="w-full sm:flex-1 px-3 py-2 rounded text-white resize-none focus:outline-none"
                 style={{
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.1)'
@@ -301,7 +300,7 @@ const Chat = () => {
               <button
                 onClick={sendMessage}
                 disabled={isStreaming || !input.trim()}
-                className="px-4 py-2 rounded font-medium transition-all hover:opacity-90"
+                className="w-full sm:w-auto px-4 py-2 rounded font-medium transition-all hover:opacity-90"
                 style={{
                   background: (isStreaming || !input.trim())
                     ? 'rgba(255,255,255,0.05)'

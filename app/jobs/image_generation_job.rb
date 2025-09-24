@@ -1,46 +1,102 @@
-# Placeholder for ComfyUI image generation
-# This job will handle image generation requests through ComfyUI API
 class ImageGenerationJob < GpuJob
-  def perform(prompt, parameters, job_id)
-    Rails.logger.info "Starting ImageGenerationJob #{job_id}"
+  sidekiq_options retry: 1
+
+  def perform(generation_id, prompt, options = {})
+    Rails.logger.info "Starting ImageGenerationJob #{generation_id}"
 
     # Store initial status
-    store_result("image_job:#{job_id}:status", { status: "processing", started_at: Time.current })
+    store_result("image:#{generation_id}:status", {
+      status: "processing",
+      started_at: Time.current
+    })
+
+    # Broadcast that we're processing
+    ActionCable.server.broadcast(
+      "image_generation_#{generation_id}",
+      {
+        status: 'processing',
+        generation_id: generation_id
+      }
+    )
 
     begin
-      # TODO: Implement ComfyUI integration
-      # For now, this is a placeholder that simulates the job
+      # Generate the image(s) using ComfyUI
+      result = ComfyService.generate_image(
+        prompt,
+        negative_prompt: options['negative_prompt'],
+        seed: options['seed'],
+        image_size: options['image_size'],
+        batch_size: options['batch_size']
+      )
 
-      # Example structure for ComfyUI integration:
-      # comfyui_service = ComfyuiService.new
-      # image_url = comfyui_service.generate_image(prompt, parameters)
+      # Store temporarily in Redis (expires in 10 minutes)
+      # Handle both single images and batch
+      image_data = if result.is_a?(Array)
+        {
+          images: result,  # Array of base64 images
+          prompt: prompt,
+          options: options,
+          created_at: Time.current,
+          published: options['publish'] == true || options['publish'] == 'true',
+          batch_size: result.length
+        }
+      else
+        {
+          base64: result,  # Single base64 image
+          prompt: prompt,
+          options: options,
+          created_at: Time.current,
+          published: options['publish'] == true || options['publish'] == 'true'
+        }
+      end
 
-      # Simulate processing time
-      sleep 2 if Rails.env.development?
+      store_result("image:#{generation_id}", image_data, ttl: 600)
 
-      # Store successful result (placeholder)
-      result = {
+      # If published, add to published images list
+      if options['publish'] == true || options['publish'] == 'true'
+        redis = Redis.new(url: Rails.application.config_for(:redis)["url"])
+        # Add to sorted set with timestamp as score
+        redis.zadd("published_ai_images", Time.current.to_i, generation_id)
+        # Set expiry on the sorted set member (cleanup old ones periodically)
+        redis.expire("published_ai_images", 3600) # Keep list for 1 hour
+      end
+
+      # Update status
+      store_result("image:#{generation_id}:status", {
         status: "completed",
-        message: "ComfyUI integration pending",
-        prompt: prompt,
-        parameters: parameters,
         completed_at: Time.current
-      }
-      store_result("image_job:#{job_id}", result, ttl: 3600) # Keep for 1 hour
-      store_result("image_job:#{job_id}:status", { status: "completed" })
+      })
 
-      Rails.logger.info "ImageGenerationJob #{job_id} completed (placeholder)"
+      # Broadcast completion
+      ActionCable.server.broadcast(
+        "image_generation_#{generation_id}",
+        {
+          status: 'complete',
+          generation_id: generation_id
+        }
+      )
+
+      Rails.logger.info "ImageGenerationJob #{generation_id} completed successfully"
+
     rescue => e
-      Rails.logger.error "ImageGenerationJob #{job_id} failed: #{e.message}"
+      Rails.logger.error "ImageGenerationJob #{generation_id} failed: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
 
       # Store error result
-      error_result = {
+      store_result("image:#{generation_id}:status", {
         status: "failed",
         error: e.message,
         failed_at: Time.current
-      }
-      store_result("image_job:#{job_id}", error_result, ttl: 600)
-      store_result("image_job:#{job_id}:status", { status: "failed", error: e.message })
+      }, ttl: 600)
+
+      # Notify failure
+      ActionCable.server.broadcast(
+        "image_generation_#{generation_id}",
+        {
+          status: 'failed',
+          error: e.message
+        }
+      )
 
       # Re-raise to trigger retry logic
       raise

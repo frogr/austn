@@ -1,0 +1,359 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="rounded-lg p-3 sm:p-6 mb-4 sm:mb-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <div class="space-y-4">
+        <div>
+          <label for="prompt" class="block text-sm font-medium text-gray-300 mb-2">
+            Describe your image
+          </label>
+          <textarea
+            id="prompt"
+            placeholder="A serene landscape with mountains and a sunset..."
+            rows="3"
+            class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+            onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); generateImage(); }"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center gap-6 mb-4">
+          <div class="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="advanced"
+              class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+              onchange="toggleAdvanced()"
+            >
+            <label for="advanced" class="text-sm font-medium text-gray-300">
+              Advanced options
+            </label>
+          </div>
+          <div class="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="publish"
+              class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+            >
+            <label for="publish" class="text-sm font-medium text-gray-300">
+              Publish to gallery (keeps in gallery for 10 minutes)
+            </label>
+          </div>
+        </div>
+
+        <div id="advanced-options" style="display: none;">
+          <div class="mb-4">
+            <label for="negative-prompt" class="block text-sm font-medium text-gray-300 mb-2">
+              What to avoid (optional)
+            </label>
+            <textarea
+              id="negative-prompt"
+              placeholder="blurry, low quality, distorted..."
+              rows="2"
+              class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+            ></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label for="seed" class="block text-sm font-medium text-gray-300 mb-2">
+                Seed (optional)
+              </label>
+              <input
+                type="number"
+                id="seed"
+                placeholder="Random seed"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+              >
+            </div>
+
+            <div>
+              <label for="image-size" class="block text-sm font-medium text-gray-300 mb-2">
+                Image Size
+              </label>
+              <select
+                id="image-size"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+              >
+                <option value="128">128 × 128 (Fast)</option>
+                <option value="256">256 × 256</option>
+                <option value="512" selected>512 × 512 (Default)</option>
+                <option value="1024">1024 × 1024 (Slow)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="batch-size" class="block text-sm font-medium text-gray-300 mb-2">
+                Batch Size
+              </label>
+              <select
+                id="batch-size"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+              >
+                <option value="1" selected>1 Image</option>
+                <option value="2">2 Images</option>
+                <option value="4">4 Images</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick="generateImage()"
+          id="generate-btn"
+          class="w-full font-semibold py-3 px-4 rounded-md transition duration-200" style="background: linear-gradient(45deg, #10b981, #059669); color: #fff;"
+        >
+          Generate Image
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Display -->
+    <div id="status" style="display:none;" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="animate-spin h-5 w-5 mr-3 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span id="status-text" class="text-yellow-700">Generating your image...</span>
+      </div>
+      <div id="queue-position" class="mt-2 text-sm text-yellow-600"></div>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error" style="display:none;" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="h-5 w-5 text-red-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-12v4m0 4h.01"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Generation failed</h3>
+          <div id="error-message" class="mt-1 text-sm text-red-700"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" style="display:none;">
+      <div class="rounded-lg p-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <h3 class="text-lg font-semibold text-white mb-2" id="result-prompt"></h3>
+        <p class="text-sm text-gray-400 mb-4" id="result-info"></p>
+        <div id="result-images" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <!-- Images will be inserted here -->
+        </div>
+        <div class="flex gap-4">
+          <a id="view-full-link" href="#"
+            class="flex-1 text-center text-white font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: linear-gradient(45deg, #10b981, #059669);">
+            View Full Size
+          </a>
+          <button
+            onclick="generateNew()"
+            class="flex-1 font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            Generate New
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Cache bust: <%= Time.now.to_i %>
+let currentGenerationId = null;
+let pollingInterval = null;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+async function generateImage() {
+  const prompt = document.getElementById('prompt').value;
+  const negativePrompt = document.getElementById('negative-prompt').value;
+  const seed = document.getElementById('seed').value;
+  const publish = document.getElementById('publish').checked;
+  const imageSize = document.getElementById('image-size').value;
+  const batchSize = document.getElementById('batch-size').value;
+
+  if (!prompt) {
+    alert('Please enter a prompt');
+    return;
+  }
+
+  // Clear any existing polling
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+
+  // Disable button
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Generating...';
+
+  // Hide previous displays
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('status-text').textContent = 'Generating your image...';
+  document.getElementById('queue-position').textContent = '';
+
+  try {
+    // Send request
+    const response = await fetch('/images/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCsrfToken()
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        negative_prompt: negativePrompt,
+        seed: seed ? parseInt(seed) : null,
+        publish: publish,
+        image_size: parseInt(imageSize),
+        batch_size: parseInt(batchSize)
+      })
+    });
+
+    const data = await response.json();
+    currentGenerationId = data.generation_id;
+    console.log('Generation started:', currentGenerationId);
+
+    // Simple polling - check every 1 second
+    startPolling();
+
+  } catch (error) {
+    showError('Failed to start generation: ' + error.message);
+  }
+}
+
+function startPolling() {
+  pollingInterval = setInterval(async () => {
+    if (!currentGenerationId) {
+      clearInterval(pollingInterval);
+      return;
+    }
+
+    try {
+      // Check if image is ready in Redis
+      const response = await fetch(`/images/${currentGenerationId}/ai_data`);
+
+      if (response.ok) {
+        // Image is ready!
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+
+        const imageData = await response.json();
+        console.log('Image ready, displaying...');
+        displayGeneratedImages(imageData);
+      } else if (response.status === 404) {
+        // Still processing, check status
+        const statusResponse = await fetch(`/images/${currentGenerationId}/ai_status`);
+        const statusData = await statusResponse.json();
+
+        if (statusData.status === 'queued' && statusData.position) {
+          document.getElementById('queue-position').textContent = `Position in queue: ${statusData.position}`;
+        } else if (statusData.status === 'processing') {
+          document.getElementById('status-text').textContent = 'Processing your image...';
+          document.getElementById('queue-position').textContent = '';
+        } else if (statusData.status === 'failed') {
+          clearInterval(pollingInterval);
+          showError(statusData.error || 'Generation failed');
+        }
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+      // Keep polling on errors
+    }
+  }, 1000); // Check every second
+}
+
+function displayGeneratedImages(imageData) {
+  console.log('Displaying images...');
+
+  // Hide status, show result
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+
+  // Set prompt and info
+  document.getElementById('result-prompt').textContent = imageData.prompt || 'Generated Image';
+
+  const batchSize = imageData.batch_size || (imageData.images ? imageData.images.length : 1);
+  const imageSize = imageData.options?.image_size || 512;
+  document.getElementById('result-info').textContent =
+    `${batchSize} image${batchSize > 1 ? 's' : ''} • ${imageSize}×${imageSize}px`;
+
+  // Clear and populate images container
+  const container = document.getElementById('result-images');
+  container.innerHTML = '';
+
+  if (imageData.images && Array.isArray(imageData.images)) {
+    // Multiple images
+    imageData.images.forEach((base64, index) => {
+      const div = document.createElement('div');
+      div.className = 'rounded overflow-hidden';
+      div.style = 'background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);';
+      div.innerHTML = `<img src="data:image/png;base64,${base64}" class="w-full h-auto" alt="Image ${index + 1}" />`;
+      container.appendChild(div);
+    });
+  } else if (imageData.base64) {
+    // Single image
+    const div = document.createElement('div');
+    div.className = 'rounded overflow-hidden col-span-full';
+    div.style = 'background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);';
+    div.innerHTML = `<img src="data:image/png;base64,${imageData.base64}" class="w-full h-auto" alt="Generated image" />`;
+    container.appendChild(div);
+  }
+
+  // Update view link
+  document.getElementById('view-full-link').href = `/images/${currentGenerationId}/ai_show`;
+
+  // Re-enable button
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Image';
+}
+
+function showError(message) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+  document.getElementById('error-message').textContent = message;
+
+  // Re-enable button
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Image';
+
+  // Clear polling
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function generateNew() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  currentGenerationId = null;
+
+  // Clear any existing polling
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function toggleAdvanced() {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+
+  if (checkbox.checked) {
+    advancedOptions.style.display = 'block';
+  } else {
+    advancedOptions.style.display = 'none';
+  }
+}
+</script>
