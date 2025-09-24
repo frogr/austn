@@ -15,8 +15,8 @@ class ChatService
 
     uri = URI.parse("#{@base_url}#{@endpoint}")
 
-    Rails.logger.info "Connecting to LMStudio at #{uri}"
 
+    # Simple, direct HTTP request without extra buffering
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 120
     http.open_timeout = 10
@@ -33,57 +33,44 @@ class ChatService
       max_tokens: 2000
     }
 
-    Rails.logger.info "Sending request with #{full_messages.length} messages"
     request.body = request_body.to_json
 
+    # Direct streaming with block to avoid read_body being called twice
+    buffer = ""
     http.request(request) do |response|
-      Rails.logger.info "LMStudio responded with status: #{response.code}"
-
       if response.code != '200'
-        error_body = response.read_body
-        Rails.logger.error "LMStudio error response: #{error_body}"
-        yield({ error: "LMStudio returned #{response.code}: #{error_body}" })
+        yield({ error: "LMStudio returned #{response.code}" })
         return
       end
 
-      buffer = ""
       response.read_body do |chunk|
         buffer += chunk
-        lines = buffer.split("\n")
 
-        # Keep the last incomplete line in buffer
-        if lines.last && !buffer.end_with?("\n")
-          buffer = lines.pop
-        else
-          buffer = ""
-        end
+        # Process complete lines immediately
+        while (line_end = buffer.index("\n"))
+          line = buffer[0..line_end].strip
+          buffer = buffer[(line_end + 1)..-1]
 
-        lines.each do |line|
-          next if line.strip.empty?
+          next if line.empty?
 
           if line.start_with?("data: ")
             data = line[6..]
-            next if data.strip == "[DONE]"
+            next if data == "[DONE]"
 
             begin
               parsed = JSON.parse(data)
               content = parsed.dig("choices", 0, "delta", "content")
-              if content
-                Rails.logger.debug "Yielding content: #{content}"
-                yield({ content: content })
-              end
-            rescue JSON::ParserError => e
-              Rails.logger.error "Failed to parse SSE data: #{e.message}, line: #{line}"
+              yield({ content: content }) if content
+            rescue JSON::ParserError
+              # Skip non-JSON lines
             end
           end
         end
       end
     end
 
-    Rails.logger.info "Stream completed successfully"
   rescue => e
     Rails.logger.error "ChatService error: #{e.message}"
-    Rails.logger.error e.backtrace.first(5).join("\n")
     yield({ error: "Failed to connect to LMStudio: #{e.message}" })
   end
 
@@ -92,26 +79,37 @@ class ChatService
 
     uri = URI.parse("#{@base_url}#{@endpoint}")
     http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 60
+    http.read_timeout = 300  # 5 minutes for completion
     http.open_timeout = 10
 
     request = Net::HTTP::Post.new(uri.path)
     request['Content-Type'] = 'application/json'
 
-    request.body = {
+    request_payload = {
       model: DEFAULT_MODEL,
       messages: full_messages,
+      stream: false,  # Explicitly set to false for non-streaming
       temperature: 0.7,
       max_tokens: 2000
-    }.to_json
+    }
 
+    Rails.logger.info "Sending request to LMStudio: #{uri}"
+    Rails.logger.info "Request payload: #{request_payload.to_json}"
+
+    request.body = request_payload.to_json
     response = http.request(request)
+
+    Rails.logger.info "LMStudio responded with code: #{response.code}"
 
     if response.code == '200'
       parsed = JSON.parse(response.body)
-      parsed.dig("choices", 0, "message", "content")
+      content = parsed.dig("choices", 0, "message", "content")
+      Rails.logger.info "Successfully got response: #{content&.first(100)}..."
+      content
     else
-      raise "LMStudio returned #{response.code}: #{response.body}"
+      error_msg = "LMStudio returned #{response.code}: #{response.body}"
+      Rails.logger.error error_msg
+      raise error_msg
     end
   rescue => e
     Rails.logger.error "ChatService completion error: #{e.message}"

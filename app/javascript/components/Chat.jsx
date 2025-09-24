@@ -59,72 +59,27 @@ const Chat = () => {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
+      const data = await response.json()
 
-      console.log('Starting to read stream...')
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) {
-          console.log('Stream reading complete')
-          break
-        }
-
-        const chunk = decoder.decode(value, { stream: true })
-        console.log('Received chunk:', chunk)
-        buffer += chunk
-
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || '' // Keep incomplete line in buffer
-
-        for (const line of lines) {
-          const trimmedLine = line.trim()
-          if (!trimmedLine) continue
-
-          console.log('Processing line:', trimmedLine)
-
-          if (trimmedLine.startsWith('data: ')) {
-            const dataStr = trimmedLine.slice(6)
-
-            if (dataStr === '[DONE]') {
-              console.log('Received [DONE] signal')
-              continue
-            }
-
-            try {
-              const data = JSON.parse(dataStr)
-              console.log('Parsed data:', data)
-
-              if (data.error) {
-                console.error('Received error:', data.error)
-                setMessages(prev => {
-                  const newMessages = [...prev]
-                  newMessages[newMessages.length - 1] = {
-                    ...newMessages[newMessages.length - 1],
-                    content: `Error: ${data.error}`,
-                    error: true
-                  }
-                  return newMessages
-                })
-                break
-              }
-
-              if (data.content) {
-                console.log('Adding content:', data.content)
-                setMessages(prev => {
-                  const newMessages = [...prev]
-                  const lastMessage = newMessages[newMessages.length - 1]
-                  lastMessage.content = (lastMessage.content || '') + data.content
-                  return [...newMessages]
-                })
-              }
-            } catch (e) {
-              console.error('Error parsing SSE data:', e, 'Line was:', trimmedLine)
-            }
+      if (data.error) {
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = {
+            ...newMessages[newMessages.length - 1],
+            content: `Error: ${data.error}`,
+            error: true
           }
-        }
+          return newMessages
+        })
+      } else if (data.content) {
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = {
+            ...newMessages[newMessages.length - 1],
+            content: data.content
+          }
+          return newMessages
+        })
       }
     } catch (error) {
       console.error('Chat error:', error)
@@ -228,7 +183,7 @@ const Chat = () => {
             {isStreaming && (
               <div className="flex justify-start">
                 <div className="text-gray-500 italic text-sm">
-                  <span className="inline-block animate-pulse">Streaming response...</span>
+                  <span className="inline-block animate-pulse">Processing...</span>
                 </div>
               </div>
             )}
