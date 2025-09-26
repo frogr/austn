@@ -259,122 +259,175 @@ const ProjectDetail = ({ projectId }) => {
   }
 
   return (
-    <div className="min-h-screen pt-16 pb-8" style={{ backgroundColor: 'transparent' }}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 readable-content">
+    <div className="min-h-screen p-2 sm:p-4 md:p-8">
+      <div className="w-full max-w-4xl mx-auto">
         {/* Back Button */}
-        <a href="/projects" className="inline-flex items-center gap-2 btn btn-secondary group mb-8">
-          <span className="material-icons transform group-hover:-translate-x-1 transition-transform text-base">arrow_back</span>
-          <span>Back to Projects</span>
-        </a>
+        <div className="mb-6">
+          <a 
+            href="/projects" 
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded transition-all hover:opacity-80"
+            style={{
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: 'rgba(255,255,255,0.9)'
+            }}
+          >
+            ← Back to Projects
+          </a>
+        </div>
 
-        {/* Project Header */}
-        <div className="mb-12">
-          <div className="flex items-start gap-4 mb-6">
-            {/* Emoji icon removed */}
-            <div className="flex-1">
-              <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                {project.title}
-              </h1>
-              <p className="text-lg mb-4" style={{ color: 'var(--text-muted)' }}>{project.category}</p>
+        {/* Main Content Card */}
+        <div 
+          className="rounded-lg overflow-hidden"
+          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          {/* Header Section */}
+          <div className="px-3 sm:px-6 py-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'rgba(255,255,255,0.95)' }}>
+                  {project.title}
+                </h1>
+                <p className="text-sm font-medium mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {project.category}
+                </p>
+              </div>
+              {project.externalLink && (
+                <a 
+                  href={project.externalLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded font-medium transition-all hover:opacity-90"
+                  style={{
+                    background: 'var(--accent-color)',
+                    color: '#000'
+                  }}
+                >
+                  Visit Live Site ↗
+                </a>
+              )}
+            </div>
+            
+            <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.8)' }}>
+              {project.description}
+            </p>
+
+            {/* Technologies */}
+            <div className="flex flex-wrap gap-2">
+              {project.technologies.map(tech => (
+                <span
+                  key={tech}
+                  className="px-2 py-1 rounded text-xs font-medium"
+                  style={{ 
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: 'rgba(255,255,255,0.8)'
+                  }}
+                >
+                  {tech}
+                </span>
+              ))}
             </div>
           </div>
-          
-          <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>{project.description}</p>
 
-          {/* External Link */}
-          {project.externalLink && (
-            <a 
-              href={project.externalLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 btn btn-primary mb-6"
-            >
-              Visit Live Site
-              <span className="material-icons text-base">open_in_new</span>
-            </a>
+          {/* Screenshot Section */}
+          {project.screenshot && (
+            <div className="px-3 sm:px-6 py-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <h2 className="text-lg font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.95)' }}>
+                Preview
+              </h2>
+              <div 
+                className="rounded overflow-hidden"
+                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+              >
+                <img 
+                  src={project.screenshot} 
+                  alt={`${project.title} screenshot`}
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
           )}
 
-          {/* Technologies */}
-          <div className="flex flex-wrap gap-2">
-            {project.technologies.map(tech => (
-              <span
-                key={tech}
-                className="px-3 py-1 rounded-full text-sm glass-thick"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Screenshot Section */}
-        {project.screenshot && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Preview</h2>
-            <div className="glass-morphism rounded-lg overflow-hidden">
-              <img 
-                src={project.screenshot} 
-                alt={`${project.title} screenshot`}
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Key Features */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Key Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {project.highlights.map((highlight, index) => (
-              <div key={index} className="glass-panel p-4 rounded-lg flex items-start gap-3">
-                <span className="material-icons text-lg" style={{ color: 'var(--accent-color)' }}>check_circle</span>
-                <span style={{ color: 'var(--text-secondary)' }}>{highlight}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Accomplishments */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>What I Accomplished</h2>
-          <div className="space-y-4">
-            {project.accomplishments.map((accomplishment, index) => (
-              <div key={index} className="glass-panel p-6 rounded-lg">
-                <p style={{ color: 'var(--text-secondary)' }}>{accomplishment}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Challenges & Solutions */}
-        {project.challenges && project.challenges.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Challenges & Solutions</h2>
-            <div className="space-y-4">
-              {project.challenges.map((item, index) => (
-                <div key={index} className="glass-panel p-6 rounded-lg">
-                  <p style={{ color: 'var(--text-secondary)' }}>{item}</p>
+          {/* Key Features */}
+          <div className="px-3 sm:px-6 py-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <h2 className="text-lg font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.95)' }}>
+              Key Features
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {project.highlights.map((highlight, index) => (
+                <div 
+                  key={index} 
+                  className="p-3 rounded flex items-start gap-3"
+                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+                >
+                  <span className="text-green-400 text-sm mt-0.5">✓</span>
+                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                    {highlight}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
-        )}
 
-        {/* Call to Action */}
-        <div className="glass-thick rounded-xl p-8 text-center relative overflow-hidden">
-          <div 
-            className="absolute inset-0 opacity-10"
-            style={{ background: project.gradient }}
-          ></div>
-          <div className="relative z-10">
-            <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+          {/* Accomplishments */}
+          <div className="px-3 sm:px-6 py-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <h2 className="text-lg font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.95)' }}>
+              What I Accomplished
+            </h2>
+            <div className="space-y-3">
+              {project.accomplishments.map((accomplishment, index) => (
+                <div 
+                  key={index} 
+                  className="p-4 rounded"
+                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+                >
+                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                    {accomplishment}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Challenges & Solutions */}
+          {project.challenges && project.challenges.length > 0 && (
+            <div className="px-3 sm:px-6 py-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <h2 className="text-lg font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.95)' }}>
+                Challenges & Solutions
+              </h2>
+              <div className="space-y-3">
+                {project.challenges.map((item, index) => (
+                  <div 
+                    key={index} 
+                    className="p-4 rounded"
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+                  >
+                    <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                      {item}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Contact Section */}
+          <div className="px-3 sm:px-6 py-6 text-center">
+            <h3 className="text-lg font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.95)' }}>
               Interested in this project?
             </h3>
-            <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>
               Let's discuss how I can help bring your ideas to life.
             </p>
-            <a href="/#contact" className="btn btn-gradient-vibrant">
+            <a 
+              href="/#contact" 
+              className="px-4 py-2 rounded font-medium transition-all hover:opacity-90"
+              style={{
+                background: 'var(--accent-color)',
+                color: '#000'
+              }}
+            >
               Get in Touch
             </a>
           </div>
