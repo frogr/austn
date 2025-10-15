@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ThemeContext } from './ThemeContext';
+import { ThemeContext } from './Theme';
 import ResponsiveImage from './ResponsiveImage';
 
 const AboutMe = () => {

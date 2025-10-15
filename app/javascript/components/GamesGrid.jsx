@@ -7,8 +7,6 @@ import GameCard from './GameCard'
  */
 const GamesGrid = ({ games = [] }) => {
   // Using destructured props with default empty array
-  console.log('GamesGrid rendering with games:', games);
-  
   return (
     <div className="flex flex-wrap justify-center gap-8">
       {games.map((game, index) => (

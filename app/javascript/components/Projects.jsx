@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeContext';
+import { useTheme } from './Theme';
 
 const Projects = () => {
   const { theme } = useTheme();

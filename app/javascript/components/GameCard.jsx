@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { ThemeContext } from './ThemeContext'
+import { ThemeContext } from './Theme'
 import ResponsiveImage from './ResponsiveImage'
 
 /**
@@ -7,8 +7,6 @@ import ResponsiveImage from './ResponsiveImage'
  * Enhanced with glass morphism effect
  */
 const GameCard = ({ title, description, imageUrl, link }) => {
-  console.log('GameCard rendering:', { title, imageUrl, link });
-  
   // Get theme context if available
   let theme = 'dark'; // Default to dark if context not available
   try {
@@ -17,7 +15,7 @@ const GameCard = ({ title, description, imageUrl, link }) => {
       theme = themeContext.theme;
     }
   } catch (e) {
-    console.log('ThemeContext not available, using default theme');
+    // ThemeContext not available, using default theme
   }
   
   const isDark = theme === 'dark';

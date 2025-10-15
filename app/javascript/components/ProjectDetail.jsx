@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from './ThemeContext';
+import { useTheme } from './Theme';
 
 const ProjectDetail = ({ projectId }) => {
   const { theme } = useTheme();
