@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useTheme } from './Theme';
+import { useTheme } from './ThemeContext';
 
 const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
   const { theme } = useTheme();
