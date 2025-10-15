@@ -2,8 +2,6 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("Movement Demo initializing");
-  
   // DOM elements
   const container = document.getElementById('movement-demo-container');
   const startButton = document.getElementById('start-button');
@@ -78,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     controls.addEventListener('lock', () => {
       startScreen.style.display = 'none';
       crosshair.style.display = 'block';
-      console.log('Controls locked');
     });
     
     controls.addEventListener('unlock', () => {
@@ -86,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isPaused) {
         startScreen.style.display = 'flex';
       }
-      console.log('Controls unlocked');
     });
     
     // Start button click handler
@@ -120,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           break;
       }
-      console.log(`Key down: ${event.code}, Forward: ${moveForward}`);
     };
     
     const onKeyUp = function(event) {
@@ -162,8 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
-    
-    console.log("Movement demo initialized");
     
     // Create pause menu
     createPauseMenu();
@@ -265,13 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Apply movement through controls
       controls.moveRight(-velocity.x * delta);
       controls.moveForward(-velocity.z * delta);
-      
-      // Debug log
-      if (Math.random() < 0.01) {
-        console.log(`Position: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}`);
-        console.log(`Direction: ${direction.x.toFixed(2)}, ${direction.z.toFixed(2)}`);
-        console.log(`Velocity: ${velocity.x.toFixed(2)}, ${velocity.z.toFixed(2)}`);
-      }
       
       prevTime = time;
     }

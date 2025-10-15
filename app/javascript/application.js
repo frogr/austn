@@ -45,20 +45,13 @@ document.addEventListener("turbo:load", () => {
       try {
         // Get component props if they exist
         const propsStr = component.dataset.props
-        console.log(`Found ${componentName} with props:`, propsStr ? propsStr.substring(0, 100) + '...' : 'none')
         
         let props = {}
         if (propsStr) {
           try {
             props = JSON.parse(propsStr)
-            console.log(`Successfully parsed props for ${componentName}:`, Object.keys(props))
-            // More detailed logging for GamesGrid component
-            if (componentName === 'GamesGrid') {
-              console.log('GamesGrid props detail:', JSON.stringify(props, null, 2))
-            }
           } catch (e) {
             console.error(`Error parsing props for ${componentName}:`, e)
-            console.log('Raw props string:', propsStr)
           }
         }
         
@@ -82,7 +75,6 @@ document.addEventListener("turbo:load", () => {
             : <Component {...props} />
 
           roots.get(component).render(element)
-          console.log(`Rendered ${componentName} with props:`, props)
         }).catch(e => {
           console.error(`Failed to load component ${componentName}:`, e)
         })
