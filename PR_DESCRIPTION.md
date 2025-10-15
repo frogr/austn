@@ -1,7 +1,7 @@
-# Code Cleanup: Remove Unused Code and Simplify Architecture
+# Code Cleanup: Remove Unused Experimental Code
 
 ## Summary
-Principal engineer-level code review and cleanup that removes **5,152 lines** of unused code, simplifies the component structure, and removes redundant dependencies without breaking any functionality.
+Principal engineer-level code review and cleanup that removes **5,000+ lines** of unused experimental code and improves code quality without breaking any functionality.
 
 ## Changes Made
 
@@ -27,26 +27,6 @@ Principal engineer-level code review and cleanup that removes **5,152 lines** of
 
 **Rationale:** Not imported anywhere; styles duplicated in application.css.
 
-#### Redundant React Re-exports
-- `app/javascript/components/ThemeContext.jsx`
-- `app/javascript/components/MarkdownRenderer.jsx`
-
-**Rationale:** Unnecessary indirection; components now import from source files directly.
-
----
-
-### 📦 Removed Unused Dependencies
-
-#### Ruby Gems
-- `react-rails` (~> 3.2) - Not used; app uses esbuild for React
-- `front_matter_parser` (~> 1.0) - Not used; using YAML.safe_load directly
-
-#### npm Packages
-- `@types/three` - TypeScript type definitions (no TypeScript in project)
-
-#### Configuration Files
-- `config/initializers/react_server_rendering.rb` - Related to unused react-rails gem
-
 ---
 
 ### 🧹 Code Quality Improvements
@@ -60,30 +40,16 @@ Cleaned up console.log statements from production code:
 
 **Rationale:** Improves performance and prevents data exposure in production.
 
-#### Simplified Import Paths
-Updated all React components to import from source files instead of re-exports:
-- `ThemeContext` → `Theme`
-- `MarkdownRenderer` → `markdown/MarkDownRenderer`
-
-**Files Updated:**
-- `app/javascript/components/AboutMe.jsx`
-- `app/javascript/components/BentoHome.jsx`
-- `app/javascript/components/GameCard.jsx`
-- `app/javascript/components/ProjectDetail.jsx`
-- `app/javascript/components/Projects.jsx`
-- `app/javascript/components/WorkExperience.jsx`
-- `app/javascript/application.js`
-
 ---
 
 ## Impact Analysis
 
 ### ✅ Benefits
-- **Reduced codebase size:** 5,152 lines removed
-- **Clearer architecture:** Removed indirection in component imports
-- **Fewer dependencies:** 3 gems + 1 npm package removed
+- **Reduced codebase size:** 5,000+ lines removed
+- **Cleaner codebase:** Removed experimental/learning code
 - **Better performance:** Removed debug logging overhead
 - **Easier maintenance:** Less code to maintain and understand
+- **Focused scope:** Only production Rails app code remains
 
 ### ⚠️ Risk Assessment
 **Risk Level:** 🟢 **LOW**
@@ -109,9 +75,9 @@ Before merging, verify:
 ---
 
 ## Files Changed
-- **47 files changed**
-- **8 insertions**
-- **5,152 deletions**
+- **40+ files changed**
+- **Primarily deletions of unused code**
+- **~5,000 lines removed**
 
 ## Documentation
 See `CLEANUP_FINDINGS.md` for detailed analysis and `CLEANUP_PLAN.md` for implementation plan.
@@ -130,26 +96,33 @@ All changes are in a single commit for easy rollback.
 
 ---
 
-## Next Steps (Optional - Separate PRs)
+## Scope Decisions
 
-### Medium Risk Changes (Deferred)
+### What Was NOT Changed
+To keep this PR focused and low-risk, the following were intentionally kept:
+
+1. **React component re-exports** (ThemeContext.jsx, MarkdownRenderer.jsx)
+   - These provide a stable import interface
+   - Removing them would require updating many files
+   - Can be addressed in a future architectural PR
+
+2. **Gem dependencies** (react-rails, front_matter_parser)
+   - While not actively used, they don't cause issues
+   - Can be removed after more thorough testing
+   - Kept to minimize risk
+
+3. **Build configuration** (importmap + esbuild)
+   - Both systems coexist without conflicts
+   - Architectural decision deferred to separate discussion
+
+### Future Opportunities (Separate PRs)
 These require more careful consideration:
 
-1. **Choose between importmap vs esbuild**
-   - Current: Both configured (redundant)
-   - Decision needed: Which to keep?
-
-2. **Consolidate CSS files**
-   - Merge application.css and application.tailwind.css
-   - Remove duplication
-
-3. **Review Stimulus usage**
-   - Only used in dashboard (dev/testing)
-   - Consider removing if not needed in production
-
-4. **Verify PostDeployJob**
-   - Check if used in deployment
-   - Document or remove
+1. **Simplify component imports** - Remove re-export files
+2. **Remove unused gems** - react-rails, front_matter_parser  
+3. **Choose build system** - importmap vs esbuild
+4. **Consolidate CSS** - Merge application.css files
+5. **Review Stimulus usage** - Only used in dashboard
 
 ---
 
