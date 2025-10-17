@@ -185,34 +185,44 @@ const ProjectDetail = ({ projectId }) => {
       ],
       challenges: []
     },
-    'ai-experiments': {
+    'ai-lab': {
       title: 'AI Experiments Lab',
       category: 'Personal Projects',
-      description: 'A collection of 20+ projects built with Claude as my pair programmer. From CLI tools to web apps, these experiments push the boundaries of what\'s possible with AI-assisted development.',
-      technologies: ['Claude AI', 'OpenAI', 'Python', 'Rails', 'JavaScript', 'RAG Systems'],
-      
+      description: 'A comprehensive collection of 20+ projects spanning gaming apps, web platforms, developer tools, games, hardware projects, and AI/ML experiments. Built with Claude as my pair programmer, these projects demonstrate rapid prototyping and AI-assisted development.',
+      technologies: ['Claude AI', 'React', 'Rails', 'Python', 'Node.js', 'Three.js', 'OpenDota API', 'Arduino', 'Godot', 'Stable Diffusion'],
+
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
       highlights: [
-        'TodayIn3Minutes - AI-powered news summarizer',
-        'gitRAG - Repository knowledge extraction system',
-        'Overcommunicator - Context-aware communication tool',
-        'Obsidian to Web publishing pipeline',
-        'Multiple game projects using Three.js',
-        'YouTube channel documenting the process'
+        'Gaming: Dota 2 Progress Tracker with OpenDota API integration, League of Matchups with live search',
+        'Web Apps: ECHOROOMS ($20/month subscription platform), TodayIn3Minutes (AI productivity digest)',
+        'Developer Tools: austncoder (local LLM agent), GitRAG (git history query tool), GitHub Minifier',
+        'Games: Frogger and Chess in React, Godot 2D/3D game prototypes',
+        'Hardware: Arduino LED projects, Morse code transmitter, PiHole ad blocking',
+        'AI/ML: BirdOrNot classifier, ComfyUI workflows with Stable Diffusion',
+        'Learning Projects: TinyRails, C++ servers, database fundamentals'
       ],
       screenshot: null,
       accomplishments: [
-        'Built 20+ functional projects in record time using AI pair programming',
-        'Created practical tools that solve real problems in my workflow',
-        'Documented the entire process on YouTube to teach others',
-        'Proved that AI accelerates development without sacrificing quality',
-        'Developed a repeatable process for AI-assisted rapid prototyping'
+        'Built full-stack Dota 2 tracker with match history, hero analytics, performance graphs, and MMR tracking',
+        'Set up local AI image generation with ComfyUI workflows and custom prompting pipelines',
+        'Hardware projects: Multiple LED circuits with PWM control, morse code communication systems',
+        'Deployed PiHole for network-wide ad blocking on Raspberry Pi',
+        'Developed TodayIn3Minutes: daily productivity digest synthesizing Gmail, Calendar, and Slack with OAuth',
+        'Built austncoder: Python app using local models for agentic codebase search similar to Claude Code',
+        'Created functional games: Frogger with collision detection, Chess with AI opponent',
+        'Built wardrobe fitting scheduling system replacing Excel-based workflows with capacity tracking',
+        'Developed Discord-like IRC MVP with accounts, friends, private messages, and role management',
+        'Prototyped 2D physics platformers and 3D Zelda-like games while learning Godot'
       ],
       challenges: [
-        'Challenge: Learning new technologies (like Three.js) quickly',
-        'Solution: Used Claude to explain concepts and debug in real-time',
-        'Challenge: Maintaining code quality while moving fast',
-        'Solution: Established patterns and let AI handle boilerplate'
+        'Challenge: Integrating complex APIs like OpenDota and U.GG scraping',
+        'Solution: Used Claude to debug API responses and handle rate limiting gracefully',
+        'Challenge: Building subscription platform with Stripe integration from scratch',
+        'Solution: Leveraged AI pair programming to implement payment flows and user management quickly',
+        'Challenge: Learning Three.js, Godot, and Arduino simultaneously',
+        'Solution: Used Claude to explain fundamentals and debug issues in real-time',
+        'Challenge: Building RAG systems and embedding-based search',
+        'Solution: Iterated on architecture with AI assistance to implement semantic search correctly'
       ]
     },
     'backlit': {

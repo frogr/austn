@@ -84,18 +84,20 @@ const Projects = () => {
       id: 6,
       title: 'AI Experiments Lab',
       category: 'ai',
-      description: '20+ projects built with Claude: TodayIn3Minutes, Dota2Tracker, and more',
-      technologies: ['Claude Code', 'Ruby on Rails', 'JavaScript'],
+      description: '20+ projects: gaming apps, web platforms, developer tools, games, and hardware',
+      technologies: ['Claude AI', 'React', 'Rails', 'Python', 'Arduino', 'Godot'],
       link: '/projects/ai-lab',
       featured: false,
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
       details: {
-        fullDescription: 'My personal laboratory for AI-powered development. Building everything from CLI tools to automation scripts, documenting the journey on YouTube.',
+        fullDescription: 'Comprehensive collection spanning gaming apps (Dota 2 Tracker, League of Matchups), web platforms (ECHOROOMS, TodayIn3Minutes), developer tools (austncoder, GitRAG), games (Frogger, Chess, Godot), hardware (Arduino, PiHole), and AI/ML experiments.',
         highlights: [
-          'TodayIn3Minutes - AI calendar summarizer',
-          'Dota2Tracker - an OPGG like interface for Dota 2 stats',
-          'LeagueOfMatchups - Data scraping U.GG to provide matchup details',
-          'Documenting as much as I can on YouTube!'
+          'Gaming apps with OpenDota API and U.GG scraping',
+          'Subscription platforms and productivity tools with OAuth',
+          'Local LLM agents and RAG-based git query tools',
+          'Games built in React and Godot (2D/3D prototypes)',
+          'Arduino LED projects and network ad blocking',
+          'AI image generation with ComfyUI and Stable Diffusion'
         ]
       }
     },
