@@ -132,6 +132,37 @@ const ProjectDetail = ({ projectId }) => {
         'Solution: Built redundant systems and thoroughly tested every edge case',
       ]
     },
+    'tinyrails': {
+      title: 'TinyRails',
+      category: 'Learning Project',
+      description: 'Rebuilt Rails from scratch to understand how web frameworks actually work. Educational project implementing core framework features including routing, controllers, and data persistence.',
+      technologies: ['Ruby 3.1+', 'Rack', 'JSON', 'ERB Templates', 'Web Frameworks'],
+      gradient: 'var(--gradient-cool)',
+      externalLink: 'https://github.com/frogr/tinyrails',
+      highlights: [
+        'Custom routing system mapping URLs to controllers',
+        'Rack interface integration for web server communication',
+        'Controller architecture with automatic template rendering',
+        'FileModel: JSON-based database with CRUD operations',
+        'Working demo app (best_tweets) validating functionality',
+        'Ruby 3.1+ implementation with modern patterns'
+      ],
+      screenshot: null,
+      accomplishments: [
+        'Demystified web framework internals by rebuilding core Rails features from scratch',
+        'Implemented custom router that parses URLs and dispatches to controller actions',
+        'Built Rack integration enabling communication with standard Ruby web servers',
+        'Created file-based JSON database proving you don\'t always need PostgreSQL',
+        'Developed working companion app demonstrating the framework handles real use cases',
+        'Gained deep understanding of request/response cycles and MVC architecture'
+      ],
+      challenges: [
+        'Challenge: Understanding how routing actually maps URLs to code execution',
+        'Solution: Built custom router handling path parsing and controller dispatch step-by-step',
+        'Challenge: Making it actually work like Rails without copying Rails code',
+        'Solution: Focused on core concepts and implemented the simplest version that could work'
+      ]
+    },
     'car-search': {
       title: 'Car Search Aggregator',
       category: 'Web Application',

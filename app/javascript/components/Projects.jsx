@@ -11,15 +11,14 @@ const Projects = () => {
       title: 'Pages AI Assistant',
       category: 'ai',
       description: 'Natural language document generation that grew adoption 4% → 11%',
-      technologies: ['OpenAI', 'Rails', 'PDF Processing', 'React'],
+      technologies: ['OpenAI', 'Rails', 'React', 'TypeScript'],
       link: '/projects/pages-ai',
       featured: true,
       gradient: 'var(--gradient-accent)',
       details: {
-        fullDescription: 'Architected and shipped AI-powered document generation at CompanyCam, integrating OpenAI with Rails for natural language processing. Optimized PDF infrastructure achieving 10x size reduction.',
+        fullDescription: 'Architected and shipped AI-powered document generation at CompanyCam, integrating OpenAI with Rails for natural language processing.',
         highlights: [
           'Grew feature adoption from 4% to 11% of companies',
-          '10x PDF size optimization',
           'Thousands of daily document exports',
           'Natural language UI that users actually understand'
         ]
@@ -35,17 +34,35 @@ const Projects = () => {
       featured: true,
       gradient: 'var(--gradient-vibrant)',
       details: {
-        fullDescription: 'Subcontracted to build critical donation infrastructure for BGCA 2021 fundraiser. Handled payment processing, receipts, and real-time tracking for a high-stakes live event.',
+        fullDescription: 'Subcontracted to build critical donation infrastructure for BGCA 2021 fundraiser. Handled payment processing at massive scale for a great cause',
         highlights: [
           'Processed over $2 million in donations',
-          'Zero downtime during live fundraiser',
-          'Stripe integration with custom receipt generation',
-          'Built under tight deadline, delivered on time'
+          'Stripe integration',
+          'Built under tight deadline, delivered ahead of time'
         ]
       }
     },
     {
       id: 3,
+      title: 'TinyRails',
+      category: 'experiment',
+      description: 'Rebuilt Rails from scratch to learn how web frameworks actually work',
+      technologies: ['Ruby', 'Rack', 'JSON', 'Web Frameworks'],
+      link: '/projects/tinyrails',
+      featured: true,
+      gradient: 'var(--gradient-cool)',
+      details: {
+        fullDescription: 'Reconstructed Rails core functionality from scratch using Ruby. Educational project to demystify web framework internals by implementing routing, controllers, and data persistence.',
+        highlights: [
+          'Custom routing system mapping URLs to controllers',
+          'Rack integration for web server communication',
+          'File-based JSON database with basic CRUD operations',
+          'Working demo app (best_tweets) proving it functions'
+        ]
+      }
+    },
+    {
+      id: 4,
       title: 'Hub - Rails Starter Kit',
       category: 'web',
       description: 'My opinionated alternative to Jumpstart Pro',
@@ -54,7 +71,7 @@ const Projects = () => {
       featured: true,
       gradient: 'var(--gradient-cool)',
       details: {
-        fullDescription: 'Built with Claude as my pair programmer. A production-ready Rails boilerplate with my preferred patterns, because sometimes you need to build things your way.',
+        fullDescription: 'Built with Claude as my pair programmer. A production-ready Rails boilerplate with my preferred patterns',
         highlights: [
           'Authentication, payments, and multi-tenancy out of the box',
           'My personal Rails patterns baked in',
@@ -64,26 +81,26 @@ const Projects = () => {
       }
     },
     {
-      id: 5,
+      id: 6,
       title: 'AI Experiments Lab',
       category: 'ai',
-      description: '20+ projects built with Claude: TodayIn3Minutes, gitRAG, and more',
-      technologies: ['Claude AI', 'OpenAI', 'Python', 'RAG Systems'],
+      description: '20+ projects built with Claude: TodayIn3Minutes, Dota2Tracker, and more',
+      technologies: ['Claude Code', 'Ruby on Rails', 'JavaScript'],
       link: '/projects/ai-lab',
       featured: false,
       gradient: 'linear-gradient(135deg, var(--pink-accent) 0%, var(--purple-accent) 100%)',
       details: {
         fullDescription: 'My personal laboratory for AI-powered development. Building everything from CLI tools to automation scripts, documenting the journey on YouTube.',
         highlights: [
-          'TodayIn3Minutes - AI news summarizer',
-          'gitRAG - Repository knowledge system',
-          'Overcommunicator - Because context matters',
-          'YouTube channel documenting the process'
+          'TodayIn3Minutes - AI calendar summarizer',
+          'Dota2Tracker - an OPGG like interface for Dota 2 stats',
+          'LeagueOfMatchups - Data scraping U.GG to provide matchup details',
+          'Documenting as much as I can on YouTube!'
         ]
       }
     },
     {
-      id: 6,
+      id: 7,
       title: 'Backlit Platform Suite',
       category: 'web',
       description: 'Rails apps for Super Bowl, Oscars, and Grammys production',
@@ -102,22 +119,22 @@ const Projects = () => {
       }
     },
     {
-      id: 7,
+      id: 8,
       title: 'curl.lol',
       category: 'experiment',
-      description: 'URL shortener with analytics - because why not?',
+      description: 'URL shortener with event-based analytics',
       technologies: ['Rails', 'Redis', 'PostgreSQL'],
       link: '/projects/curl-lol',
-      externalLink: 'https://curl.lol',
+      externalLink: 'https://github.com/frogr/url_shortener',
       featured: false,
       gradient: 'var(--gradient-primary)'
     },
     {
-      id: 8,
+      id: 9,
       title: 'Minecraft Build Planner',
       category: 'game',
-      description: 'Three.js tool for planning builds - built with Claude',
-      technologies: ['Three.js', 'JavaScript', 'Claude AI'],
+      description: 'Three.js tool for planning builds',
+      technologies: ['Three.js', 'JavaScript'],
       link: '/projects/minecraft-planner',
       featured: false,
       gradient: 'linear-gradient(135deg, var(--green-accent) 0%, var(--blue-accent) 100%)'
@@ -141,11 +158,9 @@ const Projects = () => {
   return (
     <div className="min-h-screen pt-12 pb-6 relative overflow-hidden" 
          style={{ background: 'transparent' }}>
-      {/* Background mesh disabled to avoid top band */}
       <div className="absolute inset-0 opacity-0" aria-hidden="true"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 readable-content">
-        {/* Header with simple solid text */}
         <div className="text-center mb-6 md:mb-8">
           <h1 className="font-black mb-3"
               style={{ 
@@ -155,14 +170,6 @@ const Projects = () => {
               }}>
             Projects
           </h1>
-          <p className="font-medium max-w-2xl mx-auto px-4" 
-             style={{ 
-               fontSize: 'clamp(1.25rem, 2vw, 1.75rem)',
-               color: isDark ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.85)',
-               letterSpacing: '-0.01em'
-             }}>
-            Significant work shipped
-          </p>
         </div>
 
         {/* Filter Pills with gradient active state */}
@@ -209,12 +216,7 @@ const Projects = () => {
                 border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)'
               }}
             >
-              {/* Decorative overlays removed for simpler look */}
-
               <div className="flex flex-col h-full relative z-10">
-                {/* Emoji icon removed */}
-
-                {/* Project Info */}
                 <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2"
                     style={{ color: 'var(--text-primary)' }}>
                   {project.title}
@@ -224,7 +226,6 @@ const Projects = () => {
                   {project.description}
                 </p>
 
-                {/* Technologies with glass effect */}
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {project.technologies.map(tech => (
                     <span
@@ -237,7 +238,6 @@ const Projects = () => {
                   ))}
                 </div>
 
-                {/* Link indicator with gradient */}
                 {project.link && (
                   <div className="flex items-center text-xs sm:text-sm font-medium gap-1 group-hover:gap-2 transition-all mt-auto pt-2"
                        style={{ color: 'var(--accent-color)' }}>
@@ -252,19 +252,13 @@ const Projects = () => {
           ))}
         </div>
 
-        {/* Call to Action with solid accent */}
         <div className="mt-6 sm:mt-8 text-center">
-          <div className="glass-thick rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 max-w-2xl mx-auto relative overflow-hidden">
-            {/* Background effect removed */}
-            
+          <div className="glass-thick rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 max-w-2xl mx-auto relative overflow-hidden">            
             <div className="relative z-10">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3"
                   style={{ color: 'var(--text-primary)' }}>
                 Have a project in mind?
               </h2>
-              <p className="mb-4 sm:mb-6 text-sm sm:text-base px-4" style={{ color: 'var(--text-secondary)' }}>
-                I love working with teams that care about craft and humans in equal measure.
-              </p>
               <a href="/#contact" className="inline-flex items-center gap-2 transform hover:scale-105 transition-all text-sm sm:text-base px-6 py-3 rounded-lg font-medium"
                  style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
                 <span className="material-icons text-base">send</span>

@@ -18,10 +18,10 @@ class PortfolioController < ApplicationController
         # icon removed (no emojis)
       },
       {
-        id: "hub",
-        title: "Hub - Rails Starter Kit",
-        description: "My opinionated alternative to Jumpstart Pro",
-        technologies: [ "Rails 7", "React", "Docker" ]
+        id: "tinyrails",
+        title: "TinyRails",
+        description: "Rebuilt Rails from scratch to learn how web frameworks actually work",
+        technologies: [ "Ruby", "Rack", "JSON" ]
         # icon removed (no emojis)
       }
     ]
