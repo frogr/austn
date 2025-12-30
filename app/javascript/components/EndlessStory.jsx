@@ -13,23 +13,40 @@ const EndlessStory = ({
   const [page, setPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   const [totalParagraphs, setTotalParagraphs] = useState(initialTotalParagraphs)
-  const [countdown, setCountdown] = useState(initialSeconds)
   const [loading, setLoading] = useState(false)
-  const countdownRef = useRef(null)
+
+  // Use absolute time as source of truth to avoid drift
+  const [nextGenTime, setNextGenTime] = useState(() => {
+    if (initialNextGen) return new Date(initialNextGen).getTime()
+    return Date.now() + (initialSeconds * 1000)
+  })
+  const [countdown, setCountdown] = useState(initialSeconds)
+  const refreshScheduled = useRef(false)
 
   useEffect(() => {
-    countdownRef.current = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          setTimeout(() => refreshData(), 3000)
-          return 1800
-        }
-        return prev - 1
-      })
-    }, 1000)
+    const updateCountdown = () => {
+      const now = Date.now()
+      const remaining = Math.max(0, Math.floor((nextGenTime - now) / 1000))
+      setCountdown(remaining)
 
-    return () => clearInterval(countdownRef.current)
-  }, [])
+      // When countdown hits 0, schedule one refresh
+      if (remaining === 0 && !refreshScheduled.current) {
+        refreshScheduled.current = true
+        setTimeout(() => {
+          refreshData()
+          refreshScheduled.current = false
+        }, 3000)
+      }
+    }
+
+    // Reset the scheduled flag when nextGenTime changes
+    refreshScheduled.current = false
+
+    updateCountdown()
+    const interval = setInterval(updateCountdown, 1000)
+
+    return () => clearInterval(interval)
+  }, [nextGenTime])
 
   const refreshData = useCallback(async () => {
     try {
@@ -39,7 +56,11 @@ const EndlessStory = ({
       setParagraphs(data.paragraphs)
       setTotalPages(data.total_pages)
       setTotalParagraphs(data.total_paragraphs)
-      setCountdown(data.seconds_until_next)
+
+      // Update the absolute time source of truth
+      if (data.next_generation_at) {
+        setNextGenTime(new Date(data.next_generation_at).getTime())
+      }
     } catch (error) {
       console.error('Failed to refresh:', error)
     }
@@ -55,7 +76,10 @@ const EndlessStory = ({
       setPage(newPage)
       setTotalPages(data.total_pages)
       setTotalParagraphs(data.total_paragraphs)
-      setCountdown(data.seconds_until_next)
+
+      if (data.next_generation_at) {
+        setNextGenTime(new Date(data.next_generation_at).getTime())
+      }
 
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (error) {
