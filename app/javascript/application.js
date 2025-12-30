@@ -20,7 +20,8 @@ const COMPONENT_LOADERS = {
   ProjectDetail: () => import('./components/ProjectDetail'),
   ThemeLayout: () => import('./components/DarkModeLayout'),
   DarkModeLayout: () => import('./components/DarkModeLayout'),
-  Chat: () => import('./components/Chat')
+  Chat: () => import('./components/Chat'),
+  DAW: () => import('./components/daw/DAW')
 }
 
 // Store our roots so we can track which elements have been initialized
@@ -69,7 +70,7 @@ document.addEventListener("turbo:load", () => {
             roots.set(component, root)
           }
 
-          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar']
+          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar', 'DAW']
           const element = needsThemeContext.includes(componentName)
             ? <ThemeProvider><Component {...props} /></ThemeProvider>
             : <Component {...props} />

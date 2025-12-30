@@ -85,6 +85,9 @@ Rails.application.routes.draw do
   get "/tts/:id/data", to: "tts#data", as: :tts_data
   get "/tts/:id/download", to: "tts#download", as: :tts_download
 
+  # MIDI DAW interface
+  get "/midi", to: "midi#index"
+
   # Portfolio as root
   root "portfolio#index"
 end
