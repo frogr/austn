@@ -1,5 +1,5 @@
 class EndlessController < ApplicationController
-  GENERATION_INTERVAL_MINUTES = 10
+  GENERATION_INTERVAL_MINUTES = 30
 
   def index
     @story = Story.active.first

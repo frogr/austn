@@ -21,7 +21,8 @@ const COMPONENT_LOADERS = {
   ThemeLayout: () => import('./components/DarkModeLayout'),
   DarkModeLayout: () => import('./components/DarkModeLayout'),
   Chat: () => import('./components/Chat'),
-  DAW: () => import('./components/daw/DAW')
+  DAW: () => import('./components/daw/DAW'),
+  EndlessStory: () => import('./components/EndlessStory')
 }
 
 // Store our roots so we can track which elements have been initialized

@@ -4,6 +4,11 @@ class StoryGenerationJob < ApplicationJob
   retry_on GroqService::GroqError, wait: :exponentially_longer, attempts: 3
 
   def perform(story_id = nil)
+    unless Rails.env.production?
+      Rails.logger.info "StoryGenerationJob: Skipping in #{Rails.env} environment"
+      return
+    end
+
     story = if story_id
       Story.find(story_id)
     else

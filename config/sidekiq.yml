@@ -16,6 +16,11 @@
       class: GpuHealthCheckJob
       queue: default
       description: "Check GPU service health status"
+    story_generation:
+      cron: '*/30 * * * *'  # Every 30 minutes
+      class: StoryGenerationJob
+      queue: default
+      description: "Generate next paragraph for Endless Story"
 
 # GPU queue configuration
 # Run a separate Sidekiq process for GPU tasks:

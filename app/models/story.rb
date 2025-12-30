@@ -23,7 +23,7 @@ class Story < ApplicationRecord
   end
 
   def total_pages(per_page: PARAGRAPHS_PER_PAGE)
-    [(story_paragraphs.count.to_f / per_page).ceil, 1].max
+    [ (story_paragraphs.count.to_f / per_page).ceil, 1 ].max
   end
 
   def paragraph_count
