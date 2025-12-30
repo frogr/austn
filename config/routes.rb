@@ -70,6 +70,14 @@ Rails.application.routes.draw do
     end
   end
 
+  # TTS (Text-to-Speech) interface
+  get "/tts", to: "tts#index"
+  post "/tts/generate", to: "tts#generate"
+  get "/tts/:id/status", to: "tts#status", as: :tts_status
+  get "/tts/:id/audio", to: "tts#audio", as: :tts_audio
+  get "/tts/:id/data", to: "tts#data", as: :tts_data
+  get "/tts/:id/download", to: "tts#download", as: :tts_download
+
   # Portfolio as root
   root "portfolio#index"
 end
