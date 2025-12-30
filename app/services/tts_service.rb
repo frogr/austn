@@ -13,22 +13,24 @@ class TtsService
     voice_preset = options[:voice_preset] || options["voice_preset"]
     voice_audio = options[:voice_audio] || options["voice_audio"]
 
-    Rails.logger.info "Sending TTS request to #{base_uri}/generate"
-
     body = {
       text: text,
       exaggeration: exaggeration.to_f,
       cfg_weight: cfg_weight.to_f
     }
 
-    # Add voice preset if provided (takes precedence over uploaded audio)
+    # Voice handling - explicit logging
     if voice_preset.present?
       body[:voice_preset] = voice_preset
-      Rails.logger.info "Using voice preset: #{voice_preset}"
+      Rails.logger.info "TtsService: Sending request with voice_preset=#{voice_preset}"
     elsif voice_audio.present?
       body[:voice_audio] = voice_audio
-      Rails.logger.info "Using voice cloning with uploaded audio"
+      Rails.logger.info "TtsService: Sending request with custom voice audio (#{voice_audio.length} bytes)"
+    else
+      Rails.logger.info "TtsService: Sending request with DEFAULT voice (no voice params)"
     end
+
+    Rails.logger.info "TtsService: POST #{base_uri}/generate"
 
     response = post("/generate",
       body: body.to_json,

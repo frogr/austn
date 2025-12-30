@@ -299,11 +299,19 @@ async function generateSpeech() {
       cfg_weight: parseFloat(cfgWeight)
     };
 
-    // Use preset voice OR custom uploaded audio
-    if (voicePreset && voicePreset !== '' && voicePreset !== '_custom') {
-      body.voice_preset = voicePreset;
-    } else if (voiceAudioBase64) {
+    // Voice selection logic - explicit and clear
+    // voicePreset values: "" = default, "djt" = preset, "_custom" = use uploaded audio
+    if (voicePreset === '_custom' && voiceAudioBase64) {
+      // Custom voice: use uploaded audio for this generation only
       body.voice_audio = voiceAudioBase64;
+      console.log('Using custom uploaded voice');
+    } else if (voicePreset && voicePreset !== '' && voicePreset !== '_custom') {
+      // Preset voice: send the preset ID
+      body.voice_preset = voicePreset;
+      console.log('Using preset voice:', voicePreset);
+    } else {
+      // Default voice: don't send any voice params
+      console.log('Using default voice');
     }
 
     const response = await fetch('/tts/generate', {

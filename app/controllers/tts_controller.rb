@@ -14,19 +14,27 @@ class TtsController < ApplicationController
   def generate
     generation_id = SecureRandom.uuid
 
-    Rails.logger.info "Starting TTS generation #{generation_id} with text: #{params[:text]&.first(50)}..."
+    # Build options hash - only include values that are present
+    options = {
+      "exaggeration" => params[:exaggeration],
+      "cfg_weight" => params[:cfg_weight]
+    }
+
+    # Only add voice params if they're actually provided
+    if params[:voice_preset].present?
+      options["voice_preset"] = params[:voice_preset]
+      Rails.logger.info "TTS #{generation_id}: Using voice preset '#{params[:voice_preset]}'"
+    elsif params[:voice_audio].present?
+      options["voice_audio"] = params[:voice_audio]
+      Rails.logger.info "TTS #{generation_id}: Using custom voice audio"
+    else
+      Rails.logger.info "TTS #{generation_id}: Using default voice"
+    end
+
+    Rails.logger.info "TTS #{generation_id}: text=#{params[:text]&.first(50)}..."
 
     # Queue the job
-    TtsGenerationJob.perform_later(
-      generation_id,
-      params[:text],
-      {
-        "exaggeration" => params[:exaggeration],
-        "cfg_weight" => params[:cfg_weight],
-        "voice_preset" => params[:voice_preset],
-        "voice_audio" => params[:voice_audio]
-      }
-    )
+    TtsGenerationJob.perform_later(generation_id, params[:text], options)
 
     # Return immediately with generation ID
     render json: {

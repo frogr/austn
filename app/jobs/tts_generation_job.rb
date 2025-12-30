@@ -21,14 +21,24 @@ class TtsGenerationJob < GpuJob
     )
 
     begin
-      # Generate the speech using TTS service
-      result = TtsService.generate_speech(
-        text,
+      # Build service options - only pass what we have
+      service_opts = {
         exaggeration: options["exaggeration"],
-        cfg_weight: options["cfg_weight"],
-        voice_preset: options["voice_preset"],
-        voice_audio: options["voice_audio"]
-      )
+        cfg_weight: options["cfg_weight"]
+      }
+
+      if options["voice_preset"]
+        service_opts[:voice_preset] = options["voice_preset"]
+        Rails.logger.info "TtsGenerationJob #{generation_id}: voice_preset=#{options["voice_preset"]}"
+      elsif options["voice_audio"]
+        service_opts[:voice_audio] = options["voice_audio"]
+        Rails.logger.info "TtsGenerationJob #{generation_id}: using custom voice audio"
+      else
+        Rails.logger.info "TtsGenerationJob #{generation_id}: using default voice"
+      end
+
+      # Generate the speech using TTS service
+      result = TtsService.generate_speech(text, service_opts)
 
       # Store audio data with service
       audio_data = {
