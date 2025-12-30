@@ -2,6 +2,6 @@
 <% status = GpuHealthStatus.for_service(service) %>
 <span class="gpu-health-indicator relative inline-block align-middle cursor-help"
       data-service="<%= service %>"
-      title="<%= status.online ? 'GPU Online' : 'GPU Offline' %><%= status.last_online_at ? " - Last online: #{time_ago_in_words(status.last_online_at)} ago" : (status.last_checked_at ? " - Never connected" : "") %>">
+      title="<%= status.online ? 'Online' : 'Offline' %><%= status.last_online_at ? " - Last used: #{time_ago_in_words(status.last_online_at)} ago" : "" %>">
   <span class="inline-block w-2 h-2 rounded-full <%= status.online ? 'bg-green-500' : 'bg-red-500' %>"></span>
 </span>

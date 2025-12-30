@@ -11,7 +11,8 @@
   <div class="flex justify-center mb-6">
     <%= link_to "Generate with AI", ai_generate_images_path,
                 class: "px-6 py-3 text-base font-medium rounded-lg transition-all hover:opacity-90 hover:scale-105",
-                style: "background: linear-gradient(45deg, #10b981, #059669); color: #fff;" %>
+                style: "background: linear-gradient(45deg, #10b981, #059669); color: #fff;",
+                data: { turbo: false } %>
   </div>
 
   <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
@@ -59,7 +60,8 @@
     <div class="text-center py-12">
       <p style="color: rgba(255,255,255,0.5);" class="mb-4">No images yet</p>
       <%= link_to "Generate with AI", ai_generate_images_path,
-                  style: "color: #10b981;" %>
+                  style: "color: #10b981;",
+                  data: { turbo: false } %>
     </div>
   <% end %>
 </div>
