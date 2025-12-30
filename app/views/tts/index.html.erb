@@ -32,8 +32,12 @@
           >
             <option value="">Default voice</option>
             <% if @voices.present? %>
-              <% @voices.each do |voice| %>
-                <option value="<%= voice["id"] %>"><%= voice["name"] %></option>
+              <% @voices.group_by { |v| v["category"] || "General" }.each do |category, voices| %>
+                <optgroup label="<%= category %>">
+                  <% voices.each do |voice| %>
+                    <option value="<%= voice["id"] %>"><%= voice["name"] %></option>
+                  <% end %>
+                </optgroup>
               <% end %>
             <% end %>
             <option value="_custom">Custom</option>
