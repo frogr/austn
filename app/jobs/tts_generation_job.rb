@@ -26,6 +26,7 @@ class TtsGenerationJob < GpuJob
         text,
         exaggeration: options["exaggeration"],
         cfg_weight: options["cfg_weight"],
+        voice_preset: options["voice_preset"],
         voice_audio: options["voice_audio"]
       )
 
