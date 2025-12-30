@@ -48,6 +48,7 @@ gem "redis", "~> 5.0"
 
 # Sidekiq for background jobs
 gem "sidekiq", "~> 7.3"
+gem "sidekiq-scheduler", "~> 5.0"
 
 # HTTP client for ComfyUI API
 gem "httparty", "~> 0.22"

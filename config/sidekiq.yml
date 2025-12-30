@@ -9,6 +9,14 @@
   - [low, 1]
   - [mailers, 2]
 
+:scheduler:
+  :schedule:
+    gpu_health_check:
+      cron: '0 * * * *'  # Every hour at minute 0
+      class: GpuHealthCheckJob
+      queue: default
+      description: "Check GPU service health status"
+
 # GPU queue configuration
 # Run a separate Sidekiq process for GPU tasks:
 # bundle exec sidekiq -q gpu -c 1

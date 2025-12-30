@@ -17,6 +17,15 @@
 </style>
 
 <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="font-black mb-4 inline-flex items-center justify-center gap-3" style="font-size: clamp(3rem, 6vw, 4rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Text to Speech
+      <%= render "shared/gpu_health_indicator", service: "tts" %>
+    </h1>
+    <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Routed to my local GPU via Chatterbox TTS</p>
+  </div>
+
   <div class="max-w-4xl mx-auto">
     <div class="rounded-lg p-3 sm:p-6 mb-4 sm:mb-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
       <div class="space-y-4">
