@@ -1,10 +1,45 @@
 import * as Tone from 'tone'
 
 // Default effects settings
+// Chain order: EQ -> Compressor -> Distortion -> Phaser -> Tremolo -> Chorus -> Delay -> Reverb
 export const DEFAULT_EFFECTS = {
-  reverb: {
+  eq3: {
     enabled: false,
-    roomSize: 0.5,
+    low: 0,      // dB (-12 to 12)
+    mid: 0,      // dB (-12 to 12)
+    high: 0,     // dB (-12 to 12)
+    lowFrequency: 400,   // Hz
+    highFrequency: 2500, // Hz
+  },
+  compressor: {
+    enabled: false,
+    threshold: -24,  // dB
+    ratio: 4,        // ratio
+    attack: 0.003,   // seconds
+    release: 0.25,   // seconds
+  },
+  distortion: {
+    enabled: false,
+    amount: 0.4,
+    type: 'softclip', // 'softclip', 'hardclip', 'bitcrusher'
+  },
+  phaser: {
+    enabled: false,
+    frequency: 0.5,  // Hz (LFO rate)
+    octaves: 3,      // range of modulation
+    baseFrequency: 1000, // Hz
+    wet: 0.5,
+  },
+  tremolo: {
+    enabled: false,
+    frequency: 4,    // Hz (LFO rate)
+    depth: 0.5,      // 0-1
+    wet: 1,
+  },
+  chorus: {
+    enabled: false,
+    frequency: 1.5,
+    depth: 0.7,
     wet: 0.3,
   },
   delay: {
@@ -13,15 +48,9 @@ export const DEFAULT_EFFECTS = {
     feedback: 0.3,
     wet: 0.3,
   },
-  distortion: {
+  reverb: {
     enabled: false,
-    amount: 0.4,
-    type: 'softclip', // 'softclip', 'hardclip', 'bitcrusher'
-  },
-  chorus: {
-    enabled: false,
-    frequency: 1.5,
-    depth: 0.7,
+    roomSize: 0.5,
     wet: 0.3,
   },
 }
@@ -70,8 +99,10 @@ class AudioEngine {
       await Tone.start()
 
       // Create analyzers for visualizations (connected before master volume)
-      this.waveformAnalyzer = new Tone.Waveform(1024)
-      this.fftAnalyzer = new Tone.FFT(256)
+      // Use 2048 samples for waveform for smoother display
+      this.waveformAnalyzer = new Tone.Waveform(2048)
+      // Use 2048 bins for FFT for better frequency resolution (especially for bass)
+      this.fftAnalyzer = new Tone.FFT(2048)
       this.masterMeter = new Tone.Meter({ smoothing: 0.8 })
 
       // Create master volume and connect analyzers
@@ -186,6 +217,7 @@ class AudioEngine {
   }
 
   // Create effects chain for a track
+  // Chain order: EQ -> Compressor -> Distortion -> Phaser -> Tremolo -> Chorus -> Delay -> Reverb
   createEffectsChain(trackId, effectsSettings = null) {
     // Dispose existing effects if any
     this.disposeEffects(trackId)
@@ -193,25 +225,27 @@ class AudioEngine {
     // Use default settings if none provided
     const settings = effectsSettings || { ...DEFAULT_EFFECTS }
 
-    // Create all effects
-    const reverb = new Tone.Reverb({
-      decay: settings.reverb?.roomSize ? settings.reverb.roomSize * 10 : 5,
-      wet: settings.reverb?.enabled ? settings.reverb.wet : 0,
+    // Create all effects in chain order
+
+    // 1. EQ3 - 3-band equalizer
+    const eq3 = new Tone.EQ3({
+      low: settings.eq3?.enabled ? (settings.eq3?.low || 0) : 0,
+      mid: settings.eq3?.enabled ? (settings.eq3?.mid || 0) : 0,
+      high: settings.eq3?.enabled ? (settings.eq3?.high || 0) : 0,
+      lowFrequency: settings.eq3?.lowFrequency || 400,
+      highFrequency: settings.eq3?.highFrequency || 2500,
     })
 
-    const delay = new Tone.FeedbackDelay({
-      delayTime: settings.delay?.time || '8n',
-      feedback: settings.delay?.feedback || 0.3,
-      wet: settings.delay?.enabled ? settings.delay.wet : 0,
+    // 2. Compressor
+    const compressor = new Tone.Compressor({
+      threshold: settings.compressor?.threshold || -24,
+      ratio: settings.compressor?.ratio || 4,
+      attack: settings.compressor?.attack || 0.003,
+      release: settings.compressor?.release || 0.25,
     })
+    // Compressor doesn't have wet/dry, we'll bypass by connecting around it when disabled
 
-    const chorus = new Tone.Chorus({
-      frequency: settings.chorus?.frequency || 1.5,
-      depth: settings.chorus?.depth || 0.7,
-      wet: settings.chorus?.enabled ? settings.chorus.wet : 0,
-    }).start()
-
-    // Distortion - choose type based on settings
+    // 3. Distortion - choose type based on settings
     let distortion
     const distType = settings.distortion?.type || 'softclip'
     if (distType === 'bitcrusher') {
@@ -228,23 +262,66 @@ class AudioEngine {
       distortion.wet.value = settings.distortion?.enabled ? 1 : 0
     }
 
-    // Chain: input (distortion) -> chorus -> delay -> reverb -> output
-    distortion.connect(chorus)
+    // 4. Phaser
+    const phaser = new Tone.Phaser({
+      frequency: settings.phaser?.frequency || 0.5,
+      octaves: settings.phaser?.octaves || 3,
+      baseFrequency: settings.phaser?.baseFrequency || 1000,
+      wet: settings.phaser?.enabled ? (settings.phaser?.wet || 0.5) : 0,
+    })
+
+    // 5. Tremolo
+    const tremolo = new Tone.Tremolo({
+      frequency: settings.tremolo?.frequency || 4,
+      depth: settings.tremolo?.depth || 0.5,
+      wet: settings.tremolo?.enabled ? (settings.tremolo?.wet || 1) : 0,
+    }).start()
+
+    // 6. Chorus
+    const chorus = new Tone.Chorus({
+      frequency: settings.chorus?.frequency || 1.5,
+      depth: settings.chorus?.depth || 0.7,
+      wet: settings.chorus?.enabled ? settings.chorus.wet : 0,
+    }).start()
+
+    // 7. Delay
+    const delay = new Tone.FeedbackDelay({
+      delayTime: settings.delay?.time || '8n',
+      feedback: settings.delay?.feedback || 0.3,
+      wet: settings.delay?.enabled ? settings.delay.wet : 0,
+    })
+
+    // 8. Reverb
+    const reverb = new Tone.Reverb({
+      decay: settings.reverb?.roomSize ? settings.reverb.roomSize * 10 : 5,
+      wet: settings.reverb?.enabled ? settings.reverb.wet : 0,
+    })
+
+    // Chain: EQ -> Compressor -> Distortion -> Phaser -> Tremolo -> Chorus -> Delay -> Reverb
+    eq3.connect(compressor)
+    compressor.connect(distortion)
+    distortion.connect(phaser)
+    phaser.connect(tremolo)
+    tremolo.connect(chorus)
     chorus.connect(delay)
     delay.connect(reverb)
 
     // Store effects for later updates
     this.effects.set(trackId, {
-      reverb,
-      delay,
-      chorus,
+      eq3,
+      compressor,
       distortion,
+      phaser,
+      tremolo,
+      chorus,
+      delay,
+      reverb,
       distortionType: distType,
       settings: { ...DEFAULT_EFFECTS, ...settings },
     })
 
     return {
-      input: distortion,
+      input: eq3,
       output: reverb,
     }
   }
@@ -254,58 +331,64 @@ class AudioEngine {
     const effectsData = this.effects.get(trackId)
     if (!effectsData) return
 
-    const { reverb, delay, chorus, distortion } = effectsData
+    const { eq3, compressor, distortion, phaser, tremolo, chorus, delay, reverb } = effectsData
 
-    // Update reverb
-    if (effectsSettings.reverb !== undefined) {
-      const reverbSettings = effectsSettings.reverb
-      if (reverbSettings.enabled !== undefined) {
-        reverb.wet.rampTo(reverbSettings.enabled ? (reverbSettings.wet ?? effectsData.settings.reverb.wet) : 0, 0.1)
+    // Update EQ3
+    if (effectsSettings.eq3 !== undefined) {
+      const eqSettings = effectsSettings.eq3
+      if (eqSettings.enabled !== undefined) {
+        effectsData.settings.eq3.enabled = eqSettings.enabled
+        // When enabling/disabling, set bands to their values or to 0
+        const isEnabled = eqSettings.enabled
+        eq3.low.rampTo(isEnabled ? (effectsData.settings.eq3.low || 0) : 0, 0.1)
+        eq3.mid.rampTo(isEnabled ? (effectsData.settings.eq3.mid || 0) : 0, 0.1)
+        eq3.high.rampTo(isEnabled ? (effectsData.settings.eq3.high || 0) : 0, 0.1)
       }
-      if (reverbSettings.wet !== undefined && effectsData.settings.reverb.enabled) {
-        reverb.wet.rampTo(reverbSettings.wet, 0.1)
+      if (eqSettings.low !== undefined && effectsData.settings.eq3.enabled) {
+        eq3.low.rampTo(eqSettings.low, 0.1)
       }
-      if (reverbSettings.roomSize !== undefined) {
-        // Reverb decay is linked to room size (0.5 -> 5 seconds)
-        reverb.decay = reverbSettings.roomSize * 10
+      if (eqSettings.mid !== undefined && effectsData.settings.eq3.enabled) {
+        eq3.mid.rampTo(eqSettings.mid, 0.1)
       }
-      effectsData.settings.reverb = { ...effectsData.settings.reverb, ...reverbSettings }
+      if (eqSettings.high !== undefined && effectsData.settings.eq3.enabled) {
+        eq3.high.rampTo(eqSettings.high, 0.1)
+      }
+      if (eqSettings.lowFrequency !== undefined) {
+        eq3.lowFrequency.rampTo(eqSettings.lowFrequency, 0.1)
+      }
+      if (eqSettings.highFrequency !== undefined) {
+        eq3.highFrequency.rampTo(eqSettings.highFrequency, 0.1)
+      }
+      effectsData.settings.eq3 = { ...effectsData.settings.eq3, ...eqSettings }
     }
 
-    // Update delay
-    if (effectsSettings.delay !== undefined) {
-      const delaySettings = effectsSettings.delay
-      if (delaySettings.enabled !== undefined) {
-        delay.wet.rampTo(delaySettings.enabled ? (delaySettings.wet ?? effectsData.settings.delay.wet) : 0, 0.1)
+    // Update Compressor
+    if (effectsSettings.compressor !== undefined) {
+      const compSettings = effectsSettings.compressor
+      if (compSettings.enabled !== undefined) {
+        effectsData.settings.compressor.enabled = compSettings.enabled
+        // Compressor doesn't have wet/dry - we adjust threshold to bypass
+        // When disabled, set threshold to 0 (no compression)
+        // When enabled, restore to saved threshold
+        if (!compSettings.enabled) {
+          compressor.threshold.rampTo(0, 0.1) // No compression when disabled
+        } else {
+          compressor.threshold.rampTo(effectsData.settings.compressor.threshold || -24, 0.1)
+        }
       }
-      if (delaySettings.wet !== undefined && effectsData.settings.delay.enabled) {
-        delay.wet.rampTo(delaySettings.wet, 0.1)
+      if (compSettings.threshold !== undefined && effectsData.settings.compressor.enabled) {
+        compressor.threshold.rampTo(compSettings.threshold, 0.1)
       }
-      if (delaySettings.time !== undefined) {
-        delay.delayTime.rampTo(delaySettings.time, 0.1)
+      if (compSettings.ratio !== undefined) {
+        compressor.ratio.rampTo(compSettings.ratio, 0.1)
       }
-      if (delaySettings.feedback !== undefined) {
-        delay.feedback.rampTo(delaySettings.feedback, 0.1)
+      if (compSettings.attack !== undefined) {
+        compressor.attack.rampTo(compSettings.attack, 0.1)
       }
-      effectsData.settings.delay = { ...effectsData.settings.delay, ...delaySettings }
-    }
-
-    // Update chorus
-    if (effectsSettings.chorus !== undefined) {
-      const chorusSettings = effectsSettings.chorus
-      if (chorusSettings.enabled !== undefined) {
-        chorus.wet.rampTo(chorusSettings.enabled ? (chorusSettings.wet ?? effectsData.settings.chorus.wet) : 0, 0.1)
+      if (compSettings.release !== undefined) {
+        compressor.release.rampTo(compSettings.release, 0.1)
       }
-      if (chorusSettings.wet !== undefined && effectsData.settings.chorus.enabled) {
-        chorus.wet.rampTo(chorusSettings.wet, 0.1)
-      }
-      if (chorusSettings.frequency !== undefined) {
-        chorus.frequency.rampTo(chorusSettings.frequency, 0.1)
-      }
-      if (chorusSettings.depth !== undefined) {
-        chorus.depth = chorusSettings.depth
-      }
-      effectsData.settings.chorus = { ...effectsData.settings.chorus, ...chorusSettings }
+      effectsData.settings.compressor = { ...effectsData.settings.compressor, ...compSettings }
     }
 
     // Update distortion
@@ -340,6 +423,97 @@ class AudioEngine {
       effectsData.settings.distortion = { ...effectsData.settings.distortion, ...distSettings }
     }
 
+    // Update Phaser
+    if (effectsSettings.phaser !== undefined) {
+      const phaserSettings = effectsSettings.phaser
+      if (phaserSettings.enabled !== undefined) {
+        phaser.wet.rampTo(phaserSettings.enabled ? (phaserSettings.wet ?? effectsData.settings.phaser.wet) : 0, 0.1)
+      }
+      if (phaserSettings.wet !== undefined && effectsData.settings.phaser.enabled) {
+        phaser.wet.rampTo(phaserSettings.wet, 0.1)
+      }
+      if (phaserSettings.frequency !== undefined) {
+        phaser.frequency.rampTo(phaserSettings.frequency, 0.1)
+      }
+      if (phaserSettings.octaves !== undefined) {
+        phaser.octaves = phaserSettings.octaves
+      }
+      if (phaserSettings.baseFrequency !== undefined) {
+        phaser.baseFrequency = phaserSettings.baseFrequency
+      }
+      effectsData.settings.phaser = { ...effectsData.settings.phaser, ...phaserSettings }
+    }
+
+    // Update Tremolo
+    if (effectsSettings.tremolo !== undefined) {
+      const tremoloSettings = effectsSettings.tremolo
+      if (tremoloSettings.enabled !== undefined) {
+        tremolo.wet.rampTo(tremoloSettings.enabled ? (tremoloSettings.wet ?? effectsData.settings.tremolo.wet) : 0, 0.1)
+      }
+      if (tremoloSettings.wet !== undefined && effectsData.settings.tremolo.enabled) {
+        tremolo.wet.rampTo(tremoloSettings.wet, 0.1)
+      }
+      if (tremoloSettings.frequency !== undefined) {
+        tremolo.frequency.rampTo(tremoloSettings.frequency, 0.1)
+      }
+      if (tremoloSettings.depth !== undefined) {
+        tremolo.depth.rampTo(tremoloSettings.depth, 0.1)
+      }
+      effectsData.settings.tremolo = { ...effectsData.settings.tremolo, ...tremoloSettings }
+    }
+
+    // Update chorus
+    if (effectsSettings.chorus !== undefined) {
+      const chorusSettings = effectsSettings.chorus
+      if (chorusSettings.enabled !== undefined) {
+        chorus.wet.rampTo(chorusSettings.enabled ? (chorusSettings.wet ?? effectsData.settings.chorus.wet) : 0, 0.1)
+      }
+      if (chorusSettings.wet !== undefined && effectsData.settings.chorus.enabled) {
+        chorus.wet.rampTo(chorusSettings.wet, 0.1)
+      }
+      if (chorusSettings.frequency !== undefined) {
+        chorus.frequency.rampTo(chorusSettings.frequency, 0.1)
+      }
+      if (chorusSettings.depth !== undefined) {
+        chorus.depth = chorusSettings.depth
+      }
+      effectsData.settings.chorus = { ...effectsData.settings.chorus, ...chorusSettings }
+    }
+
+    // Update delay
+    if (effectsSettings.delay !== undefined) {
+      const delaySettings = effectsSettings.delay
+      if (delaySettings.enabled !== undefined) {
+        delay.wet.rampTo(delaySettings.enabled ? (delaySettings.wet ?? effectsData.settings.delay.wet) : 0, 0.1)
+      }
+      if (delaySettings.wet !== undefined && effectsData.settings.delay.enabled) {
+        delay.wet.rampTo(delaySettings.wet, 0.1)
+      }
+      if (delaySettings.time !== undefined) {
+        delay.delayTime.rampTo(delaySettings.time, 0.1)
+      }
+      if (delaySettings.feedback !== undefined) {
+        delay.feedback.rampTo(delaySettings.feedback, 0.1)
+      }
+      effectsData.settings.delay = { ...effectsData.settings.delay, ...delaySettings }
+    }
+
+    // Update reverb
+    if (effectsSettings.reverb !== undefined) {
+      const reverbSettings = effectsSettings.reverb
+      if (reverbSettings.enabled !== undefined) {
+        reverb.wet.rampTo(reverbSettings.enabled ? (reverbSettings.wet ?? effectsData.settings.reverb.wet) : 0, 0.1)
+      }
+      if (reverbSettings.wet !== undefined && effectsData.settings.reverb.enabled) {
+        reverb.wet.rampTo(reverbSettings.wet, 0.1)
+      }
+      if (reverbSettings.roomSize !== undefined) {
+        // Reverb decay is linked to room size (0.5 -> 5 seconds)
+        reverb.decay = reverbSettings.roomSize * 10
+      }
+      effectsData.settings.reverb = { ...effectsData.settings.reverb, ...reverbSettings }
+    }
+
     this.effects.set(trackId, effectsData)
   }
 
@@ -353,10 +527,14 @@ class AudioEngine {
     if (!effectsData) return
 
     // Dispose old effects
-    effectsData.reverb.dispose()
-    effectsData.delay.dispose()
-    effectsData.chorus.dispose()
+    effectsData.eq3.dispose()
+    effectsData.compressor.dispose()
     effectsData.distortion.dispose()
+    effectsData.phaser.dispose()
+    effectsData.tremolo.dispose()
+    effectsData.chorus.dispose()
+    effectsData.delay.dispose()
+    effectsData.reverb.dispose()
     this.effects.delete(trackId)
 
     // Create new effects chain
@@ -386,10 +564,14 @@ class AudioEngine {
   disposeEffects(trackId) {
     const effectsData = this.effects.get(trackId)
     if (effectsData) {
-      effectsData.reverb.dispose()
-      effectsData.delay.dispose()
-      effectsData.chorus.dispose()
+      effectsData.eq3.dispose()
+      effectsData.compressor.dispose()
       effectsData.distortion.dispose()
+      effectsData.phaser.dispose()
+      effectsData.tremolo.dispose()
+      effectsData.chorus.dispose()
+      effectsData.delay.dispose()
+      effectsData.reverb.dispose()
       this.effects.delete(trackId)
     }
   }
@@ -572,6 +754,228 @@ class AudioEngine {
 
     this.drumSamplers.set(trackId, { drums, channel })
     return drums
+  }
+
+  // Create a PluckSynth for guitar-like sounds
+  createPluckSynth(trackId, settings = {}, effectsSettings = null) {
+    // Dispose existing synth if any
+    this.disposeSynth(trackId)
+
+    const {
+      attackNoise = 1,
+      dampening = 4000,
+      resonance = 0.7,
+      release = 1,
+    } = settings
+
+    // Create channel for volume/pan
+    const channel = new Tone.Channel().connect(this.masterVolume)
+    this.channels.set(trackId, channel)
+
+    // Create meter for this track
+    this.createTrackMeter(trackId, channel)
+
+    // Create effects chain
+    const effectsChain = this.createEffectsChain(trackId, effectsSettings)
+    effectsChain.output.connect(channel)
+
+    // Create pluck synth (use PolySynth for polyphony)
+    const synth = new Tone.PolySynth(Tone.PluckSynth, {
+      attackNoise,
+      dampening,
+      resonance,
+      release,
+    }).connect(effectsChain.input)
+
+    this.synths.set(trackId, { synth, channel, synthType: 'pluck', settings: { attackNoise, dampening, resonance, release } })
+
+    return synth
+  }
+
+  // Create an FMSynth for rich, evolving timbres
+  createFMSynth(trackId, settings = {}, effectsSettings = null) {
+    // Dispose existing synth if any
+    this.disposeSynth(trackId)
+
+    const {
+      harmonicity = 3,
+      modulationIndex = 10,
+      attack = 0.01,
+      decay = 0.1,
+      sustain = 0.5,
+      release = 0.5,
+      modulationAttack = 0.5,
+      modulationDecay = 0,
+      modulationSustain = 1,
+      modulationRelease = 0.5,
+    } = settings
+
+    // Create channel for volume/pan
+    const channel = new Tone.Channel().connect(this.masterVolume)
+    this.channels.set(trackId, channel)
+
+    // Create meter for this track
+    this.createTrackMeter(trackId, channel)
+
+    // Create effects chain
+    const effectsChain = this.createEffectsChain(trackId, effectsSettings)
+    effectsChain.output.connect(channel)
+
+    // Create FM synth
+    const synth = new Tone.PolySynth(Tone.FMSynth, {
+      harmonicity,
+      modulationIndex,
+      envelope: { attack, decay, sustain, release },
+      modulation: { type: 'sine' },
+      modulationEnvelope: {
+        attack: modulationAttack,
+        decay: modulationDecay,
+        sustain: modulationSustain,
+        release: modulationRelease,
+      },
+    }).connect(effectsChain.input)
+
+    this.synths.set(trackId, { synth, channel, synthType: 'fm', settings: { harmonicity, modulationIndex, attack, decay, sustain, release, modulationAttack, modulationDecay, modulationSustain, modulationRelease } })
+
+    return synth
+  }
+
+  // Create an AMSynth for amplitude modulation sounds
+  createAMSynth(trackId, settings = {}, effectsSettings = null) {
+    // Dispose existing synth if any
+    this.disposeSynth(trackId)
+
+    const {
+      harmonicity = 3,
+      attack = 0.01,
+      decay = 0.1,
+      sustain = 0.5,
+      release = 0.5,
+      modulationAttack = 0.5,
+      modulationDecay = 0,
+      modulationSustain = 1,
+      modulationRelease = 0.5,
+    } = settings
+
+    // Create channel for volume/pan
+    const channel = new Tone.Channel().connect(this.masterVolume)
+    this.channels.set(trackId, channel)
+
+    // Create meter for this track
+    this.createTrackMeter(trackId, channel)
+
+    // Create effects chain
+    const effectsChain = this.createEffectsChain(trackId, effectsSettings)
+    effectsChain.output.connect(channel)
+
+    // Create AM synth
+    const synth = new Tone.PolySynth(Tone.AMSynth, {
+      harmonicity,
+      envelope: { attack, decay, sustain, release },
+      modulation: { type: 'sine' },
+      modulationEnvelope: {
+        attack: modulationAttack,
+        decay: modulationDecay,
+        sustain: modulationSustain,
+        release: modulationRelease,
+      },
+    }).connect(effectsChain.input)
+
+    this.synths.set(trackId, { synth, channel, synthType: 'am', settings: { harmonicity, attack, decay, sustain, release, modulationAttack, modulationDecay, modulationSustain, modulationRelease } })
+
+    return synth
+  }
+
+  // Update Pluck synth settings
+  updatePluckSettings(trackId, settings) {
+    const synthData = this.synths.get(trackId)
+    if (!synthData || synthData.synthType !== 'pluck') return
+
+    // PluckSynth parameters can't be changed after creation, so we need to recreate
+    const newSettings = { ...synthData.settings, ...settings }
+    const effectsData = this.effects.get(trackId)
+    this.createPluckSynth(trackId, newSettings, effectsData?.settings)
+  }
+
+  // Update FM synth settings
+  updateFMSettings(trackId, settings) {
+    const synthData = this.synths.get(trackId)
+    if (!synthData || synthData.synthType !== 'fm') return
+
+    const { synth } = synthData
+    const newSettings = { ...synthData.settings, ...settings }
+
+    // Update synth parameters
+    if (settings.harmonicity !== undefined) {
+      synth.set({ harmonicity: settings.harmonicity })
+    }
+    if (settings.modulationIndex !== undefined) {
+      synth.set({ modulationIndex: settings.modulationIndex })
+    }
+    if (settings.attack !== undefined || settings.decay !== undefined ||
+        settings.sustain !== undefined || settings.release !== undefined) {
+      synth.set({
+        envelope: {
+          attack: newSettings.attack,
+          decay: newSettings.decay,
+          sustain: newSettings.sustain,
+          release: newSettings.release,
+        }
+      })
+    }
+    if (settings.modulationAttack !== undefined || settings.modulationDecay !== undefined ||
+        settings.modulationSustain !== undefined || settings.modulationRelease !== undefined) {
+      synth.set({
+        modulationEnvelope: {
+          attack: newSettings.modulationAttack,
+          decay: newSettings.modulationDecay,
+          sustain: newSettings.modulationSustain,
+          release: newSettings.modulationRelease,
+        }
+      })
+    }
+
+    synthData.settings = newSettings
+    this.synths.set(trackId, synthData)
+  }
+
+  // Update AM synth settings
+  updateAMSettings(trackId, settings) {
+    const synthData = this.synths.get(trackId)
+    if (!synthData || synthData.synthType !== 'am') return
+
+    const { synth } = synthData
+    const newSettings = { ...synthData.settings, ...settings }
+
+    // Update synth parameters
+    if (settings.harmonicity !== undefined) {
+      synth.set({ harmonicity: settings.harmonicity })
+    }
+    if (settings.attack !== undefined || settings.decay !== undefined ||
+        settings.sustain !== undefined || settings.release !== undefined) {
+      synth.set({
+        envelope: {
+          attack: newSettings.attack,
+          decay: newSettings.decay,
+          sustain: newSettings.sustain,
+          release: newSettings.release,
+        }
+      })
+    }
+    if (settings.modulationAttack !== undefined || settings.modulationDecay !== undefined ||
+        settings.modulationSustain !== undefined || settings.modulationRelease !== undefined) {
+      synth.set({
+        modulationEnvelope: {
+          attack: newSettings.modulationAttack,
+          decay: newSettings.modulationDecay,
+          sustain: newSettings.modulationSustain,
+          release: newSettings.modulationRelease,
+        }
+      })
+    }
+
+    synthData.settings = newSettings
+    this.synths.set(trackId, synthData)
   }
 
   // Create an audio player for a track
@@ -830,10 +1234,14 @@ class AudioEngine {
               const drumTypes = ['kick', 'snare', 'hihat', 'clap', 'tom', 'crash', 'ride', 'cowbell']
               const drumType = drumTypes[note.pitch % drumTypes.length]
               this.triggerDrum(track.id, drumType, time, note.velocity / 127)
-            } else if (track.type === 'synth') {
-              // For synths, pitch is MIDI note number
-              const duration = `${note.duration * stepsPerMeasure}n`
-              this.triggerNote(track.id, note.pitch, duration, time, note.velocity / 127)
+            } else if (track.type === 'synth' || track.type === 'pluck' || track.type === 'fm' || track.type === 'am') {
+              // For all synth types (synth, pluck, fm, am), pitch is MIDI note number
+              // Calculate duration: each step is 1/stepsPerMeasure of a measure
+              // So note.duration steps = note.duration / stepsPerMeasure measures
+              // Use seconds for precise timing
+              const stepDurationSec = Tone.Time(`${stepsPerMeasure}n`).toSeconds()
+              const noteDurationSec = stepDurationSec * note.duration
+              this.triggerNote(track.id, note.pitch, noteDurationSec, time, note.velocity / 127)
             }
             // Audio tracks don't use notes - they play continuously
           })
@@ -893,7 +1301,10 @@ class AudioEngine {
     const synthData = this.synths.get(trackId)
     if (synthData) {
       synthData.synth.dispose()
-      synthData.filter.dispose()
+      // Filter may not exist for pluck, FM, and AM synths
+      if (synthData.filter) {
+        synthData.filter.dispose()
+      }
       synthData.channel.dispose()
       this.synths.delete(trackId)
     }

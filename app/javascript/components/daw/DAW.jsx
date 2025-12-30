@@ -51,7 +51,7 @@ const styles = {
   },
   mainGrid: {
     display: 'grid',
-    gridTemplateColumns: '200px 1fr 280px',
+    gridTemplateColumns: '180px 1fr 360px',
     gap: '1px',
     background: 'rgba(255,255,255,0.05)',
   },
@@ -94,6 +94,12 @@ function DAWContent() {
           engine.createSynth(track.id, track.instrument, track.effects)
         } else if (track.type === 'drums') {
           engine.createDrumSampler(track.id, track.effects)
+        } else if (track.type === 'pluck') {
+          engine.createPluckSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'fm') {
+          engine.createFMSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'am') {
+          engine.createAMSynth(track.id, track.instrument, track.effects)
         } else if (track.type === 'audio' && track.audioData?.buffer) {
           engine.createAudioPlayer(track.id, track.audioData.buffer, track.effects)
         }
@@ -218,7 +224,7 @@ function DAWContent() {
     const track = getSelectedTrack()
     if (!track || !audioEngineRef.current) return
 
-    if (track.type === 'synth') {
+    if (track.type === 'synth' || track.type === 'pluck' || track.type === 'fm' || track.type === 'am') {
       audioEngineRef.current.triggerNote(track.id, note, '8n', '+0', velocity / 127)
     } else if (track.type === 'drums') {
       const drumTypes = ['kick', 'snare', 'hihat', 'clap']
@@ -234,7 +240,7 @@ function DAWContent() {
   const selectedTrack = getSelectedTrack()
 
   return (
-    <div style={{ ...styles.container, position: 'relative' }}>
+    <div className="daw-scrollbar" style={{ ...styles.container, position: 'relative' }}>
       {/* Audio initialization overlay */}
       {!state.audioInitialized && (
         <div style={styles.initOverlay}>
@@ -280,7 +286,7 @@ function DAWContent() {
         </div>
 
         {/* Instrument + Effects Panels - collapsible */}
-        <div style={{ ...styles.panel, overflow: 'auto', maxHeight: '500px' }}>
+        <div style={{ ...styles.panel, overflow: 'auto', maxHeight: '500px', minWidth: 0, padding: '0.75rem' }}>
           <InstrumentPanel
             track={selectedTrack}
             audioEngine={audioEngineRef.current}

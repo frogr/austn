@@ -221,6 +221,12 @@ export default function TrackList({ audioEngine }) {
           audioEngine.createSynth(track.id, track.instrument, track.effects)
         } else if (track.type === 'drums') {
           audioEngine.createDrumSampler(track.id, track.effects)
+        } else if (track.type === 'pluck') {
+          audioEngine.createPluckSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'fm') {
+          audioEngine.createFMSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'am') {
+          audioEngine.createAMSynth(track.id, track.instrument, track.effects)
         }
         audioEngine.setTrackVolume(track.id, track.volume)
         audioEngine.setTrackPan(track.id, track.pan)
@@ -239,6 +245,18 @@ export default function TrackList({ audioEngine }) {
     actions.addTrack('drums')
   }, [actions])
 
+  const handleAddPluck = useCallback(() => {
+    actions.addTrack('pluck')
+  }, [actions])
+
+  const handleAddFM = useCallback(() => {
+    actions.addTrack('fm')
+  }, [actions])
+
+  const handleAddAM = useCallback(() => {
+    actions.addTrack('am')
+  }, [actions])
+
   const handleDelete = useCallback((trackId) => {
     if (state.tracks.length <= 1) return
     if (audioEngine) {
@@ -252,12 +270,13 @@ export default function TrackList({ audioEngine }) {
     <div style={styles.container}>
       <div style={styles.header}>
         <span style={styles.title}>Tracks</span>
-        <div style={{ display: 'flex', gap: '0.25rem' }}>
+        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
           <button
             style={styles.addButton}
             onClick={handleAddSynth}
             onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
             onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+            title="Basic oscillator synth"
           >
             + Synth
           </button>
@@ -266,8 +285,36 @@ export default function TrackList({ audioEngine }) {
             onClick={handleAddDrums}
             onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
             onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+            title="Drum machine"
           >
             + Drums
+          </button>
+          <button
+            style={styles.addButton}
+            onClick={handleAddPluck}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+            title="Plucked string (guitar-like)"
+          >
+            + Pluck
+          </button>
+          <button
+            style={styles.addButton}
+            onClick={handleAddFM}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+            title="FM synthesis (rich, evolving sounds)"
+          >
+            + FM
+          </button>
+          <button
+            style={styles.addButton}
+            onClick={handleAddAM}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+            title="AM synthesis (tremolo-like)"
+          >
+            + AM
           </button>
         </div>
       </div>

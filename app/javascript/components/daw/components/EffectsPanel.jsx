@@ -18,7 +18,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '0.5rem 0.75rem',
+    padding: '0.5rem',
     cursor: 'pointer',
     background: 'rgba(255,255,255,0.02)',
     borderBottom: '1px solid rgba(255,255,255,0.05)',
@@ -40,36 +40,38 @@ const styles = {
     transition: 'transform 0.2s',
   },
   sectionContent: {
-    padding: '0.75rem',
+    padding: '0.35rem',
   },
   effectsGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '0.5rem',
+    gap: '0.25rem',
   },
   effectCard: {
     background: 'rgba(0,0,0,0.2)',
-    borderRadius: '0.375rem',
-    padding: '0.5rem',
+    borderRadius: '0.25rem',
+    padding: '0.3rem',
     border: '1px solid rgba(255,255,255,0.05)',
+    minWidth: 0,
+    overflow: 'hidden',
   },
   effectHeader: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: '0.5rem',
+    marginBottom: '0.25rem',
   },
   effectTitle: {
-    fontSize: '0.6rem',
+    fontSize: '0.55rem',
     fontWeight: 600,
     color: 'rgba(255,255,255,0.7)',
     textTransform: 'uppercase',
   },
   toggleButton: {
-    padding: '0.15rem 0.4rem',
-    fontSize: '0.55rem',
+    padding: '0.1rem 0.3rem',
+    fontSize: '0.5rem',
     fontWeight: 600,
-    borderRadius: '0.25rem',
+    borderRadius: '0.2rem',
     border: 'none',
     cursor: 'pointer',
     transition: 'all 0.15s',
@@ -84,18 +86,19 @@ const styles = {
   },
   row: {
     display: 'flex',
-    gap: '0.4rem',
+    gap: '0.15rem',
     alignItems: 'center',
-    marginBottom: '0.35rem',
+    marginBottom: '0.15rem',
   },
   label: {
-    fontSize: '0.55rem',
+    fontSize: '0.5rem',
     color: 'rgba(255,255,255,0.5)',
-    width: '45px',
+    width: '26px',
     flexShrink: 0,
   },
   slider: {
     flex: 1,
+    minWidth: 0,
     height: '3px',
     appearance: 'none',
     background: 'rgba(255,255,255,0.1)',
@@ -104,20 +107,22 @@ const styles = {
   },
   select: {
     flex: 1,
-    padding: '0.2rem 0.3rem',
+    minWidth: 0,
+    padding: '0.1rem 0.15rem',
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '0.25rem',
+    borderRadius: '0.2rem',
     color: 'white',
-    fontSize: '0.6rem',
+    fontSize: '0.5rem',
     cursor: 'pointer',
   },
   valueDisplay: {
-    fontSize: '0.5rem',
+    fontSize: '0.45rem',
     color: 'rgba(255,255,255,0.4)',
     fontFamily: 'monospace',
-    width: '35px',
+    width: '22px',
     textAlign: 'right',
+    flexShrink: 0,
   },
   disabled: {
     opacity: 0.4,
@@ -138,16 +143,21 @@ const DISTORTION_TYPES = [
   { value: 'bitcrusher', label: 'Crush' },
 ]
 
+const COMPRESSOR_RATIOS = [
+  { value: 2, label: '2:1' },
+  { value: 4, label: '4:1' },
+  { value: 8, label: '8:1' },
+  { value: 12, label: '12:1' },
+  { value: 20, label: '20:1' },
+]
+
 function CollapsibleSection({ title, children, defaultOpen = true, color, enabledCount = 0 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
     <div style={styles.section}>
       <div
-        style={{
-          ...styles.sectionHeader,
-          borderLeft: color ? `3px solid ${color}` : 'none',
-        }}
+        style={styles.sectionHeader}
         onClick={() => setIsOpen(!isOpen)}
         onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
         onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
@@ -326,6 +336,135 @@ function ChorusCard({ track, audioEngine, onUpdate }) {
   )
 }
 
+function PhaserCard({ track, audioEngine, onUpdate }) {
+  const effects = track.effects?.phaser || {}
+  const enabled = effects.enabled || false
+
+  const handleUpdate = useCallback((key, value) => {
+    onUpdate('phaser', { [key]: value })
+    if (audioEngine) {
+      audioEngine.updateEffects(track.id, { phaser: { [key]: value } })
+    }
+  }, [track.id, audioEngine, onUpdate])
+
+  return (
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+      <div style={styles.effectHeader}>
+        <span style={styles.effectTitle}>Phaser</span>
+        <button
+          style={{ ...styles.toggleButton, ...(enabled ? styles.toggleButtonOn : styles.toggleButtonOff) }}
+          onClick={() => handleUpdate('enabled', !enabled)}
+        >
+          {enabled ? 'ON' : 'OFF'}
+        </button>
+      </div>
+      <div style={enabled ? {} : styles.disabled}>
+        <EffectControl label="Rate" value={effects.frequency || 0.5} min={0.1} max={8} step={0.1} onChange={(v) => handleUpdate('frequency', v)} disabled={!enabled} />
+        <EffectControl label="Oct" value={effects.octaves || 3} min={1} max={6} step={1} onChange={(v) => handleUpdate('octaves', v)} disabled={!enabled} />
+        <EffectControl label="Mix" value={effects.wet || 0.5} min={0} max={1} step={0.05} onChange={(v) => handleUpdate('wet', v)} disabled={!enabled} />
+      </div>
+    </div>
+  )
+}
+
+function TremoloCard({ track, audioEngine, onUpdate }) {
+  const effects = track.effects?.tremolo || {}
+  const enabled = effects.enabled || false
+
+  const handleUpdate = useCallback((key, value) => {
+    onUpdate('tremolo', { [key]: value })
+    if (audioEngine) {
+      audioEngine.updateEffects(track.id, { tremolo: { [key]: value } })
+    }
+  }, [track.id, audioEngine, onUpdate])
+
+  return (
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+      <div style={styles.effectHeader}>
+        <span style={styles.effectTitle}>Tremolo</span>
+        <button
+          style={{ ...styles.toggleButton, ...(enabled ? styles.toggleButtonOn : styles.toggleButtonOff) }}
+          onClick={() => handleUpdate('enabled', !enabled)}
+        >
+          {enabled ? 'ON' : 'OFF'}
+        </button>
+      </div>
+      <div style={enabled ? {} : styles.disabled}>
+        <EffectControl label="Rate" value={effects.frequency || 4} min={0.5} max={20} step={0.5} onChange={(v) => handleUpdate('frequency', v)} disabled={!enabled} />
+        <EffectControl label="Depth" value={effects.depth || 0.5} min={0} max={1} step={0.05} onChange={(v) => handleUpdate('depth', v)} disabled={!enabled} />
+      </div>
+    </div>
+  )
+}
+
+function EQ3Card({ track, audioEngine, onUpdate }) {
+  const effects = track.effects?.eq3 || {}
+  const enabled = effects.enabled || false
+
+  const handleUpdate = useCallback((key, value) => {
+    onUpdate('eq3', { [key]: value })
+    if (audioEngine) {
+      audioEngine.updateEffects(track.id, { eq3: { [key]: value } })
+    }
+  }, [track.id, audioEngine, onUpdate])
+
+  return (
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+      <div style={styles.effectHeader}>
+        <span style={styles.effectTitle}>EQ3</span>
+        <button
+          style={{ ...styles.toggleButton, ...(enabled ? styles.toggleButtonOn : styles.toggleButtonOff) }}
+          onClick={() => handleUpdate('enabled', !enabled)}
+        >
+          {enabled ? 'ON' : 'OFF'}
+        </button>
+      </div>
+      <div style={enabled ? {} : styles.disabled}>
+        <EffectControl label="Low" value={effects.low || 0} min={-12} max={12} step={1} onChange={(v) => handleUpdate('low', v)} disabled={!enabled} />
+        <EffectControl label="Mid" value={effects.mid || 0} min={-12} max={12} step={1} onChange={(v) => handleUpdate('mid', v)} disabled={!enabled} />
+        <EffectControl label="High" value={effects.high || 0} min={-12} max={12} step={1} onChange={(v) => handleUpdate('high', v)} disabled={!enabled} />
+      </div>
+    </div>
+  )
+}
+
+function CompressorCard({ track, audioEngine, onUpdate }) {
+  const effects = track.effects?.compressor || {}
+  const enabled = effects.enabled || false
+
+  const handleUpdate = useCallback((key, value) => {
+    onUpdate('compressor', { [key]: value })
+    if (audioEngine) {
+      audioEngine.updateEffects(track.id, { compressor: { [key]: value } })
+    }
+  }, [track.id, audioEngine, onUpdate])
+
+  return (
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+      <div style={styles.effectHeader}>
+        <span style={styles.effectTitle}>Comp</span>
+        <button
+          style={{ ...styles.toggleButton, ...(enabled ? styles.toggleButtonOn : styles.toggleButtonOff) }}
+          onClick={() => handleUpdate('enabled', !enabled)}
+        >
+          {enabled ? 'ON' : 'OFF'}
+        </button>
+      </div>
+      <div style={enabled ? {} : styles.disabled}>
+        <EffectControl label="Thrs" value={effects.threshold || -24} min={-60} max={0} step={1} onChange={(v) => handleUpdate('threshold', v)} disabled={!enabled} />
+        <div style={styles.row}>
+          <span style={styles.label}>Ratio</span>
+          <select style={styles.select} value={effects.ratio || 4} onChange={(e) => handleUpdate('ratio', parseFloat(e.target.value))} disabled={!enabled}>
+            {COMPRESSOR_RATIOS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+          </select>
+        </div>
+        <EffectControl label="Atk" value={(effects.attack || 0.003) * 1000} min={0} max={100} step={1} onChange={(v) => handleUpdate('attack', v / 1000)} disabled={!enabled} />
+        <EffectControl label="Rel" value={(effects.release || 0.25) * 1000} min={10} max={1000} step={10} onChange={(v) => handleUpdate('release', v / 1000)} disabled={!enabled} />
+      </div>
+    </div>
+  )
+}
+
 export default function EffectsPanel({ track, audioEngine }) {
   const { actions } = useDAW()
 
@@ -340,20 +479,32 @@ export default function EffectsPanel({ track, audioEngine }) {
 
   // Count enabled effects
   const enabledCount = [
-    track.effects.reverb?.enabled,
-    track.effects.delay?.enabled,
+    track.effects.eq3?.enabled,
+    track.effects.compressor?.enabled,
     track.effects.distortion?.enabled,
+    track.effects.phaser?.enabled,
+    track.effects.tremolo?.enabled,
     track.effects.chorus?.enabled,
+    track.effects.delay?.enabled,
+    track.effects.reverb?.enabled,
   ].filter(Boolean).length
 
   return (
     <div style={styles.container}>
       <CollapsibleSection title="Effects" defaultOpen={false} color="#ec4899" enabledCount={enabledCount}>
         <div style={styles.effectsGrid}>
-          <ReverbCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
-          <DelayCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
+          {/* Row 1: EQ & Compressor (processing effects) */}
+          <EQ3Card track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
+          <CompressorCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
+          {/* Row 2: Distortion & Phaser */}
           <DistortionCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
+          <PhaserCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
+          {/* Row 3: Tremolo & Chorus (modulation effects) */}
+          <TremoloCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
           <ChorusCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
+          {/* Row 4: Delay & Reverb (time-based effects) */}
+          <DelayCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
+          <ReverbCard track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />
         </div>
       </CollapsibleSection>
     </div>

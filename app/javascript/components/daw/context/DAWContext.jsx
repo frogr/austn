@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react'
-import { dawReducer, initialState, ActionTypes, generateNoteId, createDefaultSynthTrack, createDefaultDrumTrack, createAudioTrack } from './DAWReducer'
+import { dawReducer, initialState, ActionTypes, generateNoteId, createDefaultSynthTrack, createDefaultDrumTrack, createAudioTrack, createPluckTrack, createFMTrack, createAMTrack } from './DAWReducer'
 
 const DAWContext = createContext(null)
 
@@ -41,7 +41,23 @@ export function DAWProvider({ children }) {
     }, []),
 
     addTrack: useCallback((type = 'synth') => {
-      const track = type === 'drums' ? createDefaultDrumTrack() : createDefaultSynthTrack()
+      let track
+      switch (type) {
+        case 'drums':
+          track = createDefaultDrumTrack()
+          break
+        case 'pluck':
+          track = createPluckTrack()
+          break
+        case 'fm':
+          track = createFMTrack()
+          break
+        case 'am':
+          track = createAMTrack()
+          break
+        default:
+          track = createDefaultSynthTrack()
+      }
       dispatch({ type: ActionTypes.ADD_TRACK, payload: track })
       return track.id
     }, []),

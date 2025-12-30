@@ -27,10 +27,45 @@ export const ActionTypes = {
 }
 
 // Default effects settings for tracks
+// Chain order: EQ -> Compressor -> Distortion -> Phaser -> Tremolo -> Chorus -> Delay -> Reverb
 export const DEFAULT_TRACK_EFFECTS = {
-  reverb: {
+  eq3: {
     enabled: false,
-    roomSize: 0.5,
+    low: 0,      // dB (-12 to 12)
+    mid: 0,      // dB (-12 to 12)
+    high: 0,     // dB (-12 to 12)
+    lowFrequency: 400,   // Hz
+    highFrequency: 2500, // Hz
+  },
+  compressor: {
+    enabled: false,
+    threshold: -24,  // dB
+    ratio: 4,        // ratio
+    attack: 0.003,   // seconds
+    release: 0.25,   // seconds
+  },
+  distortion: {
+    enabled: false,
+    amount: 0.4,
+    type: 'softclip',
+  },
+  phaser: {
+    enabled: false,
+    frequency: 0.5,  // Hz (LFO rate)
+    octaves: 3,      // range of modulation
+    baseFrequency: 1000, // Hz
+    wet: 0.5,
+  },
+  tremolo: {
+    enabled: false,
+    frequency: 4,    // Hz (LFO rate)
+    depth: 0.5,      // 0-1
+    wet: 1,
+  },
+  chorus: {
+    enabled: false,
+    frequency: 1.5,
+    depth: 0.7,
     wet: 0.3,
   },
   delay: {
@@ -39,15 +74,9 @@ export const DEFAULT_TRACK_EFFECTS = {
     feedback: 0.3,
     wet: 0.3,
   },
-  distortion: {
+  reverb: {
     enabled: false,
-    amount: 0.4,
-    type: 'softclip',
-  },
-  chorus: {
-    enabled: false,
-    frequency: 1.5,
-    depth: 0.7,
+    roomSize: 0.5,
     wet: 0.3,
   },
 }
@@ -62,6 +91,9 @@ export const generateTrackId = () => `track-${Date.now()}-${++trackIdCounter}`
 // Track counters for instrument naming
 let synthCounter = 1
 let drumCounter = 1
+let pluckCounter = 1
+let fmCounter = 1
+let amCounter = 1
 
 // Initial state
 export const initialState = {
@@ -172,6 +204,83 @@ export function createAudioTrack(name, audioData) {
     volume: 0.8,
     pan: 0,
     notes: [], // Not used for audio tracks
+  }
+}
+
+// Create a pluck/guitar synth track
+export function createPluckTrack() {
+  const id = generateTrackId()
+  return {
+    id,
+    name: `Pluck ${pluckCounter++}`,
+    type: 'pluck',
+    instrument: {
+      attackNoise: 1,      // 0-10 (string attack noise)
+      dampening: 4000,     // Hz (string dampening frequency)
+      resonance: 0.7,      // 0-1 (string resonance)
+      release: 1,          // seconds (release time)
+    },
+    effects: { ...DEFAULT_TRACK_EFFECTS },
+    muted: false,
+    solo: false,
+    volume: 0.8,
+    pan: 0,
+    notes: [],
+  }
+}
+
+// Create an FM synth track
+export function createFMTrack() {
+  const id = generateTrackId()
+  return {
+    id,
+    name: `FM ${fmCounter++}`,
+    type: 'fm',
+    instrument: {
+      harmonicity: 3,           // ratio between carrier and modulator
+      modulationIndex: 10,      // modulation depth
+      attack: 0.01,
+      decay: 0.1,
+      sustain: 0.5,
+      release: 0.5,
+      modulationAttack: 0.5,
+      modulationDecay: 0,
+      modulationSustain: 1,
+      modulationRelease: 0.5,
+    },
+    effects: { ...DEFAULT_TRACK_EFFECTS },
+    muted: false,
+    solo: false,
+    volume: 0.8,
+    pan: 0,
+    notes: [],
+  }
+}
+
+// Create an AM synth track
+export function createAMTrack() {
+  const id = generateTrackId()
+  return {
+    id,
+    name: `AM ${amCounter++}`,
+    type: 'am',
+    instrument: {
+      harmonicity: 3,           // ratio between carrier and modulator
+      attack: 0.01,
+      decay: 0.1,
+      sustain: 0.5,
+      release: 0.5,
+      modulationAttack: 0.5,
+      modulationDecay: 0,
+      modulationSustain: 1,
+      modulationRelease: 0.5,
+    },
+    effects: { ...DEFAULT_TRACK_EFFECTS },
+    muted: false,
+    solo: false,
+    volume: 0.8,
+    pan: 0,
+    notes: [],
   }
 }
 

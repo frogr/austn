@@ -499,3 +499,55 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
+
+/* ===== DAW CUSTOM SCROLLBARS ===== */
+/* Minimalistic scrollbars for DAW component */
+.daw-scrollbar,
+.daw-scrollbar * {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.daw-scrollbar:hover,
+.daw-scrollbar:hover * {
+  scrollbar-color: #10b981 rgba(255, 255, 255, 0.05);
+}
+
+/* Webkit scrollbar styling */
+.daw-scrollbar::-webkit-scrollbar,
+.daw-scrollbar *::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.daw-scrollbar::-webkit-scrollbar-track,
+.daw-scrollbar *::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 3px;
+}
+
+.daw-scrollbar::-webkit-scrollbar-thumb,
+.daw-scrollbar *::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.daw-scrollbar:hover::-webkit-scrollbar-thumb,
+.daw-scrollbar *:hover::-webkit-scrollbar-thumb,
+.daw-scrollbar::-webkit-scrollbar-thumb:hover,
+.daw-scrollbar *::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+/* Show subtle thumb when scrolling */
+.daw-scrollbar::-webkit-scrollbar-thumb:active,
+.daw-scrollbar *::-webkit-scrollbar-thumb:active {
+  background: #059669;
+}
+
+/* Scrollbar corner (where horizontal and vertical meet) */
+.daw-scrollbar::-webkit-scrollbar-corner,
+.daw-scrollbar *::-webkit-scrollbar-corner {
+  background: transparent;
+}

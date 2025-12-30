@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import { useDAW } from '../context/DAWContext'
 
 const PIANO_KEYS = [
@@ -34,9 +34,9 @@ const generateKeys = () => {
 }
 
 const ALL_KEYS = generateKeys()
-const ROW_HEIGHT = 28
-const KEY_WIDTH = 60
-const STEP_WIDTH = 40
+const ROW_HEIGHT = 24
+const KEY_WIDTH = 48
+const STEP_WIDTH = 24
 
 const styles = {
   container: {
@@ -97,15 +97,37 @@ const styles = {
   },
   note: {
     position: 'absolute',
-    height: `${ROW_HEIGHT - 2}px`,
+    height: `${ROW_HEIGHT - 4}px`,
     background: 'linear-gradient(135deg, var(--accent-color, #10b981), #059669)',
-    borderRadius: '2px',
+    borderRadius: '3px',
     cursor: 'pointer',
     boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-    transition: 'transform 0.1s',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    userSelect: 'none',
   },
   noteHover: {
-    transform: 'scale(1.02)',
+    filter: 'brightness(1.1)',
+  },
+  noteResizing: {
+    filter: 'brightness(1.2)',
+    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.5)',
+  },
+  resizeHandle: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: '8px',
+    height: '100%',
+    cursor: 'ew-resize',
+    background: 'rgba(255,255,255,0.2)',
+    borderRadius: '0 3px 3px 0',
+    opacity: 0,
+    transition: 'opacity 0.15s',
+  },
+  resizeHandleVisible: {
+    opacity: 1,
   },
   playhead: {
     position: 'absolute',
@@ -253,26 +275,130 @@ function DrumGrid({ track, audioEngine }) {
 
 function SynthGrid({ track, audioEngine }) {
   const { state, actions } = useDAW()
+  const gridContainerRef = useRef(null)
 
-  const handleCellClick = useCallback((step, midi) => {
+  // State for resize operations
+  const [resizingNote, setResizingNote] = useState(null)
+  const [hoveredNoteId, setHoveredNoteId] = useState(null)
+
+  // State for click-drag to create notes
+  const [isCreating, setIsCreating] = useState(false)
+  const [createStart, setCreateStart] = useState(null)
+  const [createPreview, setCreatePreview] = useState(null)
+
+  // Handle resize drag
+  const handleResizeStart = useCallback((e, note) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setResizingNote({
+      noteId: note.id,
+      pitch: note.pitch,
+      startStep: note.step,
+      originalDuration: note.duration,
+      startX: e.clientX,
+    })
+  }, [])
+
+  // Handle mouse move for resizing
+  useEffect(() => {
+    if (!resizingNote) return
+
+    const handleMouseMove = (e) => {
+      const deltaX = e.clientX - resizingNote.startX
+      const stepDelta = Math.round(deltaX / STEP_WIDTH)
+      const newDuration = Math.max(1, resizingNote.originalDuration + stepDelta)
+
+      // Limit duration to not exceed total steps
+      const maxDuration = state.totalSteps - resizingNote.startStep
+      const clampedDuration = Math.min(newDuration, maxDuration)
+
+      actions.updateNote(track.id, resizingNote.noteId, { duration: clampedDuration })
+    }
+
+    const handleMouseUp = () => {
+      setResizingNote(null)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [resizingNote, actions, track?.id, state.totalSteps])
+
+  // Handle click-drag to create notes
+  const handleGridMouseDown = useCallback((e, step, midi) => {
     if (!track) return
 
-    const existingNote = track.notes.find(n => n.step === step && n.pitch === midi)
+    // Check if clicking on an existing note
+    const existingNote = track.notes.find(n =>
+      n.pitch === midi && step >= n.step && step < n.step + (n.duration || 1)
+    )
+
     if (existingNote) {
+      // If clicking on note body (not resize handle), delete it
       actions.removeNote(track.id, existingNote.id)
-    } else {
-      // Play the note as preview - use 16n to match actual step duration
-      if (audioEngine) {
-        audioEngine.triggerNote(track.id, midi, '16n', '+0', 0.8)
-      }
-      actions.addNote(track.id, {
-        pitch: midi,
-        step,
-        duration: 1,
-        velocity: 100,
-      })
+      return
+    }
+
+    // Start creating a new note
+    setIsCreating(true)
+    setCreateStart({ step, midi })
+    setCreatePreview({ step, midi, duration: 1 })
+
+    // Play preview sound
+    if (audioEngine) {
+      audioEngine.triggerNote(track.id, midi, '16n', '+0', 0.8)
     }
   }, [track, actions, audioEngine])
+
+  // Handle mouse move while creating note
+  useEffect(() => {
+    if (!isCreating || !createStart) return
+
+    const handleMouseMove = (e) => {
+      if (!gridContainerRef.current) return
+
+      const rect = gridContainerRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const currentStep = Math.floor(x / STEP_WIDTH)
+
+      const newDuration = Math.max(1, currentStep - createStart.step + 1)
+      const maxDuration = state.totalSteps - createStart.step
+      const clampedDuration = Math.min(newDuration, maxDuration)
+
+      setCreatePreview({
+        step: createStart.step,
+        midi: createStart.midi,
+        duration: clampedDuration,
+      })
+    }
+
+    const handleMouseUp = () => {
+      if (createPreview && track) {
+        actions.addNote(track.id, {
+          pitch: createPreview.midi,
+          step: createPreview.step,
+          duration: createPreview.duration,
+          velocity: 100,
+        })
+      }
+
+      setIsCreating(false)
+      setCreateStart(null)
+      setCreatePreview(null)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isCreating, createStart, createPreview, actions, track?.id, state.totalSteps])
 
   const notesByRow = useMemo(() => {
     const map = new Map()
@@ -284,6 +410,11 @@ function SynthGrid({ track, audioEngine }) {
     })
     return map
   }, [track?.notes])
+
+  // Get row index for a midi value (for positioning notes)
+  const getMidiRowIndex = useCallback((midi) => {
+    return ALL_KEYS.findIndex(k => k.midi === midi)
+  }, [])
 
   const playheadLeft = KEY_WIDTH + (state.currentStep * STEP_WIDTH) + (STEP_WIDTH / 2)
 
@@ -332,10 +463,9 @@ function SynthGrid({ track, audioEngine }) {
       </div>
 
       {/* Note grid */}
-      <div style={styles.gridContainer}>
-        {/* Grid rows */}
+      <div style={styles.gridContainer} ref={gridContainerRef}>
+        {/* Grid rows (background cells) */}
         {ALL_KEYS.map(key => {
-          const rowNotes = notesByRow.get(key.midi) || []
           const isSelected = state.selectedPitch === key.midi
           return (
             <div
@@ -350,7 +480,6 @@ function SynthGrid({ track, audioEngine }) {
               }}
             >
               {Array.from({ length: state.totalSteps }).map((_, step) => {
-                const hasNote = rowNotes.some(n => n.step === step)
                 const isBarLine = (step + 1) % 4 === 0
                 return (
                   <div
@@ -358,19 +487,73 @@ function SynthGrid({ track, audioEngine }) {
                     style={{
                       ...styles.gridCell,
                       ...(isBarLine ? styles.barLine : {}),
-                      background: hasNote
-                        ? 'linear-gradient(135deg, var(--accent-color, #10b981), #059669)'
-                        : state.currentStep === step
+                      background: state.currentStep === step
                         ? 'rgba(255,255,255,0.05)'
                         : 'transparent',
                     }}
-                    onClick={() => handleCellClick(step, key.midi)}
+                    onMouseDown={(e) => handleGridMouseDown(e, step, key.midi)}
                   />
                 )
               })}
             </div>
           )
         })}
+
+        {/* Render notes as positioned rectangles */}
+        {track?.notes.map(note => {
+          const rowIndex = getMidiRowIndex(note.pitch)
+          if (rowIndex === -1) return null
+
+          const duration = note.duration || 1
+          const isResizing = resizingNote?.noteId === note.id
+          const isHovered = hoveredNoteId === note.id
+
+          return (
+            <div
+              key={note.id}
+              style={{
+                ...styles.note,
+                ...(isHovered ? styles.noteHover : {}),
+                ...(isResizing ? styles.noteResizing : {}),
+                top: `${rowIndex * ROW_HEIGHT + 2}px`,
+                left: `${note.step * STEP_WIDTH + 1}px`,
+                width: `${duration * STEP_WIDTH - 2}px`,
+                zIndex: isResizing ? 20 : 5,
+              }}
+              onMouseEnter={() => setHoveredNoteId(note.id)}
+              onMouseLeave={() => setHoveredNoteId(null)}
+              onClick={(e) => {
+                e.stopPropagation()
+                actions.removeNote(track.id, note.id)
+              }}
+            >
+              {/* Resize handle */}
+              <div
+                style={{
+                  ...styles.resizeHandle,
+                  ...(isHovered || isResizing ? styles.resizeHandleVisible : {}),
+                }}
+                onMouseDown={(e) => handleResizeStart(e, note)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )
+        })}
+
+        {/* Create preview */}
+        {createPreview && (
+          <div
+            style={{
+              ...styles.note,
+              top: `${getMidiRowIndex(createPreview.midi) * ROW_HEIGHT + 2}px`,
+              left: `${createPreview.step * STEP_WIDTH + 1}px`,
+              width: `${createPreview.duration * STEP_WIDTH - 2}px`,
+              opacity: 0.6,
+              zIndex: 15,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
       </div>
     </div>
   )
