@@ -10,6 +10,7 @@ class TtsService
   def self.generate_speech(text, options = {})
     exaggeration = options[:exaggeration] || options["exaggeration"] || 0.5
     cfg_weight = options[:cfg_weight] || options["cfg_weight"] || 0.5
+    voice_preset = options[:voice_preset] || options["voice_preset"]
     voice_audio = options[:voice_audio] || options["voice_audio"]
 
     Rails.logger.info "Sending TTS request to #{base_uri}/generate"
@@ -20,8 +21,11 @@ class TtsService
       cfg_weight: cfg_weight.to_f
     }
 
-    # Add voice audio for cloning if provided
-    if voice_audio.present?
+    # Add voice preset if provided (takes precedence over uploaded audio)
+    if voice_preset.present?
+      body[:voice_preset] = voice_preset
+      Rails.logger.info "Using voice preset: #{voice_preset}"
+    elsif voice_audio.present?
       body[:voice_audio] = voice_audio
       Rails.logger.info "Using voice cloning with uploaded audio"
     end
@@ -70,5 +74,19 @@ class TtsService
     end
   rescue => e
     { status: "unreachable", error: e.message }
+  end
+
+  def self.available_voices
+    response = get("/voices", timeout: 5)
+
+    if response.success?
+      data = response.parsed_response || JSON.parse(response.body)
+      data["voices"] || []
+    else
+      []
+    end
+  rescue => e
+    Rails.logger.error "Failed to fetch voices: #{e.message}"
+    []
   end
 end

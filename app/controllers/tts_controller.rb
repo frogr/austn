@@ -2,7 +2,13 @@ class TtsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
-    # Show the TTS generation form
+    # Fetch available voice presets for the dropdown
+    @voices = TtsService.available_voices
+  end
+
+  def voices
+    # API endpoint to get available voices
+    render json: { voices: TtsService.available_voices }
   end
 
   def generate
@@ -17,6 +23,7 @@ class TtsController < ApplicationController
       {
         "exaggeration" => params[:exaggeration],
         "cfg_weight" => params[:cfg_weight],
+        "voice_preset" => params[:voice_preset],
         "voice_audio" => params[:voice_audio]
       }
     )

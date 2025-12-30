@@ -72,6 +72,7 @@ Rails.application.routes.draw do
 
   # TTS (Text-to-Speech) interface
   get "/tts", to: "tts#index"
+  get "/tts/voices", to: "tts#voices", as: :tts_voices
   post "/tts/generate", to: "tts#generate"
   get "/tts/:id/status", to: "tts#status", as: :tts_status
   get "/tts/:id/audio", to: "tts#audio", as: :tts_audio
