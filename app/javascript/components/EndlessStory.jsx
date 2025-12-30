@@ -137,26 +137,26 @@ const EndlessStory = ({
     <div className="endless-story-container">
       <style>{`
         .endless-story-container {
-          max-width: 800px;
+          max-width: 1000px;
           margin: 0 auto;
-          padding: 0 1rem;
+          padding: 0 1.5rem;
         }
 
         .story-header {
           text-align: center;
-          margin-bottom: 1.5rem;
+          margin-bottom: 2rem;
         }
 
         .story-title {
-          font-size: clamp(1.5rem, 3vw, 2rem);
+          font-size: clamp(2rem, 4vw, 3rem);
           font-weight: 600;
           color: rgba(255,255,255,0.9);
-          margin: 0 0 0.5rem 0;
+          margin: 0 0 0.75rem 0;
         }
 
         .story-subtitle {
           color: rgba(255,255,255,0.6);
-          font-size: 1rem;
+          font-size: 1.15rem;
           margin: 0;
         }
 
@@ -165,8 +165,8 @@ const EndlessStory = ({
           backdrop-filter: saturate(200%) blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 1rem;
-          padding: 1.5rem;
-          margin-bottom: 1.5rem;
+          padding: 2rem;
+          margin-bottom: 2rem;
         }
 
         .cooldown-timer {
@@ -185,11 +185,11 @@ const EndlessStory = ({
 
         .timer-label {
           color: rgba(255, 255, 255, 0.6);
-          font-size: 1rem;
+          font-size: 1.2rem;
         }
 
         .timer-value {
-          font-size: 1.75rem;
+          font-size: 2.25rem;
           font-weight: 700;
           font-family: monospace;
           color: var(--accent-color, #4ade80);
@@ -197,7 +197,7 @@ const EndlessStory = ({
 
         .paragraph-count {
           color: rgba(255, 255, 255, 0.5);
-          font-size: 1rem;
+          font-size: 1.1rem;
         }
 
         .story-container {
@@ -206,89 +206,89 @@ const EndlessStory = ({
 
         .story-text {
           font-family: 'Georgia', 'Times New Roman', serif;
-          font-size: 1.25rem;
-          line-height: 1.9;
+          font-size: 1.4rem;
+          line-height: 2;
           color: rgba(255, 255, 255, 0.9);
         }
 
         .paragraph-block {
-          margin-bottom: 2rem;
+          margin-bottom: 2.5rem;
           position: relative;
-          padding-left: 3.5rem;
+          padding-left: 4rem;
         }
 
         .paragraph-number {
           position: absolute;
           left: 0;
-          top: 0.2rem;
-          font-size: 0.875rem;
+          top: 0.3rem;
+          font-size: 1rem;
           font-weight: 600;
           color: var(--accent-color, #4ade80);
           font-family: 'Inter', sans-serif;
           opacity: 0.8;
-          min-width: 2.5rem;
+          min-width: 3rem;
         }
 
         .paragraph-content {
           margin: 0;
-          text-indent: 1.5em;
+          text-indent: 2em;
         }
 
         .paragraph-timestamp {
           display: block;
-          font-size: 0.8rem;
+          font-size: 0.9rem;
           color: rgba(255, 255, 255, 0.35);
           font-family: 'Inter', sans-serif;
-          margin-top: 0.5rem;
+          margin-top: 0.75rem;
           font-style: italic;
         }
 
         .empty-state, .loading-state {
           text-align: center;
-          padding: 3rem 1rem;
+          padding: 4rem 1rem;
         }
 
         .empty-title {
-          font-size: 1.5rem;
+          font-size: 1.75rem;
           color: rgba(255, 255, 255, 0.8);
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.75rem;
           font-family: 'Georgia', serif;
           font-style: italic;
         }
 
         .empty-subtitle {
           color: rgba(255, 255, 255, 0.5);
-          font-size: 1.1rem;
+          font-size: 1.2rem;
         }
 
         .loading-spinner {
           color: rgba(255, 255, 255, 0.6);
-          font-size: 1.1rem;
+          font-size: 1.2rem;
         }
 
         .pagination-container {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.75rem;
           flex-wrap: wrap;
-          margin-top: 1rem;
+          margin-top: 1.5rem;
         }
 
         .page-numbers {
           display: flex;
-          gap: 0.25rem;
+          gap: 0.35rem;
         }
 
         .pagination-btn {
-          padding: 0.6rem 1.1rem;
+          padding: 0.75rem 1.25rem;
           background: rgba(255, 255, 255, 0.06);
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 0.5rem;
           color: rgba(255, 255, 255, 0.8);
           cursor: pointer;
           transition: all 0.2s;
-          font-size: 1rem;
+          font-size: 1.1rem;
           font-family: 'Inter', sans-serif;
         }
 
@@ -314,9 +314,9 @@ const EndlessStory = ({
 
         .page-indicator {
           text-align: center;
-          margin-top: 1rem;
+          margin-top: 1.5rem;
           color: rgba(255, 255, 255, 0.4);
-          font-size: 0.95rem;
+          font-size: 1.05rem;
         }
       `}</style>
 

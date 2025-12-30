@@ -7,7 +7,7 @@ class GroqService
   class GroqError < StandardError; end
 
   DEFAULT_MODEL = "openai/gpt-oss-120b"
-  MAX_OUTPUT_TOKENS = 300
+  MAX_OUTPUT_TOKENS = 500
   TEMPERATURE = 0.85
 
   BOOTSTRAP_PROMPT = <<~PROMPT
@@ -80,7 +80,7 @@ class GroqService
       story_so_far = context_paragraphs.map(&:content).join("\n\n")
       messages << {
         role: "user",
-        content: "Here is the story so far:\n\n#{story_so_far}\n\nContinue with the next paragraph:"
+        content: "Here is the story so far:\n\n#{story_so_far}\n\nWrite exactly ONE paragraph continuing the story (4-6 sentences). You MUST end with a complete sentence."
       }
     end
 
