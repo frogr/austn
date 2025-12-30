@@ -261,9 +261,9 @@ function SynthGrid({ track, audioEngine }) {
     if (existingNote) {
       actions.removeNote(track.id, existingNote.id)
     } else {
-      // Play the note as preview
+      // Play the note as preview - use 16n to match actual step duration
       if (audioEngine) {
-        audioEngine.triggerNote(track.id, midi, '4n', '+0', 0.8)
+        audioEngine.triggerNote(track.id, midi, '16n', '+0', 0.8)
       }
       actions.addNote(track.id, {
         pitch: midi,
@@ -320,8 +320,8 @@ function SynthGrid({ track, audioEngine }) {
               onClick={() => {
                 actions.setSelectedPitch(key.midi)
                 if (audioEngine && track) {
-                  // Use longer duration for preview so envelope is audible
-                  audioEngine.triggerNote(track.id, key.midi, '2n', '+0', 0.8)
+                  // Match actual step duration so release/sustain is accurate
+                  audioEngine.triggerNote(track.id, key.midi, '16n', '+0', 0.8)
                 }
               }}
             >
