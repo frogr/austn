@@ -1,4 +1,6 @@
 class ChatCompletionJob < GpuJob
+  self.gpu_service_name = "chat"
+
   def perform(messages, system_prompt, job_id)
     Rails.logger.info "Starting ChatCompletionJob #{job_id}"
 
@@ -20,6 +22,7 @@ class ChatCompletionJob < GpuJob
       store_result("chat_job:#{job_id}:status", { status: "completed" })
 
       Rails.logger.info "ChatCompletionJob #{job_id} completed successfully"
+      mark_service_online
     rescue => e
       Rails.logger.error "ChatCompletionJob #{job_id} failed: #{e.message}"
 

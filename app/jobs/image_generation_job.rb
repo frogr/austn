@@ -1,4 +1,5 @@
 class ImageGenerationJob < GpuJob
+  self.gpu_service_name = "images"
   sidekiq_options retry: 1
 
   def perform(generation_id, prompt, options = {})
@@ -72,6 +73,7 @@ class ImageGenerationJob < GpuJob
       )
 
       Rails.logger.info "ImageGenerationJob #{generation_id} completed successfully"
+      mark_service_online
 
     rescue => e
       Rails.logger.error "ImageGenerationJob #{generation_id} failed: #{e.message}"

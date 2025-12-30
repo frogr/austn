@@ -1,4 +1,5 @@
 class TtsGenerationJob < GpuJob
+  self.gpu_service_name = "tts"
   sidekiq_options retry: 1
 
   def perform(generation_id, text, options = {})
@@ -70,6 +71,7 @@ class TtsGenerationJob < GpuJob
       )
 
       Rails.logger.info "TtsGenerationJob #{generation_id} completed successfully (#{result[:duration]}s audio)"
+      mark_service_online
 
     rescue => e
       Rails.logger.error "TtsGenerationJob #{generation_id} failed: #{e.message}"

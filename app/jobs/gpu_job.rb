@@ -4,9 +4,13 @@ class GpuJob < ApplicationJob
   # Always use the GPU queue for these jobs
   queue_as :gpu
 
+  # Track which service this job is for (override in subclasses)
+  class_attribute :gpu_service_name, default: nil
+
   # Retry configuration for GPU jobs
   retry_on StandardError, wait: :exponentially_longer, attempts: 3 do |job, error|
     Rails.logger.error "GPU job #{job.class.name} failed after retries: #{error.message}"
+    job.class.mark_service_offline(error.message) if job.class.gpu_service_name
   end
 
   # Ensure only one GPU job runs at a time by using Redis lock
@@ -49,5 +53,22 @@ class GpuJob < ApplicationJob
     JSON.parse(result) if result
   rescue JSON::ParserError
     nil
+  end
+
+  # Mark the GPU service as online
+  def self.mark_service_online
+    return unless gpu_service_name
+    GpuHealthStatus.for_service(gpu_service_name).mark_online!
+  end
+
+  # Mark the GPU service as offline with error
+  def self.mark_service_offline(error_message = nil)
+    return unless gpu_service_name
+    GpuHealthStatus.for_service(gpu_service_name).mark_offline!(error_message)
+  end
+
+  # Instance method to mark online (called after successful job)
+  def mark_service_online
+    self.class.mark_service_online
   end
 end
