@@ -23,24 +23,21 @@ class GpuHealthService
   def check_images
     check_service("images") do
       uri = URI.parse("#{COMFYUI_URL}/system_stats")
-      response = make_request(uri)
-      response.is_a?(Net::HTTPSuccess)
+      make_request(uri).is_a?(Net::HTTPSuccess)
     end
   end
 
   def check_tts
     check_service("tts") do
       uri = URI.parse("#{TTS_URL}/health")
-      response = make_request(uri)
-      response.is_a?(Net::HTTPSuccess)
+      make_request(uri).is_a?(Net::HTTPSuccess)
     end
   end
 
   def check_chat
     check_service("chat") do
       uri = URI.parse("#{LMSTUDIO_URL}/v1/models")
-      response = make_request(uri)
-      response.is_a?(Net::HTTPSuccess)
+      make_request(uri).is_a?(Net::HTTPSuccess)
     end
   end
 
