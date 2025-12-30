@@ -6,7 +6,9 @@ import TrackList from './components/TrackList'
 import PianoRoll from './components/PianoRoll'
 import PatternHelpers from './components/PatternHelpers'
 import InstrumentPanel from './components/InstrumentPanel'
+import EffectsPanel from './components/EffectsPanel'
 import MixerPanel from './components/MixerPanel'
+import VisualizerPanel from './components/VisualizerPanel'
 import ProjectPanel from './components/ProjectPanel'
 import ExportPanel from './components/ExportPanel'
 import RecordingPanel from './components/RecordingPanel'
@@ -42,22 +44,34 @@ const styles = {
   section: {
     borderBottom: '1px solid rgba(255,255,255,0.08)',
   },
+  visualizerSection: {
+    padding: '1rem',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    background: 'rgba(0,0,0,0.2)',
+  },
   mainGrid: {
     display: 'grid',
-    gridTemplateColumns: '240px 1fr 320px',
+    gridTemplateColumns: '200px 1fr 280px',
     gap: '1px',
     background: 'rgba(255,255,255,0.05)',
-    minHeight: '500px',
   },
   panel: {
     background: 'rgba(0,0,0,0.3)',
-    padding: '1.25rem',
+    padding: '1rem',
   },
   bottomSection: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    display: 'flex',
     gap: '1px',
     background: 'rgba(255,255,255,0.05)',
+  },
+  bottomPanel: {
+    background: 'rgba(0,0,0,0.3)',
+    padding: '1rem',
+    flex: 1,
+    display: 'flex',
+    gap: '1rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
   },
 }
 
@@ -77,11 +91,11 @@ function DAWContent() {
       // Create initial synths for existing tracks
       state.tracks.forEach(track => {
         if (track.type === 'synth') {
-          engine.createSynth(track.id, track.instrument)
+          engine.createSynth(track.id, track.instrument, track.effects)
         } else if (track.type === 'drums') {
-          engine.createDrumSampler(track.id)
+          engine.createDrumSampler(track.id, track.effects)
         } else if (track.type === 'audio' && track.audioData?.buffer) {
-          engine.createAudioPlayer(track.id, track.audioData.buffer)
+          engine.createAudioPlayer(track.id, track.audioData.buffer, track.effects)
         }
         engine.setTrackVolume(track.id, track.volume)
         engine.setTrackPan(track.id, track.pan)
@@ -117,7 +131,6 @@ function DAWContent() {
     if (!audioEngineRef.current || !state.audioInitialized) return
 
     if (state.isPlaying) {
-      // Schedule the sequence
       sequenceRef.current = audioEngineRef.current.scheduleSequence(
         state.tracks,
         state.totalSteps,
@@ -140,7 +153,6 @@ function DAWContent() {
   useEffect(() => {
     if (!audioEngineRef.current || !state.isPlaying) return
 
-    // Re-schedule the sequence with updated tracks
     sequenceRef.current = audioEngineRef.current.scheduleSequence(
       state.tracks,
       state.totalSteps,
@@ -155,9 +167,8 @@ function DAWContent() {
 
     state.tracks.forEach(track => {
       if (track.type === 'audio' && track.audioData?.buffer) {
-        // Check if player already exists
         if (!audioEngineRef.current.audioPlayers.has(track.id)) {
-          audioEngineRef.current.createAudioPlayer(track.id, track.audioData.buffer)
+          audioEngineRef.current.createAudioPlayer(track.id, track.audioData.buffer, track.effects)
           audioEngineRef.current.setTrackVolume(track.id, track.volume)
           audioEngineRef.current.setTrackPan(track.id, track.pan)
           audioEngineRef.current.setTrackMute(track.id, track.muted)
@@ -244,26 +255,37 @@ function DAWContent() {
         </div>
       )}
 
+      {/* Visualizers at top - large format */}
+      <div style={styles.visualizerSection}>
+        <VisualizerPanel audioEngine={audioEngineRef.current} large={true} />
+      </div>
+
       {/* Transport Controls */}
       <div style={styles.section}>
         <TransportControls />
       </div>
 
-      {/* Main Grid: Tracks | Piano Roll | Instrument Panel */}
+      {/* Main Grid: Tracks | Piano Roll | Instrument/Effects Panel */}
       <div style={styles.mainGrid}>
         {/* Track List */}
         <div style={styles.panel}>
           <TrackList audioEngine={audioEngineRef.current} />
         </div>
 
-        {/* Piano Roll / Sequencer */}
-        <div style={{ ...styles.panel, padding: 0, overflow: 'hidden' }}>
-          <PianoRoll track={selectedTrack} audioEngine={audioEngineRef.current} />
+        {/* Piano Roll / Sequencer - fills available space */}
+        <div style={{ ...styles.panel, padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            <PianoRoll track={selectedTrack} audioEngine={audioEngineRef.current} />
+          </div>
         </div>
 
-        {/* Instrument Panel */}
-        <div style={styles.panel}>
+        {/* Instrument + Effects Panels - collapsible */}
+        <div style={{ ...styles.panel, overflow: 'auto', maxHeight: '500px' }}>
           <InstrumentPanel
+            track={selectedTrack}
+            audioEngine={audioEngineRef.current}
+          />
+          <EffectsPanel
             track={selectedTrack}
             audioEngine={audioEngineRef.current}
           />
@@ -272,11 +294,11 @@ function DAWContent() {
 
       {/* Bottom Section: Pattern Helpers + Mixer | MIDI + Project + Export */}
       <div style={styles.bottomSection}>
-        <div style={{ ...styles.panel, display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={styles.bottomPanel}>
           <PatternHelpers track={selectedTrack} />
           <MixerPanel audioEngine={audioEngineRef.current} />
         </div>
-        <div style={{ ...styles.panel, display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={styles.bottomPanel}>
           <MIDIPanel onNoteOn={handleMIDINoteOn} onNoteOff={handleMIDINoteOff} />
           <ProjectPanel />
           <ExportPanel />

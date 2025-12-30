@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { useDAW } from '../context/DAWContext'
 
 const styles = {
@@ -203,23 +203,41 @@ function TrackItem({ track, isSelected, onSelect, onUpdate, onDelete, audioEngin
 
 export default function TrackList({ audioEngine }) {
   const { state, actions } = useDAW()
+  const prevTracksRef = useRef(state.tracks)
+
+  // Handle new tracks being added - create audio engine resources
+  useEffect(() => {
+    if (!audioEngine) return
+
+    const prevTracks = prevTracksRef.current
+    const currentTracks = state.tracks
+
+    // Find newly added tracks
+    currentTracks.forEach(track => {
+      const wasPresent = prevTracks.some(t => t.id === track.id)
+      if (!wasPresent) {
+        // This is a new track, create its audio engine resources
+        if (track.type === 'synth') {
+          audioEngine.createSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'drums') {
+          audioEngine.createDrumSampler(track.id, track.effects)
+        }
+        audioEngine.setTrackVolume(track.id, track.volume)
+        audioEngine.setTrackPan(track.id, track.pan)
+        audioEngine.setTrackMute(track.id, track.muted)
+      }
+    })
+
+    prevTracksRef.current = currentTracks
+  }, [state.tracks, audioEngine])
 
   const handleAddSynth = useCallback(() => {
-    const trackId = actions.addTrack('synth')
-    if (audioEngine) {
-      const track = state.tracks.find(t => t.id === trackId) ||
-        { id: trackId, instrument: {}, volume: 0.8, pan: 0, muted: false }
-      audioEngine.createSynth(trackId, track.instrument)
-      audioEngine.setTrackVolume(trackId, track.volume)
-    }
-  }, [actions, audioEngine, state.tracks])
+    actions.addTrack('synth')
+  }, [actions])
 
   const handleAddDrums = useCallback(() => {
-    const trackId = actions.addTrack('drums')
-    if (audioEngine) {
-      audioEngine.createDrumSampler(trackId)
-    }
-  }, [actions, audioEngine])
+    actions.addTrack('drums')
+  }, [actions])
 
   const handleDelete = useCallback((trackId) => {
     if (state.tracks.length <= 1) return

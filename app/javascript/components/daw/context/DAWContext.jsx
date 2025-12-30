@@ -60,6 +60,10 @@ export function DAWProvider({ children }) {
       dispatch({ type: ActionTypes.UPDATE_TRACK, payload: { id: trackId, updates } })
     }, []),
 
+    updateTrackEffects: useCallback((trackId, effectType, settings) => {
+      dispatch({ type: ActionTypes.UPDATE_TRACK_EFFECTS, payload: { trackId, effectType, settings } })
+    }, []),
+
     selectTrack: useCallback((trackId) => {
       dispatch({ type: ActionTypes.SELECT_TRACK, payload: trackId })
     }, []),

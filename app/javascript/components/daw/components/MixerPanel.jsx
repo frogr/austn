@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { useDAW } from '../context/DAWContext'
 
 const styles = {
@@ -39,6 +39,12 @@ const styles = {
     whiteSpace: 'nowrap',
     width: '100%',
   },
+  faderMeterContainer: {
+    display: 'flex',
+    gap: '3px',
+    alignItems: 'stretch',
+    height: '60px',
+  },
   fader: {
     width: '8px',
     height: '60px',
@@ -77,6 +83,143 @@ const styles = {
     color: 'rgba(255,255,255,0.4)',
     fontFamily: 'monospace',
   },
+  meterContainer: {
+    width: '6px',
+    height: '60px',
+    background: 'rgba(0,0,0,0.4)',
+    borderRadius: '3px',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  meterFill: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderRadius: '3px',
+    transition: 'height 0.05s ease-out',
+  },
+  meterSegments: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1px',
+    padding: '1px',
+    pointerEvents: 'none',
+  },
+}
+
+/**
+ * LevelMeter component - displays current audio level for a track
+ * @param {Object} props
+ * @param {string} props.trackId - The track ID to monitor
+ * @param {Object} props.audioEngine - The audio engine instance
+ */
+function LevelMeter({ trackId, audioEngine }) {
+  const [level, setLevel] = useState(0)
+  const animationRef = useRef(null)
+
+  const updateLevel = useCallback(() => {
+    if (audioEngine) {
+      // Get level in dB (typically -100 to 0)
+      const dbLevel = audioEngine.getTrackLevel(trackId)
+      // Convert dB to 0-1 range for display
+      // Map -60dB to 0dB range to 0-1
+      const normalizedLevel = Math.max(0, Math.min(1, (dbLevel + 60) / 60))
+      setLevel(normalizedLevel)
+    }
+    animationRef.current = requestAnimationFrame(updateLevel)
+  }, [audioEngine, trackId])
+
+  useEffect(() => {
+    animationRef.current = requestAnimationFrame(updateLevel)
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [updateLevel])
+
+  // Calculate color based on level
+  const getGradient = () => {
+    if (level > 0.9) {
+      return 'linear-gradient(to top, #10b981 0%, #fbbf24 70%, #ef4444 90%)'
+    } else if (level > 0.6) {
+      return 'linear-gradient(to top, #10b981 0%, #fbbf24 100%)'
+    }
+    return 'linear-gradient(to top, #059669, #10b981)'
+  }
+
+  return (
+    <div style={styles.meterContainer}>
+      <div
+        style={{
+          ...styles.meterFill,
+          height: `${level * 100}%`,
+          background: getGradient(),
+          boxShadow: level > 0.1 ? '0 0 4px rgba(16, 185, 129, 0.5)' : 'none',
+        }}
+      />
+    </div>
+  )
+}
+
+/**
+ * MasterMeter component - displays master output level
+ * @param {Object} props
+ * @param {Object} props.audioEngine - The audio engine instance
+ */
+function MasterMeter({ audioEngine }) {
+  const [level, setLevel] = useState(0)
+  const animationRef = useRef(null)
+
+  const updateLevel = useCallback(() => {
+    if (audioEngine) {
+      const dbLevel = audioEngine.getMasterLevel()
+      const normalizedLevel = Math.max(0, Math.min(1, (dbLevel + 60) / 60))
+      setLevel(normalizedLevel)
+    }
+    animationRef.current = requestAnimationFrame(updateLevel)
+  }, [audioEngine])
+
+  useEffect(() => {
+    animationRef.current = requestAnimationFrame(updateLevel)
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [updateLevel])
+
+  const getGradient = () => {
+    if (level > 0.9) {
+      return 'linear-gradient(to top, #10b981 0%, #fbbf24 70%, #ef4444 90%)'
+    } else if (level > 0.6) {
+      return 'linear-gradient(to top, #10b981 0%, #fbbf24 100%)'
+    }
+    return 'linear-gradient(to top, #059669, #10b981)'
+  }
+
+  return (
+    <div style={{ ...styles.channel, minWidth: '40px', background: 'rgba(255,255,255,0.05)' }}>
+      <span style={styles.channelName}>MST</span>
+      <div style={{ ...styles.meterContainer, width: '10px', height: '60px' }}>
+        <div
+          style={{
+            ...styles.meterFill,
+            height: `${level * 100}%`,
+            background: getGradient(),
+            boxShadow: level > 0.1 ? '0 0 6px rgba(16, 185, 129, 0.6)' : 'none',
+          }}
+        />
+      </div>
+      <span style={styles.volumeValue}>{level > 0 ? Math.round((level * 60) - 60) : '-inf'}</span>
+    </div>
+  )
 }
 
 function ChannelStrip({ track, audioEngine, onUpdate }) {
@@ -132,16 +275,19 @@ function ChannelStrip({ track, audioEngine, onUpdate }) {
       </div>
       <span style={styles.panLabel}>{formatPan(track.pan)}</span>
 
-      {/* Volume fader */}
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value={track.volume}
-        onChange={handleVolumeChange}
-        style={styles.fader}
-      />
+      {/* Volume fader with level meter */}
+      <div style={styles.faderMeterContainer}>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={track.volume}
+          onChange={handleVolumeChange}
+          style={styles.fader}
+        />
+        <LevelMeter trackId={track.id} audioEngine={audioEngine} />
+      </div>
       <span style={styles.volumeValue}>{Math.round(track.volume * 100)}</span>
     </div>
   )
@@ -162,6 +308,8 @@ export default function MixerPanel({ audioEngine }) {
             onUpdate={actions.updateTrack}
           />
         ))}
+        {/* Master meter */}
+        <MasterMeter audioEngine={audioEngine} />
       </div>
     </div>
   )

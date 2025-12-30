@@ -1,59 +1,78 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useDAW } from '../context/DAWContext'
 
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
-    height: '100%',
-    overflow: 'auto',
-  },
-  title: {
-    fontSize: '0.75rem',
-    color: 'rgba(255,255,255,0.5)',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    gap: '0.5rem',
   },
   section: {
+    background: 'rgba(255,255,255,0.03)',
+    borderRadius: '0.375rem',
+    border: '1px solid rgba(255,255,255,0.08)',
+    overflow: 'hidden',
+  },
+  sectionHeader: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0.5rem 0.75rem',
+    cursor: 'pointer',
+    background: 'rgba(255,255,255,0.02)',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    transition: 'background 0.15s',
+  },
+  sectionTitle: {
+    fontSize: '0.7rem',
+    color: 'rgba(255,255,255,0.7)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    fontWeight: 600,
+  },
+  chevron: {
+    fontSize: '0.6rem',
+    color: 'rgba(255,255,255,0.4)',
+    transition: 'transform 0.2s',
+  },
+  sectionContent: {
+    padding: '0.75rem',
   },
   row: {
     display: 'flex',
     gap: '0.5rem',
     alignItems: 'center',
+    marginBottom: '0.5rem',
   },
   label: {
-    fontSize: '0.7rem',
-    color: 'rgba(255,255,255,0.6)',
-    width: '60px',
+    fontSize: '0.65rem',
+    color: 'rgba(255,255,255,0.5)',
+    width: '55px',
     flexShrink: 0,
   },
   select: {
     flex: 1,
-    padding: '0.375rem 0.5rem',
+    padding: '0.3rem 0.4rem',
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '0.25rem',
     color: 'white',
-    fontSize: '0.75rem',
+    fontSize: '0.7rem',
   },
   knobContainer: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '0.75rem',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '0.5rem',
   },
   knob: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '0.25rem',
+    gap: '0.15rem',
   },
   knobDial: {
-    width: '48px',
-    height: '48px',
+    width: '36px',
+    height: '36px',
     borderRadius: '50%',
     background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(0,0,0,0.2))',
     border: '1px solid rgba(255,255,255,0.1)',
@@ -63,19 +82,19 @@ const styles = {
   knobIndicator: {
     position: 'absolute',
     width: '2px',
-    height: '16px',
+    height: '12px',
     background: 'var(--accent-color, #10b981)',
     left: '50%',
-    top: '4px',
+    top: '3px',
     transformOrigin: 'bottom center',
     borderRadius: '1px',
   },
   knobLabel: {
-    fontSize: '0.65rem',
+    fontSize: '0.55rem',
     color: 'rgba(255,255,255,0.5)',
   },
   knobValue: {
-    fontSize: '0.6rem',
+    fontSize: '0.5rem',
     color: 'rgba(255,255,255,0.4)',
     fontFamily: 'monospace',
   },
@@ -85,8 +104,8 @@ const styles = {
   },
   drumPads: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '0.5rem',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '0.4rem',
   },
   drumPad: {
     aspectRatio: '1',
@@ -95,126 +114,105 @@ const styles = {
     justifyContent: 'center',
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '0.5rem',
+    borderRadius: '0.375rem',
     color: 'rgba(255,255,255,0.7)',
-    fontSize: '0.7rem',
+    fontSize: '0.6rem',
     cursor: 'pointer',
     transition: 'all 0.1s',
+  },
+  toggle: {
+    width: '32px',
+    height: '18px',
+    borderRadius: '9px',
+    background: 'rgba(255,255,255,0.1)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    cursor: 'pointer',
+    position: 'relative',
+    transition: 'all 0.2s',
+    flexShrink: 0,
+  },
+  toggleActive: {
+    background: 'rgba(139, 92, 246, 0.6)',
+    borderColor: 'rgba(139, 92, 246, 0.8)',
+  },
+  toggleKnob: {
+    width: '14px',
+    height: '14px',
+    borderRadius: '50%',
+    background: 'white',
+    position: 'absolute',
+    top: '1px',
+    left: '1px',
+    transition: 'transform 0.2s',
+  },
+  toggleKnobActive: {
+    transform: 'translateX(14px)',
+  },
+  lfoSection: {
+    background: 'rgba(139, 92, 246, 0.08)',
+    borderRadius: '0.375rem',
+    padding: '0.5rem',
+    marginTop: '0.5rem',
+    border: '1px solid rgba(139, 92, 246, 0.2)',
   },
 }
 
 const OSCILLATOR_TYPES = [
   { value: 'sine', label: 'Sine' },
-  { value: 'sawtooth', label: 'Sawtooth' },
+  { value: 'sawtooth', label: 'Saw' },
   { value: 'square', label: 'Square' },
-  { value: 'triangle', label: 'Triangle' },
+  { value: 'triangle', label: 'Tri' },
   { value: 'fatsawtooth', label: 'Fat Saw' },
-  { value: 'fatsquare', label: 'Fat Square' },
+  { value: 'fatsquare', label: 'Fat Sq' },
   { value: 'pulse', label: 'Pulse' },
   { value: 'pwm', label: 'PWM' },
 ]
 
+const LFO_RATES = [
+  { value: '1m', label: '1 Bar' },
+  { value: '2n', label: '1/2' },
+  { value: '4n', label: '1/4' },
+  { value: '8n', label: '1/8' },
+  { value: '16n', label: '1/16' },
+  { value: '32n', label: '1/32' },
+]
+
+const LFO_WAVEFORMS = [
+  { value: 'sine', label: 'Sine' },
+  { value: 'square', label: 'Square' },
+  { value: 'sawtooth', label: 'Saw' },
+  { value: 'triangle', label: 'Tri' },
+]
+
 const SYNTH_PRESETS = {
-  init: {
-    name: 'Init',
-    oscillator: 'sawtooth',
-    attack: 0.01,
-    decay: 0.1,
-    sustain: 0.5,
-    release: 0.3,
-    filterFreq: 2000,
-    filterRes: 1,
-  },
-  bass: {
-    name: 'Bass',
-    oscillator: 'square',
-    attack: 0.005,
-    decay: 0.2,
-    sustain: 0.8,
-    release: 0.1,
-    filterFreq: 400,
-    filterRes: 4,
-  },
-  lead: {
-    name: 'Lead',
-    oscillator: 'sawtooth',
-    attack: 0.01,
-    decay: 0.1,
-    sustain: 0.7,
-    release: 0.2,
-    filterFreq: 4000,
-    filterRes: 2,
-  },
-  pad: {
-    name: 'Pad',
-    oscillator: 'triangle',
-    attack: 0.5,
-    decay: 0.3,
-    sustain: 0.8,
-    release: 1.5,
-    filterFreq: 3000,
-    filterRes: 0.5,
-  },
-  pluck: {
-    name: 'Pluck',
-    oscillator: 'triangle',
-    attack: 0.001,
-    decay: 0.3,
-    sustain: 0,
-    release: 0.2,
-    filterFreq: 5000,
-    filterRes: 3,
-  },
-  bell: {
-    name: 'Bell',
-    oscillator: 'sine',
-    attack: 0.001,
-    decay: 1.5,
-    sustain: 0,
-    release: 1,
-    filterFreq: 8000,
-    filterRes: 1,
-  },
-  strings: {
-    name: 'Strings',
-    oscillator: 'sawtooth',
-    attack: 0.3,
-    decay: 0.2,
-    sustain: 0.9,
-    release: 0.8,
-    filterFreq: 2500,
-    filterRes: 0.5,
-  },
-  organ: {
-    name: 'Organ',
-    oscillator: 'sine',
-    attack: 0.01,
-    decay: 0.01,
-    sustain: 1,
-    release: 0.1,
-    filterFreq: 6000,
-    filterRes: 0,
-  },
-  brass: {
-    name: 'Brass',
-    oscillator: 'square',
-    attack: 0.1,
-    decay: 0.2,
-    sustain: 0.6,
-    release: 0.3,
-    filterFreq: 1500,
-    filterRes: 3,
-  },
-  acid: {
-    name: 'Acid',
-    oscillator: 'sawtooth',
-    attack: 0.001,
-    decay: 0.15,
-    sustain: 0.2,
-    release: 0.1,
-    filterFreq: 800,
-    filterRes: 15,
-  },
+  init: { name: 'Init', oscillator: 'sawtooth', attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.3, filterFreq: 2000, filterRes: 1 },
+  bass: { name: 'Bass', oscillator: 'square', attack: 0.005, decay: 0.2, sustain: 0.8, release: 0.1, filterFreq: 400, filterRes: 4 },
+  lead: { name: 'Lead', oscillator: 'sawtooth', attack: 0.01, decay: 0.1, sustain: 0.7, release: 0.2, filterFreq: 4000, filterRes: 2 },
+  pad: { name: 'Pad', oscillator: 'triangle', attack: 0.5, decay: 0.3, sustain: 0.8, release: 1.5, filterFreq: 3000, filterRes: 0.5 },
+  pluck: { name: 'Pluck', oscillator: 'triangle', attack: 0.001, decay: 0.3, sustain: 0, release: 0.2, filterFreq: 5000, filterRes: 3 },
+  acid: { name: 'Acid', oscillator: 'sawtooth', attack: 0.001, decay: 0.15, sustain: 0.2, release: 0.1, filterFreq: 800, filterRes: 15 },
+}
+
+function CollapsibleSection({ title, children, defaultOpen = true, color }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  return (
+    <div style={styles.section}>
+      <div
+        style={{
+          ...styles.sectionHeader,
+          borderLeft: color ? `3px solid ${color}` : 'none',
+        }}
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+      >
+        <span style={{ ...styles.sectionTitle, color: color || 'rgba(255,255,255,0.7)' }}>{title}</span>
+        <span style={{ ...styles.chevron, transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }}>▼</span>
+      </div>
+      {isOpen && <div style={styles.sectionContent}>{children}</div>}
+    </div>
+  )
 }
 
 function Knob({ label, value, min, max, step, onChange }) {
@@ -243,12 +241,7 @@ function Knob({ label, value, min, max, step, onChange }) {
   return (
     <div style={styles.knob}>
       <div style={styles.knobDial} onMouseDown={handleMouseDown}>
-        <div
-          style={{
-            ...styles.knobIndicator,
-            transform: `translateX(-50%) rotate(${rotation}deg)`,
-          }}
-        />
+        <div style={{ ...styles.knobIndicator, transform: `translateX(-50%) rotate(${rotation}deg)` }} />
       </div>
       <span style={styles.knobLabel}>{label}</span>
       <span style={styles.knobValue}>{value.toFixed(step < 1 ? 2 : 0)}</span>
@@ -259,6 +252,8 @@ function Knob({ label, value, min, max, step, onChange }) {
 function SynthEditor({ track, audioEngine }) {
   const { actions } = useDAW()
 
+  const lfo = track.instrument.lfo || { enabled: false, rate: '8n', waveform: 'sine', depth: 0.5 }
+
   const updateInstrument = useCallback((key, value) => {
     const newInstrument = { ...track.instrument, [key]: value }
     actions.updateTrack(track.id, { instrument: newInstrument })
@@ -267,19 +262,19 @@ function SynthEditor({ track, audioEngine }) {
     }
   }, [track, actions, audioEngine])
 
+  const updateLFO = useCallback((lfoKey, lfoValue) => {
+    const newLFO = { ...lfo, [lfoKey]: lfoValue }
+    const newInstrument = { ...track.instrument, lfo: newLFO }
+    actions.updateTrack(track.id, { instrument: newInstrument })
+    if (audioEngine) {
+      audioEngine.updateSynthSettings(track.id, { lfo: newLFO })
+    }
+  }, [track, lfo, actions, audioEngine])
+
   const loadPreset = useCallback((presetKey) => {
     const preset = SYNTH_PRESETS[presetKey]
     if (!preset) return
-
-    const newInstrument = {
-      oscillator: preset.oscillator,
-      attack: preset.attack,
-      decay: preset.decay,
-      sustain: preset.sustain,
-      release: preset.release,
-      filterFreq: preset.filterFreq,
-      filterRes: preset.filterRes,
-    }
+    const newInstrument = { ...preset, lfo: track.instrument.lfo }
     actions.updateTrack(track.id, { instrument: newInstrument })
     if (audioEngine) {
       audioEngine.updateSynthSettings(track.id, newInstrument)
@@ -288,28 +283,16 @@ function SynthEditor({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <span style={styles.title}>Synthesizer</span>
-
-      {/* Preset selector */}
-      <div style={styles.section}>
+      <CollapsibleSection title="Synthesizer" defaultOpen={true} color="#10b981">
         <div style={styles.row}>
           <span style={styles.label}>Preset</span>
-          <select
-            onChange={(e) => loadPreset(e.target.value)}
-            style={styles.select}
-            defaultValue=""
-          >
-            <option value="" disabled>Load preset...</option>
+          <select onChange={(e) => loadPreset(e.target.value)} style={styles.select} defaultValue="">
+            <option value="" disabled>Load...</option>
             {Object.entries(SYNTH_PRESETS).map(([key, preset]) => (
-              <option key={key} value={key}>
-                {preset.name}
-              </option>
+              <option key={key} value={key}>{preset.name}</option>
             ))}
           </select>
         </div>
-      </div>
-
-      <div style={styles.section}>
         <div style={styles.row}>
           <span style={styles.label}>Wave</span>
           <select
@@ -318,54 +301,22 @@ function SynthEditor({ track, audioEngine }) {
             style={styles.select}
           >
             {OSCILLATOR_TYPES.map(type => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
+              <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </select>
         </div>
-      </div>
+      </CollapsibleSection>
 
-      <div style={styles.section}>
-        <span style={styles.title}>Envelope</span>
+      <CollapsibleSection title="Envelope" defaultOpen={false} color="#3b82f6">
         <div style={styles.knobContainer}>
-          <Knob
-            label="Attack"
-            value={track.instrument.attack}
-            min={0.001}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateInstrument('attack', v)}
-          />
-          <Knob
-            label="Decay"
-            value={track.instrument.decay}
-            min={0.001}
-            max={2}
-            step={0.01}
-            onChange={(v) => updateInstrument('decay', v)}
-          />
-          <Knob
-            label="Sustain"
-            value={track.instrument.sustain}
-            min={0}
-            max={1}
-            step={0.01}
-            onChange={(v) => updateInstrument('sustain', v)}
-          />
-          <Knob
-            label="Release"
-            value={track.instrument.release}
-            min={0.001}
-            max={4}
-            step={0.01}
-            onChange={(v) => updateInstrument('release', v)}
-          />
+          <Knob label="Atk" value={track.instrument.attack} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('attack', v)} />
+          <Knob label="Dec" value={track.instrument.decay} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('decay', v)} />
+          <Knob label="Sus" value={track.instrument.sustain} min={0} max={1} step={0.01} onChange={(v) => updateInstrument('sustain', v)} />
+          <Knob label="Rel" value={track.instrument.release} min={0.001} max={4} step={0.01} onChange={(v) => updateInstrument('release', v)} />
         </div>
-      </div>
+      </CollapsibleSection>
 
-      <div style={styles.section}>
-        <span style={styles.title}>Filter</span>
+      <CollapsibleSection title="Filter + LFO" defaultOpen={true} color="#8b5cf6">
         <div style={styles.row}>
           <span style={styles.label}>Cutoff</span>
           <input
@@ -377,12 +328,10 @@ function SynthEditor({ track, audioEngine }) {
             onChange={(e) => updateInstrument('filterFreq', parseInt(e.target.value))}
             style={styles.slider}
           />
-          <span style={{ ...styles.knobValue, width: '50px', textAlign: 'right' }}>
-            {track.instrument.filterFreq}Hz
-          </span>
+          <span style={{ ...styles.knobValue, width: '45px', textAlign: 'right' }}>{track.instrument.filterFreq}Hz</span>
         </div>
         <div style={styles.row}>
-          <span style={styles.label}>Resonance</span>
+          <span style={styles.label}>Reso</span>
           <input
             type="range"
             min="0"
@@ -392,25 +341,66 @@ function SynthEditor({ track, audioEngine }) {
             onChange={(e) => updateInstrument('filterRes', parseFloat(e.target.value))}
             style={styles.slider}
           />
-          <span style={{ ...styles.knobValue, width: '50px', textAlign: 'right' }}>
-            {track.instrument.filterRes.toFixed(1)}
-          </span>
+          <span style={{ ...styles.knobValue, width: '45px', textAlign: 'right' }}>{track.instrument.filterRes.toFixed(1)}</span>
         </div>
-      </div>
+
+        {/* LFO Wobble */}
+        <div style={styles.lfoSection}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.65rem', color: 'rgba(139, 92, 246, 0.9)', fontWeight: 600 }}>LFO WOBBLE</span>
+            <div
+              style={{ ...styles.toggle, ...(lfo.enabled ? styles.toggleActive : {}) }}
+              onClick={() => updateLFO('enabled', !lfo.enabled)}
+            >
+              <div style={{ ...styles.toggleKnob, ...(lfo.enabled ? styles.toggleKnobActive : {}) }} />
+            </div>
+          </div>
+
+          {lfo.enabled && (
+            <>
+              <div style={styles.row}>
+                <span style={styles.label}>Rate</span>
+                <select value={lfo.rate} onChange={(e) => updateLFO('rate', e.target.value)} style={styles.select}>
+                  {LFO_RATES.map(rate => <option key={rate.value} value={rate.value}>{rate.label}</option>)}
+                </select>
+              </div>
+              <div style={styles.row}>
+                <span style={styles.label}>Shape</span>
+                <select value={lfo.waveform} onChange={(e) => updateLFO('waveform', e.target.value)} style={styles.select}>
+                  {LFO_WAVEFORMS.map(wf => <option key={wf.value} value={wf.value}>{wf.label}</option>)}
+                </select>
+              </div>
+              <div style={styles.row}>
+                <span style={styles.label}>Depth</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={lfo.depth}
+                  onChange={(e) => updateLFO('depth', parseFloat(e.target.value))}
+                  style={styles.slider}
+                />
+                <span style={{ ...styles.knobValue, width: '35px', textAlign: 'right' }}>{Math.round(lfo.depth * 100)}%</span>
+              </div>
+            </>
+          )}
+        </div>
+      </CollapsibleSection>
     </div>
   )
 }
 
 function DrumEditor({ track, audioEngine }) {
   const DRUMS = [
-    { name: 'Kick', index: 0, color: '#ef4444', type: 'kick' },
-    { name: 'Snare', index: 1, color: '#f59e0b', type: 'snare' },
-    { name: 'Hi-Hat', index: 2, color: '#10b981', type: 'hihat' },
-    { name: 'Clap', index: 3, color: '#3b82f6', type: 'clap' },
-    { name: 'Tom', index: 4, color: '#8b5cf6', type: 'tom' },
-    { name: 'Crash', index: 5, color: '#ec4899', type: 'crash' },
-    { name: 'Ride', index: 6, color: '#06b6d4', type: 'ride' },
-    { name: 'Cowbell', index: 7, color: '#f97316', type: 'cowbell' },
+    { name: 'Kick', type: 'kick', color: '#ef4444' },
+    { name: 'Snare', type: 'snare', color: '#f59e0b' },
+    { name: 'HiHat', type: 'hihat', color: '#10b981' },
+    { name: 'Clap', type: 'clap', color: '#3b82f6' },
+    { name: 'Tom', type: 'tom', color: '#8b5cf6' },
+    { name: 'Crash', type: 'crash', color: '#ec4899' },
+    { name: 'Ride', type: 'ride', color: '#06b6d4' },
+    { name: 'Bell', type: 'cowbell', color: '#f97316' },
   ]
 
   const playDrum = (drumType) => {
@@ -421,39 +411,31 @@ function DrumEditor({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <span style={styles.title}>Drum Machine</span>
-
-      <div style={{ ...styles.drumPads, gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        {DRUMS.map(drum => (
-          <button
-            key={drum.index}
-            style={{
-              ...styles.drumPad,
-              borderColor: drum.color,
-              fontSize: '0.65rem',
-            }}
-            onClick={() => playDrum(drum.type)}
-            onMouseDown={(e) => {
-              e.currentTarget.style.background = `${drum.color}40`
-              e.currentTarget.style.transform = 'scale(0.95)'
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-          >
-            {drum.name}
-          </button>
-        ))}
-      </div>
-
-      <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>
-        Click pads to preview. Add notes in the grid above.
-      </p>
+      <CollapsibleSection title="Drum Machine" defaultOpen={true} color="#f59e0b">
+        <div style={styles.drumPads}>
+          {DRUMS.map((drum, idx) => (
+            <button
+              key={idx}
+              style={{ ...styles.drumPad, borderColor: drum.color }}
+              onClick={() => playDrum(drum.type)}
+              onMouseDown={(e) => {
+                e.currentTarget.style.background = `${drum.color}40`
+                e.currentTarget.style.transform = 'scale(0.95)'
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
+            >
+              {drum.name}
+            </button>
+          ))}
+        </div>
+      </CollapsibleSection>
     </div>
   )
 }
@@ -461,20 +443,17 @@ function DrumEditor({ track, audioEngine }) {
 function AudioEditor({ track }) {
   return (
     <div style={styles.container}>
-      <span style={styles.title}>Audio Track</span>
-
-      <div style={styles.section}>
+      <CollapsibleSection title="Audio Track" defaultOpen={true} color="#06b6d4">
         <div style={styles.row}>
           <span style={styles.label}>Duration</span>
-          <span style={{ ...styles.knobValue, flex: 1 }}>
+          <span style={styles.knobValue}>
             {track.audioData?.duration ? `${track.audioData.duration.toFixed(1)}s` : '-'}
           </span>
         </div>
-      </div>
-
-      <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>
-        Audio tracks play back recorded audio. Use the mixer to adjust volume and pan.
-      </p>
+        <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+          Use mixer to adjust volume/pan
+        </p>
+      </CollapsibleSection>
     </div>
   )
 }

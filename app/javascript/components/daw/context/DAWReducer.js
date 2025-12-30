@@ -8,6 +8,7 @@ export const ActionTypes = {
   ADD_TRACK: 'ADD_TRACK',
   REMOVE_TRACK: 'REMOVE_TRACK',
   UPDATE_TRACK: 'UPDATE_TRACK',
+  UPDATE_TRACK_EFFECTS: 'UPDATE_TRACK_EFFECTS',
   SELECT_TRACK: 'SELECT_TRACK',
   ADD_NOTE: 'ADD_NOTE',
   REMOVE_NOTE: 'REMOVE_NOTE',
@@ -25,12 +26,42 @@ export const ActionTypes = {
   SET_SELECTED_PITCH: 'SET_SELECTED_PITCH',
 }
 
+// Default effects settings for tracks
+export const DEFAULT_TRACK_EFFECTS = {
+  reverb: {
+    enabled: false,
+    roomSize: 0.5,
+    wet: 0.3,
+  },
+  delay: {
+    enabled: false,
+    time: '8n',
+    feedback: 0.3,
+    wet: 0.3,
+  },
+  distortion: {
+    enabled: false,
+    amount: 0.4,
+    type: 'softclip',
+  },
+  chorus: {
+    enabled: false,
+    frequency: 1.5,
+    depth: 0.7,
+    wet: 0.3,
+  },
+}
+
 // Generate unique IDs
 let noteIdCounter = 0
 export const generateNoteId = () => `note-${Date.now()}-${++noteIdCounter}`
 
 let trackIdCounter = 0
 export const generateTrackId = () => `track-${Date.now()}-${++trackIdCounter}`
+
+// Track counters for instrument naming
+let synthCounter = 1
+let drumCounter = 1
 
 // Initial state
 export const initialState = {
@@ -59,7 +90,14 @@ export const initialState = {
         release: 0.3,
         filterFreq: 2000,
         filterRes: 1,
+        lfo: {
+          enabled: false,
+          rate: '8n',      // Tempo-synced rate (1m, 2n, 4n, 8n, 16n, 32n, triplets)
+          waveform: 'sine', // sine, square, sawtooth, triangle
+          depth: 0.5,       // 0-1 (how much the filter moves)
+        },
       },
+      effects: { ...DEFAULT_TRACK_EFFECTS },
       muted: false,
       solo: false,
       volume: 0.8,
@@ -75,7 +113,7 @@ export function createDefaultSynthTrack() {
   const id = generateTrackId()
   return {
     id,
-    name: `Synth ${id.split('-').pop()}`,
+    name: `Synth ${synthCounter++}`,
     type: 'synth',
     instrument: {
       oscillator: 'sawtooth',
@@ -85,7 +123,14 @@ export function createDefaultSynthTrack() {
       release: 0.3,
       filterFreq: 2000,
       filterRes: 1,
+      lfo: {
+        enabled: false,
+        rate: '8n',      // Tempo-synced rate (1m, 2n, 4n, 8n, 16n, 32n, triplets)
+        waveform: 'sine', // sine, square, sawtooth, triangle
+        depth: 0.5,       // 0-1 (how much the filter moves)
+      },
     },
+    effects: { ...DEFAULT_TRACK_EFFECTS },
     muted: false,
     solo: false,
     volume: 0.8,
@@ -99,11 +144,12 @@ export function createDefaultDrumTrack() {
   const id = generateTrackId()
   return {
     id,
-    name: `Drums ${id.split('-').pop()}`,
+    name: `Drums ${drumCounter++}`,
     type: 'drums',
     instrument: {
       kit: 'default',
     },
+    effects: { ...DEFAULT_TRACK_EFFECTS },
     muted: false,
     solo: false,
     volume: 0.8,
@@ -120,6 +166,7 @@ export function createAudioTrack(name, audioData) {
     name: name || `Audio ${id.split('-').pop()}`,
     type: 'audio',
     audioData, // { url, buffer, duration }
+    effects: { ...DEFAULT_TRACK_EFFECTS },
     muted: false,
     solo: false,
     volume: 0.8,
@@ -226,6 +273,26 @@ export function dawReducer(state, action) {
           t.id === action.payload.id ? { ...t, ...action.payload.updates } : t
         ),
       }
+
+    case ActionTypes.UPDATE_TRACK_EFFECTS: {
+      const { trackId, effectType, settings } = action.payload
+      return {
+        ...state,
+        tracks: state.tracks.map(t => {
+          if (t.id !== trackId) return t
+          return {
+            ...t,
+            effects: {
+              ...t.effects,
+              [effectType]: {
+                ...t.effects[effectType],
+                ...settings,
+              },
+            },
+          }
+        }),
+      }
+    }
 
     case ActionTypes.SELECT_TRACK:
       return { ...state, selectedTrackId: action.payload }
