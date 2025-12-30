@@ -88,6 +88,11 @@ Rails.application.routes.draw do
   # MIDI DAW interface
   get "/midi", to: "midi#index"
 
+  # Endless Story
+  get "/endless", to: "endless#index"
+  get "/endless/paragraphs", to: "endless#paragraphs"
+  get "/endless/timer", to: "endless#timer"
+
   # Portfolio as root
   root "portfolio#index"
 end

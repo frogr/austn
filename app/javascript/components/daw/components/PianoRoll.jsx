@@ -34,9 +34,15 @@ const generateKeys = () => {
 }
 
 const ALL_KEYS = generateKeys()
-const ROW_HEIGHT = 24
+const ROW_HEIGHT = 25
 const KEY_WIDTH = 48
-const STEP_WIDTH = 24
+const DEFAULT_STEP_WIDTH = 24
+// Target fill ratio - how much of the container the pattern should fill
+const TARGET_FILL_RATIO = 0.80
+// Base step count for calculating fill (at 16 steps, fill TARGET_FILL_RATIO)
+const BASE_STEP_COUNT = 16
+const MIN_STEP_WIDTH = 20
+const MAX_STEP_WIDTH = 60
 
 const styles = {
   container: {
@@ -69,7 +75,7 @@ const styles = {
     transition: 'background 0.1s',
   },
   whiteKey: {
-    background: 'rgba(255,255,255,0.08)',
+    background: 'rgba(255,255,255,0.15)',
     color: 'rgba(255,255,255,0.7)',
   },
   blackKey: {
@@ -86,7 +92,7 @@ const styles = {
     borderBottom: '1px solid rgba(255,255,255,0.05)',
   },
   gridCell: {
-    width: `${STEP_WIDTH}px`,
+    width: `${DEFAULT_STEP_WIDTH}px`,
     height: '100%',
     borderRight: '1px solid rgba(255,255,255,0.05)',
     cursor: 'pointer',
@@ -165,6 +171,31 @@ const DRUM_TYPES = ['kick', 'snare', 'hihat', 'clap', 'tom', 'crash', 'ride', 'c
 
 function DrumGrid({ track, audioEngine }) {
   const { state, actions } = useDAW()
+  const containerRef = useRef(null)
+
+  // Dynamic step width based on container size
+  const [stepWidth, setStepWidth] = useState(DEFAULT_STEP_WIDTH)
+
+  // Calculate step width to fill container appropriately
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const calculateStepWidth = () => {
+      const containerWidth = container.clientWidth - KEY_WIDTH
+      const baseWidth = (containerWidth * TARGET_FILL_RATIO) / BASE_STEP_COUNT
+      const scaledWidth = baseWidth * (BASE_STEP_COUNT / Math.max(state.totalSteps, BASE_STEP_COUNT))
+      const newWidth = Math.min(MAX_STEP_WIDTH, Math.max(MIN_STEP_WIDTH, scaledWidth))
+      setStepWidth(newWidth)
+    }
+
+    calculateStepWidth()
+
+    const resizeObserver = new ResizeObserver(calculateStepWidth)
+    resizeObserver.observe(container)
+
+    return () => resizeObserver.disconnect()
+  }, [state.totalSteps])
 
   const handleCellClick = useCallback((step, drumIndex) => {
     if (!track) return
@@ -195,10 +226,10 @@ function DrumGrid({ track, audioEngine }) {
     return map
   }, [track?.notes])
 
-  const playheadLeft = KEY_WIDTH + (state.currentStep * STEP_WIDTH) + (STEP_WIDTH / 2)
+  const playheadLeft = KEY_WIDTH + (state.currentStep * stepWidth) + (stepWidth / 2)
 
   return (
-    <div style={{ ...styles.container, height: `${DRUM_LABELS.length * ROW_HEIGHT}px` }}>
+    <div style={{ ...styles.container, height: `${DRUM_LABELS.length * ROW_HEIGHT}px` }} ref={containerRef}>
       {/* Playhead - at container level for full height */}
       {state.isPlaying && (
         <div
@@ -253,8 +284,13 @@ function DrumGrid({ track, audioEngine }) {
                   <div
                     key={step}
                     style={{
-                      ...styles.gridCell,
-                      ...(isBarLine ? styles.barLine : {}),
+                      width: `${stepWidth}px`,
+                      height: '100%',
+                      borderRight: isBarLine
+                        ? '1px solid rgba(255,255,255,0.15)'
+                        : '1px solid rgba(255,255,255,0.05)',
+                      cursor: 'pointer',
+                      transition: 'background 0.1s',
                       background: hasNote
                         ? 'linear-gradient(135deg, var(--accent-color, #10b981), #059669)'
                         : state.currentStep === step
@@ -276,6 +312,34 @@ function DrumGrid({ track, audioEngine }) {
 function SynthGrid({ track, audioEngine }) {
   const { state, actions } = useDAW()
   const gridContainerRef = useRef(null)
+  const outerContainerRef = useRef(null)
+
+  // Dynamic step width based on container size
+  const [stepWidth, setStepWidth] = useState(DEFAULT_STEP_WIDTH)
+
+  // Calculate step width to fill container appropriately
+  useEffect(() => {
+    const container = outerContainerRef.current
+    if (!container) return
+
+    const calculateStepWidth = () => {
+      const containerWidth = container.clientWidth - KEY_WIDTH
+      // Calculate width so that BASE_STEP_COUNT steps fill TARGET_FILL_RATIO of container
+      // Then scale by the ratio of BASE_STEP_COUNT to actual totalSteps
+      const baseWidth = (containerWidth * TARGET_FILL_RATIO) / BASE_STEP_COUNT
+      // Scale: more steps = smaller width, fewer steps = larger width (but capped)
+      const scaledWidth = baseWidth * (BASE_STEP_COUNT / Math.max(state.totalSteps, BASE_STEP_COUNT))
+      const newWidth = Math.min(MAX_STEP_WIDTH, Math.max(MIN_STEP_WIDTH, scaledWidth))
+      setStepWidth(newWidth)
+    }
+
+    calculateStepWidth()
+
+    const resizeObserver = new ResizeObserver(calculateStepWidth)
+    resizeObserver.observe(container)
+
+    return () => resizeObserver.disconnect()
+  }, [state.totalSteps])
 
   // State for resize operations
   const [resizingNote, setResizingNote] = useState(null)
@@ -305,7 +369,7 @@ function SynthGrid({ track, audioEngine }) {
 
     const handleMouseMove = (e) => {
       const deltaX = e.clientX - resizingNote.startX
-      const stepDelta = Math.round(deltaX / STEP_WIDTH)
+      const stepDelta = Math.round(deltaX / stepWidth)
       const newDuration = Math.max(1, resizingNote.originalDuration + stepDelta)
 
       // Limit duration to not exceed total steps
@@ -326,7 +390,7 @@ function SynthGrid({ track, audioEngine }) {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [resizingNote, actions, track?.id, state.totalSteps])
+  }, [resizingNote, actions, track?.id, state.totalSteps, stepWidth])
 
   // Handle click-drag to create notes
   const handleGridMouseDown = useCallback((e, step, midi) => {
@@ -363,7 +427,7 @@ function SynthGrid({ track, audioEngine }) {
 
       const rect = gridContainerRef.current.getBoundingClientRect()
       const x = e.clientX - rect.left
-      const currentStep = Math.floor(x / STEP_WIDTH)
+      const currentStep = Math.floor(x / stepWidth)
 
       const newDuration = Math.max(1, currentStep - createStart.step + 1)
       const maxDuration = state.totalSteps - createStart.step
@@ -398,7 +462,7 @@ function SynthGrid({ track, audioEngine }) {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isCreating, createStart, createPreview, actions, track?.id, state.totalSteps])
+  }, [isCreating, createStart, createPreview, actions, track?.id, state.totalSteps, stepWidth])
 
   const notesByRow = useMemo(() => {
     const map = new Map()
@@ -416,10 +480,10 @@ function SynthGrid({ track, audioEngine }) {
     return ALL_KEYS.findIndex(k => k.midi === midi)
   }, [])
 
-  const playheadLeft = KEY_WIDTH + (state.currentStep * STEP_WIDTH) + (STEP_WIDTH / 2)
+  const playheadLeft = KEY_WIDTH + (state.currentStep * stepWidth) + (stepWidth / 2)
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} ref={outerContainerRef}>
       {/* Playhead - at container level for full height */}
       {state.isPlaying && (
         <div
@@ -485,8 +549,13 @@ function SynthGrid({ track, audioEngine }) {
                   <div
                     key={step}
                     style={{
-                      ...styles.gridCell,
-                      ...(isBarLine ? styles.barLine : {}),
+                      width: `${stepWidth}px`,
+                      height: '100%',
+                      borderRight: isBarLine
+                        ? '1px solid rgba(255,255,255,0.15)'
+                        : '1px solid rgba(255,255,255,0.05)',
+                      cursor: 'pointer',
+                      transition: 'background 0.1s',
                       background: state.currentStep === step
                         ? 'rgba(255,255,255,0.05)'
                         : 'transparent',
@@ -516,8 +585,8 @@ function SynthGrid({ track, audioEngine }) {
                 ...(isHovered ? styles.noteHover : {}),
                 ...(isResizing ? styles.noteResizing : {}),
                 top: `${rowIndex * ROW_HEIGHT + 2}px`,
-                left: `${note.step * STEP_WIDTH + 1}px`,
-                width: `${duration * STEP_WIDTH - 2}px`,
+                left: `${note.step * stepWidth + 1}px`,
+                width: `${duration * stepWidth - 2}px`,
                 zIndex: isResizing ? 20 : 5,
               }}
               onMouseEnter={() => setHoveredNoteId(note.id)}
@@ -546,8 +615,8 @@ function SynthGrid({ track, audioEngine }) {
             style={{
               ...styles.note,
               top: `${getMidiRowIndex(createPreview.midi) * ROW_HEIGHT + 2}px`,
-              left: `${createPreview.step * STEP_WIDTH + 1}px`,
-              width: `${createPreview.duration * STEP_WIDTH - 2}px`,
+              left: `${createPreview.step * stepWidth + 1}px`,
+              width: `${createPreview.duration * stepWidth - 2}px`,
               opacity: 0.6,
               zIndex: 15,
               pointerEvents: 'none',
@@ -562,6 +631,29 @@ function SynthGrid({ track, audioEngine }) {
 function AudioWaveform({ track }) {
   const { state } = useDAW()
   const canvasRef = React.useRef(null)
+  const containerRef = useRef(null)
+  const [stepWidth, setStepWidth] = useState(DEFAULT_STEP_WIDTH)
+
+  // Calculate step width to fill container appropriately
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const calculateStepWidth = () => {
+      const containerWidth = container.clientWidth - KEY_WIDTH
+      const baseWidth = (containerWidth * TARGET_FILL_RATIO) / BASE_STEP_COUNT
+      const scaledWidth = baseWidth * (BASE_STEP_COUNT / Math.max(state.totalSteps, BASE_STEP_COUNT))
+      const newWidth = Math.min(MAX_STEP_WIDTH, Math.max(MIN_STEP_WIDTH, scaledWidth))
+      setStepWidth(newWidth)
+    }
+
+    calculateStepWidth()
+
+    const resizeObserver = new ResizeObserver(calculateStepWidth)
+    resizeObserver.observe(container)
+
+    return () => resizeObserver.disconnect()
+  }, [state.totalSteps])
 
   // Draw waveform when track loads
   React.useEffect(() => {
@@ -573,7 +665,7 @@ function AudioWaveform({ track }) {
     const data = buffer.getChannelData(0)
 
     // Set canvas size
-    canvas.width = state.totalSteps * STEP_WIDTH
+    canvas.width = state.totalSteps * stepWidth
     canvas.height = 200
 
     // Clear
@@ -601,12 +693,12 @@ function AudioWaveform({ track }) {
     }
 
     ctx.stroke()
-  }, [track.audioData?.buffer, state.totalSteps])
+  }, [track.audioData?.buffer, state.totalSteps, stepWidth])
 
-  const playheadLeft = KEY_WIDTH + (state.currentStep * STEP_WIDTH) + (STEP_WIDTH / 2)
+  const playheadLeft = KEY_WIDTH + (state.currentStep * stepWidth) + (stepWidth / 2)
 
   return (
-    <div style={{ ...styles.container, height: '200px' }}>
+    <div style={{ ...styles.container, height: '200px' }} ref={containerRef}>
       {state.isPlaying && (
         <div
           style={{

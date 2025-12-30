@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_30_062308) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_30_131107) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_30_062308) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "stories", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "system_prompt", null: false
+    t.boolean "active", default: true, null: false
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_stories_on_active"
+  end
+
+  create_table "story_paragraphs", force: :cascade do |t|
+    t.bigint "story_id", null: false
+    t.text "content", null: false
+    t.integer "paragraph_number", null: false
+    t.integer "token_count"
+    t.string "model_used"
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_story_paragraphs_on_created_at"
+    t.index ["story_id", "paragraph_number"], name: "index_story_paragraphs_on_story_id_and_paragraph_number", unique: true
+    t.index ["story_id"], name: "index_story_paragraphs_on_story_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "story_paragraphs", "stories"
 end
