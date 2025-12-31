@@ -1,0 +1,263 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 md:mb-8 gap-4">
+    <div>
+      <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        <%= @batch.name %>
+      </h1>
+      <p class="text-gray-400 text-sm">
+        Created <%= time_ago_in_words(@batch.created_at) %> ago
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to tts_batches_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600" do %>
+        Back to Batches
+      <% end %>
+      <% if @batch.completed? && @batch.completed_items > 0 %>
+        <%= link_to download_all_tts_batch_path(@batch), class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-blue-600 hover:bg-blue-500" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download All
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="mb-6 p-4 rounded-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <div class="flex items-center justify-between mb-2">
+      <span id="batch-status" class="text-sm font-medium">
+        <% case @batch.status %>
+        <% when "pending" %>
+          <span class="text-gray-400">Pending</span>
+        <% when "processing" %>
+          <span class="text-blue-400">Processing...</span>
+        <% when "completed" %>
+          <span class="text-green-400">Completed</span>
+        <% when "completed_with_errors" %>
+          <span class="text-yellow-400">Completed with errors</span>
+        <% when "failed" %>
+          <span class="text-red-400">Failed</span>
+        <% end %>
+      </span>
+      <span id="progress-text" class="text-sm text-gray-400">
+        <span id="completed-count"><%= @batch.completed_items %></span> / <%= @batch.total_items %> completed
+        <% if @batch.failed_items > 0 %>
+          (<span id="failed-count"><%= @batch.failed_items %></span> failed)
+        <% end %>
+      </span>
+    </div>
+    <div class="w-full bg-gray-700 rounded-full h-2.5">
+      <div id="progress-bar" class="h-2.5 rounded-full transition-all duration-300" style="width: <%= @batch.progress_percentage %>%; background: linear-gradient(45deg, #10b981, #059669);"></div>
+    </div>
+  </div>
+
+  <!-- Items Table -->
+  <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr style="background: rgba(255,255,255,0.05);">
+            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300 w-12">#</th>
+            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Status</th>
+            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Voice</th>
+            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Text</th>
+            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Duration</th>
+            <th class="text-center px-4 py-3 text-sm font-semibold text-gray-300">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y" style="border-color: rgba(255,255,255,0.05);">
+          <% @batch.tts_batch_items.each do |item| %>
+            <tr id="item-<%= item.id %>" class="hover:bg-white/5 transition-colors">
+              <td class="px-4 py-3 text-sm text-gray-500"><%= item.position %></td>
+              <td class="px-4 py-3 text-sm" data-field="status">
+                <% case item.status %>
+                <% when "pending" %>
+                  <span class="px-2 py-1 rounded-full text-xs bg-gray-700 text-gray-300">Pending</span>
+                <% when "processing" %>
+                  <span class="px-2 py-1 rounded-full text-xs bg-blue-900 text-blue-300 flex items-center gap-1 w-fit">
+                    <svg class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing
+                  </span>
+                <% when "completed" %>
+                  <span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Completed</span>
+                <% when "failed" %>
+                  <span class="px-2 py-1 rounded-full text-xs bg-red-900 text-red-300" title="<%= item.error_message %>">Failed</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">
+                <%= voice_name_for(item.voice_preset, @voices) %>
+              </td>
+              <td class="px-4 py-3 text-sm text-white max-w-xs">
+                <span class="line-clamp-2" title="<%= item.text %>"><%= truncate(item.text, length: 60) %></span>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap" data-field="duration">
+                <%= item.duration ? "#{item.duration.round(1)}s" : "-" %>
+              </td>
+              <td class="px-4 py-3" data-field="actions">
+                <% if item.status == "completed" && item.audio_data.present? %>
+                  <div class="flex items-center justify-center gap-2">
+                    <button type="button" onclick="playItemAudio(<%= item.id %>)" class="p-2 rounded-md transition-colors hover:bg-white/10" title="Play" data-play-btn="<%= item.id %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </button>
+                    <%= link_to download_tts_batch_item_path(item), class: "p-2 rounded-md transition-colors hover:bg-white/10", title: "Download" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <span class="text-gray-600">-</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Hidden audio player -->
+  <audio id="item-audio-player" style="display: none;"></audio>
+</div>
+
+<script type="module">
+import consumer from "channels/consumer"
+
+// Subscribe to batch updates
+const batchId = <%= @batch.id %>;
+let subscription = null;
+
+<% unless @batch.completed? %>
+subscription = consumer.subscriptions.create(
+  { channel: "TtsBatchChannel", batch_id: batchId },
+  {
+    received(data) {
+      console.log("Received:", data);
+
+      if (data.type === "item_update") {
+        updateItemRow(data);
+        updateProgress(data);
+      } else if (data.type === "batch_complete") {
+        updateBatchStatus(data.status);
+        // Reload to show download buttons
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }
+  }
+);
+<% end %>
+
+function updateItemRow(data) {
+  const row = document.getElementById(`item-${data.item_id}`);
+  if (!row) return;
+
+  const statusCell = row.querySelector('[data-field="status"]');
+  const durationCell = row.querySelector('[data-field="duration"]');
+
+  // Update status
+  let statusHtml = '';
+  switch(data.status) {
+    case 'processing':
+      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-blue-900 text-blue-300 flex items-center gap-1 w-fit">
+        <svg class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Processing
+      </span>`;
+      break;
+    case 'completed':
+      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Completed</span>`;
+      break;
+    case 'failed':
+      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-red-900 text-red-300" title="${data.error || ''}">Failed</span>`;
+      break;
+  }
+  statusCell.innerHTML = statusHtml;
+
+  // Update duration
+  if (data.duration) {
+    durationCell.textContent = `${data.duration.toFixed(1)}s`;
+  }
+}
+
+function updateProgress(data) {
+  const progressBar = document.getElementById('progress-bar');
+  const completedCount = document.getElementById('completed-count');
+
+  progressBar.style.width = `${data.batch_progress}%`;
+  completedCount.textContent = data.completed_items;
+}
+
+function updateBatchStatus(status) {
+  const statusEl = document.getElementById('batch-status');
+  let statusHtml = '';
+  switch(status) {
+    case 'completed':
+      statusHtml = '<span class="text-green-400">Completed</span>';
+      break;
+    case 'completed_with_errors':
+      statusHtml = '<span class="text-yellow-400">Completed with errors</span>';
+      break;
+  }
+  statusEl.innerHTML = statusHtml;
+}
+
+// Audio player
+let currentlyPlayingId = null;
+const audioPlayer = document.getElementById('item-audio-player');
+
+window.playItemAudio = function(itemId) {
+  const playBtn = document.querySelector(`[data-play-btn="${itemId}"]`);
+
+  if (currentlyPlayingId === itemId && !audioPlayer.paused) {
+    audioPlayer.pause();
+    resetPlayButton(itemId);
+    currentlyPlayingId = null;
+    return;
+  }
+
+  if (currentlyPlayingId) {
+    resetPlayButton(currentlyPlayingId);
+  }
+
+  audioPlayer.src = `/tts_batches/items/${itemId}/download`;
+  audioPlayer.play();
+  currentlyPlayingId = itemId;
+
+  if (playBtn) {
+    playBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    `;
+  }
+}
+
+function resetPlayButton(itemId) {
+  const playBtn = document.querySelector(`[data-play-btn="${itemId}"]`);
+  if (playBtn) {
+    playBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    `;
+  }
+}
+
+audioPlayer?.addEventListener('ended', () => {
+  if (currentlyPlayingId) {
+    resetPlayButton(currentlyPlayingId);
+    currentlyPlayingId = null;
+  }
+});
+</script>

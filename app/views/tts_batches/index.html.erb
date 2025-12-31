@@ -1,0 +1,93 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 md:mb-8 gap-4">
+    <div>
+      <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        TTS Batch Generation
+      </h1>
+      <p class="text-gray-400 text-sm">Generate multiple TTS clips from a CSV file</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to tts_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600" do %>
+        Back to TTS
+      <% end %>
+      <%= link_to new_tts_batch_path, class: "inline-flex items-center gap-2 font-semibold py-2.5 px-5 rounded-md transition duration-200 text-white", style: "background: linear-gradient(45deg, #10b981, #059669);" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        New Batch
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Batches Table -->
+  <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <% if @batches.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr style="background: rgba(255,255,255,0.05);">
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Name</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Status</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Progress</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Created</th>
+              <th class="text-center px-4 py-3 text-sm font-semibold text-gray-300">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y" style="border-color: rgba(255,255,255,0.05);">
+            <% @batches.each do |batch| %>
+              <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-4 py-3 text-sm text-white">
+                  <%= link_to batch.name, tts_batch_path(batch), class: "hover:text-green-400 transition-colors" %>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  <% case batch.status %>
+                  <% when "pending" %>
+                    <span class="px-2 py-1 rounded-full text-xs bg-gray-700 text-gray-300">Pending</span>
+                  <% when "processing" %>
+                    <span class="px-2 py-1 rounded-full text-xs bg-blue-900 text-blue-300">Processing</span>
+                  <% when "completed" %>
+                    <span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Completed</span>
+                  <% when "completed_with_errors" %>
+                    <span class="px-2 py-1 rounded-full text-xs bg-yellow-900 text-yellow-300">Completed with errors</span>
+                  <% when "failed" %>
+                    <span class="px-2 py-1 rounded-full text-xs bg-red-900 text-red-300">Failed</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-400">
+                  <%= batch.completed_items + batch.failed_items %> / <%= batch.total_items %>
+                  <span class="text-gray-500">(<%= batch.progress_percentage %>%)</span>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">
+                  <%= batch.created_at.strftime("%b %d, %Y %l:%M %p") %>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <%= link_to tts_batch_path(batch), class: "p-2 rounded-md transition-colors hover:bg-white/10 inline-block", title: "View" do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="text-center py-12 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-300 mb-2">No batches yet</h3>
+        <p class="text-gray-500 mb-6">Create a batch from a CSV file to generate multiple TTS clips at once.</p>
+        <%= link_to new_tts_batch_path, class: "inline-flex items-center gap-2 font-semibold py-2.5 px-5 rounded-md transition duration-200 text-white", style: "background: linear-gradient(45deg, #10b981, #059669);" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Create Your First Batch
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

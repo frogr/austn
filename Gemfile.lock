@@ -423,6 +423,7 @@ DEPENDENCIES
   redcarpet (~> 3.5)
   redis (~> 5.0)
   rubocop-rails-omakase
+  rubyzip (~> 2.3)
   selenium-webdriver
   sidekiq (~> 7.3)
   sidekiq-scheduler (~> 5.0)

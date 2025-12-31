@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_31_042443) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_31_150033) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -98,6 +98,39 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_31_042443) do
     t.index ["story_id"], name: "index_story_paragraphs_on_story_id"
   end
 
+  create_table "tts_batch_items", force: :cascade do |t|
+    t.bigint "tts_batch_id", null: false
+    t.text "text", null: false
+    t.string "voice_preset"
+    t.float "exaggeration", default: 0.5
+    t.float "cfg_weight", default: 0.5
+    t.integer "position", null: false
+    t.string "status", default: "pending"
+    t.text "audio_data"
+    t.float "duration"
+    t.text "error_message"
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_tts_batch_items_on_status"
+    t.index ["tts_batch_id", "position"], name: "index_tts_batch_items_on_tts_batch_id_and_position"
+    t.index ["tts_batch_id"], name: "index_tts_batch_items_on_tts_batch_id"
+  end
+
+  create_table "tts_batches", force: :cascade do |t|
+    t.string "name"
+    t.string "status", default: "pending"
+    t.integer "total_items", default: 0
+    t.integer "completed_items", default: 0
+    t.integer "failed_items", default: 0
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_tts_batches_on_status"
+  end
+
   create_table "tts_shares", force: :cascade do |t|
     t.string "token"
     t.text "audio_data"
@@ -106,6 +139,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_31_042443) do
     t.datetime "expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "voice_preset"
     t.index ["expires_at"], name: "index_tts_shares_on_expires_at"
     t.index ["token"], name: "index_tts_shares_on_token", unique: true
   end
@@ -113,4 +147,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_31_042443) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "story_paragraphs", "stories"
+  add_foreign_key "tts_batch_items", "tts_batches"
 end

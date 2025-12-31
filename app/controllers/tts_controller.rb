@@ -4,6 +4,7 @@ class TtsController < ApplicationController
   def index
     # Show list of TTS shares
     @shares = TtsShare.active.order(created_at: :desc)
+    @voices = TtsService.available_voices
   end
 
   def new
@@ -137,10 +138,13 @@ class TtsController < ApplicationController
     audio_data = tts_redis_service.get_audio(generation_id)
 
     if audio_data && audio_data["audio"]
+      voice_preset = audio_data.dig("options", "voice_preset")
+
       share = TtsShare.create!(
         audio_data: audio_data["audio"],
         text: audio_data["text"],
-        duration: audio_data["duration"]
+        duration: audio_data["duration"],
+        voice_preset: voice_preset
       )
 
       render json: {

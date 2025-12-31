@@ -92,6 +92,36 @@ Rails.application.routes.draw do
   get "/tts/s/:token/audio", to: "tts_shares#audio", as: :tts_share_audio
   get "/tts/s/:token/embed", to: "tts_shares#embed", as: :tts_share_embed
 
+  # TTS Batch Generation (admin)
+  resources :tts_batches, only: [ :index, :show, :new, :create ] do
+    member do
+      get :download_all
+    end
+  end
+  get "/tts_batches/items/:id/download", to: "tts_batches#download_item", as: :download_tts_batch_item
+
+  # Admin namespace
+  namespace :admin do
+    root to: "dashboard#index"
+    resources :tts_shares, only: [ :index, :destroy ] do
+      collection do
+        post :bulk_destroy
+        post :cleanup_expired
+      end
+    end
+  end
+
+  # API v1
+  namespace :api do
+    namespace :v1 do
+      post "tts/generate", to: "tts#generate"
+      get "tts/voices", to: "tts#voices"
+      get "tts/:id/status", to: "tts#status", as: :tts_status
+      post "tts/batch", to: "tts#batch"
+      get "tts/batch/:id/status", to: "tts#batch_status", as: :tts_batch_status
+    end
+  end
+
   # MIDI DAW interface
   get "/midi", to: "midi#index"
 

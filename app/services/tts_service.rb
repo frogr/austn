@@ -79,7 +79,16 @@ class TtsService
   end
 
   def self.available_voices
-    response = get("/voices", timeout: 5)
+    Rails.cache.fetch("tts_available_voices", expires_in: 5.minutes) do
+      fetch_voices_from_api
+    end
+  rescue => e
+    Rails.logger.error "Failed to fetch voices: #{e.message}"
+    []
+  end
+
+  def self.fetch_voices_from_api
+    response = get("/voices", timeout: 2)  # Quick timeout - voices list should be fast
 
     if response.success?
       data = response.parsed_response || JSON.parse(response.body)
@@ -88,7 +97,7 @@ class TtsService
       []
     end
   rescue => e
-    Rails.logger.error "Failed to fetch voices: #{e.message}"
+    Rails.logger.error "Failed to fetch voices from API: #{e.message}"
     []
   end
 end

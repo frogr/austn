@@ -1,0 +1,113 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
+  <!-- Header -->
+  <div class="mb-6 md:mb-8">
+    <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      New Batch
+    </h1>
+    <p class="text-gray-400 text-sm">Upload a CSV file to generate multiple TTS clips</p>
+  </div>
+
+  <!-- CSV Format Info -->
+  <div class="mb-6 p-4 rounded-lg" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+    <h3 class="text-blue-400 font-semibold mb-2">CSV Format</h3>
+    <p class="text-gray-400 text-sm mb-2">Your CSV should have the following columns:</p>
+    <code class="block text-xs p-2 rounded bg-gray-900 text-gray-300 mb-3">text,voice_preset,exaggeration,cfg_weight</code>
+    <p class="text-gray-500 text-xs">
+      <strong>text</strong> (required): The text to convert to speech<br>
+      <strong>voice_preset</strong>: Voice ID (e.g., "djt", "jp") - leave empty for default<br>
+      <strong>exaggeration</strong>: 0.0-0.9, default 0.5<br>
+      <strong>cfg_weight</strong>: 0.0-1.0, default 0.5
+    </p>
+  </div>
+
+  <!-- Available Voices -->
+  <% if @voices.any? %>
+    <div class="mb-6 p-4 rounded-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <h3 class="text-gray-300 font-semibold mb-2">Available Voices</h3>
+      <div class="flex flex-wrap gap-2">
+        <% @voices.each do |voice| %>
+          <span class="text-xs px-2 py-1 rounded bg-gray-800 text-gray-400">
+            <strong class="text-gray-300"><%= voice["id"] %></strong>: <%= voice["name"] %>
+          </span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Upload Form -->
+  <div class="rounded-lg p-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <form id="batch-form">
+      <div class="mb-4">
+        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Batch Name (optional)</label>
+        <input type="text" name="name" id="name" placeholder="My Batch" class="w-full px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+      </div>
+
+      <div class="mb-6">
+        <label for="csv_file" class="block text-sm font-medium text-gray-300 mb-2">CSV File</label>
+        <input type="file" name="csv_file" id="csv_file" accept=".csv" required class="w-full px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+      </div>
+
+      <div class="flex gap-3">
+        <%= link_to "Cancel", tts_batches_path, class: "flex-1 text-center py-2.5 px-5 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600 font-semibold" %>
+        <button type="submit" id="submit-btn" class="flex-1 py-2.5 px-5 rounded-md transition duration-200 text-white font-semibold" style="background: linear-gradient(45deg, #10b981, #059669);">
+          Start Batch
+        </button>
+      </div>
+    </form>
+
+    <div id="upload-status" class="hidden mt-4 p-3 rounded-md bg-blue-900/50 text-blue-300 border border-blue-700">
+      <div class="flex items-center gap-2">
+        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Uploading and processing...</span>
+      </div>
+    </div>
+
+    <div id="upload-error" class="hidden mt-4 p-3 rounded-md bg-red-900/50 text-red-300 border border-red-700"></div>
+  </div>
+</div>
+
+<script>
+document.getElementById('batch-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const submitBtn = document.getElementById('submit-btn');
+  const statusDiv = document.getElementById('upload-status');
+  const errorDiv = document.getElementById('upload-error');
+
+  // Reset state
+  statusDiv.classList.remove('hidden');
+  errorDiv.classList.add('hidden');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Processing...';
+
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch('<%= tts_batches_path %>', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      window.location.href = data.redirect_url;
+    } else {
+      throw new Error(data.error || 'Upload failed');
+    }
+  } catch (err) {
+    statusDiv.classList.add('hidden');
+    errorDiv.classList.remove('hidden');
+    errorDiv.textContent = err.message;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Start Batch';
+  }
+});
+</script>
