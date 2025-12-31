@@ -5,9 +5,6 @@
       <h1 class="font-black mb-2" style="font-size: clamp(2.5rem, 5vw, 3.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
         Text to Speech <%= render "shared/gpu_health_indicator", service: "tts" %>
       </h1>
-      <p class="font-medium" style="font-size: clamp(1rem, 1.5vw, 1.25rem); color: var(--text-secondary); letter-spacing: -0.01em;">
-        Shared audio clips
-      </p>
     </div>
     <a href="<%= new_tts_path %>" class="inline-flex items-center gap-2 font-semibold py-2.5 px-5 rounded-md transition duration-200 text-white shrink-0" style="background: linear-gradient(45deg, #10b981, #059669);">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
