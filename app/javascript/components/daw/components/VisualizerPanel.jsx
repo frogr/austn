@@ -247,17 +247,6 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
     // Get FFT data (values are in dB, typically -100 to 0)
     const values = fft.getValue()
 
-    // Debug: log FFT status periodically
-    if (Math.random() < 0.005) {
-      const maxDb = Math.max(...values)
-      console.log('FFT Debug:', {
-        canvasWidth: width,
-        canvasHeight: canvasHeight,
-        fftBins: values.length,
-        maxDb: maxDb.toFixed(1),
-      })
-    }
-
     // Generate band mappings if not already done
     if (!bandMappingsRef.current || bandMappingsRef.current.length !== bands) {
       // FFT returns full array, use values.length as fftSize
@@ -368,11 +357,6 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
       ctx.fillStyle = gradient
       ctx.fillRect(x, canvasHeight - barHeight, barWidth, barHeight)
 
-      // Debug: log first band's values occasionally
-      if (i === 10 && Math.random() < 0.01) {
-        console.log('Band 10:', { bandValue, smoothed: smoothedRef.current[i], normalized, displayValue, barHeight, x, barWidth })
-      }
-
       // Draw peak indicator line
       if (peaksRef.current[i] > 0.02) {
         ctx.fillStyle = displayValue > 0.8
@@ -399,7 +383,6 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
 
     const rect = canvas.getBoundingClientRect()
     const dpr = window.devicePixelRatio || 1
-    console.log('Spectrum canvas setup:', { rectWidth: rect.width, rectHeight: rect.height, dpr })
     canvas.width = rect.width * dpr
     canvas.height = rect.height * dpr
     const ctx = canvas.getContext('2d')

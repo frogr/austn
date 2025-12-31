@@ -757,6 +757,7 @@ class AudioEngine {
   }
 
   // Create a PluckSynth for guitar-like sounds
+  // Note: PluckSynth cannot be used with PolySynth, so we create multiple instances for polyphony
   createPluckSynth(trackId, settings = {}, effectsSettings = null) {
     // Dispose existing synth if any
     this.disposeSynth(trackId)
@@ -779,13 +780,33 @@ class AudioEngine {
     const effectsChain = this.createEffectsChain(trackId, effectsSettings)
     effectsChain.output.connect(channel)
 
-    // Create pluck synth (use PolySynth for polyphony)
-    const synth = new Tone.PolySynth(Tone.PluckSynth, {
-      attackNoise,
-      dampening,
-      resonance,
-      release,
-    }).connect(effectsChain.input)
+    // Create multiple PluckSynth instances for polyphony (PluckSynth can't use PolySynth wrapper)
+    const voiceCount = 8
+    const voices = []
+    for (let i = 0; i < voiceCount; i++) {
+      const voice = new Tone.PluckSynth({
+        attackNoise,
+        dampening,
+        resonance,
+        release,
+      }).connect(effectsChain.input)
+      voices.push({ synth: voice, busy: false })
+    }
+
+    // Create a wrapper object that mimics PolySynth interface
+    const synth = {
+      voices,
+      currentVoice: 0,
+      triggerAttackRelease: (note, duration, time, velocity) => {
+        // Round-robin voice allocation
+        const voice = voices[synth.currentVoice]
+        voice.synth.triggerAttackRelease(note, duration, time, velocity)
+        synth.currentVoice = (synth.currentVoice + 1) % voiceCount
+      },
+      dispose: () => {
+        voices.forEach(v => v.synth.dispose())
+      }
+    }
 
     this.synths.set(trackId, { synth, channel, synthType: 'pluck', settings: { attackNoise, dampening, resonance, release } })
 
