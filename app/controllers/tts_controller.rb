@@ -2,6 +2,11 @@ class TtsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
+    # Show list of TTS shares
+    @shares = TtsShare.active.order(created_at: :desc)
+  end
+
+  def new
     # Fetch available voice presets for the dropdown
     @voices = TtsService.available_voices
   end

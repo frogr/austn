@@ -1,0 +1,527 @@
+<style>
+  select option {
+    background-color: #1f2937;
+    color: white;
+  }
+  select optgroup {
+    background-color: #111827;
+    color: #9ca3af;
+    font-weight: 600;
+    -webkit-text-fill-color: #9ca3af;
+  }
+  select optgroup[label] {
+    background-color: #374151;
+    color: #d1d5db;
+    -webkit-text-fill-color: #d1d5db;
+  }
+</style>
+
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Text to Speech <%= render "shared/gpu_health_indicator", service: "tts" %>
+    </h1>
+    <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Routed to my local GPU via Chatterbox TTS</p>
+  </div>
+
+  <div class="max-w-4xl mx-auto">
+    <div class="rounded-lg p-3 sm:p-6 mb-4 sm:mb-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <div class="space-y-4">
+        <div>
+          <label for="text" class="block text-sm font-medium text-gray-300 mb-2">
+            Enter text to speak
+          </label>
+          <textarea
+            id="text"
+            placeholder="Hello! This is a test of the text-to-speech system..."
+            rows="3"
+            class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+            onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); generateSpeech(); }"
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="voice-preset" class="block text-sm font-medium text-gray-300 mb-2">
+            Voice
+          </label>
+          <select
+            id="voice-preset"
+            class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+          >
+            <option value="">Default voice</option>
+            <% if @voices.present? %>
+              <% @voices.group_by { |v| v["category"] || "General" }.each do |category, voices| %>
+                <optgroup label="<%= category %>">
+                  <% voices.each do |voice| %>
+                    <option value="<%= voice["id"] %>"><%= voice["name"] %></option>
+                  <% end %>
+                </optgroup>
+              <% end %>
+            <% end %>
+            <option value="_custom">Custom</option>
+          </select>
+        </div>
+
+        <div id="custom-voice-section" class="mb-4" style="display: none;">
+          <label for="voice-file" class="block text-sm font-medium text-gray-300 mb-2">
+            Upload voice sample (~10s audio)
+          </label>
+          <input
+            type="file"
+            id="voice-file"
+            accept="audio/*"
+            class="w-full px-3 py-2 rounded-md focus:outline-none text-white text-sm" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+            onchange="handleVoiceFile(this)"
+          >
+          <div id="voice-file-status" class="mt-1 text-sm text-gray-400"></div>
+        </div>
+
+        <div class="flex items-center gap-6 mb-4">
+          <div class="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="advanced"
+              class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+              onchange="toggleAdvanced()"
+            >
+            <label for="advanced" class="text-sm font-medium text-gray-300">
+              Advanced options
+            </label>
+          </div>
+        </div>
+
+        <div id="advanced-options" style="display: none;">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label for="exaggeration" class="block text-sm font-medium text-gray-300 mb-2">
+                Exaggeration
+              </label>
+              <select
+                id="exaggeration"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+              >
+                <option value="0.2">0.2 (Calm)</option>
+                <option value="0.3">0.3</option>
+                <option value="0.5" selected>0.5 (Default)</option>
+                <option value="0.7">0.7</option>
+                <option value="0.9">0.9 (Dramatic)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="cfg-weight" class="block text-sm font-medium text-gray-300 mb-2">
+                CFG Weight
+              </label>
+              <select
+                id="cfg-weight"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+              >
+                <option value="0.0">0.0 (Natural)</option>
+                <option value="0.3">0.3</option>
+                <option value="0.5" selected>0.5 (Default)</option>
+                <option value="0.7">0.7</option>
+                <option value="1.0">1.0 (Guided)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">
+                Expression tags
+              </label>
+              <select
+                id="tag-select"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+                onchange="insertTag(this.value); this.value='';"
+              >
+                <option value="">Insert tag...</option>
+                <option value="[laughter]">[laughter]</option>
+                <option value="[giggle]">[giggle]</option>
+                <option value="[sigh]">[sigh]</option>
+                <option value="[gasp]">[gasp]</option>
+                <option value="[whisper]">[whisper]</option>
+                <option value="[cough]">[cough]</option>
+                <option value="[clear_throat]">[clear_throat]</option>
+                <option value="[groan]">[groan]</option>
+                <option value="[humming]">[humming]</option>
+                <option value="[UH]">[UH]</option>
+                <option value="[UM]">[UM]</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick="generateSpeech()"
+          id="generate-btn"
+          class="w-full font-semibold py-3 px-4 rounded-md transition duration-200" style="background: linear-gradient(45deg, #10b981, #059669); color: #fff;"
+        >
+          Generate Speech
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Display -->
+    <div id="status" style="display:none;" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="animate-spin h-5 w-5 mr-3 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span id="status-text" class="text-yellow-700">Generating your audio...</span>
+      </div>
+      <div id="queue-position" class="mt-2 text-sm text-yellow-600"></div>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error" style="display:none;" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="h-5 w-5 text-red-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-12v4m0 4h.01"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Generation failed</h3>
+          <div id="error-message" class="mt-1 text-sm text-red-700"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" style="display:none;">
+      <div class="rounded-lg p-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <h3 class="text-lg font-semibold text-white mb-2" id="result-text"></h3>
+        <p class="text-sm text-gray-400 mb-4" id="result-info"></p>
+        <div class="mb-4">
+          <audio id="audio-player" controls class="w-full">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+        <div class="flex gap-4 mb-3">
+          <a id="download-link" href="#" download
+            class="flex-1 text-center text-white font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: linear-gradient(45deg, #10b981, #059669);">
+            Download Audio
+          </a>
+          <button
+            onclick="generateNew()"
+            class="flex-1 font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            Generate New
+          </button>
+        </div>
+        <div id="share-section">
+          <button
+            onclick="shareAudio()"
+            id="share-btn"
+            class="w-full font-semibold py-2 px-4 rounded transition duration-200 flex items-center justify-center gap-2"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Share Link (7 days)
+          </button>
+          <div id="share-result" style="display: none;" class="mt-2 p-3 rounded" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div class="flex items-center gap-2">
+              <input type="text" id="share-url" readonly class="flex-1 px-2 py-1 rounded text-sm text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" />
+              <button onclick="copyShareUrl()" class="px-3 py-1 rounded text-sm font-medium" style="background: #10b981; color: white;">
+                Copy
+              </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Link copied! Expires in 7 days.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Cache bust: <%= Time.now.to_i %>
+let currentGenerationId = null;
+let pollingInterval = null;
+let voiceAudioBase64 = null;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+function insertTag(tag) {
+  if (!tag) return;
+  const textarea = document.getElementById('text');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+  const before = text.substring(0, start);
+  const after = text.substring(end);
+  textarea.value = before + tag + after;
+  textarea.focus();
+  textarea.setSelectionRange(start + tag.length, start + tag.length);
+}
+
+function handleVoiceFile(input) {
+  const statusEl = document.getElementById('voice-file-status');
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      voiceAudioBase64 = e.target.result.split(',')[1];
+      statusEl.textContent = `Loaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      statusEl.style.color = '#10b981';
+    };
+    reader.onerror = function() {
+      statusEl.textContent = 'Failed to load file';
+      statusEl.style.color = '#ef4444';
+      voiceAudioBase64 = null;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    voiceAudioBase64 = null;
+    statusEl.textContent = '';
+  }
+}
+
+function handleVoicePresetChange() {
+  const voicePreset = document.getElementById('voice-preset');
+  const customSection = document.getElementById('custom-voice-section');
+
+  if (voicePreset && voicePreset.value === '_custom') {
+    // Show custom upload section
+    if (customSection) customSection.style.display = 'block';
+  } else {
+    // Hide custom upload section
+    if (customSection) customSection.style.display = 'none';
+    // Clear any uploaded file
+    voiceAudioBase64 = null;
+    const voiceFile = document.getElementById('voice-file');
+    if (voiceFile) voiceFile.value = '';
+    const statusEl = document.getElementById('voice-file-status');
+    if (statusEl) statusEl.textContent = '';
+  }
+}
+
+// Attach handler if voice-preset exists
+document.addEventListener('DOMContentLoaded', function() {
+  const voicePreset = document.getElementById('voice-preset');
+  if (voicePreset) {
+    voicePreset.addEventListener('change', handleVoicePresetChange);
+  }
+});
+
+async function generateSpeech() {
+  const text = document.getElementById('text').value;
+  const exaggeration = document.getElementById('exaggeration').value;
+  const cfgWeight = document.getElementById('cfg-weight').value;
+  const voicePresetEl = document.getElementById('voice-preset');
+  const voicePreset = voicePresetEl ? voicePresetEl.value : '';
+
+  if (!text) {
+    alert('Please enter some text');
+    return;
+  }
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Generating...';
+
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('status-text').textContent = 'Generating your audio...';
+  document.getElementById('queue-position').textContent = '';
+
+  try {
+    const body = {
+      text: text,
+      exaggeration: parseFloat(exaggeration),
+      cfg_weight: parseFloat(cfgWeight)
+    };
+
+    // Voice selection logic - explicit and clear
+    // voicePreset values: "" = default, "djt" = preset, "_custom" = use uploaded audio
+    if (voicePreset === '_custom' && voiceAudioBase64) {
+      // Custom voice: use uploaded audio for this generation only
+      body.voice_audio = voiceAudioBase64;
+      console.log('Using custom uploaded voice');
+    } else if (voicePreset && voicePreset !== '' && voicePreset !== '_custom') {
+      // Preset voice: send the preset ID
+      body.voice_preset = voicePreset;
+      console.log('Using preset voice:', voicePreset);
+    } else {
+      // Default voice: don't send any voice params
+      console.log('Using default voice');
+    }
+
+    const response = await fetch('/tts/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCsrfToken()
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await response.json();
+    currentGenerationId = data.generation_id;
+    console.log('Generation started:', currentGenerationId);
+
+    startPolling();
+
+  } catch (error) {
+    showError('Failed to start generation: ' + error.message);
+  }
+}
+
+function startPolling() {
+  pollingInterval = setInterval(async () => {
+    if (!currentGenerationId) {
+      clearInterval(pollingInterval);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/tts/${currentGenerationId}/status`);
+      const statusData = await response.json();
+
+      if (statusData.status === 'complete') {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        displayAudio(statusData);
+      } else if (statusData.status === 'queued' && statusData.position) {
+        document.getElementById('queue-position').textContent = `Position in queue: ${statusData.position}`;
+      } else if (statusData.status === 'processing') {
+        document.getElementById('status-text').textContent = 'Processing your audio...';
+        document.getElementById('queue-position').textContent = '';
+      } else if (statusData.status === 'failed') {
+        clearInterval(pollingInterval);
+        showError(statusData.error || 'Generation failed');
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+    }
+  }, 1000);
+}
+
+function displayAudio(statusData) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+
+  const text = document.getElementById('text').value;
+  document.getElementById('result-text').textContent = text.length > 100 ? text.substring(0, 100) + '...' : text;
+
+  const duration = statusData.duration ? statusData.duration.toFixed(1) : '?';
+  document.getElementById('result-info').textContent = `Duration: ${duration}s`;
+
+  const audioPlayer = document.getElementById('audio-player');
+  audioPlayer.src = `/tts/${currentGenerationId}/audio`;
+
+  document.getElementById('download-link').href = `/tts/${currentGenerationId}/download`;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Speech';
+}
+
+function showError(message) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+  document.getElementById('error-message').textContent = message;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Speech';
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function generateNew() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  currentGenerationId = null;
+
+  // Reset share UI
+  document.getElementById('share-result').style.display = 'none';
+  const shareBtn = document.getElementById('share-btn');
+  shareBtn.style.display = 'flex';
+  shareBtn.disabled = false;
+  shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg> Share Link (7 days)';
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function toggleAdvanced() {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+
+  if (checkbox.checked) {
+    advancedOptions.style.display = 'block';
+  } else {
+    advancedOptions.style.display = 'none';
+  }
+}
+
+async function shareAudio() {
+  if (!currentGenerationId) {
+    alert('No audio to share');
+    return;
+  }
+
+  const shareBtn = document.getElementById('share-btn');
+  shareBtn.disabled = true;
+  shareBtn.textContent = 'Creating share link...';
+
+  try {
+    const response = await fetch(`/tts/${currentGenerationId}/share`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCsrfToken()
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      const shareUrl = document.getElementById('share-url');
+      shareUrl.value = data.share_url;
+      document.getElementById('share-result').style.display = 'block';
+      shareBtn.style.display = 'none';
+
+      // Auto-copy to clipboard
+      await navigator.clipboard.writeText(data.share_url);
+    } else {
+      alert('Failed to create share link: ' + (data.error || 'Unknown error'));
+      shareBtn.disabled = false;
+      shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg> Share Link (7 days)';
+    }
+  } catch (error) {
+    alert('Failed to create share link: ' + error.message);
+    shareBtn.disabled = false;
+    shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg> Share Link (7 days)';
+  }
+}
+
+async function copyShareUrl() {
+  const shareUrl = document.getElementById('share-url');
+  try {
+    await navigator.clipboard.writeText(shareUrl.value);
+  } catch (err) {
+    shareUrl.select();
+    document.execCommand('copy');
+  }
+}
+</script>
