@@ -1,6 +1,6 @@
 class Story < ApplicationRecord
   PARAGRAPHS_PER_PAGE = 25
-  CONTEXT_PARAGRAPHS = 10
+  CONTEXT_PARAGRAPHS = 7
 
   has_many :story_paragraphs, dependent: :destroy
 
