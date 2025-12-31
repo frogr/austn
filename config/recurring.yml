@@ -8,3 +8,9 @@
 #     command: "SoftDeletedRecord.due.delete_all"
 #     priority: 2
 #     schedule: at 5am every day
+
+production:
+  cleanup_expired_tts_shares:
+    class: CleanupExpiredTtsSharesJob
+    queue: low
+    schedule: every day at 3am

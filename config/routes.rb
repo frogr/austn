@@ -80,10 +80,16 @@ Rails.application.routes.draw do
   get "/tts", to: "tts#index"
   get "/tts/voices", to: "tts#voices", as: :tts_voices
   post "/tts/generate", to: "tts#generate"
+  post "/tts/:id/share", to: "tts#share", as: :tts_share_create
   get "/tts/:id/status", to: "tts#status", as: :tts_status
   get "/tts/:id/audio", to: "tts#audio", as: :tts_audio
   get "/tts/:id/data", to: "tts#data", as: :tts_data
   get "/tts/:id/download", to: "tts#download", as: :tts_download
+
+  # TTS Share pages (public)
+  get "/tts/s/:token", to: "tts_shares#show", as: :tts_share
+  get "/tts/s/:token/audio", to: "tts_shares#audio", as: :tts_share_audio
+  get "/tts/s/:token/embed", to: "tts_shares#embed", as: :tts_share_embed
 
   # MIDI DAW interface
   get "/midi", to: "midi#index"

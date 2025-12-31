@@ -127,6 +127,30 @@ class TtsController < ApplicationController
     end
   end
 
+  def share
+    generation_id = params[:id]
+    audio_data = tts_redis_service.get_audio(generation_id)
+
+    if audio_data && audio_data["audio"]
+      share = TtsShare.create!(
+        audio_data: audio_data["audio"],
+        text: audio_data["text"],
+        duration: audio_data["duration"]
+      )
+
+      render json: {
+        share_url: tts_share_url(share.token),
+        token: share.token,
+        expires_at: share.expires_at
+      }
+    else
+      render json: { error: "Audio not found or expired" }, status: :not_found
+    end
+  rescue => e
+    Rails.logger.error "Failed to create TTS share: #{e.message}"
+    render json: { error: e.message }, status: :internal_server_error
+  end
+
   private
 
   def tts_redis_service

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TTS Audio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .player {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      width: 100%;
+      max-width: 440px;
+    }
+    audio { width: 100%; }
+    .text {
+      color: #e5e5e5;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="player">
+    <% if @share %>
+      <p class="text"><%= truncate(@share.text, length: 100) %></p>
+      <audio controls autoplay preload="auto">
+        <source src="<%= tts_share_audio_url(@share.token) %>" type="audio/wav">
+      </audio>
+    <% else %>
+      <p class="text">Audio expired or not found</p>
+    <% end %>
+  </div>
+</body>
+</html>

@@ -196,7 +196,7 @@
             Your browser does not support the audio element.
           </audio>
         </div>
-        <div class="flex gap-4">
+        <div class="flex gap-4 mb-3">
           <a id="download-link" href="#" download
             class="flex-1 text-center text-white font-semibold py-2 px-4 rounded transition duration-200"
             style="background: linear-gradient(45deg, #10b981, #059669);">
@@ -209,6 +209,28 @@
           >
             Generate New
           </button>
+        </div>
+        <div id="share-section">
+          <button
+            onclick="shareAudio()"
+            id="share-btn"
+            class="w-full font-semibold py-2 px-4 rounded transition duration-200 flex items-center justify-center gap-2"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Share Link (7 days)
+          </button>
+          <div id="share-result" style="display: none;" class="mt-2 p-3 rounded" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div class="flex items-center gap-2">
+              <input type="text" id="share-url" readonly class="flex-1 px-2 py-1 rounded text-sm text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" />
+              <button onclick="copyShareUrl()" class="px-3 py-1 rounded text-sm font-medium" style="background: #10b981; color: white;">
+                Copy
+              </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Link copied! Expires in 7 days.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -428,6 +450,13 @@ function generateNew() {
   document.getElementById('error').style.display = 'none';
   currentGenerationId = null;
 
+  // Reset share UI
+  document.getElementById('share-result').style.display = 'none';
+  const shareBtn = document.getElementById('share-btn');
+  shareBtn.style.display = 'flex';
+  shareBtn.disabled = false;
+  shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg> Share Link (7 days)';
+
   if (pollingInterval) {
     clearInterval(pollingInterval);
     pollingInterval = null;
@@ -442,6 +471,57 @@ function toggleAdvanced() {
     advancedOptions.style.display = 'block';
   } else {
     advancedOptions.style.display = 'none';
+  }
+}
+
+async function shareAudio() {
+  if (!currentGenerationId) {
+    alert('No audio to share');
+    return;
+  }
+
+  const shareBtn = document.getElementById('share-btn');
+  shareBtn.disabled = true;
+  shareBtn.textContent = 'Creating share link...';
+
+  try {
+    const response = await fetch(`/tts/${currentGenerationId}/share`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCsrfToken()
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      const shareUrl = document.getElementById('share-url');
+      shareUrl.value = data.share_url;
+      document.getElementById('share-result').style.display = 'block';
+      shareBtn.style.display = 'none';
+
+      // Auto-copy to clipboard
+      await navigator.clipboard.writeText(data.share_url);
+    } else {
+      alert('Failed to create share link: ' + (data.error || 'Unknown error'));
+      shareBtn.disabled = false;
+      shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg> Share Link (7 days)';
+    }
+  } catch (error) {
+    alert('Failed to create share link: ' + error.message);
+    shareBtn.disabled = false;
+    shareBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg> Share Link (7 days)';
+  }
+}
+
+async function copyShareUrl() {
+  const shareUrl = document.getElementById('share-url');
+  try {
+    await navigator.clipboard.writeText(shareUrl.value);
+  } catch (err) {
+    shareUrl.select();
+    document.execCommand('copy');
   }
 }
 </script>
