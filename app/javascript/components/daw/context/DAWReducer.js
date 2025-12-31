@@ -24,6 +24,8 @@ export const ActionTypes = {
   SET_TOTAL_STEPS: 'SET_TOTAL_STEPS',
   SET_PROJECT_NAME: 'SET_PROJECT_NAME',
   SET_SELECTED_PITCH: 'SET_SELECTED_PITCH',
+  LOAD_PATTERN: 'LOAD_PATTERN',
+  SET_CURRENT_PATTERN_ID: 'SET_CURRENT_PATTERN_ID',
 }
 
 // Default effects settings for tracks
@@ -109,6 +111,7 @@ export const initialState = {
   masterVolume: 0.8,
   projectName: '',
   selectedPitch: null, // For pattern fill - which row is selected
+  currentPatternId: null, // For tracking loaded pattern from library
   tracks: [
     {
       id: 'track-1',
@@ -502,6 +505,49 @@ export function dawReducer(state, action) {
 
     case ActionTypes.SET_SELECTED_PITCH:
       return { ...state, selectedPitch: action.payload }
+
+    case ActionTypes.LOAD_PATTERN: {
+      // Load a pattern from the library, merging its tracks and settings
+      const { pattern, mode = 'replace' } = action.payload
+
+      // Generate new unique IDs for tracks and notes to avoid conflicts
+      const processedTracks = (pattern.data?.tracks || []).map(track => {
+        const newTrackId = generateTrackId()
+        return {
+          ...track,
+          id: newTrackId,
+          notes: track.notes.map(note => ({
+            ...note,
+            id: generateNoteId(),
+          })),
+        }
+      })
+
+      if (mode === 'merge') {
+        // Merge mode: add pattern tracks to existing tracks
+        return {
+          ...state,
+          tracks: [...state.tracks, ...processedTracks],
+          currentPatternId: pattern.id,
+        }
+      }
+
+      // Replace mode: replace all state with pattern
+      return {
+        ...state,
+        bpm: pattern.bpm || state.bpm,
+        totalSteps: pattern.total_steps || pattern.totalSteps || state.totalSteps,
+        stepsPerMeasure: pattern.steps_per_measure || pattern.stepsPerMeasure || state.stepsPerMeasure,
+        loopEnd: pattern.total_steps || pattern.totalSteps || state.loopEnd,
+        tracks: processedTracks.length > 0 ? processedTracks : state.tracks,
+        selectedTrackId: processedTracks[0]?.id || state.selectedTrackId,
+        currentPatternId: pattern.id || null,
+        projectName: pattern.name || state.projectName,
+      }
+    }
+
+    case ActionTypes.SET_CURRENT_PATTERN_ID:
+      return { ...state, currentPatternId: action.payload }
 
     default:
       return state

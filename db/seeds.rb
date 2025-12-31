@@ -232,3 +232,255 @@ if Rails.env.development?
     puts "Created #{sample_paragraphs.length} sample paragraphs for development (spanning #{((sample_paragraphs.length * 30) / 60.0 / 24).round(1)} days)"
   end
 end
+
+# DAW Pattern Templates
+default_effects = {
+  eq3: { enabled: false, low: 0, mid: 0, high: 0, lowFrequency: 400, highFrequency: 2500 },
+  compressor: { enabled: false, threshold: -24, ratio: 4, attack: 0.003, release: 0.25 },
+  distortion: { enabled: false, amount: 0.4, type: "softclip" },
+  phaser: { enabled: false, frequency: 0.5, octaves: 3, baseFrequency: 1000, wet: 0.5 },
+  tremolo: { enabled: false, frequency: 4, depth: 0.5, wet: 1 },
+  chorus: { enabled: false, frequency: 1.5, depth: 0.7, wet: 0.3 },
+  delay: { enabled: false, time: "8n", feedback: 0.3, wet: 0.3 },
+  reverb: { enabled: false, roomSize: 0.5, wet: 0.3 }
+}
+
+# 1. Basic 4/4 Beat
+DawPattern.find_or_create_by!(name: "Basic 4/4 Beat") do |pattern|
+  pattern.description = "Classic four-on-the-floor drum pattern. Great starting point for electronic music."
+  pattern.bpm = 120
+  pattern.total_steps = 16
+  pattern.steps_per_measure = 16
+  pattern.tags = [ "drums", "basic", "template" ]
+  pattern.is_template = true
+  pattern.data = {
+    "tracks" => [
+      {
+        "id" => "template-drums-1",
+        "name" => "Drums",
+        "type" => "drums",
+        "instrument" => { "kit" => "default" },
+        "effects" => default_effects,
+        "muted" => false,
+        "solo" => false,
+        "volume" => 0.8,
+        "pan" => 0,
+        "notes" => [
+          # Kick on 1, 5, 9, 13
+          { "id" => "n1", "pitch" => 0, "step" => 0, "duration" => 1, "velocity" => 120 },
+          { "id" => "n2", "pitch" => 0, "step" => 4, "duration" => 1, "velocity" => 120 },
+          { "id" => "n3", "pitch" => 0, "step" => 8, "duration" => 1, "velocity" => 120 },
+          { "id" => "n4", "pitch" => 0, "step" => 12, "duration" => 1, "velocity" => 120 },
+          # Snare on 5, 13
+          { "id" => "n5", "pitch" => 1, "step" => 4, "duration" => 1, "velocity" => 100 },
+          { "id" => "n6", "pitch" => 1, "step" => 12, "duration" => 1, "velocity" => 100 },
+          # Hi-hats on every step
+          { "id" => "n7", "pitch" => 2, "step" => 0, "duration" => 1, "velocity" => 80 },
+          { "id" => "n8", "pitch" => 2, "step" => 2, "duration" => 1, "velocity" => 60 },
+          { "id" => "n9", "pitch" => 2, "step" => 4, "duration" => 1, "velocity" => 80 },
+          { "id" => "n10", "pitch" => 2, "step" => 6, "duration" => 1, "velocity" => 60 },
+          { "id" => "n11", "pitch" => 2, "step" => 8, "duration" => 1, "velocity" => 80 },
+          { "id" => "n12", "pitch" => 2, "step" => 10, "duration" => 1, "velocity" => 60 },
+          { "id" => "n13", "pitch" => 2, "step" => 12, "duration" => 1, "velocity" => 80 },
+          { "id" => "n14", "pitch" => 2, "step" => 14, "duration" => 1, "velocity" => 60 }
+        ]
+      }
+    ]
+  }
+end
+
+# 2. House Beat
+DawPattern.find_or_create_by!(name: "House Beat") do |pattern|
+  pattern.description = "Classic house pattern with off-beat hi-hats and driving kick."
+  pattern.bpm = 124
+  pattern.total_steps = 16
+  pattern.steps_per_measure = 16
+  pattern.tags = [ "drums", "house", "electronic", "template" ]
+  pattern.is_template = true
+  pattern.data = {
+    "tracks" => [
+      {
+        "id" => "template-drums-2",
+        "name" => "House Drums",
+        "type" => "drums",
+        "instrument" => { "kit" => "default" },
+        "effects" => default_effects,
+        "muted" => false,
+        "solo" => false,
+        "volume" => 0.8,
+        "pan" => 0,
+        "notes" => [
+          # Kick on every beat
+          { "id" => "h1", "pitch" => 0, "step" => 0, "duration" => 1, "velocity" => 127 },
+          { "id" => "h2", "pitch" => 0, "step" => 4, "duration" => 1, "velocity" => 127 },
+          { "id" => "h3", "pitch" => 0, "step" => 8, "duration" => 1, "velocity" => 127 },
+          { "id" => "h4", "pitch" => 0, "step" => 12, "duration" => 1, "velocity" => 127 },
+          # Clap on 2 and 4
+          { "id" => "h5", "pitch" => 3, "step" => 4, "duration" => 1, "velocity" => 100 },
+          { "id" => "h6", "pitch" => 3, "step" => 12, "duration" => 1, "velocity" => 100 },
+          # Off-beat hi-hats
+          { "id" => "h7", "pitch" => 2, "step" => 2, "duration" => 1, "velocity" => 90 },
+          { "id" => "h8", "pitch" => 2, "step" => 6, "duration" => 1, "velocity" => 90 },
+          { "id" => "h9", "pitch" => 2, "step" => 10, "duration" => 1, "velocity" => 90 },
+          { "id" => "h10", "pitch" => 2, "step" => 14, "duration" => 1, "velocity" => 90 }
+        ]
+      }
+    ]
+  }
+end
+
+# 3. Synth Arp
+DawPattern.find_or_create_by!(name: "Synth Arp") do |pattern|
+  pattern.description = "Rising arpeggio pattern with a bright synth. Perfect for leads or pads."
+  pattern.bpm = 128
+  pattern.total_steps = 16
+  pattern.steps_per_measure = 16
+  pattern.tags = [ "synth", "arp", "melodic", "template" ]
+  pattern.is_template = true
+  pattern.data = {
+    "tracks" => [
+      {
+        "id" => "template-synth-1",
+        "name" => "Arp Synth",
+        "type" => "synth",
+        "instrument" => {
+          "oscillator" => "sawtooth",
+          "attack" => 0.01,
+          "decay" => 0.2,
+          "sustain" => 0.3,
+          "release" => 0.4,
+          "filterFreq" => 3000,
+          "filterRes" => 2,
+          "lfo" => { "enabled" => false, "rate" => "8n", "waveform" => "sine", "depth" => 0.5 }
+        },
+        "effects" => default_effects.merge(
+          "delay" => { "enabled" => true, "time" => "8n", "feedback" => 0.3, "wet" => 0.25 },
+          "reverb" => { "enabled" => true, "roomSize" => 0.6, "wet" => 0.2 }
+        ),
+        "muted" => false,
+        "solo" => false,
+        "volume" => 0.7,
+        "pan" => 0,
+        "notes" => [
+          # C minor arp: C3, Eb3, G3, C4 (MIDI: 48, 51, 55, 60)
+          { "id" => "a1", "pitch" => 48, "step" => 0, "duration" => 1, "velocity" => 100 },
+          { "id" => "a2", "pitch" => 51, "step" => 1, "duration" => 1, "velocity" => 90 },
+          { "id" => "a3", "pitch" => 55, "step" => 2, "duration" => 1, "velocity" => 85 },
+          { "id" => "a4", "pitch" => 60, "step" => 3, "duration" => 1, "velocity" => 95 },
+          { "id" => "a5", "pitch" => 48, "step" => 4, "duration" => 1, "velocity" => 100 },
+          { "id" => "a6", "pitch" => 51, "step" => 5, "duration" => 1, "velocity" => 90 },
+          { "id" => "a7", "pitch" => 55, "step" => 6, "duration" => 1, "velocity" => 85 },
+          { "id" => "a8", "pitch" => 60, "step" => 7, "duration" => 1, "velocity" => 95 },
+          # G minor arp: G2, Bb2, D3, G3 (MIDI: 43, 46, 50, 55)
+          { "id" => "a9", "pitch" => 43, "step" => 8, "duration" => 1, "velocity" => 100 },
+          { "id" => "a10", "pitch" => 46, "step" => 9, "duration" => 1, "velocity" => 90 },
+          { "id" => "a11", "pitch" => 50, "step" => 10, "duration" => 1, "velocity" => 85 },
+          { "id" => "a12", "pitch" => 55, "step" => 11, "duration" => 1, "velocity" => 95 },
+          { "id" => "a13", "pitch" => 43, "step" => 12, "duration" => 1, "velocity" => 100 },
+          { "id" => "a14", "pitch" => 46, "step" => 13, "duration" => 1, "velocity" => 90 },
+          { "id" => "a15", "pitch" => 50, "step" => 14, "duration" => 1, "velocity" => 85 },
+          { "id" => "a16", "pitch" => 55, "step" => 15, "duration" => 1, "velocity" => 95 }
+        ]
+      }
+    ]
+  }
+end
+
+# 4. Chill Chords
+DawPattern.find_or_create_by!(name: "Chill Chords") do |pattern|
+  pattern.description = "Slow, lush chord progression with pluck synth. Great for lo-fi or ambient."
+  pattern.bpm = 85
+  pattern.total_steps = 32
+  pattern.steps_per_measure = 16
+  pattern.tags = [ "pluck", "chords", "chill", "ambient", "template" ]
+  pattern.is_template = true
+  pattern.data = {
+    "tracks" => [
+      {
+        "id" => "template-pluck-1",
+        "name" => "Chill Pluck",
+        "type" => "pluck",
+        "instrument" => {
+          "attackNoise" => 0.5,
+          "dampening" => 3000,
+          "resonance" => 0.8,
+          "release" => 2
+        },
+        "effects" => default_effects.merge(
+          "reverb" => { "enabled" => true, "roomSize" => 0.7, "wet" => 0.4 },
+          "delay" => { "enabled" => true, "time" => "4n", "feedback" => 0.2, "wet" => 0.15 }
+        ),
+        "muted" => false,
+        "solo" => false,
+        "volume" => 0.75,
+        "pan" => 0,
+        "notes" => [
+          # Am chord (A2, C3, E3) - steps 0-7
+          { "id" => "c1", "pitch" => 45, "step" => 0, "duration" => 8, "velocity" => 90 },
+          { "id" => "c2", "pitch" => 48, "step" => 0, "duration" => 8, "velocity" => 80 },
+          { "id" => "c3", "pitch" => 52, "step" => 0, "duration" => 8, "velocity" => 85 },
+          # F chord (F2, A2, C3) - steps 8-15
+          { "id" => "c4", "pitch" => 41, "step" => 8, "duration" => 8, "velocity" => 90 },
+          { "id" => "c5", "pitch" => 45, "step" => 8, "duration" => 8, "velocity" => 80 },
+          { "id" => "c6", "pitch" => 48, "step" => 8, "duration" => 8, "velocity" => 85 },
+          # C chord (C3, E3, G3) - steps 16-23
+          { "id" => "c7", "pitch" => 48, "step" => 16, "duration" => 8, "velocity" => 90 },
+          { "id" => "c8", "pitch" => 52, "step" => 16, "duration" => 8, "velocity" => 80 },
+          { "id" => "c9", "pitch" => 55, "step" => 16, "duration" => 8, "velocity" => 85 },
+          # G chord (G2, B2, D3) - steps 24-31
+          { "id" => "c10", "pitch" => 43, "step" => 24, "duration" => 8, "velocity" => 90 },
+          { "id" => "c11", "pitch" => 47, "step" => 24, "duration" => 8, "velocity" => 80 },
+          { "id" => "c12", "pitch" => 50, "step" => 24, "duration" => 8, "velocity" => 85 }
+        ]
+      }
+    ]
+  }
+end
+
+# 5. Wobble Bass
+DawPattern.find_or_create_by!(name: "Wobble Bass") do |pattern|
+  pattern.description = "Dubstep-style wobble bass with LFO filter modulation. Heavy and aggressive."
+  pattern.bpm = 140
+  pattern.total_steps = 16
+  pattern.steps_per_measure = 16
+  pattern.tags = [ "bass", "dubstep", "wobble", "electronic", "template" ]
+  pattern.is_template = true
+  pattern.data = {
+    "tracks" => [
+      {
+        "id" => "template-bass-1",
+        "name" => "Wobble Bass",
+        "type" => "synth",
+        "instrument" => {
+          "oscillator" => "sawtooth",
+          "attack" => 0.01,
+          "decay" => 0.1,
+          "sustain" => 0.8,
+          "release" => 0.2,
+          "filterFreq" => 800,
+          "filterRes" => 4,
+          "lfo" => { "enabled" => true, "rate" => "8n", "waveform" => "sine", "depth" => 0.7 }
+        },
+        "effects" => default_effects.merge(
+          "distortion" => { "enabled" => true, "amount" => 0.3, "type" => "softclip" },
+          "compressor" => { "enabled" => true, "threshold" => -20, "ratio" => 6, "attack" => 0.003, "release" => 0.1 }
+        ),
+        "muted" => false,
+        "solo" => false,
+        "volume" => 0.85,
+        "pan" => 0,
+        "notes" => [
+          # Low E bass notes (MIDI: 28)
+          { "id" => "w1", "pitch" => 28, "step" => 0, "duration" => 4, "velocity" => 127 },
+          { "id" => "w2", "pitch" => 28, "step" => 4, "duration" => 2, "velocity" => 120 },
+          { "id" => "w3", "pitch" => 28, "step" => 6, "duration" => 2, "velocity" => 110 },
+          { "id" => "w4", "pitch" => 31, "step" => 8, "duration" => 4, "velocity" => 127 },
+          { "id" => "w5", "pitch" => 28, "step" => 12, "duration" => 2, "velocity" => 120 },
+          { "id" => "w6", "pitch" => 33, "step" => 14, "duration" => 2, "velocity" => 115 }
+        ]
+      }
+    ]
+  }
+end
+
+puts "Created #{DawPattern.count} DAW pattern templates"

@@ -6,13 +6,21 @@ import React, { useRef, useEffect, useCallback } from 'react'
 function Oscilloscope({ audioEngine, height = 80 }) {
   const canvasRef = useRef(null)
   const animationRef = useRef(null)
-  const waveformRef = useRef(null)
   // Store peak amplitude for auto-scaling with decay
   const peakRef = useRef(0.1)
+  // Store audioEngine in ref for animation loop access
+  const audioEngineRef = useRef(audioEngine)
+
+  // Keep audioEngine ref updated
+  useEffect(() => {
+    audioEngineRef.current = audioEngine
+  }, [audioEngine])
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
-    const waveform = waveformRef.current
+    // Read from ref to always get latest audioEngine
+    const engine = audioEngineRef.current
+    const waveform = engine?.waveformAnalyzer
     if (!canvas || !waveform) {
       animationRef.current = requestAnimationFrame(draw)
       return
@@ -122,10 +130,6 @@ function Oscilloscope({ audioEngine, height = 80 }) {
   }, [height])
 
   useEffect(() => {
-    if (audioEngine && audioEngine.waveformAnalyzer) {
-      waveformRef.current = audioEngine.waveformAnalyzer
-    }
-
     // Start animation loop
     animationRef.current = requestAnimationFrame(draw)
 
@@ -134,14 +138,7 @@ function Oscilloscope({ audioEngine, height = 80 }) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [audioEngine, draw])
-
-  // Update waveform reference when audioEngine changes
-  useEffect(() => {
-    if (audioEngine && audioEngine.waveformAnalyzer) {
-      waveformRef.current = audioEngine.waveformAnalyzer
-    }
-  }, [audioEngine?.waveformAnalyzer])
+  }, [draw])
 
   return (
     <div style={{
@@ -218,17 +215,25 @@ function generateLogBands(numBands, fftSize, sampleRate = 44100) {
 function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
   const canvasRef = useRef(null)
   const animationRef = useRef(null)
-  const fftRef = useRef(null)
   // Store peak values for each band (for peak hold effect)
   const peaksRef = useRef(new Array(bands).fill(-100))
   // Store smoothed values for each band
   const smoothedRef = useRef(new Array(bands).fill(-100))
   // Pre-computed logarithmic band mappings
   const bandMappingsRef = useRef(null)
+  // Store audioEngine in ref for animation loop access
+  const audioEngineRef = useRef(audioEngine)
+
+  // Keep audioEngine ref updated
+  useEffect(() => {
+    audioEngineRef.current = audioEngine
+  }, [audioEngine])
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
-    const fft = fftRef.current
+    // Read from ref to always get latest audioEngine
+    const engine = audioEngineRef.current
+    const fft = engine?.fftAnalyzer
     if (!canvas || !fft) {
       animationRef.current = requestAnimationFrame(draw)
       return
@@ -242,10 +247,21 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
     // Get FFT data (values are in dB, typically -100 to 0)
     const values = fft.getValue()
 
+    // Debug: log FFT status periodically
+    if (Math.random() < 0.005) {
+      const maxDb = Math.max(...values)
+      console.log('FFT Debug:', {
+        canvasWidth: width,
+        canvasHeight: canvasHeight,
+        fftBins: values.length,
+        maxDb: maxDb.toFixed(1),
+      })
+    }
+
     // Generate band mappings if not already done
     if (!bandMappingsRef.current || bandMappingsRef.current.length !== bands) {
-      // FFT size is 2x the number of bins returned
-      bandMappingsRef.current = generateLogBands(bands, values.length * 2, 44100)
+      // FFT returns full array, use values.length as fftSize
+      bandMappingsRef.current = generateLogBands(bands, values.length, 44100)
     }
 
     // Clear canvas with slight fade for smoother visuals
@@ -286,11 +302,17 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
 
       // Use a mix of max and average for more dynamic display
       // Weighted towards max for better pitch visibility
+      // Clamp to -100 to avoid -Infinity issues
+      const safeMax = maxVal === -Infinity ? -100 : Math.max(-100, maxVal)
       const avgVal = count > 0 ? sumVal / count : -100
-      const bandValue = maxVal * 0.7 + avgVal * 0.3
+      const safeAvg = !isFinite(avgVal) ? -100 : Math.max(-100, avgVal)
+      const bandValue = safeMax * 0.7 + safeAvg * 0.3
 
       // Apply smoothing with faster attack than decay
-      const currentSmoothed = smoothedRef.current[i]
+      // Reset if current value is -Infinity
+      let currentSmoothed = smoothedRef.current[i]
+      if (!isFinite(currentSmoothed)) currentSmoothed = -100
+
       if (bandValue > currentSmoothed) {
         // Fast attack
         smoothedRef.current[i] = currentSmoothed * 0.3 + bandValue * 0.7
@@ -346,6 +368,11 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
       ctx.fillStyle = gradient
       ctx.fillRect(x, canvasHeight - barHeight, barWidth, barHeight)
 
+      // Debug: log first band's values occasionally
+      if (i === 10 && Math.random() < 0.01) {
+        console.log('Band 10:', { bandValue, smoothed: smoothedRef.current[i], normalized, displayValue, barHeight, x, barWidth })
+      }
+
       // Draw peak indicator line
       if (peaksRef.current[i] > 0.02) {
         ctx.fillStyle = displayValue > 0.8
@@ -372,17 +399,18 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
 
     const rect = canvas.getBoundingClientRect()
     const dpr = window.devicePixelRatio || 1
+    console.log('Spectrum canvas setup:', { rectWidth: rect.width, rectHeight: rect.height, dpr })
     canvas.width = rect.width * dpr
     canvas.height = rect.height * dpr
     const ctx = canvas.getContext('2d')
     ctx.scale(dpr, dpr)
+
+    // Reset back to CSS dimensions for drawing
+    canvas.style.width = `${rect.width}px`
+    canvas.style.height = `${rect.height}px`
   }, [height])
 
   useEffect(() => {
-    if (audioEngine && audioEngine.fftAnalyzer) {
-      fftRef.current = audioEngine.fftAnalyzer
-    }
-
     // Reset peaks and smoothed values when bands change
     peaksRef.current = new Array(bands).fill(0)
     smoothedRef.current = new Array(bands).fill(-100)
@@ -395,13 +423,7 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [audioEngine, draw, bands])
-
-  useEffect(() => {
-    if (audioEngine && audioEngine.fftAnalyzer) {
-      fftRef.current = audioEngine.fftAnalyzer
-    }
-  }, [audioEngine?.fftAnalyzer])
+  }, [draw, bands])
 
   return (
     <div style={{

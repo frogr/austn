@@ -130,6 +130,13 @@ Rails.application.routes.draw do
   # MIDI DAW interface
   get "/midi", to: "midi#index"
 
+  # DAW Pattern Library
+  resources :daw_patterns, path: "daw/patterns", only: [ :index, :show, :create, :update, :destroy ] do
+    collection do
+      get :tags
+    end
+  end
+
   # Endless Story
   get "/endless", to: "endless#index"
   get "/endless/paragraphs", to: "endless#paragraphs"

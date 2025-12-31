@@ -167,18 +167,39 @@ function DAWContent() {
     )
   }, [state.tracks, state.totalSteps, state.stepsPerMeasure])
 
-  // Create audio players for new audio tracks
+  // Create instruments for new tracks (handles pattern loading)
   useEffect(() => {
     if (!audioEngineRef.current || !state.audioInitialized) return
 
+    const engine = audioEngineRef.current
+
     state.tracks.forEach(track => {
-      if (track.type === 'audio' && track.audioData?.buffer) {
-        if (!audioEngineRef.current.audioPlayers.has(track.id)) {
-          audioEngineRef.current.createAudioPlayer(track.id, track.audioData.buffer, track.effects)
-          audioEngineRef.current.setTrackVolume(track.id, track.volume)
-          audioEngineRef.current.setTrackPan(track.id, track.pan)
-          audioEngineRef.current.setTrackMute(track.id, track.muted)
+      // Check if this track already has an instrument in the engine
+      const hasSynth = engine.synths?.has(track.id)
+      const hasDrums = engine.drumSamplers?.has(track.id)
+      const hasAudio = engine.audioPlayers?.has(track.id)
+      const hasInstrument = hasSynth || hasDrums || hasAudio
+
+      if (!hasInstrument) {
+        // Create the appropriate instrument for this track
+        if (track.type === 'synth') {
+          engine.createSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'drums') {
+          engine.createDrumSampler(track.id, track.effects)
+        } else if (track.type === 'pluck') {
+          engine.createPluckSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'fm') {
+          engine.createFMSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'am') {
+          engine.createAMSynth(track.id, track.instrument, track.effects)
+        } else if (track.type === 'audio' && track.audioData?.buffer) {
+          engine.createAudioPlayer(track.id, track.audioData.buffer, track.effects)
         }
+
+        // Set initial volume, pan, mute
+        engine.setTrackVolume(track.id, track.volume)
+        engine.setTrackPan(track.id, track.pan)
+        engine.setTrackMute(track.id, track.muted)
       }
     })
   }, [state.tracks, state.audioInitialized])

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useDAW } from '../context/DAWContext'
+import PatternLibrary from './PatternLibrary'
+import SavePatternModal from './SavePatternModal'
 
 const STORAGE_KEY = 'daw-projects'
 
@@ -78,6 +80,8 @@ export default function ProjectPanel() {
   const { state, actions } = useDAW()
   const [projects, setProjects] = useState({})
   const [selectedProject, setSelectedProject] = useState('')
+  const [showLibrary, setShowLibrary] = useState(false)
+  const [showSaveModal, setShowSaveModal] = useState(false)
 
   // Use global state for project name
   const projectName = state.projectName || ''
@@ -199,6 +203,33 @@ export default function ProjectPanel() {
       >
         New Project
       </button>
+
+      {/* Pattern Library section */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '0.5rem', paddingTop: '0.5rem' }}>
+        <span style={{ ...styles.title, marginBottom: '0.5rem', display: 'block' }}>Pattern Library</span>
+        <div style={styles.row}>
+          <button
+            style={{ ...styles.button, background: 'rgba(139, 92, 246, 0.1)', borderColor: 'rgba(139, 92, 246, 0.2)' }}
+            onClick={() => setShowLibrary(true)}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.2)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.1)'}
+          >
+            Browse
+          </button>
+          <button
+            style={{ ...styles.button, ...styles.saveButton }}
+            onClick={() => setShowSaveModal(true)}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'}
+          >
+            Save to Library
+          </button>
+        </div>
+      </div>
+
+      {/* Modals */}
+      <PatternLibrary isOpen={showLibrary} onClose={() => setShowLibrary(false)} />
+      <SavePatternModal isOpen={showSaveModal} onClose={() => setShowSaveModal(false)} />
     </div>
   )
 }

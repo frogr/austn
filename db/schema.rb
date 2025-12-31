@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_31_150033) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_31_162901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,6 +52,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_31_150033) do
     t.datetime "updated_at", null: false
     t.index ["published_at"], name: "index_blog_posts_on_published_at"
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
+  end
+
+  create_table "daw_patterns", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.integer "bpm", default: 120
+    t.integer "total_steps", default: 16
+    t.integer "steps_per_measure", default: 16
+    t.jsonb "data", default: {}
+    t.string "tags", default: [], array: true
+    t.boolean "is_template", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["is_template"], name: "index_daw_patterns_on_is_template"
+    t.index ["name"], name: "index_daw_patterns_on_name"
+    t.index ["tags"], name: "index_daw_patterns_on_tags", using: :gin
   end
 
   create_table "gpu_health_statuses", force: :cascade do |t|

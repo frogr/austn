@@ -123,6 +123,14 @@ export function DAWProvider({ children }) {
     setSelectedPitch: useCallback((pitch) => {
       dispatch({ type: ActionTypes.SET_SELECTED_PITCH, payload: pitch })
     }, []),
+
+    loadPattern: useCallback((pattern, mode = 'replace') => {
+      dispatch({ type: ActionTypes.LOAD_PATTERN, payload: { pattern, mode } })
+    }, []),
+
+    setCurrentPatternId: useCallback((patternId) => {
+      dispatch({ type: ActionTypes.SET_CURRENT_PATTERN_ID, payload: patternId })
+    }, []),
   }
 
   // Get selected track helper
