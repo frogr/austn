@@ -8,11 +8,9 @@ module HttpBasicAuthenticable
   private
 
   def authenticate_admin!
-    return true unless Rails.env.production?
-
     authenticate_or_request_with_http_basic("Admin Area") do |username, password|
       expected_username = ENV.fetch("ADMIN_USER_NAME", "admin")
-      expected_password = ENV.fetch("ADMIN_PASSWORD", Rails.application.credentials.dig(:admin, :password) || "changeme123")
+      expected_password = ENV.fetch("ADMIN_PASSWORD", "changeme123")
 
       ActiveSupport::SecurityUtils.secure_compare(username, expected_username) &&
         ActiveSupport::SecurityUtils.secure_compare(password, expected_password)

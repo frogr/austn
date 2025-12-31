@@ -128,94 +128,12 @@
   <audio id="item-audio-player" style="display: none;"></audio>
 </div>
 
-<script type="module">
-import consumer from "channels/consumer"
-
-// Subscribe to batch updates
-const batchId = <%= @batch.id %>;
-let subscription = null;
-
-<% unless @batch.completed? %>
-subscription = consumer.subscriptions.create(
-  { channel: "TtsBatchChannel", batch_id: batchId },
-  {
-    received(data) {
-      console.log("Received:", data);
-
-      if (data.type === "item_update") {
-        updateItemRow(data);
-        updateProgress(data);
-      } else if (data.type === "batch_complete") {
-        updateBatchStatus(data.status);
-        // Reload to show download buttons
-        setTimeout(() => window.location.reload(), 1000);
-      }
-    }
-  }
-);
-<% end %>
-
-function updateItemRow(data) {
-  const row = document.getElementById(`item-${data.item_id}`);
-  if (!row) return;
-
-  const statusCell = row.querySelector('[data-field="status"]');
-  const durationCell = row.querySelector('[data-field="duration"]');
-
-  // Update status
-  let statusHtml = '';
-  switch(data.status) {
-    case 'processing':
-      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-blue-900 text-blue-300 flex items-center gap-1 w-fit">
-        <svg class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        Processing
-      </span>`;
-      break;
-    case 'completed':
-      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Completed</span>`;
-      break;
-    case 'failed':
-      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-red-900 text-red-300" title="${data.error || ''}">Failed</span>`;
-      break;
-  }
-  statusCell.innerHTML = statusHtml;
-
-  // Update duration
-  if (data.duration) {
-    durationCell.textContent = `${data.duration.toFixed(1)}s`;
-  }
-}
-
-function updateProgress(data) {
-  const progressBar = document.getElementById('progress-bar');
-  const completedCount = document.getElementById('completed-count');
-
-  progressBar.style.width = `${data.batch_progress}%`;
-  completedCount.textContent = data.completed_items;
-}
-
-function updateBatchStatus(status) {
-  const statusEl = document.getElementById('batch-status');
-  let statusHtml = '';
-  switch(status) {
-    case 'completed':
-      statusHtml = '<span class="text-green-400">Completed</span>';
-      break;
-    case 'completed_with_errors':
-      statusHtml = '<span class="text-yellow-400">Completed with errors</span>';
-      break;
-  }
-  statusEl.innerHTML = statusHtml;
-}
-
-// Audio player
+<!-- Audio player - regular script so it's available for onclick handlers -->
+<script>
 let currentlyPlayingId = null;
-const audioPlayer = document.getElementById('item-audio-player');
 
-window.playItemAudio = function(itemId) {
+function playItemAudio(itemId) {
+  const audioPlayer = document.getElementById('item-audio-player');
   const playBtn = document.querySelector(`[data-play-btn="${itemId}"]`);
 
   if (currentlyPlayingId === itemId && !audioPlayer.paused) {
@@ -254,10 +172,89 @@ function resetPlayButton(itemId) {
   }
 }
 
-audioPlayer?.addEventListener('ended', () => {
+document.getElementById('item-audio-player')?.addEventListener('ended', () => {
   if (currentlyPlayingId) {
     resetPlayButton(currentlyPlayingId);
     currentlyPlayingId = null;
   }
 });
 </script>
+
+<!-- ActionCable subscription - module script -->
+<% unless @batch.completed? %>
+<script type="module">
+import consumer from "channels/consumer"
+
+const batchId = <%= @batch.id %>;
+
+consumer.subscriptions.create(
+  { channel: "TtsBatchChannel", batch_id: batchId },
+  {
+    received(data) {
+      console.log("Received:", data);
+
+      if (data.type === "item_update") {
+        updateItemRow(data);
+        updateProgress(data);
+      } else if (data.type === "batch_complete") {
+        updateBatchStatus(data.status);
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }
+  }
+);
+
+function updateItemRow(data) {
+  const row = document.getElementById(`item-${data.item_id}`);
+  if (!row) return;
+
+  const statusCell = row.querySelector('[data-field="status"]');
+  const durationCell = row.querySelector('[data-field="duration"]');
+
+  let statusHtml = '';
+  switch(data.status) {
+    case 'processing':
+      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-blue-900 text-blue-300 flex items-center gap-1 w-fit">
+        <svg class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Processing
+      </span>`;
+      break;
+    case 'completed':
+      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-green-900 text-green-300">Completed</span>`;
+      break;
+    case 'failed':
+      statusHtml = `<span class="px-2 py-1 rounded-full text-xs bg-red-900 text-red-300" title="${data.error || ''}">Failed</span>`;
+      break;
+  }
+  statusCell.innerHTML = statusHtml;
+
+  if (data.duration) {
+    durationCell.textContent = `${data.duration.toFixed(1)}s`;
+  }
+}
+
+function updateProgress(data) {
+  const progressBar = document.getElementById('progress-bar');
+  const completedCount = document.getElementById('completed-count');
+  progressBar.style.width = `${data.batch_progress}%`;
+  completedCount.textContent = data.completed_items;
+}
+
+function updateBatchStatus(status) {
+  const statusEl = document.getElementById('batch-status');
+  let statusHtml = '';
+  switch(status) {
+    case 'completed':
+      statusHtml = '<span class="text-green-400">Completed</span>';
+      break;
+    case 'completed_with_errors':
+      statusHtml = '<span class="text-yellow-400">Completed with errors</span>';
+      break;
+  }
+  statusEl.innerHTML = statusHtml;
+}
+</script>
+<% end %>
