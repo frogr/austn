@@ -35,9 +35,12 @@ class TtsBatchJob < GpuJob
     broadcast_item_update(batch, item, "processing")
 
     begin
+      # Normalize voice preset to handle shorthand names like "jordan_peterson" -> "actors/jordan_peterson"
+      normalized_voice = TtsService.normalize_voice_preset(item.voice_preset)
+
       result = TtsService.generate_speech(
         item.text,
-        voice_preset: item.voice_preset,
+        voice_preset: normalized_voice,
         exaggeration: item.exaggeration,
         cfg_weight: item.cfg_weight
       )

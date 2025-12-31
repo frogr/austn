@@ -99,9 +99,14 @@ Rails.application.routes.draw do
     end
   end
   get "/tts_batches/items/:id/download", to: "tts_batches#download_item", as: :download_tts_batch_item
+  post "/tts_batches/items/:id/share", to: "tts_batches#share_item", as: :share_tts_batch_item
 
   # Admin namespace
   namespace :admin do
+    get "login", to: "sessions#new", as: :login
+    post "login", to: "sessions#create"
+    delete "logout", to: "sessions#destroy", as: :logout
+
     root to: "dashboard#index"
     resources :tts_shares, only: [ :index, :destroy ] do
       collection do

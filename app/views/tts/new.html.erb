@@ -14,6 +14,46 @@
     color: #d1d5db;
     -webkit-text-fill-color: #d1d5db;
   }
+  /* Range slider styling */
+  input[type="range"].slider-green {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.5));
+    border-radius: 0.5rem;
+  }
+  input[type="range"].slider-green::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  input[type="range"].slider-green::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  }
+  input[type="range"].slider-green::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  input[type="range"].slider-green::-moz-range-thumb:hover {
+    transform: scale(1.1);
+  }
+  input[type="range"].slider-green:focus {
+    outline: none;
+  }
+  input[type="range"].slider-green:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+  }
 </style>
 
 <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
@@ -92,61 +132,59 @@
         </div>
 
         <div id="advanced-options" style="display: none;">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label for="exaggeration" class="block text-sm font-medium text-gray-300 mb-2">
-                Exaggeration
-              </label>
-              <select
+              <div class="flex items-center justify-between mb-2">
+                <label for="exaggeration" class="text-sm font-medium text-gray-300">
+                  Exaggeration
+                </label>
+                <span id="exaggeration-value" class="text-sm text-green-400 font-mono">0.5</span>
+              </div>
+              <input
+                type="range"
                 id="exaggeration"
-                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+                min="0"
+                max="0.9"
+                step="0.1"
+                value="0.5"
+                oninput="document.getElementById('exaggeration-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+                style="background: linear-gradient(to right, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.8));"
               >
-                <option value="0.2">0.2 (Calm)</option>
-                <option value="0.3">0.3</option>
-                <option value="0.5" selected>0.5 (Default)</option>
-                <option value="0.7">0.7</option>
-                <option value="0.9">0.9 (Dramatic)</option>
-              </select>
+              <p class="mt-1.5 text-xs text-gray-500">Controls emotional intensity. Lower = calm and neutral, higher = more expressive and dramatic.</p>
             </div>
 
             <div>
-              <label for="cfg-weight" class="block text-sm font-medium text-gray-300 mb-2">
-                CFG Weight
-              </label>
-              <select
+              <div class="flex items-center justify-between mb-2">
+                <label for="cfg-weight" class="text-sm font-medium text-gray-300">
+                  CFG Weight
+                </label>
+                <span id="cfg-weight-value" class="text-sm text-green-400 font-mono">0.5</span>
+              </div>
+              <input
+                type="range"
                 id="cfg-weight"
-                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+                min="0"
+                max="1"
+                step="0.1"
+                value="0.5"
+                oninput="document.getElementById('cfg-weight-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+                style="background: linear-gradient(to right, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.8));"
               >
-                <option value="0.0">0.0 (Natural)</option>
-                <option value="0.3">0.3</option>
-                <option value="0.5" selected>0.5 (Default)</option>
-                <option value="0.7">0.7</option>
-                <option value="1.0">1.0 (Guided)</option>
-              </select>
+              <p class="mt-1.5 text-xs text-gray-500">How closely to follow the voice reference. Lower = more natural variation, higher = stricter adherence.</p>
             </div>
+          </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">
-                Expression tags
-              </label>
-              <select
-                id="tag-select"
-                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
-                onchange="insertTag(this.value); this.value='';"
-              >
-                <option value="">Insert tag...</option>
-                <option value="[laughter]">[laughter]</option>
-                <option value="[giggle]">[giggle]</option>
-                <option value="[sigh]">[sigh]</option>
-                <option value="[gasp]">[gasp]</option>
-                <option value="[whisper]">[whisper]</option>
-                <option value="[cough]">[cough]</option>
-                <option value="[clear_throat]">[clear_throat]</option>
-                <option value="[groan]">[groan]</option>
-                <option value="[humming]">[humming]</option>
-                <option value="[UH]">[UH]</option>
-                <option value="[UM]">[UM]</option>
-              </select>
+          <div>
+            <p class="text-sm text-gray-400 mb-2">
+              <span class="font-medium text-gray-300">Supported expression tags:</span>
+              Add these anywhere in your text for natural speech sounds.
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              <% %w[[laughter] [giggle] [sigh] [gasp] [whisper] [cough] [clear_throat] [groan] [humming] [UH] [UM]].each do |tag| %>
+                <span class="px-2 py-0.5 text-xs rounded bg-gray-800 text-gray-400 font-mono"><%= tag %></span>
+              <% end %>
             </div>
           </div>
         </div>
@@ -246,19 +284,6 @@ let voiceAudioBase64 = null;
 function getCsrfToken() {
   const meta = document.querySelector('meta[name="csrf-token"]');
   return meta ? meta.getAttribute('content') : '';
-}
-
-function insertTag(tag) {
-  if (!tag) return;
-  const textarea = document.getElementById('text');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const text = textarea.value;
-  const before = text.substring(0, start);
-  const after = text.substring(end);
-  textarea.value = before + tag + after;
-  textarea.focus();
-  textarea.setSelectionRange(start + tag.length, start + tag.length);
 }
 
 function handleVoiceFile(input) {

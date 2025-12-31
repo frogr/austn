@@ -87,6 +87,37 @@ class TtsService
     []
   end
 
+  # Normalize voice preset - allows "jordan_peterson" to match "actors/jordan_peterson"
+  def self.normalize_voice_preset(voice_preset)
+    return nil if voice_preset.blank?
+
+    # If it already contains a slash, assume it's already fully qualified
+    return voice_preset if voice_preset.include?("/")
+
+    # Try to find a matching voice
+    voices = available_voices
+    return voice_preset if voices.empty?
+
+    # Look for exact match first
+    exact = voices.find { |v| v["id"] == voice_preset }
+    return exact["id"] if exact
+
+    # Look for partial match (voice_preset is the last part after /)
+    partial = voices.find { |v| v["id"]&.split("/")&.last == voice_preset }
+    return partial["id"] if partial
+
+    # Look for case-insensitive match
+    ci_match = voices.find { |v| v["id"]&.downcase == voice_preset.downcase }
+    return ci_match["id"] if ci_match
+
+    # Look for partial case-insensitive match
+    ci_partial = voices.find { |v| v["id"]&.split("/")&.last&.downcase == voice_preset.downcase }
+    return ci_partial["id"] if ci_partial
+
+    # Return original if no match found - let the TTS service handle it
+    voice_preset
+  end
+
   def self.fetch_voices_from_api
     response = get("/voices", timeout: 2)  # Quick timeout - voices list should be fast
 

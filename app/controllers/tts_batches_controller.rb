@@ -1,7 +1,17 @@
 class TtsBatchesController < ApplicationController
-  include HttpBasicAuthenticable
+  before_action :authenticate_admin!
+  skip_before_action :verify_authenticity_token, only: [ :create, :share_item ]
 
-  skip_before_action :verify_authenticity_token, only: [ :create ]
+  private
+
+  def authenticate_admin!
+    return true if session[:admin_authenticated]
+
+    session[:admin_return_to] = request.fullpath
+    redirect_to admin_login_path
+  end
+
+  public
 
   def index
     @batches = TtsBatch.recent.limit(50)
@@ -67,6 +77,29 @@ class TtsBatchesController < ApplicationController
     else
       head :not_found
     end
+  end
+
+  def share_item
+    item = TtsBatchItem.find(params[:id])
+
+    if item.audio_data.present?
+      share = TtsShare.create!(
+        audio_data: item.audio_data,
+        text: item.text,
+        duration: item.duration,
+        voice_preset: item.voice_preset
+      )
+
+      render json: {
+        share_url: tts_share_url(share.token),
+        token: share.token,
+        expires_at: share.expires_at
+      }
+    else
+      render json: { error: "Audio not found" }, status: :not_found
+    end
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
   def download_all
