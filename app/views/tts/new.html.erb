@@ -327,13 +327,24 @@ function handleVoicePresetChange() {
   }
 }
 
-// Attach handler if voice-preset exists
-document.addEventListener('DOMContentLoaded', function() {
+// Attach handler immediately and on Turbo navigation
+function initVoicePresetHandler() {
   const voicePreset = document.getElementById('voice-preset');
   if (voicePreset) {
+    // Remove any existing listener to avoid duplicates
+    voicePreset.removeEventListener('change', handleVoicePresetChange);
     voicePreset.addEventListener('change', handleVoicePresetChange);
+    // Check initial state in case we're returning to the page
+    handleVoicePresetChange();
   }
-});
+}
+
+// Run immediately since script is at bottom of page
+initVoicePresetHandler();
+
+// Also run on Turbo navigation
+document.addEventListener('turbo:load', initVoicePresetHandler);
+document.addEventListener('turbo:render', initVoicePresetHandler);
 
 async function generateSpeech() {
   const text = document.getElementById('text').value;
