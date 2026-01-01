@@ -35,7 +35,7 @@ class TtsService
     response = post("/generate",
       body: body.to_json,
       headers: { "Content-Type" => "application/json" },
-      timeout: 120  # TTS can take a while
+      timeout: 240  # TTS can take a while for long clips
     )
 
     Rails.logger.info "TTS response code: #{response.code}"
