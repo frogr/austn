@@ -1,13 +1,13 @@
 <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 md:mb-8 gap-4">
+  <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
     <div>
-      <h1 class="font-black mb-2" style="font-size: clamp(2.5rem, 5vw, 3.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      <h1 class="font-black mb-2" style="font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
         Text to Speech <%= render "shared/gpu_health_indicator", service: "tts" %>
       </h1>
     </div>
-    <div class="flex items-center gap-2">
-      <a href="<%= new_tts_path %>" class="inline-flex items-center gap-2 font-semibold py-2.5 px-5 rounded-md transition duration-200 text-white shrink-0" style="background: linear-gradient(45deg, #10b981, #059669);">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <a href="<%= new_tts_path %>" class="inline-flex items-center gap-2 font-semibold py-2.5 px-5 rounded-md transition duration-200 text-white" style="background: linear-gradient(45deg, #10b981, #059669); flex-shrink: 0;">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
@@ -22,80 +22,52 @@
     </div>
   </div>
 
-  <style>
-    .tts-desktop-view { display: none; }
-    .tts-mobile-view { display: block; }
-    @media (min-width: 768px) {
-      .tts-desktop-view { display: block; }
-      .tts-mobile-view { display: none; }
-    }
-  </style>
-
   <!-- Shares Table (Desktop) / Cards (Mobile) -->
   <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
     <% if @shares.any? %>
       <!-- Desktop Table View -->
-      <div class="tts-desktop-view overflow-x-auto">
-        <table class="w-full">
+      <div id="tts-desktop-table" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
           <thead>
             <tr style="background: rgba(255,255,255,0.05);">
-              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Created</th>
-              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Voice</th>
-              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Transcript</th>
-              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Duration</th>
-              <th class="text-center px-4 py-3 text-sm font-semibold text-gray-300">Actions</th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600; color: #d1d5db;">Created</th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600; color: #d1d5db;">Voice</th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600; color: #d1d5db;">Transcript</th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600; color: #d1d5db;">Duration</th>
+              <th style="text-align: center; padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600; color: #d1d5db;">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y" style="border-color: rgba(255,255,255,0.05);">
+          <tbody>
             <% @shares.each do |share| %>
-              <tr class="hover:bg-white/5 transition-colors" data-share-token="<%= share.token %>">
-                <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">
+              <tr style="border-top: 1px solid rgba(255,255,255,0.05);" data-share-token="<%= share.token %>">
+                <td style="padding: 0.75rem 1rem; font-size: 0.875rem; color: #9ca3af; white-space: nowrap;">
                   <%= share.created_at.strftime("%b %d, %Y") %>
-                  <span class="text-gray-500 text-xs block"><%= share.created_at.strftime("%l:%M %p") %></span>
+                  <span style="color: #6b7280; font-size: 0.75rem; display: block;"><%= share.created_at.strftime("%l:%M %p") %></span>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">
+                <td style="padding: 0.75rem 1rem; font-size: 0.875rem; color: #9ca3af; white-space: nowrap;">
                   <%= voice_name_for(share.voice_preset, @voices) %>
                 </td>
-                <td class="px-4 py-3 text-sm text-white max-w-xs">
-                  <span class="line-clamp-2" title="<%= share.text %>"><%= truncate(share.text, length: 80) %></span>
+                <td style="padding: 0.75rem 1rem; font-size: 0.875rem; color: #fff; max-width: 20rem;">
+                  <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="<%= share.text %>"><%= truncate(share.text, length: 80) %></span>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">
+                <td style="padding: 0.75rem 1rem; font-size: 0.875rem; color: #9ca3af; white-space: nowrap;">
                   <%= share.duration ? "#{share.duration.round(1)}s" : "-" %>
                 </td>
-                <td class="px-4 py-3">
-                  <div class="flex items-center justify-center gap-2">
-                    <!-- Play Button -->
-                    <button
-                      onclick="playAudio('<%= share.token %>')"
-                      class="p-2 rounded-md transition-colors hover:bg-white/10"
-                      title="Play audio"
-                      data-play-btn="<%= share.token %>"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <td style="padding: 0.75rem 1rem;">
+                  <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <button onclick="playAudio('<%= share.token %>')" style="padding: 0.5rem; border-radius: 0.375rem; background: transparent; border: none; cursor: pointer;" title="Play audio" data-play-btn="<%= share.token %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #4ade80;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </button>
-
-                    <!-- Download Button -->
-                    <a
-                      href="<%= tts_share_audio_path(share.token) %>"
-                      download="tts-<%= share.token %>.wav"
-                      class="p-2 rounded-md transition-colors hover:bg-white/10"
-                      title="Download audio"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <a href="<%= tts_share_audio_path(share.token) %>" download="tts-<%= share.token %>.wav" style="padding: 0.5rem; border-radius: 0.375rem; display: inline-block;" title="Download audio">
+                      <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #60a5fa;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
                     </a>
-
-                    <!-- Copy Link Button -->
-                    <button
-                      onclick="copyShareLink('<%= tts_share_url(share.token) %>', this)"
-                      class="p-2 rounded-md transition-colors hover:bg-white/10"
-                      title="Copy share link"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <button onclick="copyShareLink('<%= tts_share_url(share.token) %>', this)" style="padding: 0.5rem; border-radius: 0.375rem; background: transparent; border: none; cursor: pointer;" title="Copy share link">
+                      <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #c084fc;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
                     </button>
@@ -108,48 +80,35 @@
       </div>
 
       <!-- Mobile Card View -->
-      <div class="tts-mobile-view divide-y" style="border-color: rgba(255,255,255,0.05);">
+      <div id="tts-mobile-cards">
         <% @shares.each do |share| %>
-          <div class="p-4" data-share-token="<%= share.token %>">
-            <div class="flex items-start justify-between gap-3 mb-2">
-              <div class="flex-1 min-w-0">
-                <p class="text-sm text-white line-clamp-2 mb-1"><%= truncate(share.text, length: 100) %></p>
-                <div class="flex items-center gap-2 text-xs text-gray-500">
+          <div style="padding: 1rem; border-top: 1px solid rgba(255,255,255,0.05);" data-share-token="<%= share.token %>">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.5rem;">
+              <div style="flex: 1; min-width: 0;">
+                <p style="font-size: 0.875rem; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0 0 0.25rem 0;"><%= truncate(share.text, length: 100) %></p>
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #6b7280;">
                   <span><%= voice_name_for(share.voice_preset, @voices) %></span>
                   <span>•</span>
                   <span><%= share.duration ? "#{share.duration.round(1)}s" : "-" %></span>
                 </div>
               </div>
-              <span class="text-xs text-gray-500 whitespace-nowrap"><%= share.created_at.strftime("%b %d") %></span>
+              <span style="font-size: 0.75rem; color: #6b7280; white-space: nowrap;"><%= share.created_at.strftime("%b %d") %></span>
             </div>
-            <div class="flex items-center gap-1 mt-3">
-              <button
-                onclick="playAudio('<%= share.token %>')"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                data-play-btn="<%= share.token %>"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div style="display: flex; align-items: center; gap: 0.25rem; margin-top: 0.75rem;">
+              <button onclick="playAudio('<%= share.token %>')" style="display: flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; background: rgba(34, 197, 94, 0.2); color: #4ade80; border: none; cursor: pointer;" data-play-btn="<%= share.token %>">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 1rem; width: 1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Play
               </button>
-              <a
-                href="<%= tts_share_audio_path(share.token) %>"
-                download="tts-<%= share.token %>.wav"
-                class="p-2 rounded-md transition-colors hover:bg-white/10"
-                title="Download"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <a href="<%= tts_share_audio_path(share.token) %>" download="tts-<%= share.token %>.wav" style="padding: 0.5rem; border-radius: 0.375rem; display: inline-block;" title="Download">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #60a5fa;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
               </a>
-              <button
-                onclick="copyShareLink('<%= tts_share_url(share.token) %>', this)"
-                class="p-2 rounded-md transition-colors hover:bg-white/10"
-                title="Copy link"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <button onclick="copyShareLink('<%= tts_share_url(share.token) %>', this)" style="padding: 0.5rem; border-radius: 0.375rem; background: transparent; border: none; cursor: pointer;" title="Copy link">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #c084fc;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               </button>
@@ -158,14 +117,14 @@
         <% end %>
       </div>
     <% else %>
-      <div class="text-center py-12 px-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+      <div style="text-align: center; padding: 3rem 1rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="height: 4rem; width: 4rem; margin: 0 auto 1rem; color: #4b5563;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
         </svg>
-        <h3 class="text-lg font-semibold text-gray-300 mb-2">No shared audio yet</h3>
-        <p class="text-gray-500 mb-6">Generate some text-to-speech and share it!</p>
-        <a href="<%= new_tts_path %>" class="inline-flex items-center gap-2 font-semibold py-2.5 px-5 rounded-md transition duration-200 text-white" style="background: linear-gradient(45deg, #10b981, #059669);">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <h3 style="font-size: 1.125rem; font-weight: 600; color: #d1d5db; margin: 0 0 0.5rem 0;">No shared audio yet</h3>
+        <p style="color: #6b7280; margin: 0 0 1.5rem 0;">Generate some text-to-speech and share it!</p>
+        <a href="<%= new_tts_path %>" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; padding: 0.625rem 1.25rem; border-radius: 0.375rem; color: #fff; text-decoration: none; background: linear-gradient(45deg, #10b981, #059669);">
+          <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
           </svg>
           Create Your First
@@ -178,9 +137,41 @@
   <audio id="global-audio-player" style="display: none;"></audio>
 </div>
 
+<style>
+  /* Responsive header */
+  @media (min-width: 640px) {
+    .container > div:first-child {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  /* Desktop/Mobile toggle */
+  #tts-mobile-cards {
+    display: block;
+  }
+  #tts-desktop-table {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    #tts-mobile-cards {
+      display: none;
+    }
+    #tts-desktop-table {
+      display: block;
+    }
+  }
+
+  /* Remove first card border */
+  #tts-mobile-cards > div:first-child {
+    border-top: none;
+  }
+</style>
+
 <script>
 (function() {
-  // Prevent redeclaration on Turbo navigation
   if (window.ttsIndexInitialized) return;
   window.ttsIndexInitialized = true;
 
@@ -188,9 +179,8 @@
 
   window.playAudio = function(token) {
     const audioPlayer = document.getElementById('global-audio-player');
-    const playBtn = document.querySelector(`[data-play-btn="${token}"]`);
+    const playBtns = document.querySelectorAll(`[data-play-btn="${token}"]`);
 
-    // If clicking the same one that's playing, pause it
     if (window.ttsCurrentlyPlayingToken === token && !audioPlayer.paused) {
       audioPlayer.pause();
       window.resetPlayButton(token);
@@ -198,45 +188,52 @@
       return;
     }
 
-    // Stop any currently playing audio
     if (window.ttsCurrentlyPlayingToken) {
       window.resetPlayButton(window.ttsCurrentlyPlayingToken);
     }
 
-    // Play new audio
     audioPlayer.src = `/tts/s/${token}/audio`;
     audioPlayer.play();
     window.ttsCurrentlyPlayingToken = token;
 
-    // Update button to show pause state
-    if (playBtn) {
-      playBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    playBtns.forEach(btn => {
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #4ade80;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       `;
-    }
+    });
   };
 
   window.resetPlayButton = function(token) {
-    const playBtn = document.querySelector(`[data-play-btn="${token}"]`);
-    if (playBtn) {
-      playBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      `;
-    }
+    const playBtns = document.querySelectorAll(`[data-play-btn="${token}"]`);
+    playBtns.forEach(btn => {
+      const isMobile = btn.textContent.includes('Play');
+      if (isMobile) {
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" style="height: 1rem; width: 1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Play
+        `;
+      } else {
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #4ade80;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        `;
+      }
+    });
   };
 
   window.copyShareLink = async function(url, button) {
     try {
       await navigator.clipboard.writeText(url);
-      // Visual feedback
       const originalSvg = button.innerHTML;
       button.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" style="height: 1.25rem; width: 1.25rem; color: #4ade80;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       `;
@@ -248,7 +245,6 @@
     }
   };
 
-  // Reset button when audio ends
   const audioPlayer = document.getElementById('global-audio-player');
   if (audioPlayer) {
     audioPlayer.addEventListener('ended', () => {
