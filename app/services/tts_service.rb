@@ -9,7 +9,7 @@ class TtsService
 
   def self.generate_speech(text, options = {})
     exaggeration = options[:exaggeration] || options["exaggeration"] || 0.5
-    cfg_weight = options[:cfg_weight] || options["cfg_weight"] || 0.5
+    cfg_weight = options[:cfg_weight] || options["cfg_weight"] || 1.0
     voice_preset = options[:voice_preset] || options["voice_preset"]
     voice_audio = options[:voice_audio] || options["voice_audio"]
 
