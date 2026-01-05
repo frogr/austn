@@ -7,7 +7,7 @@ class VtracerService
     mode: "spline",
     filter_speckle: 4,
     color_precision: 6,
-    layer_difference: 10,
+    layer_difference: 16,
     corner_threshold: 60,
     length_threshold: 4.0,
     max_iterations: 10,

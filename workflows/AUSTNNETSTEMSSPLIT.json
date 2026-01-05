@@ -4,58 +4,43 @@
       "audio": "input.mp3"
     },
     "class_type": "LoadAudio",
-    "_meta": {
-      "title": "Load Audio"
-    }
+    "_meta": {"title": "Load Audio"}
   },
   "2": {
     "inputs": {
-      "model": "htdemucs",
-      "audio": ["1", 0]
+      "input_sound": ["1", 0],
+      "model": "htdemucs_ft.safetensors",
+      "shifts": 0,
+      "overlap": 0.25,
+      "custom_segment": false,
+      "segment": 44,
+      "target_device": "cuda"
     },
-    "class_type": "Demucs 4 Stems",
-    "_meta": {
-      "title": "Demucs"
-    }
+    "class_type": "AudioSeparateDemucs",
+    "_meta": {"title": "Demucs"}
   },
   "3": {
-    "inputs": {
-      "filename_prefix": "stems_vocals",
-      "audio": ["2", 0]
-    },
+    "inputs": {"audio": ["2", 0]},
     "class_type": "SaveAudio",
-    "_meta": {
-      "title": "Save Vocals"
-    }
+    "_meta": {"title": "Save Vocals"},
+    "widgets_values": ["stems/vocals"]
   },
   "4": {
-    "inputs": {
-      "filename_prefix": "stems_drums",
-      "audio": ["2", 1]
-    },
+    "inputs": {"audio": ["2", 1]},
     "class_type": "SaveAudio",
-    "_meta": {
-      "title": "Save Drums"
-    }
+    "_meta": {"title": "Save Drums"},
+    "widgets_values": ["stems/drums"]
   },
   "5": {
-    "inputs": {
-      "filename_prefix": "stems_bass",
-      "audio": ["2", 2]
-    },
+    "inputs": {"audio": ["2", 2]},
     "class_type": "SaveAudio",
-    "_meta": {
-      "title": "Save Bass"
-    }
+    "_meta": {"title": "Save Bass"},
+    "widgets_values": ["stems/bass"]
   },
   "6": {
-    "inputs": {
-      "filename_prefix": "stems_other",
-      "audio": ["2", 3]
-    },
+    "inputs": {"audio": ["2", 3]},
     "class_type": "SaveAudio",
-    "_meta": {
-      "title": "Save Other"
-    }
+    "_meta": {"title": "Save Other"},
+    "widgets_values": ["stems/other"]
   }
 }
