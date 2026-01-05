@@ -193,7 +193,8 @@ function handleAudioPreview(input) {
 
 async function separateStems() {
   const fileInput = document.getElementById('audio-file');
-  const model = document.getElementById('model').value;
+  const modelElement = document.getElementById('model');
+  const model = modelElement ? modelElement.value : 'htdemucs';
 
   if (!fileInput.files || !fileInput.files[0]) {
     alert('Please select an audio file');
