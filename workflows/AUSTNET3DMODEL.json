@@ -1,7 +1,8 @@
 {
   "1": {
     "inputs": {
-      "image": "input.png"
+      "image": "input.png",
+      "upload": "image"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -10,30 +11,68 @@
   },
   "2": {
     "inputs": {
-      "image": ["1", 0]
+      "model": "hunyuan3d-dit-v2-1\\model.fp16.ckpt",
+      "image": ["1", 0],
+      "steps": 25,
+      "guidance_scale": 5.0,
+      "seed": 0,
+      "attention_mode": "sdpa"
     },
-    "class_type": "Hunyuan3D_Image_to_3D",
+    "class_type": "Hy3DMeshGenerator",
     "_meta": {
-      "title": "Hunyuan3D Image to 3D"
+      "title": "Hunyuan3D Mesh Generator"
     }
   },
   "3": {
     "inputs": {
-      "mesh": ["2", 0]
+      "model_name": "hunyuan3d-vae-v2-1\\model.fp16.ckpt"
     },
-    "class_type": "UltraShape_Refine",
+    "class_type": "Hy3D21VAELoader",
     "_meta": {
-      "title": "UltraShape Refine"
+      "title": "Load VAE"
     }
   },
   "4": {
     "inputs": {
-      "filename_prefix": "model3d_output",
-      "mesh": ["3", 0]
+      "vae": ["3", 0],
+      "latents": ["2", 0],
+      "box_v": 1.01,
+      "octree_resolution": 256,
+      "num_chunks": 8000,
+      "mc_level": 0,
+      "mc_algo": "mc",
+      "enable_flash_vdm": true,
+      "force_offload": true
     },
-    "class_type": "Save3DModel",
+    "class_type": "Hy3D21VAEDecode",
     "_meta": {
-      "title": "Save GLB"
+      "title": "VAE Decode to Mesh"
+    }
+  },
+  "5": {
+    "inputs": {
+      "trimesh": ["4", 0],
+      "remove_floaters": true,
+      "remove_degenerate_faces": true,
+      "reduce_faces": true,
+      "max_facenum": 40000,
+      "smooth_normals": false
+    },
+    "class_type": "Hy3D21PostprocessMesh",
+    "_meta": {
+      "title": "Postprocess Mesh"
+    }
+  },
+  "6": {
+    "inputs": {
+      "trimesh": ["5", 0],
+      "filename_prefix": "model3d_output",
+      "file_format": "glb",
+      "save_file": true
+    },
+    "class_type": "Hy3D21ExportMesh",
+    "_meta": {
+      "title": "Export GLB"
     }
   }
 }
