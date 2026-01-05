@@ -9,7 +9,7 @@
   "2": {
     "inputs": {
       "input_sound": ["1", 0],
-      "model": "htdemucs_ft.safetensors",
+      "model": "⬇️ Hybrid Transformer fine-tuned",
       "shifts": 0,
       "overlap": 0.25,
       "custom_segment": false,
