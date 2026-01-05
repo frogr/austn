@@ -146,19 +146,6 @@ class ComfyuiClient
     raise ComfyuiError, "Network error fetching output: #{e.message}"
   end
 
-  # List files in ComfyUI output directory
-  # @param subfolder [String] Optional subfolder to list
-  # @return [Array<Hash>] Array of file info hashes with name, subfolder keys
-  def self.list_output_files(subfolder: "")
-    response = get("/output", query: { subfolder: subfolder }, timeout: 30)
-
-    return [] unless response.success?
-
-    response.parsed_response || []
-  rescue HTTParty::Error
-    []
-  end
-
   # Build URL to view a file from ComfyUI
   # @param filename [String] The filename
   # @param subfolder [String] The subfolder
