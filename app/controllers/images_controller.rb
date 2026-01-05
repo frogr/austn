@@ -1,4 +1,6 @@
 class ImagesController < ApplicationController
+  include GpuQueueStatus
+
   before_action :set_image, only: [ :show, :edit, :update, :destroy ]
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
@@ -132,31 +134,13 @@ class ImagesController < ApplicationController
   def ai_status
     generation_id = params[:id]
 
-    # Check if image is ready
     if image_redis_service.image_exists?(generation_id)
       render json: {
         status: "complete",
         image_url: ai_show_image_path(generation_id)
       }
     else
-      # Check status from service
-      status = image_redis_service.get_status(generation_id)
-
-      # If status is pending, check Sidekiq queue
-      if status[:status] == "pending"
-        queue_position = Sidekiq::Queue.new("gpu").find_index do |job|
-          job.args.first == generation_id
-        end
-
-        if queue_position
-          status = {
-            status: "queued",
-            position: queue_position + 1
-          }
-        end
-      end
-
-      render json: status
+      render json: status_with_queue_position(generation_id, image_redis_service)
     end
   end
 
