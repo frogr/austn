@@ -102,16 +102,20 @@ class ComfyuiClient
     loop do
       history = get_history(prompt_id)
 
-      if history && history["outputs"]
-        outputs = history["outputs"]
+      if history
+        # Check if the prompt completed (works even when outputs is empty)
+        status = history["status"]
+        if status && status["completed"]
+          outputs = history["outputs"] || {}
 
-        # If output_node_id specified, return that node's output
-        if output_node_id && outputs[output_node_id.to_s]
-          return outputs[output_node_id.to_s]
+          # If output_node_id specified, return that node's output
+          if output_node_id && outputs[output_node_id.to_s]
+            return outputs[output_node_id.to_s]
+          end
+
+          # Return outputs (may be empty for nodes like Hy3D21ExportMesh)
+          return outputs
         end
-
-        # Otherwise return all outputs if any exist
-        return outputs if outputs.any?
       end
 
       if Time.current - start_time > timeout
