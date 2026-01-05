@@ -117,6 +117,15 @@ Rails.application.routes.draw do
   get "/stems/:id/download/:stem", to: "stems#download_stem", as: :download_stem
   get "/stems/:id/download_all", to: "stems#download_all", as: :download_all_stems
 
+  # 3D Model Generation (Image to GLB)
+  get "/3d", to: "model3d#index"
+  post "/3d/generate", to: "model3d#generate"
+  get "/3d/:id/status", to: "model3d#status", as: :status_model3d
+  get "/3d/:id/result", to: "model3d#result", as: :result_model3d
+  get "/3d/:id/download", to: "model3d#download", as: :download_model3d
+  get "/3d/:id/glb", to: "model3d#glb", as: :glb_model3d
+  get "/3d/:id/preview", to: "model3d#preview", as: :preview_model3d
+
   # TTS Batch Generation (admin)
   resources :tts_batches, only: [ :index, :show, :new, :create ] do
     member do
