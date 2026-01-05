@@ -1,7 +1,7 @@
 <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
   <!-- Header -->
-  <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
-    <div>
+  <div id="tts-header" style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+    <div style="text-align: center;">
       <h1 class="font-black mb-2" style="font-size: clamp(2rem, 5vw, 3.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
         Text to Speech <%= render "shared/gpu_health_indicator", service: "tts" %>
       </h1>
@@ -140,10 +140,13 @@
 <style>
   /* Responsive header */
   @media (min-width: 640px) {
-    .container > div:first-child {
+    #tts-header {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
+    }
+    #tts-header > div:first-child {
+      text-align: left;
     }
   }
 
