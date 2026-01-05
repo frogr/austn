@@ -55,25 +55,29 @@ class StemSeparationService
 
       # Queue the workflow
       prompt_id = ComfyuiClient.queue_prompt(workflow)
+      Rails.logger.info "Queued stem separation prompt: #{prompt_id}"
 
-      # Wait for completion (5 minutes timeout for audio processing)
+      # Wait for completion (15 minutes timeout for audio processing)
       outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 900)
+      Rails.logger.info "Stem separation completed. Output nodes: #{outputs.keys.inspect}"
 
       # Collect all stem outputs
       stems = {}
 
       STEM_OUTPUT_NODES.each do |stem_name, node_id|
         node_output = outputs[node_id]
+        Rails.logger.info "Processing stem #{stem_name} (node #{node_id}): #{node_output&.keys || 'nil'}"
 
         if node_output && node_output["audio"]&.any?
           audio_info = node_output["audio"].first
           filename = audio_info["filename"]
           subfolder = audio_info["subfolder"] || ""
 
-          Rails.logger.info "Stem ready: #{stem_name} -> #{filename}"
+          Rails.logger.info "Fetching stem #{stem_name}: #{filename} (subfolder: #{subfolder.presence || 'none'})"
 
           # Fetch and encode the audio
           audio_data = ComfyuiClient.get_output_file(filename, subfolder: subfolder)
+          Rails.logger.info "Downloaded stem #{stem_name}: #{audio_data.bytesize} bytes"
           stems[stem_name] = Base64.strict_encode64(audio_data)
         elsif node_output && node_output["files"]&.any?
           # Alternative output format
@@ -81,10 +85,12 @@ class StemSeparationService
           filename = file_info["filename"]
           subfolder = file_info["subfolder"] || ""
 
+          Rails.logger.info "Fetching stem #{stem_name} (files format): #{filename}"
           audio_data = ComfyuiClient.get_output_file(filename, subfolder: subfolder)
+          Rails.logger.info "Downloaded stem #{stem_name}: #{audio_data.bytesize} bytes"
           stems[stem_name] = Base64.strict_encode64(audio_data)
         else
-          Rails.logger.warn "No output for stem: #{stem_name}"
+          Rails.logger.warn "No output for stem: #{stem_name}. Node output: #{node_output.inspect}"
         end
       end
 

@@ -97,10 +97,10 @@ class StemsController < ApplicationController
       # Generate filename based on original and stem name
       original = result_data["original_filename"] || "audio.mp3"
       basename = File.basename(original, ".*")
-      filename = "#{basename}_#{stem_name}.wav"
+      filename = "#{basename}_#{stem_name}.flac"
 
       send_data Base64.decode64(result_data["stems"][stem_name]),
-                type: "audio/wav",
+                type: "audio/flac",
                 disposition: "attachment",
                 filename: filename
     else
@@ -121,7 +121,7 @@ class StemsController < ApplicationController
 
       zip_data = Zip::OutputStream.write_buffer do |zip|
         result_data["stems"].each do |stem_name, stem_base64|
-          zip.put_next_entry("#{basename}_#{stem_name}.wav")
+          zip.put_next_entry("#{basename}_#{stem_name}.flac")
           zip.write(Base64.decode64(stem_base64))
         end
       end
