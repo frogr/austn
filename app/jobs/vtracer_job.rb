@@ -3,8 +3,8 @@ class VtracerJob < GpuJob
   sidekiq_options retry: 1
 
   VTRACER_OPTION_KEYS = %w[
-    filter_speckle color_precision gradient_step
-    corner_threshold segment_length splice_threshold
+    hierarchical mode filter_speckle color_precision layer_difference
+    corner_threshold length_threshold max_iterations splice_threshold path_precision
   ].freeze
 
   def perform(generation_id, file_data, options = {})

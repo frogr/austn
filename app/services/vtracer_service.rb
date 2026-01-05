@@ -3,12 +3,16 @@ require "tempfile"
 # Service for converting raster images to SVG using ComfyUI's VTracer node
 class VtracerService
   DEFAULT_OPTIONS = {
+    hierarchical: "stacked",
+    mode: "spline",
     filter_speckle: 4,
     color_precision: 6,
-    gradient_step: 10,
+    layer_difference: 10,
     corner_threshold: 60,
-    segment_length: 4.0,
-    splice_threshold: 45
+    length_threshold: 4.0,
+    max_iterations: 10,
+    splice_threshold: 45,
+    path_precision: 3
   }.freeze
 
   class VtracerError < StandardError; end
@@ -38,12 +42,16 @@ class VtracerService
       workflow["1"]["inputs"]["image"] = uploaded_filename
 
       # Update VTracer parameters (node 2)
+      workflow["2"]["inputs"]["hierarchical"] = opts[:hierarchical]
+      workflow["2"]["inputs"]["mode"] = opts[:mode]
       workflow["2"]["inputs"]["filter_speckle"] = opts[:filter_speckle].to_i
       workflow["2"]["inputs"]["color_precision"] = opts[:color_precision].to_i
-      workflow["2"]["inputs"]["gradient_step"] = opts[:gradient_step].to_i
+      workflow["2"]["inputs"]["layer_difference"] = opts[:layer_difference].to_i
       workflow["2"]["inputs"]["corner_threshold"] = opts[:corner_threshold].to_i
-      workflow["2"]["inputs"]["segment_length"] = opts[:segment_length].to_f
+      workflow["2"]["inputs"]["length_threshold"] = opts[:length_threshold].to_f
+      workflow["2"]["inputs"]["max_iterations"] = opts[:max_iterations].to_i
       workflow["2"]["inputs"]["splice_threshold"] = opts[:splice_threshold].to_i
+      workflow["2"]["inputs"]["path_precision"] = opts[:path_precision].to_i
 
       # Generate unique output prefix
       output_prefix = "vtracer_#{SecureRandom.hex(4)}"
@@ -93,20 +101,39 @@ class VtracerService
   private
 
   # Normalize options from web params (strings) to proper types
+  # Also handles legacy parameter names for backwards compatibility
   def self.normalize_options(options)
     opts = options.symbolize_keys
+
+    # Handle legacy parameter names
+    opts[:layer_difference] ||= opts.delete(:gradient_step)
+    opts[:length_threshold] ||= opts.delete(:segment_length)
+
     {
+      hierarchical: opts[:hierarchical]&.to_s,
+      mode: opts[:mode]&.to_s,
       filter_speckle: opts[:filter_speckle]&.to_i,
       color_precision: opts[:color_precision]&.to_i,
-      gradient_step: opts[:gradient_step]&.to_i,
+      layer_difference: opts[:layer_difference]&.to_i,
       corner_threshold: opts[:corner_threshold]&.to_i,
-      segment_length: opts[:segment_length]&.to_f,
-      splice_threshold: opts[:splice_threshold]&.to_i
+      length_threshold: opts[:length_threshold]&.to_f,
+      max_iterations: opts[:max_iterations]&.to_i,
+      splice_threshold: opts[:splice_threshold]&.to_i,
+      path_precision: opts[:path_precision]&.to_i
     }.compact
   end
 
   def self.validate_options!(opts)
-    # Validate ranges
+    # Validate string options
+    unless %w[stacked cutout].include?(opts[:hierarchical])
+      raise VtracerError, "hierarchical must be 'stacked' or 'cutout'"
+    end
+
+    unless %w[spline polygon none].include?(opts[:mode])
+      raise VtracerError, "mode must be 'spline', 'polygon', or 'none'"
+    end
+
+    # Validate numeric ranges
     if opts[:filter_speckle] < 0 || opts[:filter_speckle] > 128
       raise VtracerError, "filter_speckle must be between 0 and 128"
     end
@@ -115,20 +142,28 @@ class VtracerService
       raise VtracerError, "color_precision must be between 1 and 8"
     end
 
-    if opts[:gradient_step] < 1 || opts[:gradient_step] > 255
-      raise VtracerError, "gradient_step must be between 1 and 255"
+    if opts[:layer_difference] < 1 || opts[:layer_difference] > 255
+      raise VtracerError, "layer_difference must be between 1 and 255"
     end
 
     if opts[:corner_threshold] < 0 || opts[:corner_threshold] > 180
       raise VtracerError, "corner_threshold must be between 0 and 180"
     end
 
-    if opts[:segment_length] < 0.1 || opts[:segment_length] > 100
-      raise VtracerError, "segment_length must be between 0.1 and 100"
+    if opts[:length_threshold] < 0.1 || opts[:length_threshold] > 100
+      raise VtracerError, "length_threshold must be between 0.1 and 100"
+    end
+
+    if opts[:max_iterations] < 1 || opts[:max_iterations] > 100
+      raise VtracerError, "max_iterations must be between 1 and 100"
     end
 
     if opts[:splice_threshold] < 0 || opts[:splice_threshold] > 180
       raise VtracerError, "splice_threshold must be between 0 and 180"
+    end
+
+    if opts[:path_precision] < 1 || opts[:path_precision] > 10
+      raise VtracerError, "path_precision must be between 1 and 10"
     end
   end
 

@@ -29,8 +29,13 @@ class VtracerController < ApplicationController
       "original_filename" => uploaded_file.original_filename
     }
 
-    # Add VTracer parameters if provided
-    %w[filter_speckle color_precision gradient_step corner_threshold segment_length splice_threshold].each do |key|
+    # Add VTracer parameters if provided (includes both new and legacy param names)
+    vtracer_params = %w[
+      hierarchical mode filter_speckle color_precision layer_difference
+      corner_threshold length_threshold max_iterations splice_threshold path_precision
+      gradient_step segment_length
+    ]
+    vtracer_params.each do |key|
       options[key] = params[key] if params[key].present?
     end
 
