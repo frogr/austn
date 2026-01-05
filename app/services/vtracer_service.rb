@@ -63,8 +63,12 @@ class VtracerService
       # Wait for completion (30s timeout)
       outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 30, output_node_id: "3")
 
-      # Get the SVG output - the Save SVG node outputs svg files
-      if outputs && outputs["svg"]&.any?
+      # Get the SVG output - handle different output formats
+      if outputs && outputs.dig("ui", "saved_svg")
+        # TS_SaveSVGString format
+        filename = outputs["ui"]["saved_svg"]
+        ComfyuiClient.get_output_file(filename, subfolder: "", type: "output")
+      elsif outputs && outputs["svg"]&.any?
         svg_info = outputs["svg"].first
         filename = svg_info["filename"]
         subfolder = svg_info["subfolder"] || ""
