@@ -4,12 +4,14 @@
       "audio": "input.mp3"
     },
     "class_type": "LoadAudio",
-    "_meta": {"title": "Load Audio"}
+    "_meta": {
+      "title": "Load Audio"
+    }
   },
   "2": {
     "inputs": {
       "input_sound": ["1", 0],
-      "model": "⬇️ Hybrid Transformer fine-tuned",
+      "model": "htdemucs",
       "shifts": 0,
       "overlap": 0.25,
       "custom_segment": false,
@@ -17,30 +19,48 @@
       "target_device": "cuda"
     },
     "class_type": "AudioSeparateDemucs",
-    "_meta": {"title": "Demucs"}
+    "_meta": {
+      "title": "Demucs Audio Separator"
+    }
   },
   "3": {
-    "inputs": {"audio": ["2", 0]},
+    "inputs": {
+      "filename_prefix": "stems_vocals",
+      "audio": ["2", 0]
+    },
     "class_type": "SaveAudio",
-    "_meta": {"title": "Save Vocals"},
-    "widgets_values": ["stems/vocals"]
+    "_meta": {
+      "title": "Save Vocals"
+    }
   },
   "4": {
-    "inputs": {"audio": ["2", 1]},
+    "inputs": {
+      "filename_prefix": "stems_drums",
+      "audio": ["2", 1]
+    },
     "class_type": "SaveAudio",
-    "_meta": {"title": "Save Drums"},
-    "widgets_values": ["stems/drums"]
+    "_meta": {
+      "title": "Save Drums"
+    }
   },
   "5": {
-    "inputs": {"audio": ["2", 2]},
+    "inputs": {
+      "filename_prefix": "stems_bass",
+      "audio": ["2", 2]
+    },
     "class_type": "SaveAudio",
-    "_meta": {"title": "Save Bass"},
-    "widgets_values": ["stems/bass"]
+    "_meta": {
+      "title": "Save Bass"
+    }
   },
   "6": {
-    "inputs": {"audio": ["2", 3]},
+    "inputs": {
+      "filename_prefix": "stems_other",
+      "audio": ["2", 3]
+    },
     "class_type": "SaveAudio",
-    "_meta": {"title": "Save Other"},
-    "widgets_values": ["stems/other"]
+    "_meta": {
+      "title": "Save Other"
+    }
   }
 }
