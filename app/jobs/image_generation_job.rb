@@ -53,9 +53,8 @@ class ImageGenerationJob < GpuJob
       end
 
       # Store with service, handles publishing automatically
-      service.store_image(generation_id, image_data, {
-        publish: options["publish"] == true || options["publish"] == "true"
-      })
+      should_publish = options["publish"] == true || options["publish"] == "true"
+      service.store_image(generation_id, image_data, publish: should_publish)
 
       # Update status
       service.store_status(generation_id, {
