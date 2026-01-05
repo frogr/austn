@@ -115,6 +115,42 @@
         </div>
       </div>
     </div>
+
+    <% if @recent_models.any? %>
+    <!-- Recent Models Gallery -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-white mb-4">Recent Models <span class="text-sm font-normal text-gray-400">(expires after 24 hours)</span></h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <% @recent_models.each do |model| %>
+          <div class="rounded-lg overflow-hidden transition-transform hover:scale-105" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+            <a href="<%= preview_model3d_path(model.generation_id) %>" class="block">
+              <% if model.thumbnail_data.present? %>
+                <img src="<%= model.thumbnail_data %>" alt="<%= model.original_filename %>" class="w-full h-32 object-cover" loading="lazy">
+              <% else %>
+                <div class="w-full h-32 flex items-center justify-center" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+                  <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                  </svg>
+                </div>
+              <% end %>
+              <div class="p-2">
+                <p class="text-xs text-gray-400 truncate" title="<%= model.original_filename %>"><%= model.original_filename || "3D Model" %></p>
+                <p class="text-xs text-gray-500"><%= time_ago_in_words(model.created_at) %> ago</p>
+              </div>
+            </a>
+            <div class="px-2 pb-2 flex gap-2">
+              <a href="<%= download_model3d_path(model.generation_id) %>" class="flex-1 text-center text-xs py-1 px-2 rounded transition" style="background: rgba(139, 92, 246, 0.2); color: #a78bfa;">
+                Download
+              </a>
+              <a href="<%= preview_model3d_path(model.generation_id) %>" class="flex-1 text-center text-xs py-1 px-2 rounded transition" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8);">
+                View
+              </a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <% end %>
   </div>
 </div>
 

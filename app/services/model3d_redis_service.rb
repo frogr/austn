@@ -1,6 +1,6 @@
 class Model3dRedisService < BaseRedisService
-  # Longer TTL for 3D models since they take a while to generate
-  DEFAULT_TTL = 1800 # 30 minutes
+  # 24-hour TTL for 3D models to match database expiration
+  DEFAULT_TTL = 86400 # 24 hours
 
   # Store GLB data separately with longer TTL
   def store_glb(generation_id, glb_data, ttl: DEFAULT_TTL)
@@ -17,6 +17,12 @@ class Model3dRedisService < BaseRedisService
   # Check if GLB exists
   def glb_exists?(generation_id)
     @redis.exists?(glb_key(generation_id))
+  end
+
+  # Delete all keys for a generation (result, status, and GLB)
+  def delete_all(generation_id)
+    delete_result(generation_id)
+    @redis.del(glb_key(generation_id))
   end
 
   protected
