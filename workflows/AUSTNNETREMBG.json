@@ -1,0 +1,31 @@
+{
+  "1": {
+    "inputs": {
+      "image": "input.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "2": {
+    "inputs": {
+      "model": "u2net",
+      "image": ["1", 0]
+    },
+    "class_type": "Image Remove Background (rembg)",
+    "_meta": {
+      "title": "REMBG"
+    }
+  },
+  "3": {
+    "inputs": {
+      "filename_prefix": "rembg_output",
+      "images": ["2", 0]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  }
+}

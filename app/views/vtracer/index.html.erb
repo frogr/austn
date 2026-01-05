@@ -1,0 +1,445 @@
+<style>
+  select option {
+    background-color: #1f2937;
+    color: white;
+  }
+  /* Range slider styling */
+  input[type="range"].slider-green {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.5));
+    border-radius: 0.5rem;
+  }
+  input[type="range"].slider-green::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  input[type="range"].slider-green::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+</style>
+
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Image to SVG <%= render "shared/gpu_health_indicator", service: "vtracer" %>
+    </h1>
+    <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Routed to my local GPU via ComfyUI + VTracer</p>
+  </div>
+
+  <div class="max-w-4xl mx-auto">
+    <div class="rounded-lg p-3 sm:p-6 mb-4 sm:mb-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <div class="space-y-4">
+        <div>
+          <label for="image-file" class="block text-sm font-medium text-gray-300 mb-2">
+            Upload an image
+          </label>
+          <input
+            type="file"
+            id="image-file"
+            accept="image/*"
+            class="w-full px-3 py-2 rounded-md focus:outline-none text-white text-sm" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+            onchange="handleImagePreview(this)"
+          >
+          <div id="preview-container" class="mt-3" style="display: none;">
+            <img id="preview-image" class="max-h-64 rounded-md mx-auto" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6 mb-4">
+          <div class="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="advanced"
+              class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+              onchange="toggleAdvanced()"
+            >
+            <label for="advanced" class="text-sm font-medium text-gray-300">
+              Advanced options
+            </label>
+          </div>
+        </div>
+
+        <div id="advanced-options" style="display: none;">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="filter_speckle" class="text-sm font-medium text-gray-300">
+                  Filter Speckle
+                </label>
+                <span id="filter_speckle-value" class="text-sm text-green-400 font-mono">4</span>
+              </div>
+              <input
+                type="range"
+                id="filter_speckle"
+                min="0"
+                max="128"
+                step="1"
+                value="4"
+                oninput="document.getElementById('filter_speckle-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+              >
+              <p class="mt-1.5 text-xs text-gray-500">Removes small noise. Higher = less detail.</p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="color_precision" class="text-sm font-medium text-gray-300">
+                  Color Precision
+                </label>
+                <span id="color_precision-value" class="text-sm text-green-400 font-mono">6</span>
+              </div>
+              <input
+                type="range"
+                id="color_precision"
+                min="1"
+                max="8"
+                step="1"
+                value="6"
+                oninput="document.getElementById('color_precision-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+              >
+              <p class="mt-1.5 text-xs text-gray-500">Color quantization level. Higher = more colors.</p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="gradient_step" class="text-sm font-medium text-gray-300">
+                  Gradient Step
+                </label>
+                <span id="gradient_step-value" class="text-sm text-green-400 font-mono">10</span>
+              </div>
+              <input
+                type="range"
+                id="gradient_step"
+                min="1"
+                max="255"
+                step="1"
+                value="10"
+                oninput="document.getElementById('gradient_step-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+              >
+              <p class="mt-1.5 text-xs text-gray-500">Color gradient resolution.</p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="corner_threshold" class="text-sm font-medium text-gray-300">
+                  Corner Threshold
+                </label>
+                <span id="corner_threshold-value" class="text-sm text-green-400 font-mono">60</span>
+              </div>
+              <input
+                type="range"
+                id="corner_threshold"
+                min="0"
+                max="180"
+                step="1"
+                value="60"
+                oninput="document.getElementById('corner_threshold-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+              >
+              <p class="mt-1.5 text-xs text-gray-500">Angle threshold for corners.</p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="segment_length" class="text-sm font-medium text-gray-300">
+                  Segment Length
+                </label>
+                <span id="segment_length-value" class="text-sm text-green-400 font-mono">4.0</span>
+              </div>
+              <input
+                type="range"
+                id="segment_length"
+                min="0.5"
+                max="50"
+                step="0.5"
+                value="4"
+                oninput="document.getElementById('segment_length-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+              >
+              <p class="mt-1.5 text-xs text-gray-500">Path segment length.</p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="splice_threshold" class="text-sm font-medium text-gray-300">
+                  Splice Threshold
+                </label>
+                <span id="splice_threshold-value" class="text-sm text-green-400 font-mono">45</span>
+              </div>
+              <input
+                type="range"
+                id="splice_threshold"
+                min="0"
+                max="180"
+                step="1"
+                value="45"
+                oninput="document.getElementById('splice_threshold-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green"
+              >
+              <p class="mt-1.5 text-xs text-gray-500">Path splicing threshold.</p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick="convertToSvg()"
+          id="generate-btn"
+          class="w-full font-semibold py-3 px-4 rounded-md transition duration-200" style="background: linear-gradient(45deg, #10b981, #059669); color: #fff;"
+        >
+          Convert to SVG
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Display -->
+    <div id="status" style="display:none;" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="animate-spin h-5 w-5 mr-3 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span id="status-text" class="text-yellow-700">Converting your image...</span>
+      </div>
+      <div id="queue-position" class="mt-2 text-sm text-yellow-600"></div>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error" style="display:none;" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="h-5 w-5 text-red-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-12v4m0 4h.01"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Conversion failed</h3>
+          <div id="error-message" class="mt-1 text-sm text-red-700"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" style="display:none;">
+      <div class="rounded-lg p-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <h3 class="text-lg font-semibold text-white mb-2">SVG Generated</h3>
+        <p class="text-sm text-gray-400 mb-4" id="result-info"></p>
+        <div class="mb-4 flex justify-center p-4 rounded" style="background: #fff;">
+          <div id="svg-container" class="max-w-full max-h-96 overflow-auto"></div>
+        </div>
+        <div class="flex gap-4">
+          <a id="download-link" href="#" download
+            class="flex-1 text-center text-white font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: linear-gradient(45deg, #10b981, #059669);">
+            Download SVG
+          </a>
+          <button
+            onclick="processNew()"
+            class="flex-1 font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            Convert New Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentGenerationId = null;
+let pollingInterval = null;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+function handleImagePreview(input) {
+  const previewContainer = document.getElementById('preview-container');
+  const previewImage = document.getElementById('preview-image');
+
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImage.src = e.target.result;
+      previewContainer.style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewContainer.style.display = 'none';
+  }
+}
+
+async function convertToSvg() {
+  const fileInput = document.getElementById('image-file');
+
+  if (!fileInput.files || !fileInput.files[0]) {
+    alert('Please select an image');
+    return;
+  }
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Converting...';
+
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('status-text').textContent = 'Converting your image...';
+  document.getElementById('queue-position').textContent = '';
+
+  try {
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    formData.append('filter_speckle', document.getElementById('filter_speckle').value);
+    formData.append('color_precision', document.getElementById('color_precision').value);
+    formData.append('gradient_step', document.getElementById('gradient_step').value);
+    formData.append('corner_threshold', document.getElementById('corner_threshold').value);
+    formData.append('segment_length', document.getElementById('segment_length').value);
+    formData.append('splice_threshold', document.getElementById('splice_threshold').value);
+
+    const response = await fetch('/vtracer/generate', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': getCsrfToken()
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      showError(data.error || 'Failed to start conversion');
+      return;
+    }
+
+    currentGenerationId = data.generation_id;
+    console.log('Conversion started:', currentGenerationId);
+
+    startPolling();
+
+  } catch (error) {
+    showError('Failed to start conversion: ' + error.message);
+  }
+}
+
+function startPolling() {
+  pollingInterval = setInterval(async () => {
+    if (!currentGenerationId) {
+      clearInterval(pollingInterval);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/vtracer/${currentGenerationId}/status`);
+      const statusData = await response.json();
+
+      if (statusData.status === 'complete') {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        fetchAndDisplayResult();
+      } else if (statusData.status === 'queued' && statusData.position) {
+        document.getElementById('queue-position').textContent = `Position in queue: ${statusData.position}`;
+      } else if (statusData.status === 'processing') {
+        document.getElementById('status-text').textContent = 'Converting to vectors...';
+        document.getElementById('queue-position').textContent = '';
+      } else if (statusData.status === 'failed') {
+        clearInterval(pollingInterval);
+        showError(statusData.error || 'Conversion failed');
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+    }
+  }, 1000);
+}
+
+async function fetchAndDisplayResult() {
+  try {
+    const response = await fetch(`/vtracer/${currentGenerationId}/result`);
+    const data = await response.json();
+
+    document.getElementById('status').style.display = 'none';
+    document.getElementById('error').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+
+    document.getElementById('result-info').textContent = `Original: ${data.original_filename}`;
+
+    // Display the SVG
+    const svgContainer = document.getElementById('svg-container');
+    svgContainer.innerHTML = data.svg;
+
+    // Scale SVG to fit
+    const svgElement = svgContainer.querySelector('svg');
+    if (svgElement) {
+      svgElement.style.maxWidth = '100%';
+      svgElement.style.maxHeight = '384px';
+      svgElement.style.height = 'auto';
+    }
+
+    document.getElementById('download-link').href = `/vtracer/${currentGenerationId}/download`;
+
+    const generateBtn = document.getElementById('generate-btn');
+    generateBtn.disabled = false;
+    generateBtn.textContent = 'Convert to SVG';
+  } catch (error) {
+    showError('Failed to load result: ' + error.message);
+  }
+}
+
+function showError(message) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+  document.getElementById('error-message').textContent = message;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Convert to SVG';
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function processNew() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('preview-container').style.display = 'none';
+  document.getElementById('image-file').value = '';
+  currentGenerationId = null;
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function toggleAdvanced() {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+
+  if (checkbox.checked) {
+    advancedOptions.style.display = 'block';
+  } else {
+    advancedOptions.style.display = 'none';
+  }
+}
+</script>

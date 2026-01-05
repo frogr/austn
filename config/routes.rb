@@ -92,6 +92,31 @@ Rails.application.routes.draw do
   get "/tts/s/:token/audio", to: "tts_shares#audio", as: :tts_share_audio
   get "/tts/s/:token/embed", to: "tts_shares#embed", as: :tts_share_embed
 
+  # Rembg (Background Removal)
+  get "/rembg", to: "rembg#index"
+  post "/rembg/generate", to: "rembg#generate"
+  get "/rembg/models", to: "rembg#models", as: :rembg_models
+  get "/rembg/:id/status", to: "rembg#status", as: :status_rembg
+  get "/rembg/:id/result", to: "rembg#result", as: :result_rembg
+  get "/rembg/:id/download", to: "rembg#download", as: :download_rembg
+
+  # VTracer (Image to SVG)
+  get "/vtracer", to: "vtracer#index"
+  post "/vtracer/generate", to: "vtracer#generate"
+  get "/vtracer/defaults", to: "vtracer#defaults", as: :vtracer_defaults
+  get "/vtracer/:id/status", to: "vtracer#status", as: :status_vtracer
+  get "/vtracer/:id/result", to: "vtracer#result", as: :result_vtracer
+  get "/vtracer/:id/download", to: "vtracer#download", as: :download_vtracer
+
+  # Stems (Audio Stem Separation)
+  get "/stems", to: "stems#index"
+  post "/stems/generate", to: "stems#generate"
+  get "/stems/models", to: "stems#models", as: :stems_models
+  get "/stems/:id/status", to: "stems#status", as: :status_stems
+  get "/stems/:id/result", to: "stems#result", as: :result_stems
+  get "/stems/:id/download/:stem", to: "stems#download_stem", as: :download_stem
+  get "/stems/:id/download_all", to: "stems#download_all", as: :download_all_stems
+
   # TTS Batch Generation (admin)
   resources :tts_batches, only: [ :index, :show, :new, :create ] do
     member do
