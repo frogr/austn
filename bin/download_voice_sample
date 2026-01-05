@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+"""
+Voice Sample Downloader & Processor
+
+Downloads audio from YouTube or other sources and processes it into
+high-quality ~10 second clips suitable for TTS voice cloning.
+
+Usage:
+    ./bin/download_voice_sample URL [--start SECONDS] [--duration SECONDS] [--name NAME]
+    ./bin/download_voice_sample URL --timestamps "0:30-0:40,1:15-1:25" [--name NAME]
+
+Examples:
+    ./bin/download_voice_sample "https://youtube.com/watch?v=xxx" --start 30 --duration 10 --name morgan_freeman
+    ./bin/download_voice_sample "https://youtube.com/watch?v=xxx" --timestamps "0:30-0:40,1:15-1:25" --name joe_rogan
+    ./bin/download_voice_sample audio.mp3 --start 0 --duration 10 --name local_sample
+
+Output: voice_samples/<name>_<timestamp>.wav
+"""
+
+import argparse
+import os
+import subprocess
+import sys
+import tempfile
+import re
+from datetime import datetime
+from pathlib import Path
+
+SAMPLES_DIR = Path(__file__).parent.parent / "voice_samples"
+
+
+def parse_timestamp(ts: str) -> float:
+    """Parse timestamp like '1:30' or '90' into seconds."""
+    if ':' in ts:
+        parts = ts.split(':')
+        if len(parts) == 2:
+            return int(parts[0]) * 60 + float(parts[1])
+        elif len(parts) == 3:
+            return int(parts[0]) * 3600 + int(parts[1]) * 60 + float(parts[2])
+    return float(ts)
+
+
+def parse_timestamp_ranges(ranges_str: str) -> list[tuple[float, float]]:
+    """Parse comma-separated timestamp ranges like '0:30-0:40,1:15-1:25'."""
+    ranges = []
+    for part in ranges_str.split(','):
+        if '-' in part:
+            start, end = part.strip().split('-')
+            ranges.append((parse_timestamp(start.strip()), parse_timestamp(end.strip())))
+    return ranges
+
+
+def download_audio(url: str, output_path: str) -> bool:
+    """Download audio using yt-dlp."""
+    print(f"Downloading audio from: {url}")
+    cmd = [
+        "yt-dlp",
+        "-x",  # Extract audio
+        "--audio-format", "wav",
+        "--audio-quality", "0",  # Best quality
+        "-o", output_path,
+        "--no-playlist",
+        url
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Download error: {result.stderr}")
+        return False
+    return True
+
+
+def get_audio_duration(filepath: str) -> float:
+    """Get duration of audio file using ffprobe."""
+    cmd = [
+        "ffprobe", "-v", "error",
+        "-show_entries", "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        filepath
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return float(result.stdout.strip())
+
+
+def extract_segment(input_path: str, output_path: str, start: float, duration: float) -> bool:
+    """Extract a segment from audio file using ffmpeg."""
+    print(f"Extracting segment: {start}s - {start + duration}s")
+    cmd = [
+        "ffmpeg", "-y",
+        "-i", input_path,
+        "-ss", str(start),
+        "-t", str(duration),
+        "-ar", "22050",  # Sample rate suitable for TTS
+        "-ac", "1",  # Mono
+        "-acodec", "pcm_s16le",  # 16-bit PCM
+        output_path
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"FFmpeg error: {result.stderr}")
+        return False
+    return True
+
+
+def concat_segments(segment_paths: list[str], output_path: str) -> bool:
+    """Concatenate multiple audio segments using ffmpeg."""
+    if len(segment_paths) == 1:
+        os.rename(segment_paths[0], output_path)
+        return True
+
+    # Create concat file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+        for path in segment_paths:
+            f.write(f"file '{path}'\n")
+        concat_file = f.name
+
+    print(f"Concatenating {len(segment_paths)} segments...")
+    cmd = [
+        "ffmpeg", "-y",
+        "-f", "concat",
+        "-safe", "0",
+        "-i", concat_file,
+        "-ar", "22050",
+        "-ac", "1",
+        "-acodec", "pcm_s16le",
+        output_path
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    os.unlink(concat_file)
+
+    if result.returncode != 0:
+        print(f"Concat error: {result.stderr}")
+        return False
+    return True
+
+
+def is_url(path: str) -> bool:
+    """Check if path is a URL."""
+    return path.startswith(('http://', 'https://', 'www.'))
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Download and process audio for TTS voice cloning",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__
+    )
+    parser.add_argument("source", help="URL or local file path")
+    parser.add_argument("--start", "-s", type=float, default=0,
+                        help="Start time in seconds (default: 0)")
+    parser.add_argument("--duration", "-d", type=float, default=10,
+                        help="Duration in seconds (default: 10)")
+    parser.add_argument("--timestamps", "-t",
+                        help="Comma-separated timestamp ranges (e.g., '0:30-0:40,1:15-1:25')")
+    parser.add_argument("--name", "-n", default="sample",
+                        help="Name for output file (default: sample)")
+
+    args = parser.parse_args()
+
+    # Ensure output directory exists
+    SAMPLES_DIR.mkdir(exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_name = f"{args.name}_{timestamp}.wav"
+    output_path = SAMPLES_DIR / output_name
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Get source audio
+        if is_url(args.source):
+            source_audio = os.path.join(tmpdir, "source.wav")
+            if not download_audio(args.source, source_audio):
+                print("Failed to download audio")
+                sys.exit(1)
+            # yt-dlp adds extension, find the actual file
+            for f in os.listdir(tmpdir):
+                if f.startswith("source"):
+                    source_audio = os.path.join(tmpdir, f)
+                    break
+        else:
+            source_audio = args.source
+            if not os.path.exists(source_audio):
+                print(f"File not found: {source_audio}")
+                sys.exit(1)
+
+        # Get duration info
+        total_duration = get_audio_duration(source_audio)
+        print(f"Source audio duration: {total_duration:.1f}s")
+
+        # Process segments
+        if args.timestamps:
+            ranges = parse_timestamp_ranges(args.timestamps)
+            segment_paths = []
+            for i, (start, end) in enumerate(ranges):
+                segment_path = os.path.join(tmpdir, f"segment_{i}.wav")
+                duration = end - start
+                if extract_segment(source_audio, segment_path, start, duration):
+                    segment_paths.append(segment_path)
+
+            if not segment_paths:
+                print("No segments extracted")
+                sys.exit(1)
+
+            if not concat_segments(segment_paths, str(output_path)):
+                print("Failed to concatenate segments")
+                sys.exit(1)
+        else:
+            if not extract_segment(source_audio, str(output_path), args.start, args.duration):
+                print("Failed to extract segment")
+                sys.exit(1)
+
+    # Verify output
+    final_duration = get_audio_duration(str(output_path))
+    print(f"\nSuccess! Output saved to: {output_path}")
+    print(f"Duration: {final_duration:.1f}s")
+    print(f"\nTo use with TTS, upload this file or copy to your voice presets directory.")
+
+
+if __name__ == "__main__":
+    main()
