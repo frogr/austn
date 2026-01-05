@@ -18,7 +18,7 @@ class VtracerService
   # @param options [Hash] VTracer parameters
   # @return [String] SVG content as string
   def self.convert_to_svg(image_file, options = {})
-    opts = DEFAULT_OPTIONS.merge(options.symbolize_keys)
+    opts = DEFAULT_OPTIONS.merge(normalize_options(options))
     validate_options!(opts)
 
     # Save uploaded file to temp location
@@ -91,6 +91,19 @@ class VtracerService
   end
 
   private
+
+  # Normalize options from web params (strings) to proper types
+  def self.normalize_options(options)
+    opts = options.symbolize_keys
+    {
+      filter_speckle: opts[:filter_speckle]&.to_i,
+      color_precision: opts[:color_precision]&.to_i,
+      gradient_step: opts[:gradient_step]&.to_i,
+      corner_threshold: opts[:corner_threshold]&.to_i,
+      segment_length: opts[:segment_length]&.to_f,
+      splice_threshold: opts[:splice_threshold]&.to_i
+    }.compact
+  end
 
   def self.validate_options!(opts)
     # Validate ranges
