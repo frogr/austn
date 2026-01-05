@@ -34,34 +34,30 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-6 mb-4">
-          <div class="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="advanced"
-              class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
-              onchange="toggleAdvanced()"
-            >
-            <label for="advanced" class="text-sm font-medium text-gray-300">
-              Advanced options
-            </label>
-          </div>
+        <div class="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="advanced"
+            class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+            onchange="toggleAdvanced()"
+          >
+          <label for="advanced" class="text-sm font-medium text-gray-300">
+            Advanced options
+          </label>
         </div>
 
-        <div id="advanced-options" style="display: none;">
-          <div class="mb-4">
-            <label for="model" class="block text-sm font-medium text-gray-300 mb-2">
-              Model
-            </label>
-            <select
-              id="model"
-              class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
-            >
-              <option value="htdemucs" selected>htdemucs (Default, fastest)</option>
-              <option value="htdemucs_ft">htdemucs_ft (Fine-tuned, better quality)</option>
-            </select>
-            <p class="mt-1.5 text-xs text-gray-500">htdemucs_ft produces better quality but takes longer to process.</p>
-          </div>
+        <div id="advanced-options" hidden>
+          <label for="model" class="block text-sm font-medium text-gray-300 mb-2">
+            Model
+          </label>
+          <select
+            id="model"
+            class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+          >
+            <option value="htdemucs" selected>htdemucs (Default, fastest)</option>
+            <option value="htdemucs_ft">htdemucs_ft (Fine-tuned, better quality)</option>
+          </select>
+          <p class="mt-1.5 text-xs text-gray-500">htdemucs_ft produces better quality but takes longer to process.</p>
         </div>
 
         <div class="p-3 rounded-md" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);">
@@ -350,11 +346,6 @@ function processNew() {
 function toggleAdvanced() {
   const checkbox = document.getElementById('advanced');
   const advancedOptions = document.getElementById('advanced-options');
-
-  if (checkbox.checked) {
-    advancedOptions.style.display = 'block';
-  } else {
-    advancedOptions.style.display = 'none';
-  }
+  advancedOptions.hidden = !checkbox.checked;
 }
 </script>
