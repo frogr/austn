@@ -27,7 +27,12 @@ class StemsJob < GpuJob
         created_at: Time.current
       }
 
+      # Log the data sizes before storing
+      total_size = stems.values.sum { |s| s.bytesize }
+      Rails.logger.info "StemsJob #{generation_id}: Storing #{stems.keys.size} stems, total base64 size: #{total_size / 1024 / 1024}MB"
+
       service.store_result(generation_id, result_data)
+      Rails.logger.info "StemsJob #{generation_id}: Successfully stored results in Redis"
       service.store_status(generation_id, completed_status)
       broadcast_complete(generation_id, "stems")
 

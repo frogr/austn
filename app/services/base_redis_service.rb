@@ -10,7 +10,13 @@ class BaseRedisService
   DEFAULT_TTL = 600 # 10 minutes
 
   def initialize(redis: nil)
-    @redis = redis || Redis.new(url: redis_url)
+    @redis = redis || Redis.new(
+      url: redis_url,
+      timeout: 30,           # General timeout
+      connect_timeout: 5,    # Connection timeout
+      read_timeout: 60,      # Read timeout for large data
+      write_timeout: 60      # Write timeout for large data (stems ~48MB)
+    )
   end
 
   # Store a result

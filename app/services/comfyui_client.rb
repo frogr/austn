@@ -132,13 +132,14 @@ class ComfyuiClient
   # @param type [String] The type (input, output, temp)
   # @return [String] The raw file content
   def self.get_output_file(filename, subfolder: "", type: "output")
+    Rails.logger.info "ComfyUI: Fetching file #{filename} (type: #{type}, subfolder: #{subfolder.presence || 'root'})"
     response = get("/view",
       query: {
         filename: filename,
         subfolder: subfolder,
         type: type
       },
-      timeout: 60
+      timeout: 120  # Increased timeout for large audio files (~12MB each)
     )
 
     unless response.success?
