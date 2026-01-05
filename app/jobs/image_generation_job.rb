@@ -6,106 +6,60 @@ class ImageGenerationJob < GpuJob
     Rails.logger.info "Starting ImageGenerationJob #{generation_id}"
     service = ImageRedisService.new
 
-    # Store initial status
-    service.store_status(generation_id, {
-      status: "processing",
-      started_at: Time.current
-    })
+    broadcast_processing(generation_id, "image_generation")
+    service.store_status(generation_id, processing_status)
 
-    # Broadcast that we're processing
-    ActionCable.server.broadcast(
-      "image_generation_#{generation_id}",
-      {
-        status: "processing",
-        generation_id: generation_id
-      }
+    result = ComfyService.generate_image(
+      prompt,
+      negative_prompt: options["negative_prompt"],
+      seed: options["seed"],
+      image_size: options["image_size"],
+      batch_size: options["batch_size"]
     )
 
-    begin
-      # Generate the image(s) using ComfyUI
-      result = ComfyService.generate_image(
-        prompt,
-        negative_prompt: options["negative_prompt"],
-        seed: options["seed"],
-        image_size: options["image_size"],
-        batch_size: options["batch_size"]
-      )
+    image_data = build_image_data(result, prompt, options)
+    should_publish = options["publish"] == true || options["publish"] == "true"
+    service.store_image(generation_id, image_data, publish: should_publish)
+    service.store_status(generation_id, completed_status)
+    broadcast_complete(generation_id, "image_generation")
 
-      # Store image data with service
-      # Handle both single images and batch
-      image_data = if result.is_a?(Array)
-        {
-          images: result,  # Array of base64 images
-          prompt: prompt,
-          options: options,
-          created_at: Time.current,
-          published: options["publish"] == true || options["publish"] == "true",
-          batch_size: result.length
-        }
-      else
-        {
-          base64: result,  # Single base64 image
-          prompt: prompt,
-          options: options,
-          created_at: Time.current,
-          published: options["publish"] == true || options["publish"] == "true"
-        }
-      end
-
-      # Store with service, handles publishing automatically
-      should_publish = options["publish"] == true || options["publish"] == "true"
-      service.store_image(generation_id, image_data, publish: should_publish)
-
-      # Update status
-      service.store_status(generation_id, {
-        status: "completed",
-        completed_at: Time.current
-      })
-
-      # Broadcast completion
-      ActionCable.server.broadcast(
-        "image_generation_#{generation_id}",
-        {
-          status: "complete",
-          generation_id: generation_id
-        }
-      )
-
-      Rails.logger.info "ImageGenerationJob #{generation_id} completed successfully"
-      mark_service_online
-
-    rescue => e
-      Rails.logger.error "ImageGenerationJob #{generation_id} failed: #{e.message}"
-      Rails.logger.error e.backtrace.join("\n")
-
-      # Store error result
-      service.store_status(generation_id, {
-        status: "failed",
-        error: e.message,
-        failed_at: Time.current
-      }, ttl: 600)
-
-      # Notify failure
-      ActionCable.server.broadcast(
-        "image_generation_#{generation_id}",
-        {
-          status: "failed",
-          error: e.message
-        }
-      )
-
-      # Re-raise to trigger retry logic
-      raise
-    end
+    Rails.logger.info "ImageGenerationJob #{generation_id} completed successfully"
+    mark_service_online
+  rescue => e
+    handle_failure(e, generation_id, service, "image_generation")
+    raise
   end
 
-  # Class method to check job status
   def self.check_status(job_id)
     get_result("image:#{job_id}:status") || { status: "pending" }
   end
 
-  # Class method to get job result
   def self.get_image_result(job_id)
     get_result("image:#{job_id}")
+  end
+
+  private
+
+  def build_image_data(result, prompt, options)
+    should_publish = options["publish"] == true || options["publish"] == "true"
+
+    if result.is_a?(Array)
+      {
+        images: result,
+        prompt: prompt,
+        options: options,
+        created_at: Time.current,
+        published: should_publish,
+        batch_size: result.length
+      }
+    else
+      {
+        base64: result,
+        prompt: prompt,
+        options: options,
+        created_at: Time.current,
+        published: should_publish
+      }
+    end
   end
 end
