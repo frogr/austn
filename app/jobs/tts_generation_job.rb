@@ -6,105 +6,58 @@ class TtsGenerationJob < GpuJob
     Rails.logger.info "Starting TtsGenerationJob #{generation_id}"
     service = TtsRedisService.new
 
-    # Store initial status
-    service.store_status(generation_id, {
-      status: "processing",
-      started_at: Time.current
-    })
+    broadcast_processing(generation_id, "tts_generation")
+    service.store_status(generation_id, processing_status)
 
-    # Broadcast that we're processing
-    ActionCable.server.broadcast(
-      "tts_generation_#{generation_id}",
-      {
-        status: "processing",
-        generation_id: generation_id
-      }
-    )
+    service_opts = build_service_options(generation_id, options)
+    result = TtsService.generate_speech(text, service_opts)
 
-    begin
-      # Build service options - only pass what we have
-      service_opts = {
-        exaggeration: options["exaggeration"],
-        cfg_weight: options["cfg_weight"]
-      }
+    audio_data = {
+      audio: result[:audio],
+      sample_rate: result[:sample_rate],
+      duration: result[:duration],
+      text: text,
+      options: options,
+      created_at: Time.current
+    }
 
-      if options["voice_preset"]
-        service_opts[:voice_preset] = options["voice_preset"]
-        Rails.logger.info "TtsGenerationJob #{generation_id}: voice_preset=#{options["voice_preset"]}"
-      elsif options["voice_audio"]
-        service_opts[:voice_audio] = options["voice_audio"]
-        Rails.logger.info "TtsGenerationJob #{generation_id}: using custom voice audio"
-      else
-        Rails.logger.info "TtsGenerationJob #{generation_id}: using default voice"
-      end
+    service.store_audio(generation_id, audio_data)
+    service.store_status(generation_id, completed_status.merge(duration: result[:duration]))
+    broadcast_complete(generation_id, "tts_generation", duration: result[:duration])
 
-      # Generate the speech using TTS service
-      result = TtsService.generate_speech(text, service_opts)
-
-      # Store audio data with service
-      audio_data = {
-        audio: result[:audio],
-        sample_rate: result[:sample_rate],
-        duration: result[:duration],
-        text: text,
-        options: options,
-        created_at: Time.current
-      }
-
-      service.store_audio(generation_id, audio_data)
-
-      # Update status
-      service.store_status(generation_id, {
-        status: "completed",
-        completed_at: Time.current,
-        duration: result[:duration]
-      })
-
-      # Broadcast completion
-      ActionCable.server.broadcast(
-        "tts_generation_#{generation_id}",
-        {
-          status: "complete",
-          generation_id: generation_id,
-          duration: result[:duration]
-        }
-      )
-
-      Rails.logger.info "TtsGenerationJob #{generation_id} completed successfully (#{result[:duration]}s audio)"
-      mark_service_online
-
-    rescue => e
-      Rails.logger.error "TtsGenerationJob #{generation_id} failed: #{e.message}"
-      Rails.logger.error e.backtrace.join("\n")
-
-      # Store error result
-      service.store_status(generation_id, {
-        status: "failed",
-        error: e.message,
-        failed_at: Time.current
-      }, ttl: 600)
-
-      # Notify failure
-      ActionCable.server.broadcast(
-        "tts_generation_#{generation_id}",
-        {
-          status: "failed",
-          error: e.message
-        }
-      )
-
-      # Re-raise to trigger retry logic
-      raise
-    end
+    Rails.logger.info "TtsGenerationJob #{generation_id} completed successfully (#{result[:duration]}s audio)"
+    mark_service_online
+  rescue => e
+    handle_failure(e, generation_id, service, "tts_generation")
+    raise
   end
 
-  # Class method to check job status
   def self.check_status(job_id)
     get_result("tts:#{job_id}:status") || { status: "pending" }
   end
 
-  # Class method to get job result
   def self.get_audio_result(job_id)
     get_result("tts:#{job_id}")
+  end
+
+  private
+
+  def build_service_options(generation_id, options)
+    service_opts = {
+      exaggeration: options["exaggeration"],
+      cfg_weight: options["cfg_weight"]
+    }
+
+    if options["voice_preset"]
+      service_opts[:voice_preset] = options["voice_preset"]
+      Rails.logger.info "TtsGenerationJob #{generation_id}: voice_preset=#{options["voice_preset"]}"
+    elsif options["voice_audio"]
+      service_opts[:voice_audio] = options["voice_audio"]
+      Rails.logger.info "TtsGenerationJob #{generation_id}: using custom voice audio"
+    else
+      Rails.logger.info "TtsGenerationJob #{generation_id}: using default voice"
+    end
+
+    service_opts
   end
 end

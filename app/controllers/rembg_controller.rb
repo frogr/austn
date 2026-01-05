@@ -1,4 +1,6 @@
 class RembgController < ApplicationController
+  include GpuQueueStatus
+
   skip_before_action :verify_authenticity_token, only: [:generate]
 
   def index
@@ -47,29 +49,13 @@ class RembgController < ApplicationController
   def status
     generation_id = params[:id]
 
-    # Check if result is ready
     if redis_service.result_exists?(generation_id)
       render json: {
         status: "complete",
         result_url: result_rembg_path(generation_id)
       }
     else
-      status = redis_service.get_status(generation_id)
-
-      if status["status"] == "pending"
-        queue_position = Sidekiq::Queue.new("gpu").find_index do |job|
-          job.args.first == generation_id
-        end
-
-        if queue_position
-          status = {
-            "status" => "queued",
-            "position" => queue_position + 1
-          }
-        end
-      end
-
-      render json: status
+      render json: status_with_queue_position(generation_id, redis_service)
     end
   end
 

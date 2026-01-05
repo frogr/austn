@@ -6,116 +6,40 @@ class RembgJob < GpuJob
     Rails.logger.info "Starting RembgJob #{generation_id}"
     service = RembgRedisService.new
 
-    # Store initial status
-    service.store_status(generation_id, {
-      status: "processing",
-      started_at: Time.current
-    })
+    broadcast_processing(generation_id, "rembg")
+    service.store_status(generation_id, processing_status)
 
-    # Broadcast that we're processing
-    ActionCable.server.broadcast(
-      "rembg_#{generation_id}",
-      {
-        status: "processing",
-        generation_id: generation_id
-      }
+    original_filename = options["original_filename"] || "image.png"
+    uploaded_file = UploadedFileProxy.from_base64(
+      file_data["base64"],
+      original_filename: original_filename,
+      prefix: "rembg"
     )
 
     begin
-      # Create a temp file from the base64 data
-      original_filename = options["original_filename"] || "image.png"
-      extension = File.extname(original_filename).presence || ".png"
-      temp_file = Tempfile.new(["rembg_upload", extension])
-      temp_file.binmode
-      temp_file.write(Base64.decode64(file_data["base64"]))
-      temp_file.rewind
-
-      # Create a file-like object for the service
-      uploaded_file = UploadedFileProxy.new(temp_file, original_filename)
-
-      begin
-        # Process with RembgService
-        result = RembgService.remove_background(
-          uploaded_file,
-          model: options["model"] || RembgService::DEFAULT_MODEL
-        )
-
-        # Store result
-        result_data = {
-          base64: result,
-          original_filename: original_filename,
-          model: options["model"] || RembgService::DEFAULT_MODEL,
-          created_at: Time.current
-        }
-
-        service.store_result(generation_id, result_data)
-
-        # Update status
-        service.store_status(generation_id, {
-          status: "completed",
-          completed_at: Time.current
-        })
-
-        # Broadcast completion
-        ActionCable.server.broadcast(
-          "rembg_#{generation_id}",
-          {
-            status: "complete",
-            generation_id: generation_id
-          }
-        )
-
-        Rails.logger.info "RembgJob #{generation_id} completed successfully"
-        mark_service_online
-
-      ensure
-        temp_file.close
-        temp_file.unlink
-      end
-
-    rescue => e
-      Rails.logger.error "RembgJob #{generation_id} failed: #{e.message}"
-      Rails.logger.error e.backtrace.join("\n")
-
-      # Store error result
-      service.store_status(generation_id, {
-        status: "failed",
-        error: e.message,
-        failed_at: Time.current
-      }, ttl: 600)
-
-      # Notify failure
-      ActionCable.server.broadcast(
-        "rembg_#{generation_id}",
-        {
-          status: "failed",
-          error: e.message
-        }
+      result = RembgService.remove_background(
+        uploaded_file,
+        model: options["model"] || RembgService::DEFAULT_MODEL
       )
 
-      raise
-    end
-  end
+      result_data = {
+        base64: result,
+        original_filename: original_filename,
+        model: options["model"] || RembgService::DEFAULT_MODEL,
+        created_at: Time.current
+      }
 
-  # Simple proxy class that mimics an uploaded file
-  class UploadedFileProxy
-    attr_reader :original_filename
+      service.store_result(generation_id, result_data)
+      service.store_status(generation_id, completed_status)
+      broadcast_complete(generation_id, "rembg")
 
-    def initialize(tempfile, original_filename)
-      @tempfile = tempfile
-      @original_filename = original_filename
+      Rails.logger.info "RembgJob #{generation_id} completed successfully"
+      mark_service_online
+    ensure
+      uploaded_file.cleanup
     end
-
-    def read
-      @tempfile.read
-    end
-
-    def rewind
-      @tempfile.rewind
-    end
-
-    def path
-      @tempfile.path
-    end
+  rescue => e
+    handle_failure(e, generation_id, service, "rembg")
+    raise
   end
 end

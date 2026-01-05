@@ -1,17 +1,8 @@
 class TtsBatchesController < ApplicationController
+  include AdminAuthenticatable
+
   before_action :authenticate_admin!
   skip_before_action :verify_authenticity_token, only: [ :create, :share_item ]
-
-  private
-
-  def authenticate_admin!
-    return true if session[:admin_authenticated]
-
-    session[:admin_return_to] = request.fullpath
-    redirect_to admin_login_path
-  end
-
-  public
 
   def index
     @batches = TtsBatch.recent.limit(50)

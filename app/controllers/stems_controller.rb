@@ -1,4 +1,6 @@
 class StemsController < ApplicationController
+  include GpuQueueStatus
+
   skip_before_action :verify_authenticity_token, only: [:generate]
 
   def index
@@ -58,22 +60,7 @@ class StemsController < ApplicationController
         result_url: result_stems_path(generation_id)
       }
     else
-      status = redis_service.get_status(generation_id)
-
-      if status["status"] == "pending"
-        queue_position = Sidekiq::Queue.new("gpu").find_index do |job|
-          job.args.first == generation_id
-        end
-
-        if queue_position
-          status = {
-            "status" => "queued",
-            "position" => queue_position + 1
-          }
-        end
-      end
-
-      render json: status
+      render json: status_with_queue_position(generation_id, redis_service)
     end
   end
 

@@ -71,4 +71,50 @@ class GpuJob < ApplicationJob
   def mark_service_online
     self.class.mark_service_online
   end
+
+  protected
+
+  # Standard status hashes for consistency
+  def processing_status
+    { status: "processing", started_at: Time.current }
+  end
+
+  def completed_status
+    { status: "completed", completed_at: Time.current }
+  end
+
+  def failed_status(error_message)
+    { status: "failed", error: error_message, failed_at: Time.current }
+  end
+
+  # ActionCable broadcasting helpers
+  def broadcast_processing(generation_id, channel_prefix)
+    ActionCable.server.broadcast(
+      "#{channel_prefix}_#{generation_id}",
+      { status: "processing", generation_id: generation_id }
+    )
+  end
+
+  def broadcast_complete(generation_id, channel_prefix, extra = {})
+    ActionCable.server.broadcast(
+      "#{channel_prefix}_#{generation_id}",
+      { status: "complete", generation_id: generation_id }.merge(extra)
+    )
+  end
+
+  def broadcast_failure(generation_id, channel_prefix, error_message)
+    ActionCable.server.broadcast(
+      "#{channel_prefix}_#{generation_id}",
+      { status: "failed", error: error_message }
+    )
+  end
+
+  # Standard error handling
+  def handle_failure(error, generation_id, service, channel_prefix)
+    Rails.logger.error "#{self.class.name} #{generation_id} failed: #{error.message}"
+    Rails.logger.error error.backtrace.join("\n")
+
+    service.store_status(generation_id, failed_status(error.message), ttl: 600)
+    broadcast_failure(generation_id, channel_prefix, error.message)
+  end
 end
