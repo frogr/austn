@@ -1,0 +1,61 @@
+{
+  "1": {
+    "inputs": {
+      "audio": "input.mp3"
+    },
+    "class_type": "LoadAudio",
+    "_meta": {
+      "title": "Load Audio"
+    }
+  },
+  "2": {
+    "inputs": {
+      "model": "htdemucs",
+      "audio": ["1", 0]
+    },
+    "class_type": "Demucs 4 Stems",
+    "_meta": {
+      "title": "Demucs"
+    }
+  },
+  "3": {
+    "inputs": {
+      "filename_prefix": "stems_vocals",
+      "audio": ["2", 0]
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "Save Vocals"
+    }
+  },
+  "4": {
+    "inputs": {
+      "filename_prefix": "stems_drums",
+      "audio": ["2", 1]
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "Save Drums"
+    }
+  },
+  "5": {
+    "inputs": {
+      "filename_prefix": "stems_bass",
+      "audio": ["2", 2]
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "Save Bass"
+    }
+  },
+  "6": {
+    "inputs": {
+      "filename_prefix": "stems_other",
+      "audio": ["2", 3]
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "Save Other"
+    }
+  }
+}

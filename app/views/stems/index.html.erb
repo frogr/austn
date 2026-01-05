@@ -1,0 +1,358 @@
+<style>
+  select option {
+    background-color: #1f2937;
+    color: white;
+  }
+</style>
+
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Stem Separation <%= render "shared/gpu_health_indicator", service: "stems" %>
+    </h1>
+    <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Routed to my local GPU via ComfyUI + Demucs</p>
+  </div>
+
+  <div class="max-w-4xl mx-auto">
+    <div class="rounded-lg p-3 sm:p-6 mb-4 sm:mb-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <div class="space-y-4">
+        <div>
+          <label for="audio-file" class="block text-sm font-medium text-gray-300 mb-2">
+            Upload an audio file
+          </label>
+          <input
+            type="file"
+            id="audio-file"
+            accept="audio/*"
+            class="w-full px-3 py-2 rounded-md focus:outline-none text-white text-sm" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+            onchange="handleAudioPreview(this)"
+          >
+          <div id="preview-container" class="mt-3" style="display: none;">
+            <audio id="preview-audio" controls class="w-full"></audio>
+            <p class="text-sm text-gray-400 mt-1" id="file-info"></p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6 mb-4">
+          <div class="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="advanced"
+              class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+              onchange="toggleAdvanced()"
+            >
+            <label for="advanced" class="text-sm font-medium text-gray-300">
+              Advanced options
+            </label>
+          </div>
+        </div>
+
+        <div id="advanced-options" style="display: none;">
+          <div class="mb-4">
+            <label for="model" class="block text-sm font-medium text-gray-300 mb-2">
+              Model
+            </label>
+            <select
+              id="model"
+              class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;"
+            >
+              <option value="htdemucs" selected>htdemucs (Default, fastest)</option>
+              <option value="htdemucs_ft">htdemucs_ft (Fine-tuned, better quality)</option>
+            </select>
+            <p class="mt-1.5 text-xs text-gray-500">htdemucs_ft produces better quality but takes longer to process.</p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-md" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);">
+          <p class="text-sm text-green-300">
+            <strong>Output:</strong> 4 separate stems - Vocals, Drums, Bass, and Other (instruments, synths, etc.)
+          </p>
+        </div>
+
+        <button
+          onclick="separateStems()"
+          id="generate-btn"
+          class="w-full font-semibold py-3 px-4 rounded-md transition duration-200" style="background: linear-gradient(45deg, #10b981, #059669); color: #fff;"
+        >
+          Separate Stems
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Display -->
+    <div id="status" style="display:none;" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="animate-spin h-5 w-5 mr-3 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span id="status-text" class="text-yellow-700">Processing your audio...</span>
+      </div>
+      <div id="queue-position" class="mt-2 text-sm text-yellow-600"></div>
+      <p class="mt-2 text-xs text-yellow-600">This may take several minutes for longer audio files.</p>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error" style="display:none;" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="h-5 w-5 text-red-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-12v4m0 4h.01"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Processing failed</h3>
+          <div id="error-message" class="mt-1 text-sm text-red-700"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" style="display:none;">
+      <div class="rounded-lg p-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <h3 class="text-lg font-semibold text-white mb-2">Stems Separated</h3>
+        <p class="text-sm text-gray-400 mb-4" id="result-info"></p>
+
+        <div class="space-y-3 mb-4">
+          <!-- Vocals -->
+          <div class="p-3 rounded-md" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-white font-medium">Vocals</span>
+              <a id="download-vocals" href="#" download class="text-green-400 text-sm hover:underline">Download</a>
+            </div>
+            <audio id="audio-vocals" controls class="w-full"></audio>
+          </div>
+
+          <!-- Drums -->
+          <div class="p-3 rounded-md" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-white font-medium">Drums</span>
+              <a id="download-drums" href="#" download class="text-green-400 text-sm hover:underline">Download</a>
+            </div>
+            <audio id="audio-drums" controls class="w-full"></audio>
+          </div>
+
+          <!-- Bass -->
+          <div class="p-3 rounded-md" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-white font-medium">Bass</span>
+              <a id="download-bass" href="#" download class="text-green-400 text-sm hover:underline">Download</a>
+            </div>
+            <audio id="audio-bass" controls class="w-full"></audio>
+          </div>
+
+          <!-- Other -->
+          <div class="p-3 rounded-md" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-white font-medium">Other</span>
+              <a id="download-other" href="#" download class="text-green-400 text-sm hover:underline">Download</a>
+            </div>
+            <audio id="audio-other" controls class="w-full"></audio>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <a id="download-all-link" href="#" download
+            class="flex-1 text-center text-white font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: linear-gradient(45deg, #10b981, #059669);">
+            Download All (ZIP)
+          </a>
+          <button
+            onclick="processNew()"
+            class="flex-1 font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            Process New Audio
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentGenerationId = null;
+let pollingInterval = null;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+function handleAudioPreview(input) {
+  const previewContainer = document.getElementById('preview-container');
+  const previewAudio = document.getElementById('preview-audio');
+  const fileInfo = document.getElementById('file-info');
+
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    previewAudio.src = URL.createObjectURL(file);
+    fileInfo.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+    previewContainer.style.display = 'block';
+  } else {
+    previewContainer.style.display = 'none';
+  }
+}
+
+async function separateStems() {
+  const fileInput = document.getElementById('audio-file');
+  const model = document.getElementById('model').value;
+
+  if (!fileInput.files || !fileInput.files[0]) {
+    alert('Please select an audio file');
+    return;
+  }
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Processing...';
+
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('status-text').textContent = 'Uploading audio...';
+  document.getElementById('queue-position').textContent = '';
+
+  try {
+    const formData = new FormData();
+    formData.append('audio', fileInput.files[0]);
+    formData.append('model', model);
+
+    const response = await fetch('/stems/generate', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': getCsrfToken()
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      showError(data.error || 'Failed to start processing');
+      return;
+    }
+
+    currentGenerationId = data.generation_id;
+    console.log('Processing started:', currentGenerationId);
+    document.getElementById('status-text').textContent = 'Processing audio (this may take a few minutes)...';
+
+    startPolling();
+
+  } catch (error) {
+    showError('Failed to start processing: ' + error.message);
+  }
+}
+
+function startPolling() {
+  pollingInterval = setInterval(async () => {
+    if (!currentGenerationId) {
+      clearInterval(pollingInterval);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/stems/${currentGenerationId}/status`);
+      const statusData = await response.json();
+
+      if (statusData.status === 'complete') {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        displayResults(statusData.stems);
+      } else if (statusData.status === 'queued' && statusData.position) {
+        document.getElementById('queue-position').textContent = `Position in queue: ${statusData.position}`;
+      } else if (statusData.status === 'processing') {
+        document.getElementById('status-text').textContent = 'Separating stems...';
+        document.getElementById('queue-position').textContent = '';
+      } else if (statusData.status === 'failed') {
+        clearInterval(pollingInterval);
+        showError(statusData.error || 'Processing failed');
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+    }
+  }, 2000); // Poll every 2 seconds for audio processing
+}
+
+async function displayResults(stems) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+
+  const fileInput = document.getElementById('audio-file');
+  const originalFilename = fileInput.files[0]?.name || 'audio';
+  document.getElementById('result-info').textContent = `Original: ${originalFilename}`;
+
+  // Set up audio players and download links for each stem
+  const stemNames = ['vocals', 'drums', 'bass', 'other'];
+
+  for (const stem of stemNames) {
+    if (stems.includes(stem)) {
+      const audioElement = document.getElementById(`audio-${stem}`);
+      const downloadLink = document.getElementById(`download-${stem}`);
+
+      const stemUrl = `/stems/${currentGenerationId}/download/${stem}`;
+      audioElement.src = stemUrl;
+      downloadLink.href = stemUrl;
+    }
+  }
+
+  document.getElementById('download-all-link').href = `/stems/${currentGenerationId}/download_all`;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Separate Stems';
+}
+
+function showError(message) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+  document.getElementById('error-message').textContent = message;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Separate Stems';
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function processNew() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('preview-container').style.display = 'none';
+  document.getElementById('audio-file').value = '';
+  currentGenerationId = null;
+
+  // Stop any audio playback
+  ['vocals', 'drums', 'bass', 'other'].forEach(stem => {
+    const audio = document.getElementById(`audio-${stem}`);
+    if (audio) {
+      audio.pause();
+      audio.src = '';
+    }
+  });
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+}
+
+function toggleAdvanced() {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+
+  if (checkbox.checked) {
+    advancedOptions.style.display = 'block';
+  } else {
+    advancedOptions.style.display = 'none';
+  }
+}
+</script>

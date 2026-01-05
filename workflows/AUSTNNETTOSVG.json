@@ -1,0 +1,36 @@
+{
+  "1": {
+    "inputs": {
+      "image": "input.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "2": {
+    "inputs": {
+      "filter_speckle": 4,
+      "color_precision": 6,
+      "gradient_step": 10,
+      "corner_threshold": 60,
+      "segment_length": 4.0,
+      "splice_threshold": 45,
+      "image": ["1", 0]
+    },
+    "class_type": "Image to SVG String Color_Vtracer",
+    "_meta": {
+      "title": "VTracer"
+    }
+  },
+  "3": {
+    "inputs": {
+      "filename_prefix": "vtracer_output",
+      "svg_string": ["2", 0]
+    },
+    "class_type": "Save SVG",
+    "_meta": {
+      "title": "Save SVG"
+    }
+  }
+}
