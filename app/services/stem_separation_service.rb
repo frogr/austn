@@ -57,7 +57,7 @@ class StemSeparationService
       prompt_id = ComfyuiClient.queue_prompt(workflow)
 
       # Wait for completion (5 minutes timeout for audio processing)
-      outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 300)
+      outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 900)
 
       # Collect all stem outputs
       stems = {}
