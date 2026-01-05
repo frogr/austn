@@ -13,46 +13,40 @@ class Model3dService
   # @param image_file [ActionDispatch::Http::UploadedFile] The uploaded image
   # @return [Hash] { glb_data: binary_data, filename: "model.glb" }
   def self.generate(image_file)
-    # Save uploaded file to temp location
     temp_file = create_temp_file(image_file)
 
     begin
-      # Upload to ComfyUI
       upload_result = ComfyuiClient.upload_file(temp_file.path)
       uploaded_filename = upload_result["name"]
 
-      Rails.logger.info "Uploaded image for 3D generation: #{uploaded_filename}"
+      # Generate unique prefix for this job
+      unique_prefix = "model3d_#{SecureRandom.hex(8)}"
 
-      # Load and modify workflow
       workflow = ComfyuiClient.load_workflow(WORKFLOW_NAME)
-
-      # Update input image (node 1 - LoadImage)
       workflow["1"]["inputs"]["image"] = uploaded_filename
 
-      # Queue the workflow
+      # Set unique filename prefix in node 6 (Hy3D21ExportMesh)
+      workflow["6"]["inputs"]["filename_prefix"] = unique_prefix
+
       prompt_id = ComfyuiClient.queue_prompt(workflow)
+      Rails.logger.info "Queued 3D generation with prompt_id: #{prompt_id}, prefix: #{unique_prefix}"
 
-      Rails.logger.info "Queued 3D generation with prompt_id: #{prompt_id}"
-
-      # Wait for completion - returns empty outputs for this workflow
       ComfyuiClient.wait_for_completion(prompt_id, timeout: GENERATION_TIMEOUT)
 
-      # Find the GLB file by listing output directory
-      # (Hy3D21ExportMesh saves files but doesn't produce tracked UI outputs)
-      glb_info = find_latest_glb_output("model3d_output")
+      # We know the exact filename now
+      glb_filename = "#{unique_prefix}_00001_.glb"
 
-      Rails.logger.info "3D model generated: #{glb_info[:filename]}"
+      Rails.logger.info "3D model generated: #{glb_filename}"
 
-      # Fetch the GLB file from ComfyUI
       glb_data = ComfyuiClient.get_output_file(
-        glb_info[:filename],
-        subfolder: glb_info[:subfolder],
+        glb_filename,
+        subfolder: "",
         type: "output"
       )
 
       {
         glb_data: glb_data,
-        filename: glb_info[:filename]
+        filename: glb_filename
       }
 
     ensure
@@ -65,57 +59,6 @@ class Model3dService
   end
 
   private
-
-  # Find the latest GLB file with matching prefix
-  def self.find_latest_glb_output(filename_prefix)
-    # List files in ComfyUI output directory
-    response = ComfyuiClient.list_output_files
-
-    # Find GLB files matching our prefix, sorted by name (includes counter)
-    matching_files = response.select do |file|
-      file["name"]&.start_with?(filename_prefix) &&
-      file["name"]&.end_with?(".glb")
-    end
-
-    if matching_files.empty?
-      raise Model3dError, "No GLB output found with prefix '#{filename_prefix}'"
-    end
-
-    # Get the latest one (highest counter number)
-    latest = matching_files.max_by { |f| f["name"] }
-
-    {
-      filename: latest["name"],
-      subfolder: latest["subfolder"] || ""
-    }
-  end
-
-  # Fallback method for workflows that produce tracked outputs
-  def self.extract_glb_output(outputs)
-    # Look through all node outputs for GLB/GLTF files
-    outputs.each do |node_id, node_output|
-      # Check various possible output keys for 3D files
-      %w[gltf_files mesh_files glb_files files].each do |key|
-        if node_output[key].is_a?(Array) && node_output[key].any?
-          file_info = node_output[key].first
-          return {
-            filename: file_info["filename"],
-            subfolder: file_info["subfolder"] || ""
-          }
-        end
-      end
-
-      # Also check for direct filename output
-      if node_output["filename"]
-        return {
-          filename: node_output["filename"],
-          subfolder: node_output["subfolder"] || ""
-        }
-      end
-    end
-
-    raise Model3dError, "No GLB output found in workflow result. Check your workflow configuration."
-  end
 
   def self.create_temp_file(uploaded_file)
     extension = File.extname(uploaded_file.original_filename).presence || ".png"
