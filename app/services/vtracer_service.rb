@@ -63,23 +63,16 @@ class VtracerService
       # Wait for completion (30s timeout)
       outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 30, output_node_id: "3")
 
-      # Get the SVG output - the Save SVG node outputs svg files
-      if outputs && outputs["svg"]&.any?
-        svg_info = outputs["svg"].first
-        filename = svg_info["filename"]
-        subfolder = svg_info["subfolder"] || ""
-
+      # Get the SVG output
+      if outputs && outputs["saved_svg"]
+        # Handle character array (ComfyUI list output quirk)
+        filename = outputs["saved_svg"].is_a?(Array) ? outputs["saved_svg"].join : outputs["saved_svg"]
         Rails.logger.info "VTracer output ready: #{filename}"
-
-        # Fetch the SVG content
-        ComfyuiClient.get_output_file(filename, subfolder: subfolder, type: "output")
-      elsif outputs && outputs["files"]&.any?
-        # Alternative output format
-        file_info = outputs["files"].first
-        filename = file_info["filename"]
-        subfolder = file_info["subfolder"] || ""
-
-        ComfyuiClient.get_output_file(filename, subfolder: subfolder, type: "output")
+        ComfyuiClient.get_output_file(filename, subfolder: "", type: "output")
+      elsif outputs && outputs.dig("ui", "saved_svg")
+        # Fallback for different output format
+        filename = outputs["ui"]["saved_svg"]
+        ComfyuiClient.get_output_file(filename, subfolder: "", type: "output")
       else
         raise VtracerError, "No SVG output returned from ComfyUI"
       end
