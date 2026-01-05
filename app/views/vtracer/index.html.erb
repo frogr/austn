@@ -58,22 +58,20 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-6 mb-4">
-          <div class="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="advanced"
-              class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
-              onchange="toggleAdvanced()"
-            >
-            <label for="advanced" class="text-sm font-medium text-gray-300">
-              Advanced options
-            </label>
-          </div>
+        <div class="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="advanced"
+            class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500"
+            onchange="toggleAdvanced()"
+          >
+          <label for="advanced" class="text-sm font-medium text-gray-300">
+            Advanced options
+          </label>
         </div>
 
-        <div id="advanced-options" style="display: none;">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div id="advanced-options" hidden>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <div class="flex items-center justify-between mb-2">
                 <label for="filter_speckle" class="text-sm font-medium text-gray-300">
@@ -437,11 +435,6 @@ function processNew() {
 function toggleAdvanced() {
   const checkbox = document.getElementById('advanced');
   const advancedOptions = document.getElementById('advanced-options');
-
-  if (checkbox.checked) {
-    advancedOptions.style.display = 'block';
-  } else {
-    advancedOptions.style.display = 'none';
-  }
+  advancedOptions.hidden = !checkbox.checked;
 }
 </script>
