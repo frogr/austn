@@ -7,6 +7,11 @@
       </h1>
       <p class="text-gray-400 text-sm">
         <%= @published_count %> published, <%= @draft_count %> drafts
+        <% if @r2_configured %>
+          <span class="ml-2 px-2 py-0.5 text-xs rounded bg-cyan-900/50 text-cyan-400 border border-cyan-700">R2 CDN Active</span>
+        <% else %>
+          <span class="ml-2 px-2 py-0.5 text-xs rounded bg-gray-800 text-gray-500 border border-gray-700">R2 CDN Not Configured</span>
+        <% end %>
       </p>
     </div>
     <div class="flex gap-2">
@@ -77,6 +82,15 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      <% end %>
+                    <% end %>
+
+                    <!-- Sync Images to R2 Button -->
+                    <% if @r2_configured %>
+                      <%= link_to sync_images_admin_blog_post_path(post), data: { turbo_method: :post, turbo_confirm: "Sync images to R2 CDN?" }, class: "p-2 rounded-md transition-colors hover:bg-white/10", title: "Sync images to R2" do %>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                       <% end %>
                     <% end %>
