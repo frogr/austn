@@ -44,4 +44,5 @@ class PortfolioController < ApplicationController
   def fun_links; end
   def reading; end
   def resources; end
+  def resume; end
 end

@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   get "/fun-links", to: "portfolio#fun_links"
   get "/reading", to: "portfolio#reading"
   get "/resources", to: "portfolio#resources"
+  get "/resume", to: "portfolio#resume"
 
   # Legacy routes - redirect to new structure
   get "/work", to: redirect("/")
@@ -148,6 +149,8 @@ Rails.application.routes.draw do
         post :cleanup_expired
       end
     end
+
+    resources :blog_posts
   end
 
   # API v1
