@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_31_162901) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_05_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,6 +112,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_31_162901) do
     t.index ["created_at"], name: "index_story_paragraphs_on_created_at"
     t.index ["story_id", "paragraph_number"], name: "index_story_paragraphs_on_story_id_and_paragraph_number", unique: true
     t.index ["story_id"], name: "index_story_paragraphs_on_story_id"
+  end
+
+  create_table "three_d_models", force: :cascade do |t|
+    t.string "generation_id", null: false
+    t.string "original_filename"
+    t.string "glb_filename"
+    t.text "thumbnail_data"
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_three_d_models_on_created_at"
+    t.index ["expires_at"], name: "index_three_d_models_on_expires_at"
+    t.index ["generation_id"], name: "index_three_d_models_on_generation_id", unique: true
   end
 
   create_table "tts_batch_items", force: :cascade do |t|
