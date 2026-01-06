@@ -6,7 +6,7 @@
         Blog Administration
       </h1>
       <p class="text-gray-400 text-sm">
-        <%= @published_count %> published, <%= @draft_count %> drafts
+        <%= pluralize(@total_count, "post") %>
       </p>
     </div>
     <div class="flex gap-2">
@@ -42,43 +42,34 @@
             <tr style="background: rgba(255,255,255,0.03);">
               <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Title</th>
               <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Slug</th>
-              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Published</th>
-              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Created</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Date</th>
               <th class="text-center px-4 py-3 text-sm font-semibold text-gray-300">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y" style="border-color: rgba(255,255,255,0.05);">
             <% @blog_posts.each do |post| %>
-              <tr class="hover:bg-white/5 transition-colors <%= 'opacity-50' unless post.published_at %>">
+              <% display_date = post.published_at || post.created_at %>
+              <tr class="hover:bg-white/5 transition-colors">
                 <td class="px-4 py-3 text-sm text-white">
                   <span class="font-medium"><%= post.title %></span>
-                  <% unless post.published_at %>
-                    <span class="ml-2 px-2 py-0.5 text-xs rounded bg-yellow-900/50 text-yellow-400 border border-yellow-700">Draft</span>
-                  <% end %>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-400">
                   <code class="text-xs bg-gray-800 px-2 py-1 rounded"><%= post.slug %></code>
                 </td>
                 <td class="px-4 py-3 text-sm whitespace-nowrap">
-                  <% if post.published_at %>
-                    <span class="text-green-400"><%= post.published_at.strftime("%b %d, %Y") %></span>
-                  <% else %>
-                    <span class="text-gray-500">Not published</span>
+                  <span class="text-green-400"><%= display_date.strftime("%b %d, %Y") %></span>
+                  <% unless post.published_at %>
+                    <span class="ml-1 text-gray-500 text-xs">(created)</span>
                   <% end %>
-                </td>
-                <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">
-                  <%= post.created_at.strftime("%b %d, %Y") %>
                 </td>
                 <td class="px-4 py-3">
                   <div class="flex items-center justify-center gap-2">
                     <!-- View Button -->
-                    <% if post.published_at %>
-                      <%= link_to blog_post_path(post.slug), target: "_blank", class: "p-2 rounded-md transition-colors hover:bg-white/10", title: "View post" do %>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      <% end %>
+                    <%= link_to blog_post_path(post.slug), target: "_blank", class: "p-2 rounded-md transition-colors hover:bg-white/10", title: "View post" do %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
                     <% end %>
 
                     <!-- Edit Button -->
