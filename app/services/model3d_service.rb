@@ -62,7 +62,7 @@ class Model3dService
 
   def self.create_temp_file(uploaded_file)
     extension = File.extname(uploaded_file.original_filename).presence || ".png"
-    temp_file = Tempfile.new(["model3d_input", extension])
+    temp_file = Tempfile.new([ "model3d_input", extension ])
     temp_file.binmode
     temp_file.write(uploaded_file.read)
     temp_file.rewind

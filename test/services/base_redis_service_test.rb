@@ -8,13 +8,25 @@ class BaseRedisServiceTest < ActiveSupport::TestCase
   end
 
   setup do
+    skip "Redis not available" unless redis_available?
     @service = TestRedisService.new
     @generation_id = SecureRandom.uuid
   end
 
   teardown do
-    @service.delete_result(@generation_id)
+    @service&.delete_result(@generation_id) if redis_available?
   end
+
+  private
+
+  def redis_available?
+    Redis.new(url: ENV.fetch("REDIS_URL", "redis://localhost:6379/2")).ping
+    true
+  rescue Redis::CannotConnectError
+    false
+  end
+
+  public
 
   test "stores and retrieves result" do
     data = { "foo" => "bar", "count" => 42 }
@@ -44,7 +56,7 @@ class BaseRedisServiceTest < ActiveSupport::TestCase
   end
 
   test "result_exists? returns false when result does not exist" do
-    refute @service.result_exists?("nonexistent_id")
+    assert_not @service.result_exists?("nonexistent_id")
   end
 
   test "delete_result removes both result and status" do
@@ -53,7 +65,7 @@ class BaseRedisServiceTest < ActiveSupport::TestCase
 
     @service.delete_result(@generation_id)
 
-    refute @service.result_exists?(@generation_id)
+    assert_not @service.result_exists?(@generation_id)
     assert_equal "pending", @service.get_status(@generation_id)["status"]
   end
 
@@ -67,6 +79,6 @@ class BaseRedisServiceTest < ActiveSupport::TestCase
     sleep 2
 
     # Result should be gone
-    refute @service.result_exists?(@generation_id)
+    assert_not @service.result_exists?(@generation_id)
   end
 end

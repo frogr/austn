@@ -24,9 +24,9 @@ class ComfyuiClient
 
     # Build multipart form data
     form_data = [
-      ["image", File.open(file_path, "rb"), { filename: basename }]
+      [ "image", File.open(file_path, "rb"), { filename: basename } ]
     ]
-    form_data << ["subfolder", subfolder] if subfolder.present?
+    form_data << [ "subfolder", subfolder ] if subfolder.present?
 
     request.set_form(form_data, "multipart/form-data")
 

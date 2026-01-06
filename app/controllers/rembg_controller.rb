@@ -1,7 +1,7 @@
 class RembgController < ApplicationController
   include GpuQueueStatus
 
-  skip_before_action :verify_authenticity_token, only: [:generate]
+  skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
     # Show the rembg form

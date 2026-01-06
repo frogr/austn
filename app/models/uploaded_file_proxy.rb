@@ -24,7 +24,7 @@ class UploadedFileProxy
   # Create a proxy from base64-encoded file data
   def self.from_base64(base64_data, original_filename:, prefix: "upload")
     extension = File.extname(original_filename).presence || ".bin"
-    tempfile = Tempfile.new([prefix, extension])
+    tempfile = Tempfile.new([ prefix, extension ])
     tempfile.binmode
     tempfile.write(Base64.decode64(base64_data))
     tempfile.rewind
