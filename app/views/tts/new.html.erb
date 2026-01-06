@@ -280,6 +280,7 @@
 let currentGenerationId = null;
 let pollingInterval = null;
 let voiceAudioBase64 = null;
+let generationStartTime = null;
 
 function getCsrfToken() {
   const meta = document.querySelector('meta[name="csrf-token"]');
@@ -426,6 +427,8 @@ async function generateSpeech() {
       console.log('Using default voice');
     }
 
+    generationStartTime = Date.now();
+
     const response = await fetch('/tts/generate', {
       method: 'POST',
       headers: {
@@ -485,7 +488,8 @@ function displayAudio(statusData) {
   document.getElementById('result-text').textContent = text.length > 100 ? text.substring(0, 100) + '...' : text;
 
   const duration = statusData.duration ? statusData.duration.toFixed(1) : '?';
-  document.getElementById('result-info').textContent = `Duration: ${duration}s`;
+  const genTime = generationStartTime ? ((Date.now() - generationStartTime) / 1000).toFixed(1) : '?';
+  document.getElementById('result-info').textContent = `Duration: ${duration}s · Generated in ${genTime}s`;
 
   const audioPlayer = document.getElementById('audio-player');
   audioPlayer.src = `/tts/${currentGenerationId}/audio`;
