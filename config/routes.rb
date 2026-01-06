@@ -150,7 +150,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :blog_posts
+    resources :blog_posts do
+      member do
+        post :sync_images
+      end
+    end
   end
 
   # API v1
