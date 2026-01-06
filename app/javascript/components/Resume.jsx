@@ -79,14 +79,19 @@ const Resume = () => {
 
   const projects = [
     {
+      title: "Tinyrails",
+      year: "2025",
+      description: "To dive deeper into the fundamentals of Ruby on Rails, I rebuilt the framework from scratch using Ruby and Rack. Supports MVC CRUD operations using Rack to route requests to controllers, Eribus for template rendering, and a JSON database."
+    },
+    {
+      title: "Austn.net",
+      year: "2025",
+      description: "Built austn.net, my blog/portfolio that also hosts a suite of 9 AI-powered tools (image generation, image to 3D models, voice cloning, song stem file separation, background removal, songwriting, etc.) self-hosted on personal GPU infrastructure via Python Flask server utilizing ComfyUI, LMStudio, and Hunyuan3D"
+    },
+    {
       title: "Boys and Girls Club of America",
       year: "2021",
       description: "Subcontracted by a previous employer to build out the \"Donate Now\" functionality for the Boys and Girls Club of America 2021 fundraiser donation page, processing $2MM+ in donations using NodeJS, Express, Stripe, and Heroku."
-    },
-    {
-      title: "Tinyrails",
-      year: "2025",
-      description: "To dive deeper into the fundamentals of Ruby on Rails, I rebuilt the framework from scratch using Ruby and Rack. Supports MVC CRUD operations using Rack to route requests to controllers, eribus for template rendering, and a JSON database."
     }
   ];
 
@@ -110,10 +115,16 @@ const Resume = () => {
             Software Engineer - Rails/JS
           </p>
           <div className="flex flex-wrap gap-4 text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
-            <span>Turlock, California</span>
+            <span>Turlock, California, 95382</span>
+            <span className="hidden sm:inline">|</span>
+            <span>(209) 447-9691</span>
             <span className="hidden sm:inline">|</span>
             <a href="mailto:austindanielfrench@gmail.com" className="hover:underline" style={{ color: 'var(--accent-color)' }}>
               austindanielfrench@gmail.com
+            </a>
+            <span className="hidden sm:inline">|</span>
+            <a href="https://austn.net/" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent-color)' }}>
+              My website
             </a>
             <span className="hidden sm:inline">|</span>
             <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent-color)' }}>
@@ -132,7 +143,7 @@ const Resume = () => {
             Summary
           </h2>
           <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            Backend-focused engineer with 7 years of Ruby on Rails and JavaScript experience, and a passion for data-oriented product engineering. Built AI tools at CompanyCam giving contractors dozens of weekly hours back from rote documentation. At CoverMyMeds, launched $10M+ in pharmaceutical brands first then built the automations that let non-engineers do it going forward. I love to run experiments, research user behavior, and deeply understand business cases to deliver impact at scale.
+            Backend-focused engineer with 7 years of Ruby on Rails and JavaScript experience, and a passion for data-oriented product engineering. Built AI tools at CompanyCam giving contractors dozens of weekly hours back from rote documentation. At CoverMyMeds, launched $10M+ in pharmaceutical brands first then built the automations that let non-engineers do it going forward. I love to run experiments, research user behavior, and deeply understand business cases to deliver impact at scale. Recently I've been working on adding AI-superpowers to my website: austn.net!
           </p>
         </section>
 
