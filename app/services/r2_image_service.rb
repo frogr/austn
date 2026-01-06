@@ -84,7 +84,7 @@ class R2ImageService
     end
 
     def public_url_for(remote_key)
-      "#{public_url_base}/#{remote_key}"
+      "#{public_url_base.chomp('/')}/#{remote_key}"
     end
 
     private
