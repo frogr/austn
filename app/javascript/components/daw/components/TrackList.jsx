@@ -312,36 +312,8 @@ function TrackItem({ track, isSelected, onSelect, onUpdate, onDelete, audioEngin
 
 export default function TrackList({ audioEngine }) {
   const { state, actions } = useDAW()
-  const prevTracksRef = useRef(state.tracks)
-
-  useEffect(() => {
-    if (!audioEngine) return
-
-    const prevTracks = prevTracksRef.current
-    const currentTracks = state.tracks
-
-    currentTracks.forEach(track => {
-      const wasPresent = prevTracks.some(t => t.id === track.id)
-      if (!wasPresent) {
-        if (track.type === 'synth') {
-          audioEngine.createSynth(track.id, track.instrument, track.effects)
-        } else if (track.type === 'drums') {
-          audioEngine.createDrumSampler(track.id, track.effects)
-        } else if (track.type === 'pluck') {
-          audioEngine.createPluckSynth(track.id, track.instrument, track.effects)
-        } else if (track.type === 'fm') {
-          audioEngine.createFMSynth(track.id, track.instrument, track.effects)
-        } else if (track.type === 'am') {
-          audioEngine.createAMSynth(track.id, track.instrument, track.effects)
-        }
-        audioEngine.setTrackVolume(track.id, track.volume)
-        audioEngine.setTrackPan(track.id, track.pan)
-        audioEngine.setTrackMute(track.id, track.muted)
-      }
-    })
-
-    prevTracksRef.current = currentTracks
-  }, [state.tracks, audioEngine])
+  // Note: Instrument creation is handled centrally by DAW.jsx's ensureInstrumentsReady
+  // TrackList only handles UI and disposal on delete
 
   const handleAddTrack = useCallback((e) => {
     const type = e.target.value
@@ -354,8 +326,11 @@ export default function TrackList({ audioEngine }) {
   const handleDelete = useCallback((trackId) => {
     if (state.tracks.length <= 1) return
     if (audioEngine) {
-      audioEngine.disposeSynth(trackId)
-      audioEngine.disposeDrumSampler(trackId)
+      try {
+        audioEngine.disposeTrack(trackId)
+      } catch (err) {
+        console.warn('[TrackList] Error disposing track:', err)
+      }
     }
     actions.removeTrack(trackId)
   }, [actions, audioEngine, state.tracks.length])

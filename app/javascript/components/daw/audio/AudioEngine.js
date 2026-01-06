@@ -92,6 +92,21 @@ class AudioEngine {
     this.currentStep = 0
   }
 
+  // Safe disposal helper - handles disconnect, stop, and dispose in correct order
+  // Each step is wrapped independently so failures don't prevent subsequent steps
+  safeDispose(node) {
+    if (!node) return
+    try {
+      if (typeof node.disconnect === 'function') node.disconnect()
+    } catch (e) { /* ignore - may already be disconnected */ }
+    try {
+      if (typeof node.stop === 'function') node.stop()
+    } catch (e) { /* ignore - may already be stopped */ }
+    try {
+      if (typeof node.dispose === 'function') node.dispose()
+    } catch (e) { /* ignore - may already be disposed */ }
+  }
+
   async init() {
     if (this.isInitialized) return true
 
@@ -225,6 +240,30 @@ class AudioEngine {
     // Use default settings if none provided
     const settings = effectsSettings || { ...DEFAULT_EFFECTS }
 
+    // Check if any effects are actually enabled - if not, use bypass mode
+    const anyEffectEnabled = settings.eq3?.enabled ||
+      settings.compressor?.enabled ||
+      settings.distortion?.enabled ||
+      settings.phaser?.enabled ||
+      settings.tremolo?.enabled ||
+      settings.chorus?.enabled ||
+      settings.delay?.enabled ||
+      settings.reverb?.enabled
+
+    // BYPASS MODE: If no effects enabled, just use a simple gain node
+    if (!anyEffectEnabled) {
+      const bypass = new Tone.Gain(1)
+      this.effects.set(trackId, {
+        bypass,
+        isBypass: true,
+        settings: { ...DEFAULT_EFFECTS, ...settings },
+      })
+      return {
+        input: bypass,
+        output: bypass,
+      }
+    }
+
     // Create all effects in chain order
 
     // 1. EQ3 - 3-band equalizer
@@ -291,20 +330,19 @@ class AudioEngine {
       wet: settings.delay?.enabled ? settings.delay.wet : 0,
     })
 
-    // 8. Reverb
-    const reverb = new Tone.Reverb({
-      decay: settings.reverb?.roomSize ? settings.reverb.roomSize * 10 : 5,
-      wet: settings.reverb?.enabled ? settings.reverb.wet : 0,
-    })
+    // 8. Reverb - DISABLED: Freeverb was causing page freezes and no audio
+    // TODO: Re-enable with proper async handling for Tone.Reverb
+    const reverb = null
 
-    // Chain: EQ -> Compressor -> Distortion -> Phaser -> Tremolo -> Chorus -> Delay -> Reverb
+    // Chain: EQ -> Compressor -> Distortion -> Phaser -> Tremolo -> Chorus -> Delay
+    // (Reverb removed - was causing issues)
     eq3.connect(compressor)
     compressor.connect(distortion)
     distortion.connect(phaser)
     phaser.connect(tremolo)
     tremolo.connect(chorus)
     chorus.connect(delay)
-    delay.connect(reverb)
+    // delay is now the end of the chain
 
     // Store effects for later updates
     this.effects.set(trackId, {
@@ -315,14 +353,14 @@ class AudioEngine {
       tremolo,
       chorus,
       delay,
-      reverb,
+      reverb,  // null for now
       distortionType: distType,
       settings: { ...DEFAULT_EFFECTS, ...settings },
     })
 
     return {
       input: eq3,
-      output: reverb,
+      output: delay,  // Changed from reverb to delay
     }
   }
 
@@ -330,6 +368,25 @@ class AudioEngine {
   updateEffects(trackId, effectsSettings) {
     const effectsData = this.effects.get(trackId)
     if (!effectsData) return
+
+    // If in bypass mode, we need to recreate the full chain if an effect is being enabled
+    if (effectsData.isBypass) {
+      // Check if any effect is being enabled
+      const anyEnabled = effectsSettings.eq3?.enabled ||
+        effectsSettings.compressor?.enabled ||
+        effectsSettings.distortion?.enabled ||
+        effectsSettings.phaser?.enabled ||
+        effectsSettings.tremolo?.enabled ||
+        effectsSettings.chorus?.enabled ||
+        effectsSettings.delay?.enabled ||
+        effectsSettings.reverb?.enabled
+
+      if (anyEnabled) {
+        // Need to recreate with full effects chain - this will be handled by recreateEffectsChain
+        console.log('[AudioEngine] Upgrading from bypass to full effects chain for track:', trackId)
+      }
+      return // Can't update individual effects in bypass mode
+    }
 
     const { eq3, compressor, distortion, phaser, tremolo, chorus, delay, reverb } = effectsData
 
@@ -498,20 +555,10 @@ class AudioEngine {
       effectsData.settings.delay = { ...effectsData.settings.delay, ...delaySettings }
     }
 
-    // Update reverb
+    // Update reverb - DISABLED (reverb is null)
     if (effectsSettings.reverb !== undefined) {
-      const reverbSettings = effectsSettings.reverb
-      if (reverbSettings.enabled !== undefined) {
-        reverb.wet.rampTo(reverbSettings.enabled ? (reverbSettings.wet ?? effectsData.settings.reverb.wet) : 0, 0.1)
-      }
-      if (reverbSettings.wet !== undefined && effectsData.settings.reverb.enabled) {
-        reverb.wet.rampTo(reverbSettings.wet, 0.1)
-      }
-      if (reverbSettings.roomSize !== undefined) {
-        // Reverb decay is linked to room size (0.5 -> 5 seconds)
-        reverb.decay = reverbSettings.roomSize * 10
-      }
-      effectsData.settings.reverb = { ...effectsData.settings.reverb, ...reverbSettings }
+      // Just store settings for when reverb is re-enabled
+      effectsData.settings.reverb = { ...effectsData.settings.reverb, ...effectsSettings.reverb }
     }
 
     this.effects.set(trackId, effectsData)
@@ -526,15 +573,24 @@ class AudioEngine {
 
     if (!effectsData) return
 
-    // Dispose old effects
-    effectsData.eq3.dispose()
-    effectsData.compressor.dispose()
-    effectsData.distortion.dispose()
-    effectsData.phaser.dispose()
-    effectsData.tremolo.dispose()
-    effectsData.chorus.dispose()
-    effectsData.delay.dispose()
-    effectsData.reverb.dispose()
+    // Handle bypass mode - just dispose and recreate
+    if (effectsData.isBypass) {
+      this.safeDispose(effectsData.bypass)
+    } else {
+      // Stop LFO-based effects first
+      try { if (effectsData.tremolo) effectsData.tremolo.stop() } catch (e) { /* ignore */ }
+      try { if (effectsData.chorus) effectsData.chorus.stop() } catch (e) { /* ignore */ }
+
+      // Dispose all effects using safeDispose
+      this.safeDispose(effectsData.eq3)
+      this.safeDispose(effectsData.compressor)
+      this.safeDispose(effectsData.distortion)
+      this.safeDispose(effectsData.phaser)
+      this.safeDispose(effectsData.tremolo)
+      this.safeDispose(effectsData.chorus)
+      this.safeDispose(effectsData.delay)
+      if (effectsData.reverb) this.safeDispose(effectsData.reverb)
+    }
     this.effects.delete(trackId)
 
     // Create new effects chain
@@ -542,21 +598,27 @@ class AudioEngine {
     const channel = this.channels.get(trackId)
 
     if (channel) {
-      newChain.output.connect(channel)
+      try { newChain.output.connect(channel) } catch (e) { /* ignore */ }
     }
 
     // Reconnect synth/drums/player
-    if (synthData) {
-      synthData.filter.disconnect()
-      synthData.filter.connect(newChain.input)
-    } else if (drumData) {
-      Object.values(drumData.drums).forEach(drum => {
-        drum.disconnect()
-        drum.connect(newChain.input)
-      })
-    } else if (audioData) {
-      audioData.player.disconnect()
-      audioData.player.connect(newChain.input)
+    try {
+      if (synthData && synthData.filter) {
+        synthData.filter.disconnect()
+        synthData.filter.connect(newChain.input)
+      } else if (drumData) {
+        Object.values(drumData.drums).forEach(drum => {
+          try {
+            drum.disconnect()
+            drum.connect(newChain.input)
+          } catch (e) { /* ignore */ }
+        })
+      } else if (audioData && audioData.player) {
+        audioData.player.disconnect()
+        audioData.player.connect(newChain.input)
+      }
+    } catch (e) {
+      console.warn('[AudioEngine] Error reconnecting to new effects chain:', e)
     }
   }
 
@@ -564,14 +626,29 @@ class AudioEngine {
   disposeEffects(trackId) {
     const effectsData = this.effects.get(trackId)
     if (effectsData) {
-      effectsData.eq3.dispose()
-      effectsData.compressor.dispose()
-      effectsData.distortion.dispose()
-      effectsData.phaser.dispose()
-      effectsData.tremolo.dispose()
-      effectsData.chorus.dispose()
-      effectsData.delay.dispose()
-      effectsData.reverb.dispose()
+      // Handle bypass mode (just a gain node)
+      if (effectsData.isBypass) {
+        this.safeDispose(effectsData.bypass)
+      } else {
+        // Full effects chain - stop LFO-based effects first (Tremolo, Chorus)
+        // These have internal LFOs that must be stopped before disposal
+        if (effectsData.tremolo) {
+          try { effectsData.tremolo.stop() } catch (e) { /* ignore */ }
+        }
+        if (effectsData.chorus) {
+          try { effectsData.chorus.stop() } catch (e) { /* ignore */ }
+        }
+
+        // Now safely dispose all effects
+        this.safeDispose(effectsData.eq3)
+        this.safeDispose(effectsData.compressor)
+        this.safeDispose(effectsData.distortion)
+        this.safeDispose(effectsData.phaser)
+        this.safeDispose(effectsData.tremolo)
+        this.safeDispose(effectsData.chorus)
+        this.safeDispose(effectsData.delay)
+        if (effectsData.reverb) this.safeDispose(effectsData.reverb)
+      }
       this.effects.delete(trackId)
     }
   }
@@ -686,15 +763,22 @@ class AudioEngine {
   createDrumSampler(trackId, effectsSettings = null) {
     this.disposeDrumSampler(trackId)
 
+    console.log('[AudioEngine] Creating drum sampler for track:', trackId)
+    console.log('[AudioEngine] masterVolume exists:', !!this.masterVolume)
+    console.log('[AudioEngine] Tone.context.state:', Tone.context.state)
+
     const channel = new Tone.Channel().connect(this.masterVolume)
     this.channels.set(trackId, channel)
+    console.log('[AudioEngine] Channel created, volume:', channel.volume.value)
 
     // Create meter for this track
     this.createTrackMeter(trackId, channel)
 
     // Create effects chain
     const effectsChain = this.createEffectsChain(trackId, effectsSettings)
+    console.log('[AudioEngine] Effects chain created, input:', effectsChain.input?.constructor?.name, 'output:', effectsChain.output?.constructor?.name)
     effectsChain.output.connect(channel)
+    console.log('[AudioEngine] Effects chain connected to channel')
 
     // Create drum sounds using synths - connect to effects chain input
     const drums = {
@@ -1040,42 +1124,58 @@ class AudioEngine {
   // Trigger a drum sound
   triggerDrum(trackId, drumType, time, velocity = 1) {
     const sampler = this.drumSamplers.get(trackId)
-    if (!sampler) return
+    if (!sampler) {
+      // Silent return - instrument may not be created yet
+      return
+    }
 
-    const { drums } = sampler
+    const { drums, channel } = sampler
     const drum = drums[drumType]
-    if (!drum) return
+    if (!drum) {
+      return
+    }
 
-    switch (drumType) {
-      case 'kick':
-        drum.triggerAttackRelease('C1', '8n', time, velocity)
-        break
-      case 'tom':
-        drum.triggerAttackRelease('G1', '8n', time, velocity)
-        break
-      case 'hihat':
-      case 'ride':
-        drum.triggerAttackRelease('16n', time, velocity * 0.3)
-        break
-      case 'crash':
-        drum.triggerAttackRelease('4n', time, velocity * 0.4)
-        break
-      case 'cowbell':
-        drum.triggerAttackRelease('16n', time, velocity * 0.5)
-        break
-      default:
-        drum.triggerAttackRelease('16n', time, velocity)
+    try {
+      switch (drumType) {
+        case 'kick':
+          drum.triggerAttackRelease('C1', '8n', time, velocity)
+          break
+        case 'tom':
+          drum.triggerAttackRelease('G1', '8n', time, velocity)
+          break
+        case 'hihat':
+        case 'ride':
+          drum.triggerAttackRelease('16n', time, velocity * 0.3)
+          break
+        case 'crash':
+          drum.triggerAttackRelease('4n', time, velocity * 0.4)
+          break
+        case 'cowbell':
+          drum.triggerAttackRelease('16n', time, velocity * 0.5)
+          break
+        default:
+          drum.triggerAttackRelease('16n', time, velocity)
+      }
+    } catch (err) {
+      console.warn('[AudioEngine] Error triggering drum:', err.message)
     }
   }
 
   // Trigger a synth note
   triggerNote(trackId, pitch, duration, time, velocity = 1) {
     const synthData = this.synths.get(trackId)
-    if (!synthData) return
+    if (!synthData) {
+      // Silent return - instrument may not be created yet
+      return
+    }
 
-    const { synth } = synthData
-    const note = Tone.Frequency(pitch, 'midi').toNote()
-    synth.triggerAttackRelease(note, duration, time, velocity)
+    try {
+      const { synth } = synthData
+      const note = Tone.Frequency(pitch, 'midi').toNote()
+      synth.triggerAttackRelease(note, duration, time, velocity)
+    } catch (err) {
+      console.warn('[AudioEngine] Error triggering note:', err.message)
+    }
   }
 
   // Update synth settings - recreates synth for reliable envelope updates
@@ -1155,7 +1255,11 @@ class AudioEngine {
     const channel = this.channels.get(trackId)
     if (channel) {
       // Convert 0-1 to dB (-Infinity to 0)
-      channel.volume.value = volume > 0 ? Tone.gainToDb(volume) : -Infinity
+      const dbValue = volume > 0 ? Tone.gainToDb(volume) : -Infinity
+      console.log('[AudioEngine] setTrackVolume:', trackId, 'volume:', volume, '-> dB:', dbValue)
+      channel.volume.value = dbValue
+    } else {
+      console.warn('[AudioEngine] setTrackVolume: No channel found for track:', trackId)
     }
   }
 
@@ -1202,6 +1306,11 @@ class AudioEngine {
 
   // Schedule sequence playback
   scheduleSequence(tracks, totalSteps, stepsPerMeasure, onStep) {
+    console.log('[AudioEngine] Scheduling sequence with', tracks.length, 'tracks,', totalSteps, 'steps')
+    console.log('[AudioEngine] Track IDs:', tracks.map(t => t.id))
+    console.log('[AudioEngine] Available synths:', Array.from(this.synths.keys()))
+    console.log('[AudioEngine] Available drums:', Array.from(this.drumSamplers.keys()))
+
     // Clear any existing sequence
     Tone.Transport.cancel()
 
@@ -1249,11 +1358,16 @@ class AudioEngine {
 
           const notesAtStep = track.notes.filter(n => n.step === step)
 
+          if (step === 0 && notesAtStep.length > 0) {
+            console.log('[AudioEngine] Step 0 - triggering', notesAtStep.length, 'notes for track', track.id, track.type)
+          }
+
           notesAtStep.forEach(note => {
             if (track.type === 'drums') {
               // For drums, pitch represents drum type (0=kick, 1=snare, 2=hihat, 3=clap, etc)
               const drumTypes = ['kick', 'snare', 'hihat', 'clap', 'tom', 'crash', 'ride', 'cowbell']
               const drumType = drumTypes[note.pitch % drumTypes.length]
+              if (step === 0) console.log('[AudioEngine] Triggering drum:', drumType, 'on track', track.id)
               this.triggerDrum(track.id, drumType, time, note.velocity / 127)
             } else if (track.type === 'synth' || track.type === 'pluck' || track.type === 'fm' || track.type === 'am') {
               // For all synth types (synth, pluck, fm, am), pitch is MIDI note number
@@ -1262,6 +1376,7 @@ class AudioEngine {
               // Use seconds for precise timing
               const stepDurationSec = Tone.Time(`${stepsPerMeasure}n`).toSeconds()
               const noteDurationSec = stepDurationSec * note.duration
+              if (step === 0) console.log('[AudioEngine] Triggering synth note:', note.pitch, 'on track', track.id, track.type)
               this.triggerNote(track.id, note.pitch, noteDurationSec, time, note.velocity / 127)
             }
             // Audio tracks don't use notes - they play continuously
@@ -1312,47 +1427,137 @@ class AudioEngine {
     return Math.floor((bars * stepsPerMeasure) + (beats * (stepsPerMeasure / 4)) + (sixteenths * (stepsPerMeasure / 16)))
   }
 
-  // Cleanup
+  // Dispose channel for a track
+  disposeChannel(trackId) {
+    const channel = this.channels.get(trackId)
+    if (channel) {
+      this.safeDispose(channel)
+      this.channels.delete(trackId)
+    }
+  }
+
+  // Cleanup - dispose a synth and all its associated resources
   disposeSynth(trackId) {
     // Dispose LFO first if exists
     this.disposeLFO(trackId)
     // Dispose effects
     this.disposeEffects(trackId)
+    // Dispose track meter
+    this.disposeTrackMeter(trackId)
 
     const synthData = this.synths.get(trackId)
     if (synthData) {
-      synthData.synth.dispose()
+      // Handle PluckSynth which uses voice array instead of PolySynth
+      if (synthData.synthType === 'pluck' && synthData.synth.voices) {
+        synthData.synth.voices.forEach(v => this.safeDispose(v.synth))
+      } else {
+        this.safeDispose(synthData.synth)
+      }
       // Filter may not exist for pluck, FM, and AM synths
       if (synthData.filter) {
-        synthData.filter.dispose()
+        this.safeDispose(synthData.filter)
       }
-      synthData.channel.dispose()
       this.synths.delete(trackId)
     }
+
+    // Dispose channel last (it's the end of the audio graph)
+    this.disposeChannel(trackId)
   }
 
   disposeDrumSampler(trackId) {
     // Dispose effects
     this.disposeEffects(trackId)
+    // Dispose track meter
+    this.disposeTrackMeter(trackId)
 
     const sampler = this.drumSamplers.get(trackId)
     if (sampler) {
-      Object.values(sampler.drums).forEach(drum => drum.dispose())
-      sampler.channel.dispose()
+      Object.values(sampler.drums).forEach(drum => this.safeDispose(drum))
       this.drumSamplers.delete(trackId)
     }
+
+    // Dispose channel last
+    this.disposeChannel(trackId)
   }
 
   disposeAudioPlayer(trackId) {
     // Dispose effects
     this.disposeEffects(trackId)
+    // Dispose track meter
+    this.disposeTrackMeter(trackId)
 
     const playerData = this.audioPlayers.get(trackId)
     if (playerData) {
-      playerData.player.dispose()
-      playerData.channel.dispose()
+      if (playerData.player.state === 'started') {
+        playerData.player.stop()
+      }
+      this.safeDispose(playerData.player)
       this.audioPlayers.delete(trackId)
     }
+
+    // Dispose channel last
+    this.disposeChannel(trackId)
+  }
+
+  // Dispose a complete track (any type) - single method to fully clean up a track
+  disposeTrack(trackId) {
+    // Determine track type and dispose appropriately
+    if (this.synths.has(trackId)) {
+      this.disposeSynth(trackId)
+    } else if (this.drumSamplers.has(trackId)) {
+      this.disposeDrumSampler(trackId)
+    } else if (this.audioPlayers.has(trackId)) {
+      this.disposeAudioPlayer(trackId)
+    } else {
+      // No instrument, but may still have effects/channel/meter
+      this.disposeEffects(trackId)
+      this.disposeTrackMeter(trackId)
+      this.disposeChannel(trackId)
+    }
+  }
+
+  // Check if a track has an instrument (synth, drums, or audio player)
+  hasInstrument(trackId) {
+    return this.synths.has(trackId) ||
+           this.drumSamplers.has(trackId) ||
+           this.audioPlayers.has(trackId)
+  }
+
+  // Get the type of instrument for a track
+  getInstrumentType(trackId) {
+    if (this.synths.has(trackId)) {
+      const synthData = this.synths.get(trackId)
+      return synthData.synthType || 'synth'
+    }
+    if (this.drumSamplers.has(trackId)) return 'drums'
+    if (this.audioPlayers.has(trackId)) return 'audio'
+    return null
+  }
+
+  // Clean up instruments for tracks that no longer exist in state
+  disposeOrphanedInstruments(validTrackIds) {
+    const validSet = new Set(validTrackIds)
+
+    // Collect IDs to dispose first (don't modify Maps while iterating)
+    const synthsToDispose = [...this.synths.keys()].filter(id => !validSet.has(id))
+    const drumsToDispose = [...this.drumSamplers.keys()].filter(id => !validSet.has(id))
+    const playersToDispose = [...this.audioPlayers.keys()].filter(id => !validSet.has(id))
+
+    // Now dispose them
+    synthsToDispose.forEach(trackId => {
+      console.log('[AudioEngine] Disposing orphaned synth:', trackId)
+      this.disposeSynth(trackId)
+    })
+
+    drumsToDispose.forEach(trackId => {
+      console.log('[AudioEngine] Disposing orphaned drums:', trackId)
+      this.disposeDrumSampler(trackId)
+    })
+
+    playersToDispose.forEach(trackId => {
+      console.log('[AudioEngine] Disposing orphaned audio player:', trackId)
+      this.disposeAudioPlayer(trackId)
+    })
   }
 
   dispose() {

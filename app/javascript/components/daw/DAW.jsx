@@ -132,56 +132,15 @@ function DAWContent() {
     }
   }, [state.masterVolume])
 
-  // Handle play/stop
-  useEffect(() => {
-    if (!audioEngineRef.current || !state.audioInitialized) return
+  // Helper to ensure all track instruments exist before scheduling
+  const ensureInstrumentsReady = useCallback((engine, tracks) => {
+    // First, dispose orphaned instruments (tracks that no longer exist)
+    const validTrackIds = tracks.map(t => t.id)
+    engine.disposeOrphanedInstruments(validTrackIds)
 
-    if (state.isPlaying) {
-      sequenceRef.current = audioEngineRef.current.scheduleSequence(
-        state.tracks,
-        state.totalSteps,
-        state.stepsPerMeasure,
-        (step) => actions.setCurrentStep(step)
-      )
-      audioEngineRef.current.play()
-    } else {
-      audioEngineRef.current.pause()
-    }
-
-    return () => {
-      if (!state.isPlaying && audioEngineRef.current) {
-        // Don't cancel on pause, only on unmount
-      }
-    }
-  }, [state.isPlaying, state.audioInitialized])
-
-  // Re-schedule when tracks/notes change while playing
-  useEffect(() => {
-    if (!audioEngineRef.current || !state.isPlaying) return
-
-    sequenceRef.current = audioEngineRef.current.scheduleSequence(
-      state.tracks,
-      state.totalSteps,
-      state.stepsPerMeasure,
-      (step) => actions.setCurrentStep(step)
-    )
-  }, [state.tracks, state.totalSteps, state.stepsPerMeasure])
-
-  // Create instruments for new tracks (handles pattern loading)
-  useEffect(() => {
-    if (!audioEngineRef.current || !state.audioInitialized) return
-
-    const engine = audioEngineRef.current
-
-    state.tracks.forEach(track => {
-      // Check if this track already has an instrument in the engine
-      const hasSynth = engine.synths?.has(track.id)
-      const hasDrums = engine.drumSamplers?.has(track.id)
-      const hasAudio = engine.audioPlayers?.has(track.id)
-      const hasInstrument = hasSynth || hasDrums || hasAudio
-
-      if (!hasInstrument) {
-        // Create the appropriate instrument for this track
+    // Then, create any missing instruments
+    tracks.forEach(track => {
+      if (!engine.hasInstrument(track.id)) {
         if (track.type === 'synth') {
           engine.createSynth(track.id, track.instrument, track.effects)
         } else if (track.type === 'drums') {
@@ -195,14 +154,62 @@ function DAWContent() {
         } else if (track.type === 'audio' && track.audioData?.buffer) {
           engine.createAudioPlayer(track.id, track.audioData.buffer, track.effects)
         }
-
-        // Set initial volume, pan, mute
         engine.setTrackVolume(track.id, track.volume)
         engine.setTrackPan(track.id, track.pan)
         engine.setTrackMute(track.id, track.muted)
       }
     })
-  }, [state.tracks, state.audioInitialized])
+  }, [])
+
+  // Handle play/stop
+  useEffect(() => {
+    if (!audioEngineRef.current || !state.audioInitialized) return
+
+    const engine = audioEngineRef.current
+
+    if (state.isPlaying) {
+      // Ensure all instruments exist before scheduling
+      ensureInstrumentsReady(engine, state.tracks)
+
+      sequenceRef.current = engine.scheduleSequence(
+        state.tracks,
+        state.totalSteps,
+        state.stepsPerMeasure,
+        (step) => actions.setCurrentStep(step)
+      )
+      engine.play()
+    } else {
+      engine.pause()
+    }
+  }, [state.isPlaying, state.audioInitialized, ensureInstrumentsReady])
+
+  // Re-schedule when tracks/notes change while playing
+  useEffect(() => {
+    if (!audioEngineRef.current || !state.isPlaying) return
+
+    const engine = audioEngineRef.current
+
+    // Ensure instruments exist before re-scheduling
+    ensureInstrumentsReady(engine, state.tracks)
+
+    sequenceRef.current = engine.scheduleSequence(
+      state.tracks,
+      state.totalSteps,
+      state.stepsPerMeasure,
+      (step) => actions.setCurrentStep(step)
+    )
+  }, [state.tracks, state.totalSteps, state.stepsPerMeasure, ensureInstrumentsReady])
+
+  // Create instruments for new tracks (handles pattern loading when not playing)
+  useEffect(() => {
+    if (!audioEngineRef.current || !state.audioInitialized) return
+
+    // Only create instruments here when NOT playing
+    // (When playing, the play effect handles instrument creation)
+    if (!state.isPlaying) {
+      ensureInstrumentsReady(audioEngineRef.current, state.tracks)
+    }
+  }, [state.tracks, state.audioInitialized, state.isPlaying, ensureInstrumentsReady])
 
   // Cleanup on unmount
   useEffect(() => {

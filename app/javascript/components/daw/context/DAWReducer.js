@@ -24,6 +24,7 @@ export const ActionTypes = {
   SET_TOTAL_STEPS: 'SET_TOTAL_STEPS',
   SET_PROJECT_NAME: 'SET_PROJECT_NAME',
   SET_SELECTED_PITCH: 'SET_SELECTED_PITCH',
+  PREPARE_PATTERN_LOAD: 'PREPARE_PATTERN_LOAD',
   LOAD_PATTERN: 'LOAD_PATTERN',
   SET_CURRENT_PATTERN_ID: 'SET_CURRENT_PATTERN_ID',
 }
@@ -506,17 +507,38 @@ export function dawReducer(state, action) {
     case ActionTypes.SET_SELECTED_PITCH:
       return { ...state, selectedPitch: action.payload }
 
+    case ActionTypes.PREPARE_PATTERN_LOAD:
+      // Stop playback and reset step before loading a pattern
+      // This ensures clean state transition
+      return { ...state, isPlaying: false, currentStep: 0 }
+
     case ActionTypes.LOAD_PATTERN: {
       // Load a pattern from the library, merging its tracks and settings
       const { pattern, mode = 'replace' } = action.payload
 
       // Generate new unique IDs for tracks and notes to avoid conflicts
+      // Also ensure effects are properly merged with defaults
       const processedTracks = (pattern.data?.tracks || []).map(track => {
         const newTrackId = generateTrackId()
+
+        // Merge track effects with defaults to ensure all effect types exist
+        const mergedEffects = { ...DEFAULT_TRACK_EFFECTS }
+        if (track.effects) {
+          Object.keys(track.effects).forEach(effectType => {
+            if (mergedEffects[effectType]) {
+              mergedEffects[effectType] = {
+                ...mergedEffects[effectType],
+                ...track.effects[effectType],
+              }
+            }
+          })
+        }
+
         return {
           ...track,
           id: newTrackId,
-          notes: track.notes.map(note => ({
+          effects: mergedEffects,
+          notes: (track.notes || []).map(note => ({
             ...note,
             id: generateNoteId(),
           })),

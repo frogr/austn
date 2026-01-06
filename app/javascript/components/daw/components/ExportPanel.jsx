@@ -185,29 +185,32 @@ export default function ExportPanel() {
 
           if (track.type === 'synth') {
             const filter = new Tone.Filter({
-              frequency: track.instrument.filterFreq || 2000,
+              frequency: track.instrument?.filterFreq || 2000,
               type: 'lowpass',
-              Q: track.instrument.filterRes || 1,
+              Q: track.instrument?.filterRes || 1,
             }).connect(channel)
 
             const synth = new Tone.PolySynth(Tone.Synth, {
-              oscillator: { type: track.instrument.oscillator },
+              oscillator: { type: track.instrument?.oscillator || 'sawtooth' },
               envelope: {
-                attack: track.instrument.attack,
-                decay: track.instrument.decay,
-                sustain: track.instrument.sustain,
-                release: track.instrument.release,
+                attack: track.instrument?.attack || 0.01,
+                decay: track.instrument?.decay || 0.1,
+                sustain: track.instrument?.sustain || 0.5,
+                release: track.instrument?.release || 0.3,
               },
             }).connect(filter)
 
+            // Use transport.schedule for proper timing
             track.notes.forEach(note => {
               const time = (note.step / state.stepsPerMeasure) * beatsPerMeasure * secondsPerBeat
               const noteDuration = (note.duration / state.stepsPerMeasure) * beatsPerMeasure * secondsPerBeat
               const pitch = Tone.Frequency(note.pitch, 'midi').toNote()
-              synth.triggerAttackRelease(pitch, noteDuration, time, note.velocity / 127)
+              transport.schedule((t) => {
+                synth.triggerAttackRelease(pitch, noteDuration, t, note.velocity / 127)
+              }, time)
             })
           } else if (track.type === 'drums') {
-            // Create all drum sounds
+            // Create all drum sounds using PolySynth wrappers to avoid timing issues
             const drums = {
               kick: new Tone.MembraneSynth({
                 pitchDecay: 0.05,
@@ -265,25 +268,28 @@ export default function ExportPanel() {
 
             const drumTypes = ['kick', 'snare', 'hihat', 'clap', 'tom', 'crash', 'ride', 'cowbell']
 
+            // Use transport.schedule for each note - this handles timing properly
             track.notes.forEach(note => {
               const time = (note.step / state.stepsPerMeasure) * beatsPerMeasure * secondsPerBeat
               const drumType = drumTypes[note.pitch % drumTypes.length]
               const drum = drums[drumType]
               const velocity = note.velocity / 127
 
-              if (drumType === 'kick') {
-                drum.triggerAttackRelease('C1', '8n', time, velocity)
-              } else if (drumType === 'tom') {
-                drum.triggerAttackRelease('G1', '8n', time, velocity)
-              } else if (drumType === 'hihat' || drumType === 'ride') {
-                drum.triggerAttackRelease('16n', time, velocity * 0.3)
-              } else if (drumType === 'crash') {
-                drum.triggerAttackRelease('4n', time, velocity * 0.4)
-              } else if (drumType === 'cowbell') {
-                drum.triggerAttackRelease('16n', time, velocity * 0.5)
-              } else {
-                drum.triggerAttackRelease('16n', time, velocity)
-              }
+              transport.schedule((t) => {
+                if (drumType === 'kick') {
+                  drum.triggerAttackRelease('C1', '8n', t, velocity)
+                } else if (drumType === 'tom') {
+                  drum.triggerAttackRelease('G1', '8n', t, velocity)
+                } else if (drumType === 'hihat' || drumType === 'ride') {
+                  drum.triggerAttackRelease('16n', t, velocity * 0.3)
+                } else if (drumType === 'crash') {
+                  drum.triggerAttackRelease('4n', t, velocity * 0.4)
+                } else if (drumType === 'cowbell') {
+                  drum.triggerAttackRelease('16n', t, velocity * 0.5)
+                } else {
+                  drum.triggerAttackRelease('16n', t, velocity)
+                }
+              }, time)
             })
           } else if (track.type === 'audio' && track.audioData?.buffer) {
             // Create player for audio track

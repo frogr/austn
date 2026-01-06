@@ -256,7 +256,11 @@ function SynthEditor({ track, audioEngine }) {
     const newInstrument = { ...track.instrument, [key]: value }
     actions.updateTrack(track.id, { instrument: newInstrument })
     if (audioEngine) {
-      audioEngine.updateSynthSettings(track.id, { [key]: value })
+      try {
+        audioEngine.updateSynthSettings(track.id, { [key]: value })
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error updating synth:', err)
+      }
     }
   }, [track, actions, audioEngine])
 
@@ -265,7 +269,11 @@ function SynthEditor({ track, audioEngine }) {
     const newInstrument = { ...track.instrument, lfo: newLFO }
     actions.updateTrack(track.id, { instrument: newInstrument })
     if (audioEngine) {
-      audioEngine.updateSynthSettings(track.id, { lfo: newLFO })
+      try {
+        audioEngine.updateSynthSettings(track.id, { lfo: newLFO })
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error updating LFO:', err)
+      }
     }
   }, [track, lfo, actions, audioEngine])
 
@@ -275,7 +283,11 @@ function SynthEditor({ track, audioEngine }) {
     const newInstrument = { ...preset, lfo: track.instrument.lfo }
     actions.updateTrack(track.id, { instrument: newInstrument })
     if (audioEngine) {
-      audioEngine.updateSynthSettings(track.id, newInstrument)
+      try {
+        audioEngine.updateSynthSettings(track.id, newInstrument)
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error loading preset:', err)
+      }
     }
   }, [track, actions, audioEngine])
 
@@ -403,7 +415,11 @@ function DrumEditor({ track, audioEngine }) {
 
   const playDrum = (drumType) => {
     if (audioEngine) {
-      audioEngine.triggerDrum(track.id, drumType, '+0', 1)
+      try {
+        audioEngine.triggerDrum(track.id, drumType, '+0', 1)
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error playing drum:', err)
+      }
     }
   }
 
@@ -463,14 +479,22 @@ function PluckEditor({ track, audioEngine }) {
     const newInstrument = { ...track.instrument, [key]: value }
     actions.updateTrack(track.id, { instrument: newInstrument })
     if (audioEngine) {
-      audioEngine.updatePluckSettings(track.id, { [key]: value })
+      try {
+        audioEngine.updatePluckSettings(track.id, { [key]: value })
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error updating pluck:', err)
+      }
     }
   }, [track, actions, audioEngine])
 
   // Preview the sound
   const playPreview = useCallback(() => {
     if (audioEngine) {
-      audioEngine.triggerNote(track.id, 60, '8n', '+0', 0.8)
+      try {
+        audioEngine.triggerNote(track.id, 60, '8n', '+0', 0.8)
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error playing preview:', err)
+      }
     }
   }, [track.id, audioEngine])
 
@@ -557,14 +581,22 @@ function FMEditor({ track, audioEngine }) {
     const newInstrument = { ...track.instrument, [key]: value }
     actions.updateTrack(track.id, { instrument: newInstrument })
     if (audioEngine) {
-      audioEngine.updateFMSettings(track.id, { [key]: value })
+      try {
+        audioEngine.updateFMSettings(track.id, { [key]: value })
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error updating FM:', err)
+      }
     }
   }, [track, actions, audioEngine])
 
   // Preview the sound
   const playPreview = useCallback(() => {
     if (audioEngine) {
-      audioEngine.triggerNote(track.id, 60, '4n', '+0', 0.8)
+      try {
+        audioEngine.triggerNote(track.id, 60, '4n', '+0', 0.8)
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error playing preview:', err)
+      }
     }
   }, [track.id, audioEngine])
 
@@ -643,14 +675,22 @@ function AMEditor({ track, audioEngine }) {
     const newInstrument = { ...track.instrument, [key]: value }
     actions.updateTrack(track.id, { instrument: newInstrument })
     if (audioEngine) {
-      audioEngine.updateAMSettings(track.id, { [key]: value })
+      try {
+        audioEngine.updateAMSettings(track.id, { [key]: value })
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error updating AM:', err)
+      }
     }
   }, [track, actions, audioEngine])
 
   // Preview the sound
   const playPreview = useCallback(() => {
     if (audioEngine) {
-      audioEngine.triggerNote(track.id, 60, '4n', '+0', 0.8)
+      try {
+        audioEngine.triggerNote(track.id, 60, '4n', '+0', 0.8)
+      } catch (err) {
+        console.warn('[InstrumentPanel] Error playing preview:', err)
+      }
     }
   }, [track.id, audioEngine])
 
