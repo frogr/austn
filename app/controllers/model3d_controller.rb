@@ -1,7 +1,7 @@
 class Model3dController < ApplicationController
   include GpuQueueStatus
 
-  skip_before_action :verify_authenticity_token, only: [:generate]
+  skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
     # Load recent models for the index, limited to active (non-expired) ones

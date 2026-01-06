@@ -63,7 +63,7 @@ class Rack::Attack
         "X-RateLimit-Remaining" => "0",
         "X-RateLimit-Reset" => (now + retry_after).to_s
       },
-      [{ error: "Rate limit exceeded. Try again in #{retry_after} seconds." }.to_json]
+      [ { error: "Rate limit exceeded. Try again in #{retry_after} seconds." }.to_json ]
     ]
   end
 

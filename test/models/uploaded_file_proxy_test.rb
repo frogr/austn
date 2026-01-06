@@ -15,8 +15,9 @@ class UploadedFileProxyTest < ActiveSupport::TestCase
     assert_equal original_content, proxy.read
     assert File.exist?(proxy.path)
 
+    path = proxy.path
     proxy.cleanup
-    refute File.exist?(proxy.path)
+    assert_not File.exist?(path)
   end
 
   test "from_base64 preserves file extension" do

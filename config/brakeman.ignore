@@ -1,0 +1,10 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "fedd2ff2a188821bf9cc8ba7b762faeb5e4ad71cd352cbaf9c99b328ca72858b",
+      "note": "Admin-only controller with authentication. Slug comes from database record, not direct user input. File paths are constrained to content directory."
+    }
+  ],
+  "updated": "2026-01-06",
+  "brakeman_version": "7.1.2"
+}

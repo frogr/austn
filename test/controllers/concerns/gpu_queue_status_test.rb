@@ -46,10 +46,21 @@ class GpuQueueStatusTest < ActionController::TestCase
   end
 
   test "gpu_queue_position returns nil when job not in queue" do
+    skip "Redis not available" unless redis_available?
+
     controller = TestController.new
     controller.request = ActionController::TestRequest.create(TestController)
 
     position = controller.send(:gpu_queue_position, "nonexistent-id")
     assert_nil position
+  end
+
+  private
+
+  def redis_available?
+    Redis.new(url: ENV.fetch("REDIS_URL", "redis://localhost:6379/2")).ping
+    true
+  rescue Redis::CannotConnectError
+    false
   end
 end
