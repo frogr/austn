@@ -2,8 +2,15 @@ class ImportObsidianNotesJob < ApplicationJob
   queue_as :default
 
   OBSIDIAN_PUBLIC_PATH = ENV["OBSIDIAN_PATH"] || "/Users/austn/Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes/public"
+  OBSIDIAN_VAULT_ROOT = ENV["OBSIDIAN_VAULT_ROOT"] || "/Users/austn/Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes"
 
   CONTENT_BLOG_POSTS_PATH = Rails.root.join("content", "blog_posts")
+
+  # Regex patterns for image references in markdown
+  # Wiki-style: ![[image.png]] or ![[folder/image.png]]
+  WIKI_IMAGE_PATTERN = /!\[\[([^\]]+\.(?:png|jpe?g|gif|webp|svg|avif))\]\]/i
+  # Standard markdown: ![alt](path/to/image.png) - but not http(s) URLs
+  MARKDOWN_IMAGE_PATTERN = /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+\.(?:png|jpe?g|gif|webp|svg|avif))\)/i
 
   def perform
     # Ensure content directory exists
@@ -34,11 +41,20 @@ class ImportObsidianNotesJob < ApplicationJob
         next
       end
 
-      # Copy the file from Obsidian to content directory
-      FileUtils.cp(obsidian_file_path, target_path)
-      Rails.logger.info "Copied #{filename} to content directory"
+      # Read the original file content for image processing
+      original_content = File.read(obsidian_file_path)
 
-      # Process the newly copied file
+      # Process images first (while we still have access to the Obsidian vault paths)
+      if R2ImageService.configured?
+        processed_content = process_images(original_content, File.dirname(obsidian_file_path), obsidian_file_path)
+        File.write(target_path, processed_content)
+        Rails.logger.info "Copied #{filename} to content directory (with CDN images)"
+      else
+        FileUtils.cp(obsidian_file_path, target_path)
+        Rails.logger.info "Copied #{filename} to content directory"
+      end
+
+      # Process the newly copied file (now with CDN URLs if R2 was configured)
       process_markdown_file(target_path)
     end
 
@@ -82,6 +98,78 @@ class ImportObsidianNotesJob < ApplicationJob
     else
       Rails.logger.error "Failed to import #{file_path}: #{blog_post.errors.full_messages.join(', ')}"
     end
+  end
+
+  def process_images(content, source_dir, markdown_file_path)
+    processed_content = content.dup
+
+    # Process wiki-style image links: ![[image.png]]
+    processed_content.gsub!(WIKI_IMAGE_PATTERN) do |match|
+      image_ref = $1
+      process_single_image(image_ref, source_dir, markdown_file_path, match) do |cdn_url, alt_text|
+        "![#{alt_text}](#{cdn_url})"
+      end
+    end
+
+    # Process standard markdown images: ![alt](path)
+    processed_content.gsub!(MARKDOWN_IMAGE_PATTERN) do |match|
+      alt_text = $1
+      image_ref = $2
+      process_single_image(image_ref, source_dir, markdown_file_path, match, alt_text) do |cdn_url, final_alt|
+        "![#{final_alt}](#{cdn_url})"
+      end
+    end
+
+    processed_content
+  end
+
+  def process_single_image(image_ref, source_dir, markdown_file_path, original_match, alt_text = nil)
+    # Try to find the image file
+    image_path = find_image_file(image_ref, source_dir, markdown_file_path)
+
+    unless image_path
+      Rails.logger.warn "Image not found: #{image_ref}"
+      return original_match
+    end
+
+    begin
+      cdn_url = R2ImageService.upload_file(image_path)
+      final_alt = alt_text.presence || File.basename(image_ref, ".*").titleize
+      yield(cdn_url, final_alt)
+    rescue R2ImageService::R2Error => e
+      Rails.logger.error "Failed to upload image #{image_ref}: #{e.message}"
+      original_match
+    end
+  end
+
+  def find_image_file(image_ref, source_dir, markdown_file_path)
+    # Clean up the reference (remove any leading ./)
+    clean_ref = image_ref.sub(%r{^\./}, "")
+
+    # Search locations in order of priority:
+    search_paths = [
+      # 1. Relative to the markdown file's directory
+      File.join(File.dirname(markdown_file_path), clean_ref),
+      # 2. In an "attachments" folder relative to the markdown file
+      File.join(File.dirname(markdown_file_path), "attachments", File.basename(clean_ref)),
+      # 3. Relative to the source directory (e.g., public folder)
+      File.join(source_dir, clean_ref),
+      # 4. In an "attachments" folder in the source directory
+      File.join(source_dir, "attachments", File.basename(clean_ref)),
+      # 5. In the vault root's attachments folder
+      File.join(OBSIDIAN_VAULT_ROOT, "attachments", File.basename(clean_ref)),
+      # 6. Search the entire vault for the file by name (Obsidian's default behavior)
+      find_in_vault(File.basename(clean_ref))
+    ].compact
+
+    search_paths.find { |path| path && File.exist?(path) }
+  end
+
+  def find_in_vault(filename)
+    # Search the entire Obsidian vault for a file with this name
+    return nil unless Dir.exist?(OBSIDIAN_VAULT_ROOT)
+
+    Dir.glob(File.join(OBSIDIAN_VAULT_ROOT, "**", filename)).first
   end
 
   def extract_frontmatter(content)

@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   get "/fun-links", to: "portfolio#fun_links"
   get "/reading", to: "portfolio#reading"
   get "/resources", to: "portfolio#resources"
+  get "/resume", to: "portfolio#resume"
 
   # Legacy routes - redirect to new structure
   get "/work", to: redirect("/")
@@ -149,7 +150,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :blog_posts
+    resources :blog_posts do
+      member do
+        post :sync_images
+      end
+    end
   end
 
   # API v1
