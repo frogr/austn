@@ -314,7 +314,11 @@ export default function PatternLibrary({ isOpen, onClose }) {
     }
   }, [isOpen, activeTab, fetchPatterns])
 
-  const handleLoad = useCallback((pattern, mode = 'replace') => {
+  const handleLoad = useCallback(async (pattern, mode = 'replace') => {
+    // Stop playback first for clean state transition
+    actions.preparePatternLoad()
+    // Small delay to allow audio engine to stop
+    await new Promise(resolve => setTimeout(resolve, 50))
     actions.loadPattern(pattern, mode)
     onClose()
   }, [actions, onClose])
@@ -358,7 +362,7 @@ export default function PatternLibrary({ isOpen, onClose }) {
     }
   }
 
-  const handleQuickLoad = useCallback(() => {
+  const handleQuickLoad = useCallback(async () => {
     setImportError('')
     setImportSuccess('')
 
@@ -378,6 +382,9 @@ export default function PatternLibrary({ isOpen, onClose }) {
       },
     }
 
+    // Stop playback first for clean state transition
+    actions.preparePatternLoad()
+    await new Promise(resolve => setTimeout(resolve, 50))
     actions.loadPattern(pattern, 'replace')
     setImportSuccess('Pattern loaded!')
     setTimeout(() => {

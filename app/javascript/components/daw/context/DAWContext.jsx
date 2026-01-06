@@ -124,6 +124,10 @@ export function DAWProvider({ children }) {
       dispatch({ type: ActionTypes.SET_SELECTED_PITCH, payload: pitch })
     }, []),
 
+    preparePatternLoad: useCallback(() => {
+      dispatch({ type: ActionTypes.PREPARE_PATTERN_LOAD })
+    }, []),
+
     loadPattern: useCallback((pattern, mode = 'replace') => {
       dispatch({ type: ActionTypes.LOAD_PATTERN, payload: { pattern, mode } })
     }, []),
