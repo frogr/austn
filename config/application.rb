@@ -27,5 +27,8 @@ module Austn
     # Enable gzip compression for text-based responses (HTML, CSS, JS, JSON, XML)
     # Insert before sendfile so even static assets get compressed when served by Rails.
     config.middleware.insert_before Rack::Sendfile, Rack::Deflater
+
+    # Enable Rack::Attack for rate limiting
+    config.middleware.use Rack::Attack
   end
 end

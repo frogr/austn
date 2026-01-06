@@ -160,8 +160,11 @@ Rails.application.routes.draw do
   # API v1
   namespace :api do
     namespace :v1 do
-      post "tts/generate", to: "tts#generate"
-      get "tts/voices", to: "tts#voices"
+      # TTS endpoints
+      post "tts/generate", to: "tts#generate"        # Async - returns generation ID
+      post "tts/synthesize", to: "tts#synthesize"    # Sync - returns audio file directly
+      get "tts/voices", to: "tts#voices"             # List available voices
+      get "tts/health", to: "tts#health"             # Check TTS service health
       get "tts/:id/status", to: "tts#status", as: :tts_status
       post "tts/batch", to: "tts#batch"
       get "tts/batch/:id/status", to: "tts#batch_status", as: :tts_batch_status
