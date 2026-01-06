@@ -1,9 +1,8 @@
 module Admin
   class BlogPostsController < BaseController
     def index
-      @blog_posts = BlogPost.order(published_at: :desc, created_at: :desc)
-      @published_count = BlogPost.where.not(published_at: nil).count
-      @draft_count = BlogPost.where(published_at: nil).count
+      @blog_posts = BlogPost.all.sort_by { |p| p.published_at || p.created_at }.reverse
+      @total_count = BlogPost.count
       @r2_configured = R2ImageService.configured?
     end
 
