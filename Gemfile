@@ -55,7 +55,7 @@ gem "httparty", "~> 0.22"
 
 # AWS SDK for Cloudflare R2 (S3-compatible)
 gem "aws-sdk-s3", "~> 1.0"
-gem 'brakeman', '~> 7.1.0'
+gem "brakeman", "~> 7.1.0"
 
 # Markdown processing
 gem "redcarpet", "~> 3.5"
@@ -69,6 +69,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem "dotenv-rails"
 end
 
 group :development do
