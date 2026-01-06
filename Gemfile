@@ -52,6 +52,9 @@ gem "sidekiq-scheduler", "~> 5.0"
 
 # HTTP client for ComfyUI API
 gem "httparty", "~> 0.22"
+
+# AWS SDK for Cloudflare R2 (S3-compatible)
+gem "aws-sdk-s3", "~> 1.0"
 gem 'brakeman', '~> 7.1.0'
 
 # Markdown processing
