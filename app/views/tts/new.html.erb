@@ -280,6 +280,7 @@
 let currentGenerationId = null;
 let pollingInterval = null;
 let voiceAudioBase64 = null;
+let generationStartTime = null;
 
 function getCsrfToken() {
   const meta = document.querySelector('meta[name="csrf-token"]');
@@ -339,17 +340,41 @@ function initVoicePresetHandler() {
   }
 }
 
+// Initialize advanced options toggle (sync display state with checkbox)
+function initAdvancedOptions() {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+  if (checkbox && advancedOptions) {
+    // Sync display state with checkbox state (handles Turbo cache restore)
+    advancedOptions.style.display = checkbox.checked ? 'block' : 'none';
+  }
+}
+
 // Run immediately since script is at bottom of page
 initVoicePresetHandler();
+initAdvancedOptions();
 
 // Also run on Turbo navigation
-document.addEventListener('turbo:load', initVoicePresetHandler);
-document.addEventListener('turbo:render', initVoicePresetHandler);
+document.addEventListener('turbo:load', () => {
+  initVoicePresetHandler();
+  initAdvancedOptions();
+});
+document.addEventListener('turbo:render', () => {
+  initVoicePresetHandler();
+  initAdvancedOptions();
+});
 
 async function generateSpeech() {
   const text = document.getElementById('text').value;
-  const exaggeration = document.getElementById('exaggeration').value;
-  const cfgWeight = document.getElementById('cfg-weight').value;
+  const advancedCheckbox = document.getElementById('advanced');
+  const useAdvanced = advancedCheckbox && advancedCheckbox.checked;
+
+  // Only use advanced values if advanced options are enabled, otherwise use defaults
+  const exaggerationEl = document.getElementById('exaggeration');
+  const cfgWeightEl = document.getElementById('cfg-weight');
+  const exaggeration = useAdvanced && exaggerationEl ? exaggerationEl.value : '0.5';
+  const cfgWeight = useAdvanced && cfgWeightEl ? cfgWeightEl.value : '0.5';
+
   const voicePresetEl = document.getElementById('voice-preset');
   const voicePreset = voicePresetEl ? voicePresetEl.value : '';
 
@@ -401,6 +426,8 @@ async function generateSpeech() {
       // Default voice: don't send any voice params
       console.log('Using default voice');
     }
+
+    generationStartTime = Date.now();
 
     const response = await fetch('/tts/generate', {
       method: 'POST',
@@ -461,7 +488,8 @@ function displayAudio(statusData) {
   document.getElementById('result-text').textContent = text.length > 100 ? text.substring(0, 100) + '...' : text;
 
   const duration = statusData.duration ? statusData.duration.toFixed(1) : '?';
-  document.getElementById('result-info').textContent = `Duration: ${duration}s`;
+  const genTime = generationStartTime ? ((Date.now() - generationStartTime) / 1000).toFixed(1) : '?';
+  document.getElementById('result-info').textContent = `Duration: ${duration}s · Generated in ${genTime}s`;
 
   const audioPlayer = document.getElementById('audio-player');
   audioPlayer.src = `/tts/${currentGenerationId}/audio`;
@@ -510,11 +538,9 @@ function toggleAdvanced() {
   const checkbox = document.getElementById('advanced');
   const advancedOptions = document.getElementById('advanced-options');
 
-  if (checkbox.checked) {
-    advancedOptions.style.display = 'block';
-  } else {
-    advancedOptions.style.display = 'none';
-  }
+  if (!checkbox || !advancedOptions) return;
+
+  advancedOptions.style.display = checkbox.checked ? 'block' : 'none';
 }
 
 async function shareAudio() {
