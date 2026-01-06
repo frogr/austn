@@ -1,0 +1,58 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 md:mb-8 gap-4">
+    <div>
+      <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        New Blog Post
+      </h1>
+      <p class="text-gray-400 text-sm">Create a new blog post with markdown content</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to admin_blog_posts_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600" do %>
+        Cancel
+      <% end %>
+    </div>
+  </div>
+
+  <% if @blog_post.errors.any? %>
+    <div class="mb-4 p-3 rounded-md bg-red-900/50 text-red-300 border border-red-700">
+      <ul class="list-disc list-inside">
+        <% @blog_post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="rounded-lg p-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <%= form_with model: [:admin, @blog_post], class: "space-y-6" do |f| %>
+      <div>
+        <%= f.label :title, class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.text_field :title, class: "w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent", placeholder: "Enter post title" %>
+      </div>
+
+      <div>
+        <%= f.label :slug, class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.text_field :slug, class: "w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent", placeholder: "auto-generated-from-title (optional)" %>
+        <p class="mt-1 text-xs text-gray-500">Leave blank to auto-generate from title</p>
+      </div>
+
+      <div>
+        <%= f.label :published_at, "Publish Date", class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.datetime_local_field :published_at, class: "w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" %>
+        <p class="mt-1 text-xs text-gray-500">Leave blank to save as draft. Set a past date to backdate the post.</p>
+      </div>
+
+      <div>
+        <%= f.label :content, class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.text_area :content, rows: 20, class: "w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent font-mono text-sm", placeholder: "Write your markdown content here..." %>
+        <p class="mt-1 text-xs text-gray-500">Supports markdown formatting</p>
+      </div>
+
+      <div class="flex gap-3 pt-4">
+        <%= f.submit "Create Post", class: "inline-flex items-center gap-2 font-semibold py-3 px-6 rounded-md transition duration-200 text-white bg-green-600 hover:bg-green-500 cursor-pointer" %>
+        <%= link_to "Cancel", admin_blog_posts_path, class: "inline-flex items-center gap-2 font-semibold py-3 px-6 rounded-md transition duration-200 text-gray-300 bg-gray-700 hover:bg-gray-600" %>
+      </div>
+    <% end %>
+  </div>
+</div>

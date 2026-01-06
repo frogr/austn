@@ -148,6 +148,8 @@ Rails.application.routes.draw do
         post :cleanup_expired
       end
     end
+
+    resources :blog_posts
   end
 
   # API v1
