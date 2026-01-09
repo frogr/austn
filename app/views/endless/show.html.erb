@@ -1,0 +1,13 @@
+<div class="w-full px-2 sm:px-4 py-2 sm:py-4">
+  <div
+    data-react-component="EndlessStory"
+    data-props="<%= {
+      storyId: @story.id,
+      storyTitle: @story.title,
+      initialParagraphs: @paragraphs.map { |p| p.as_json_for_api },
+      initialPage: @page,
+      totalPages: @total_pages,
+      totalParagraphs: @total_paragraphs
+    }.to_json %>">
+  </div>
+</div>
