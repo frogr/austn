@@ -7,15 +7,31 @@ const Resume = () => {
 
   const experience = [
     {
+      company: "Backlit",
+      companyUrl: "https://getbacklit.com/",
+      companyDescription: "Backlit manages talent logistics for major live entertainment events, coordinating performers, schedules, and compliance across productions.",
+      position: "Web Development Contractor",
+      location: "Remote",
+      period: "October 2018 - February 9, 2026 (SBLX Halftime Show)",
+      highlights: [
+        "Serving as forward-deployed engineer and sole on-site engineering contact at Super Bowl LX. Checking in talent, identifying workflow friction in real-time, translating operational needs into technical decisions, and providing 24/7 platform support",
+        "Optimized critical workflows, reducing page load times from 10+ seconds to under 400ms by cutting database queries from 500+ to ~10 per page",
+        "Integrated Zeal payments, Twilio communications, Yardstik background checks, and NFL SEMS APIs to streamline talent onboarding and event compliance",
+        "Built systems for major events (Super Bowl, Oscars, Grammys) handling 10k+ performers' workflows",
+        "Subcontracted to build donation functionality for Boys and Girls Club of America 2021 fundraiser, processing $2MM+ in donations using Node.js, Express, Stripe, and Heroku"
+      ],
+      techStack: []
+    },
+    {
       company: "CompanyCam",
       companyUrl: "https://companycam.com/",
-      companyDescription: "CompanyCam is the #1 photo documentation app in construction. 140,000+ contractors use it to capture GPS/time-stamped job site photos, generate reports, and communicate with clients.",
+      companyDescription: "CompanyCam is the #1 photo documentation app in construction. 140,000+ contractors use it to capture GPS/time-stamped job site photos, generate reports, and communicate with clients. I worked on the workflows and outputs team, focused on enabling asset security, workflow automations, and enabling a host of AI-powered features across the application suite.",
       position: "Backend Engineer",
       location: "Remote",
       period: "Nov 2023 - Aug 2025",
       highlights: [
-        "Built Pages AI Assistant allowing contractors to type or speak into their phone on a job site and get professional documentation generated instantly. 3,000+ daily generations across the platform.",
-        "Drove Pages adoption from 4% to 11% of users by offering AI-generated automations after improving RubyLLM infrastructure and tooling enabling voice commands, context-aware invoice generation, and natural language search across the platform",
+        "Built Pages AI Assistant allowing contractors to type or speak into their phone on a job site and get professional documentation generated instantly, driving thousands of daily generations across the platform",
+        "Drove Pages adoption from 4% to 11% of users by offering AI-generated automations after improving RubyLLM infrastructure. Enabled voice commands, context-aware invoice generation, and AI tools",
         "Optimized PDF exports achieving 10x size reduction implementing streaming, compression, and async processing for 10,000+ daily exports",
         "Architected Share Link feature for all user-generated assets to enable users to safely and securely share their assets with clients, payers, and other stakeholders off-platform",
         "Mentored 3 developers, accelerating their onboarding through code reviews and architectural guidance"
@@ -25,30 +41,17 @@ const Resume = () => {
     {
       company: "CoverMyMeds",
       companyUrl: "https://www.covermymeds.health/",
-      companyDescription: "CoverMyMeds is the industry standard for electronic prior authorization. Connected to 950,000+ healthcare providers, 50,000+ pharmacies, and nearly every US health plan. Part of McKesson.",
+      companyDescription: "CoverMyMeds is the industry standard for electronic prior authorization. Connected to 950,000+ healthcare providers, 50,000+ pharmacies, and nearly every US health plan. Part of McKesson. I worked on the Launch team to bring new pharmaceuticals onto the platform, then led efforts to automate that away by building Configuration Station, freeing the Launch team to work on other parts of the platform.",
       position: "Software Engineer",
       location: "Remote",
       period: "July 2021 - October 2023",
       highlights: [
         "Generated $10M+ ARR launching 9 pharmaceutical brands, increasing SaaS platform coverage by 40%",
-        "Tech lead for major launches (Spravato, Renflexis, Ontruzant), coordinating across engineering and stakeholders. Built Configuration Station to automate brand launches which freed engineering from repetitive work and let non-technical staff handle new brand onboarding independently",
+        "Tech lead for major launches (Spravato, Renflexis, Ontruzant), coordinating across engineering and stakeholders. Built Configuration Station to automate brand launches; allowing non-technical staff handle new brand onboarding independently",
         "Created VEST Framework for technical debt tracking, adopted company-wide",
         "Mentored 5 developers including transitioning a CSM into engineering role"
       ],
       techStack: ["Ruby on Rails", "Hotwire", "Stimulus", "PostgreSQL", "Node", "AWS", "Redis", "Kafka"]
-    },
-    {
-      company: "Backlit",
-      companyUrl: "https://getbacklit.com/",
-      companyDescription: "Backlit manages talent logistics for major live entertainment events, coordinating performers, schedules, and compliance across productions.",
-      position: "Web Development Contractor",
-      location: "Remote",
-      period: "October 2018 - April 2019, December 2020 - April 2021, October 2023 - March 2025",
-      highlights: [
-        "Built systems for major events (Super Bowl, Oscars, Grammys) handling 100K+ performer's workflows",
-        "Developed SMS coordination system managing 200+ Oscars attendees for COVID compliance"
-      ],
-      techStack: []
     },
     {
       company: "T2 Modus",
@@ -64,7 +67,7 @@ const Resume = () => {
       techStack: []
     },
     {
-      company: "Lambda School (BloomTech)",
+      company: "Lambda School AKA BloomTech",
       companyUrl: null,
       companyDescription: null,
       position: "Teaching Assistant",
@@ -81,17 +84,12 @@ const Resume = () => {
     {
       title: "Tinyrails",
       year: "2025",
-      description: "To dive deeper into the fundamentals of Ruby on Rails, I rebuilt the framework from scratch using Ruby and Rack. Supports MVC CRUD operations using Rack to route requests to controllers, Eribus for template rendering, and a JSON database."
+      description: "Rebuilt Ruby on Rails from scratch using Ruby and Rack to deeply understand framework internals. Implemented MVC pattern with controller routing, Rails-style naming conventions, and helpful error messages that suggest corrections for typos. Features a JSON-based ORM with file-backed persistence and ENV helpers. Demonstrates that most Rails' \"magic\" is approachable clever abstractions built on simple foundations."
     },
     {
       title: "Austn.net",
       year: "2025",
-      description: "Built austn.net, my blog/portfolio that also hosts a suite of 9 AI-powered tools (image generation, image to 3D models, voice cloning, song stem file separation, background removal, songwriting, etc.) self-hosted on personal GPU infrastructure via Python Flask server utilizing ComfyUI, LMStudio, and Hunyuan3D"
-    },
-    {
-      title: "Boys and Girls Club of America",
-      year: "2021",
-      description: "Subcontracted by a previous employer to build out the \"Donate Now\" functionality for the Boys and Girls Club of America 2021 fundraiser donation page, processing $2MM+ in donations using NodeJS, Express, Stripe, and Heroku."
+      description: "Personal blog/portfolio hosting a suite of 9 AI-powered tools including image generation, image-to-3D models, voice cloning, song stem separation, background removal, and songwriting. Self-hosted on personal GPU infrastructure with a Tailscale tunnel to a DigitalOcean VPS. Requests route through the tunnel to a home server running ComfyUI workflows, LMStudio, and Hunyuan3D via a Python Flask backend. Processes thousands of tokens in production."
     }
   ];
 
@@ -143,7 +141,7 @@ const Resume = () => {
             Summary
           </h2>
           <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            Backend-focused engineer with 7 years of Ruby on Rails and JavaScript experience, and a passion for data-oriented product engineering. Built AI tools at CompanyCam giving contractors dozens of weekly hours back from rote documentation. At CoverMyMeds, launched $10M+ in pharmaceutical brands first then built the automations that let non-engineers do it going forward. I love to run experiments, research user behavior, and deeply understand business cases to deliver impact at scale. Recently I've been working on adding AI-superpowers to my website: austn.net!
+            Backend-focused engineer with 7 years of Ruby on Rails and JavaScript experience, and a passion for data-oriented product engineering. Built AI tools at CompanyCam giving contractors dozens of weekly hours back from rote documentation. At CoverMyMeds, launched $10M+ in pharmaceutical brands first then built the automations that let non-engineers do it going forward. I love to run experiments, research user behavior, and deeply understand business cases to deliver impact at scale. Currently serving as forward-deployed engineer at Super Bowl LX with Backlit.
           </p>
         </section>
 
