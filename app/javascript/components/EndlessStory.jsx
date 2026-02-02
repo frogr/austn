@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 
 const EndlessStory = ({
+  storyId,
   storyTitle = 'The Long Road',
   initialParagraphs = [],
   initialPage = 1,
   totalPages: initialTotalPages = 1,
-  totalParagraphs: initialTotalParagraphs = 0,
-  secondsUntilNext: initialSeconds = 1800,
-  nextGenerationAt: initialNextGen
+  totalParagraphs: initialTotalParagraphs = 0
 }) => {
   const [paragraphs, setParagraphs] = useState(initialParagraphs)
   const [page, setPage] = useState(initialPage)
@@ -15,61 +14,10 @@ const EndlessStory = ({
   const [totalParagraphs, setTotalParagraphs] = useState(initialTotalParagraphs)
   const [loading, setLoading] = useState(false)
 
-  // Use absolute time as source of truth to avoid drift
-  const [nextGenTime, setNextGenTime] = useState(() => {
-    if (initialNextGen) return new Date(initialNextGen).getTime()
-    return Date.now() + (initialSeconds * 1000)
-  })
-  const [countdown, setCountdown] = useState(initialSeconds)
-  const refreshScheduled = useRef(false)
-
-  useEffect(() => {
-    const updateCountdown = () => {
-      const now = Date.now()
-      const remaining = Math.max(0, Math.floor((nextGenTime - now) / 1000))
-      setCountdown(remaining)
-
-      // When countdown hits 0, schedule one refresh
-      if (remaining === 0 && !refreshScheduled.current) {
-        refreshScheduled.current = true
-        setTimeout(() => {
-          refreshData()
-          refreshScheduled.current = false
-        }, 3000)
-      }
-    }
-
-    // Reset the scheduled flag when nextGenTime changes
-    refreshScheduled.current = false
-
-    updateCountdown()
-    const interval = setInterval(updateCountdown, 1000)
-
-    return () => clearInterval(interval)
-  }, [nextGenTime])
-
-  const refreshData = useCallback(async () => {
-    try {
-      const response = await fetch(`/endless/paragraphs?page=${page}`)
-      const data = await response.json()
-
-      setParagraphs(data.paragraphs)
-      setTotalPages(data.total_pages)
-      setTotalParagraphs(data.total_paragraphs)
-
-      // Update the absolute time source of truth
-      if (data.next_generation_at) {
-        setNextGenTime(new Date(data.next_generation_at).getTime())
-      }
-    } catch (error) {
-      console.error('Failed to refresh:', error)
-    }
-  }, [page])
-
   const fetchPage = async (newPage) => {
     setLoading(true)
     try {
-      const response = await fetch(`/endless/paragraphs?page=${newPage}`)
+      const response = await fetch(`/endless/${storyId}/paragraphs?page=${newPage}`)
       const data = await response.json()
 
       setParagraphs(data.paragraphs)
@@ -77,22 +25,12 @@ const EndlessStory = ({
       setTotalPages(data.total_pages)
       setTotalParagraphs(data.total_paragraphs)
 
-      if (data.next_generation_at) {
-        setNextGenTime(new Date(data.next_generation_at).getTime())
-      }
-
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (error) {
       console.error('Failed to fetch page:', error)
     } finally {
       setLoading(false)
     }
-  }
-
-  const formatCountdown = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
   const renderPagination = () => {
@@ -183,6 +121,21 @@ const EndlessStory = ({
           }
         }
 
+        .back-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: rgba(255, 255, 255, 0.6);
+          text-decoration: none;
+          font-size: 0.9rem;
+          margin-bottom: 1rem;
+          transition: color 0.2s;
+        }
+
+        .back-link:hover {
+          color: rgba(255, 255, 255, 0.9);
+        }
+
         .story-title {
           font-size: clamp(1.75rem, 4vw, 3rem);
           font-weight: 600;
@@ -225,58 +178,12 @@ const EndlessStory = ({
           }
         }
 
-        .cooldown-timer {
+        .story-stats {
           display: flex;
-          flex-direction: column;
+          justify-content: center;
           align-items: center;
-          gap: 0.5rem;
+          gap: 1rem;
           text-align: center;
-        }
-
-        @media (min-width: 640px) {
-          .cooldown-timer {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            text-align: left;
-            gap: 1rem;
-          }
-        }
-
-        .timer-content {
-          display: flex;
-          align-items: baseline;
-          gap: 0.5rem;
-        }
-
-        @media (min-width: 640px) {
-          .timer-content {
-            gap: 0.75rem;
-          }
-        }
-
-        .timer-label {
-          color: rgba(255, 255, 255, 0.6);
-          font-size: 1rem;
-        }
-
-        @media (min-width: 640px) {
-          .timer-label {
-            font-size: 1.2rem;
-          }
-        }
-
-        .timer-value {
-          font-size: 1.75rem;
-          font-weight: 700;
-          font-family: monospace;
-          color: var(--accent-color, #4ade80);
-        }
-
-        @media (min-width: 640px) {
-          .timer-value {
-            font-size: 2.25rem;
-          }
         }
 
         .paragraph-count {
@@ -523,17 +430,19 @@ const EndlessStory = ({
       `}</style>
 
       <div className="story-header">
+        <a href="/endless" className="back-link">
+          <svg xmlns="http://www.w3.org/2000/svg" style={{height: '1rem', width: '1rem'}} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          All Stories
+        </a>
         <h1 className="story-title">{storyTitle || 'Endless Story'}</h1>
-        <p className="story-subtitle">An AI-generated thriller, one paragraph every 30 minutes</p>
+        <p className="story-subtitle">An AI-generated narrative</p>
       </div>
 
-      <div className="cooldown-timer glass-card">
-        <div className="timer-content">
-          <span className="timer-label">Next paragraph in</span>
-          <span className="timer-value">{formatCountdown(countdown)}</span>
-        </div>
+      <div className="story-stats glass-card">
         <div className="paragraph-count">
-          {totalParagraphs} paragraph{totalParagraphs !== 1 ? 's' : ''} written
+          {totalParagraphs} paragraph{totalParagraphs !== 1 ? 's' : ''}
         </div>
       </div>
 
@@ -544,8 +453,8 @@ const EndlessStory = ({
           </div>
         ) : paragraphs.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-title">The story has not yet begun...</p>
-            <p className="empty-subtitle">Check back soon. A new paragraph is generated every 30 minutes.</p>
+            <p className="empty-title">This story has no content yet...</p>
+            <p className="empty-subtitle">Check back later.</p>
           </div>
         ) : (
           <div className="story-text">

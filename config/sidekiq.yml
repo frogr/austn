@@ -16,11 +16,12 @@
       class: GpuHealthCheckJob
       queue: default
       description: "Check GPU service health status"
-    story_generation:
-      cron: '*/30 * * * *'  # Every 30 minutes
-      class: StoryGenerationJob
-      queue: default
-      description: "Generate next paragraph for Endless Story"
+    # Story generation disabled - no longer using live austn.net/endless integration
+    # story_generation:
+    #   cron: '*/30 * * * *'  # Every 30 minutes
+    #   class: StoryGenerationJob
+    #   queue: default
+    #   description: "Generate next paragraph for Endless Story"
     cleanup_old_model3ds:
       cron: '0 */6 * * *'  # Every 6 hours
       class: CleanupOldModel3dsJob

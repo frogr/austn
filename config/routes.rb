@@ -183,8 +183,9 @@ Rails.application.routes.draw do
 
   # Endless Story
   get "/endless", to: "endless#index"
-  get "/endless/paragraphs", to: "endless#paragraphs"
-  get "/endless/timer", to: "endless#timer"
+  get "/endless/:id", to: "endless#show", as: :endless_story
+  get "/endless/:id/paragraphs", to: "endless#paragraphs", as: :endless_story_paragraphs
+  get "/endless/:id/timer", to: "endless#timer", as: :endless_story_timer
 
   # Portfolio as root
   root "portfolio#index"
