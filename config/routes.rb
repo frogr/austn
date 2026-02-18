@@ -139,6 +139,17 @@ Rails.application.routes.draw do
   get "/tts_batches/items/:id/download", to: "tts_batches#download_item", as: :download_tts_batch_item
   post "/tts_batches/items/:id/share", to: "tts_batches#share_item", as: :share_tts_batch_item
 
+  # Public booking
+  get "/book", to: "bookings#new", as: :book
+  get "/book/:date", to: "bookings#slots", as: :book_date
+  resources :bookings, only: [ :create ], param: :confirmation_token do
+    member do
+      get :confirmation
+      get :cancel_confirm
+      delete :cancel
+    end
+  end
+
   # Admin namespace
   namespace :admin do
     get "login", to: "sessions#new", as: :login
@@ -146,6 +157,10 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy", as: :logout
 
     root to: "dashboard#index"
+
+    resources :availabilities, except: [ :show ]
+    resources :bookings, only: [ :index, :show, :update, :destroy ]
+
     resources :tts_shares, only: [ :index, :destroy ] do
       collection do
         post :bulk_destroy

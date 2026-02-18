@@ -1,0 +1,19 @@
+You're booked!
+
+Hey <%= @booking.first_name %>, your booking with Austin is confirmed.
+
+<%= @booking.formatted_date %>
+<%= @booking.formatted_time_range %>
+<% if @booking.notes.present? %>
+
+Your notes: <%= @booking.notes %>
+<% end %>
+
+What to expect: I'll follow up via email if we need a video link. Looking forward to it!
+
+Cancel or Reschedule: <%= @cancel_url %>
+
+Add to Google Calendar: <%= @google_cal_url %>
+
+---
+Booked via austn.net

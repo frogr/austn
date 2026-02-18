@@ -1,0 +1,96 @@
+<%= turbo_frame_tag "slot_picker" do %>
+  <div class="mt-6 p-6 rounded-xl animate-fadeInUp" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px);">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold" style="font-size: 1.125rem; color: var(--text-primary);">
+        <%= @date.strftime("%A, %B %-d") %>
+      </h3>
+      <%= link_to book_path, style: "color: var(--text-muted); font-size: 0.875rem;" do %>
+        &larr; Back to calendar
+      <% end %>
+    </div>
+
+    <% if @slots.any? %>
+      <div class="space-y-2 mb-6" data-controller="booking-slots">
+        <% @slots.each do |slot| %>
+          <button type="button"
+                  class="w-full text-left p-4 rounded-lg transition-all"
+                  style="background: var(--bg-card); border: 1px solid var(--border-glass);"
+                  data-action="click->booking-slots#selectSlot"
+                  data-booking-slots-availability-id-param="<%= slot[:availability_id] %>"
+                  data-booking-slots-start-time-param="<%= slot[:start_time].strftime('%H:%M') %>"
+                  data-booking-slots-end-time-param="<%= slot[:end_time].strftime('%H:%M') %>"
+                  data-booking-slots-date-param="<%= @date.to_s %>">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-medium" style="color: var(--text-primary);">
+                  <%= slot[:start_time].strftime("%l:%M %p").strip %> &ndash; <%= slot[:end_time].strftime("%l:%M %p").strip %>
+                </span>
+                <% if slot[:title].present? %>
+                  <span class="ml-2 text-sm" style="color: var(--text-muted);"><%= slot[:title] %></span>
+                <% end %>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: var(--accent-color);">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </button>
+        <% end %>
+      </div>
+
+      <%# Booking form (hidden until a slot is selected) %>
+      <div id="booking-form" class="hidden animate-fadeInUp">
+        <div class="mb-4 p-3 rounded-lg" style="background: rgba(29, 185, 84, 0.1); border: 1px solid rgba(29, 185, 84, 0.2);">
+          <p class="text-sm font-medium" style="color: var(--accent-color);" id="selected-slot-display"></p>
+        </div>
+
+        <%= form_with url: bookings_path, method: :post, local: true, class: "space-y-4" do |f| %>
+          <input type="hidden" name="availability_id" id="booking_availability_id">
+          <input type="hidden" name="booked_date" id="booking_booked_date" value="<%= @date.to_s %>">
+          <input type="hidden" name="start_time" id="booking_start_time">
+          <input type="hidden" name="end_time" id="booking_end_time">
+
+          <div>
+            <label for="first_name" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">First Name *</label>
+            <input type="text" name="first_name" id="first_name" required
+                   class="w-full px-4 py-3 rounded-lg text-sm"
+                   style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;"
+                   placeholder="Your first name">
+          </div>
+
+          <div>
+            <label for="email" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Email *</label>
+            <input type="email" name="email" id="email" required
+                   class="w-full px-4 py-3 rounded-lg text-sm"
+                   style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;"
+                   placeholder="you@example.com">
+          </div>
+
+          <div>
+            <label for="phone_number" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Phone Number *</label>
+            <input type="tel" name="phone_number" id="phone_number" required
+                   class="w-full px-4 py-3 rounded-lg text-sm"
+                   style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;"
+                   placeholder="(555) 123-4567">
+          </div>
+
+          <div>
+            <label for="notes" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">What would you like to discuss? <span style="color: var(--text-muted);">(optional)</span></label>
+            <textarea name="notes" id="notes" rows="3"
+                      class="w-full px-4 py-3 rounded-lg text-sm"
+                      style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none; resize: vertical;"
+                      placeholder="Tell me a bit about what you'd like to chat about..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full justify-center" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
+            Confirm Booking
+          </button>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-center py-8" style="color: var(--text-muted);">
+        No available time slots for this date.
+        <%= link_to "Choose another date", book_path, style: "color: var(--accent-color);" %>
+      </p>
+    <% end %>
+  </div>
+<% end %>

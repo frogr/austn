@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_05_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_18_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_05_000001) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "availabilities", force: :cascade do |t|
+    t.date "date", null: false
+    t.time "start_time", null: false
+    t.time "end_time", null: false
+    t.integer "slot_duration_minutes", default: 30, null: false
+    t.boolean "is_active", default: true, null: false
+    t.string "title"
+    t.text "description"
+    t.integer "max_bookings_per_slot", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["date", "is_active"], name: "index_availabilities_on_date_and_is_active"
+    t.index ["date"], name: "index_availabilities_on_date"
+  end
+
   create_table "blog_posts", force: :cascade do |t|
     t.string "title", null: false
     t.text "content", null: false
@@ -52,6 +67,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_05_000001) do
     t.datetime "updated_at", null: false
     t.index ["published_at"], name: "index_blog_posts_on_published_at"
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
+  end
+
+  create_table "bookings", force: :cascade do |t|
+    t.bigint "availability_id", null: false
+    t.date "booked_date", null: false
+    t.time "start_time", null: false
+    t.time "end_time", null: false
+    t.string "first_name", null: false
+    t.string "email", null: false
+    t.string "phone_number", null: false
+    t.text "notes"
+    t.string "status", default: "confirmed", null: false
+    t.string "confirmation_token", null: false
+    t.datetime "cancelled_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["availability_id"], name: "index_bookings_on_availability_id"
+    t.index ["booked_date", "start_time"], name: "index_bookings_on_booked_date_and_start_time"
+    t.index ["confirmation_token"], name: "index_bookings_on_confirmation_token", unique: true
+    t.index ["email"], name: "index_bookings_on_email"
+    t.index ["status"], name: "index_bookings_on_status"
   end
 
   create_table "daw_patterns", force: :cascade do |t|
@@ -175,6 +211,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_05_000001) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bookings", "availabilities"
   add_foreign_key "story_paragraphs", "stories"
   add_foreign_key "tts_batch_items", "tts_batches"
 end

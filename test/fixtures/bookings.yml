@@ -1,0 +1,24 @@
+# Times stored as UTC in DB. 14:00 PST = 22:00 UTC
+confirmed_booking:
+  availability: today_afternoon
+  booked_date: <%= Date.current + 1.day %>
+  start_time: "22:00:00"
+  end_time: "22:30:00"
+  first_name: "Jane"
+  email: "jane@example.com"
+  phone_number: "5551234567"
+  notes: "Want to discuss Rails performance"
+  status: "confirmed"
+  confirmation_token: "test_token_confirmed_123"
+
+cancelled_booking:
+  availability: today_afternoon
+  booked_date: <%= Date.current + 1.day %>
+  start_time: "23:00:00"
+  end_time: "23:30:00"
+  first_name: "Bob"
+  email: "bob@example.com"
+  phone_number: "5559876543"
+  status: "cancelled"
+  confirmation_token: "test_token_cancelled_456"
+  cancelled_at: <%= 1.hour.ago %>

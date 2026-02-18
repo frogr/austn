@@ -1,0 +1,86 @@
+<%= form_with model: [:admin, availability], class: "space-y-4" do |f| %>
+  <% if availability.errors.any? %>
+    <div class="p-3 rounded-lg" style="background: rgba(255, 59, 48, 0.15); border: 1px solid rgba(255, 59, 48, 0.3); color: var(--danger-color); font-size: 0.875rem;">
+      <% availability.errors.full_messages.each do |msg| %>
+        <p><%= msg %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :date, "Date", class: "block text-sm font-medium mb-1", style: "color: var(--text-secondary);" %>
+    <%= f.date_field :date, required: true, min: Date.current.to_s,
+        class: "w-full px-4 py-3 rounded-lg text-sm",
+        style: "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :start_time, "Start Time", class: "block text-sm font-medium mb-1", style: "color: var(--text-secondary);" %>
+      <%= f.time_field :start_time, required: true,
+          class: "w-full px-4 py-3 rounded-lg text-sm",
+          style: "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" %>
+    </div>
+    <div>
+      <%= f.label :end_time, "End Time", class: "block text-sm font-medium mb-1", style: "color: var(--text-secondary);" %>
+      <%= f.time_field :end_time, required: true,
+          class: "w-full px-4 py-3 rounded-lg text-sm",
+          style: "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :slot_duration_minutes, "Slot Duration", class: "block text-sm font-medium mb-1", style: "color: var(--text-secondary);" %>
+    <%= f.select :slot_duration_minutes, [[" 15 minutes", 15], ["30 minutes", 30], ["45 minutes", 45], ["60 minutes", 60]],
+        {}, class: "w-full px-4 py-3 rounded-lg text-sm",
+        style: "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" %>
+  </div>
+
+  <div>
+    <%= f.label :title, "Title (optional)", class: "block text-sm font-medium mb-1", style: "color: var(--text-secondary);" %>
+    <%= f.text_field :title, placeholder: "e.g. Coffee Chat, Technical Discussion",
+        class: "w-full px-4 py-3 rounded-lg text-sm",
+        style: "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" %>
+  </div>
+
+  <div>
+    <%= f.label :description, "Description (optional)", class: "block text-sm font-medium mb-1", style: "color: var(--text-secondary);" %>
+    <%= f.text_area :description, rows: 2,
+        class: "w-full px-4 py-3 rounded-lg text-sm",
+        style: "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none; resize: vertical;" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :max_bookings_per_slot, "Max Bookings / Slot", class: "block text-sm font-medium mb-1", style: "color: var(--text-secondary);" %>
+      <%= f.number_field :max_bookings_per_slot, min: 1, max: 10,
+          class: "w-full px-4 py-3 rounded-lg text-sm",
+          style: "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" %>
+    </div>
+    <div class="flex items-end pb-1">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <%= f.check_box :is_active, class: "rounded", style: "accent-color: var(--accent-color);" %>
+        <span class="text-sm" style="color: var(--text-secondary);">Active</span>
+      </label>
+    </div>
+  </div>
+
+  <% if availability.new_record? %>
+    <div>
+      <label class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Repeat Weekly (optional)</label>
+      <select name="repeat_weeks" class="w-full px-4 py-3 rounded-lg text-sm"
+              style="background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;">
+        <option value="0">No repeat</option>
+        <% (2..12).each do |n| %>
+          <option value="<%= n %>">Repeat for <%= n %> weeks</option>
+        <% end %>
+      </select>
+    </div>
+  <% end %>
+
+  <div class="flex gap-3 pt-2">
+    <%= f.submit availability.new_record? ? "Create Availability" : "Update Availability",
+        class: "btn btn-primary", style: "padding: 0.75rem 1.5rem;" %>
+    <%= link_to "Cancel", admin_availabilities_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

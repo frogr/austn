@@ -1,0 +1,24 @@
+<div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a; line-height: 1.6;">
+  <div style="padding: 32px 24px;">
+    <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 8px 0; color: #1a1a1a;">Booking Cancelled</h1>
+    <p style="font-size: 16px; color: #555; margin: 0 0 24px 0;">Hey <%= @booking.first_name %>, your booking has been cancelled.</p>
+
+    <div style="background: #f8f9fa; border-radius: 12px; padding: 24px; margin: 0 0 24px 0; border: 1px solid #e9ecef;">
+      <p style="font-size: 16px; font-weight: 600; margin: 0 0 4px 0; color: #999; text-decoration: line-through;">
+        <%= @booking.formatted_date %>
+      </p>
+      <p style="font-size: 16px; font-weight: 500; margin: 0; color: #999; text-decoration: line-through;">
+        <%= @booking.formatted_time_range %>
+      </p>
+    </div>
+
+    <div style="margin: 0 0 24px 0;">
+      <a href="<%= @book_url %>" style="display: inline-block; padding: 12px 24px; background: #1DB954; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500;">Book a New Time</a>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+    <p style="font-size: 12px; color: #999; margin: 0;">
+      <a href="https://austn.net" style="color: #1DB954; text-decoration: none;">austn.net</a>
+    </p>
+  </div>
+</div>
