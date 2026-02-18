@@ -20,6 +20,9 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Sitemap
+  get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: :xml }
+
   # GPU health status API
   get "/gpu_health", to: "gpu_health#index"
   get "/gpu_health/:service", to: "gpu_health#show"

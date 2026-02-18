@@ -4,25 +4,22 @@ class PortfolioController < ApplicationController
     @latest_blog_posts = BlogPost.order(created_at: :desc).limit(3)
     @featured_projects = [
       {
+        id: "ai-tools",
+        title: "Austn.net AI Tools Suite",
+        description: "7+ free AI tools running on local GPU — image gen, TTS, background removal, and more",
+        technologies: [ "Rails", "Python", "ComfyUI", "LMStudio" ]
+      },
+      {
         id: "pages-ai",
         title: "Pages AI Assistant",
         description: "Natural language document generation that grew adoption 4% → 11%",
         technologies: [ "OpenAI", "Rails", "RubyLLM" ]
-        # icon removed (no emojis)
       },
       {
-        id: "bgca",
-        title: "Boys & Girls Club Platform",
-        description: "$2MM+ donation processing system",
-        technologies: [ "Node.js", "Stripe", "Heroku" ]
-        # icon removed (no emojis)
-      },
-      {
-        id: "tinyrails",
-        title: "TinyRails",
-        description: "Rebuilt Rails from scratch to learn how web frameworks actually work",
-        technologies: [ "Ruby", "Rack", "JSON" ]
-        # icon removed (no emojis)
+        id: "companycam",
+        title: "CompanyCam",
+        description: "Backend engineering for the #1 construction photo app (140K+ users)",
+        technologies: [ "Rails", "PostgreSQL", "GraphQL" ]
       }
     ]
   end
