@@ -1,0 +1,40 @@
+<div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a; line-height: 1.6;">
+  <div style="padding: 32px 24px;">
+    <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 8px 0; color: #1a1a1a;">You're booked!</h1>
+    <p style="font-size: 16px; color: #555; margin: 0 0 24px 0;">Hey <%= @booking.first_name %>, your booking with Austin is confirmed.</p>
+
+    <div style="background: #f8f9fa; border-radius: 12px; padding: 24px; margin: 0 0 24px 0; border: 1px solid #e9ecef;">
+      <p style="font-size: 18px; font-weight: 600; margin: 0 0 4px 0; color: #1a1a1a;">
+        <%= @booking.formatted_date %>
+      </p>
+      <p style="font-size: 18px; font-weight: 500; margin: 0; color: #1DB954;">
+        <%= @booking.formatted_time_range %>
+      </p>
+    </div>
+
+    <% if @booking.notes.present? %>
+      <div style="margin: 0 0 24px 0;">
+        <p style="font-size: 14px; font-weight: 600; color: #555; margin: 0 0 4px 0;">Your notes:</p>
+        <p style="font-size: 14px; color: #333; margin: 0; padding: 12px; background: #fafafa; border-radius: 8px; border: 1px solid #eee;"><%= @booking.notes %></p>
+      </div>
+    <% end %>
+
+    <div style="margin: 0 0 24px 0;">
+      <p style="font-size: 14px; color: #555; margin: 0;"><strong>What to expect:</strong> I'll follow up via email if we need a video link. Looking forward to it!</p>
+    </div>
+
+    <div style="margin: 0 0 16px 0;">
+      <a href="<%= @cancel_url %>" style="display: inline-block; padding: 12px 24px; background: #f8f9fa; color: #555; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid #ddd;">Cancel or Reschedule</a>
+    </div>
+
+    <div style="margin: 0 0 24px 0;">
+      <a href="<%= @google_cal_url %>" style="display: inline-block; padding: 10px 20px; background: #1DB954; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500;">Add to Google Calendar</a>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+
+    <p style="font-size: 12px; color: #999; margin: 0;">
+      Booked via <a href="https://austn.net" style="color: #1DB954; text-decoration: none;">austn.net</a>
+    </p>
+  </div>
+</div>

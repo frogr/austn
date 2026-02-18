@@ -1,0 +1,52 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-3xl">
+  <div class="mb-6">
+    <h1 class="font-black mb-1" style="font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Bookings
+    </h1>
+  </div>
+
+  <%# Filter tabs %>
+  <div class="flex gap-2 mb-6">
+    <% %w[upcoming past cancelled all].each do |filter| %>
+      <%= link_to filter.capitalize, admin_bookings_path(filter: filter),
+            class: "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+            style: @filter == filter ? "background: var(--accent-color); color: white;" : "background: rgba(255,255,255,0.05); color: var(--text-muted);" %>
+    <% end %>
+  </div>
+
+  <% if @bookings.any? %>
+    <div class="space-y-2">
+      <% @bookings.each do |booking| %>
+        <%= link_to admin_booking_path(booking), class: "block p-4 rounded-lg hover:bg-white/5 transition-colors", style: "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" do %>
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-white font-medium"><%= booking.first_name %></span>
+              <span class="text-gray-400 text-sm ml-2"><%= booking.email %></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <% case booking.status %>
+              <% when "confirmed" %>
+                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(29, 185, 84, 0.2); color: var(--accent-color);">Confirmed</span>
+              <% when "cancelled" %>
+                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(255, 59, 48, 0.2); color: var(--danger-color);">Cancelled</span>
+              <% when "completed" %>
+                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(255, 255, 255, 0.1); color: var(--text-muted);">Completed</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="mt-1">
+            <span class="text-gray-500 text-sm"><%= booking.formatted_date %> &middot; <%= booking.formatted_start_time %></span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12" style="color: var(--text-muted);">
+      <p>No bookings found.</p>
+    </div>
+  <% end %>
+
+  <div class="mt-6 pt-4 border-t border-gray-800">
+    <%= link_to "&larr; Back to Admin".html_safe, admin_root_path, class: "text-gray-500 hover:text-gray-300 text-sm" %>
+  </div>
+</div>

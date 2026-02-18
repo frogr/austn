@@ -1,0 +1,14 @@
+New Booking
+
+<%= @booking.first_name %>
+Email: <%= @booking.email %>
+Phone: <%= @booking.phone_number %>
+
+<%= @booking.formatted_date %>
+<%= @booking.formatted_time_range %>
+<% if @booking.notes.present? %>
+
+Notes: <%= @booking.notes %>
+<% end %>
+
+View in Admin: <%= @admin_booking_url %>

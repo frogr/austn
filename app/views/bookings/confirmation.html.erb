@@ -1,0 +1,42 @@
+<div class="container mx-auto px-4 py-8 max-w-2xl" style="position: relative; z-index: 1;">
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background: rgba(29, 185, 84, 0.15); border: 1px solid rgba(29, 185, 84, 0.3);">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: var(--accent-color);">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      You're Booked!
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">
+      A confirmation email with a calendar invite has been sent to <strong style="color: var(--text-secondary);"><%= @booking.email %></strong>
+    </p>
+  </div>
+
+  <div class="p-6 rounded-xl mb-6" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px);">
+    <div class="space-y-4">
+      <div>
+        <p class="text-sm font-medium" style="color: var(--text-muted);">Date</p>
+        <p class="text-lg font-semibold" style="color: var(--text-primary);"><%= @booking.formatted_date %></p>
+      </div>
+      <div>
+        <p class="text-sm font-medium" style="color: var(--text-muted);">Time</p>
+        <p class="text-lg font-semibold" style="color: var(--accent-color);"><%= @booking.formatted_time_range %></p>
+      </div>
+      <% if @booking.notes.present? %>
+        <div>
+          <p class="text-sm font-medium" style="color: var(--text-muted);">Your notes</p>
+          <p style="color: var(--text-secondary);"><%= @booking.notes %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="text-center space-y-4">
+    <p style="color: var(--text-muted); font-size: 0.875rem;">
+      Need to cancel?
+      <%= link_to "Click here", cancel_confirm_booking_path(@booking.confirmation_token), style: "color: var(--accent-color);" %>
+    </p>
+    <%= link_to "Back to austn.net", root_path, class: "btn btn-secondary inline-flex" %>
+  </div>
+</div>

@@ -6,7 +6,72 @@
     <p class="text-gray-400 text-sm">Site administration</p>
   </div>
 
+  <%# Booking Stats %>
+  <div class="grid grid-cols-2 gap-3 mb-6" data-controller="booking-notifications">
+    <div class="p-4 rounded-lg" style="background: rgba(29, 185, 84, 0.1); border: 1px solid rgba(29, 185, 84, 0.2);">
+      <p class="text-2xl font-bold" style="color: var(--accent-color);"><%= @upcoming_count %></p>
+      <p class="text-gray-400 text-sm">Upcoming</p>
+    </div>
+    <div class="p-4 rounded-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <p class="text-2xl font-bold text-white"><%= @monthly_count %></p>
+      <p class="text-gray-400 text-sm">This month</p>
+    </div>
+  </div>
+
+  <%# Today's Bookings %>
+  <% if @todays_bookings.any? %>
+    <div class="mb-6">
+      <h2 class="text-white font-semibold mb-3">Today's Bookings</h2>
+      <div class="space-y-2">
+        <% @todays_bookings.each do |booking| %>
+          <%= link_to admin_booking_path(booking), class: "block p-3 rounded-lg hover:bg-white/5 transition-colors", style: "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" do %>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-white font-medium"><%= booking.first_name %></span>
+                <span class="text-gray-400 text-sm ml-2"><%= booking.formatted_start_time %></span>
+              </div>
+              <span class="text-gray-500 text-sm"><%= booking.email %></span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Toast container for real-time notifications %>
+  <div id="booking-toast-container" class="fixed top-4 right-4 z-50 space-y-2" style="max-width: 360px;"></div>
+
   <div class="space-y-4">
+    <%# Bookings link %>
+    <%= link_to admin_bookings_path, class: "block p-4 rounded-lg hover:bg-white/5 transition-colors", style: "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" do %>
+      <div class="flex items-center gap-4">
+        <div class="p-3 rounded-lg" style="background: rgba(29, 185, 84, 0.2);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: var(--accent-color);">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-white font-semibold">Bookings</h3>
+          <p class="text-gray-400 text-sm">View and manage bookings</p>
+        </div>
+      </div>
+    <% end %>
+
+    <%# Availabilities link %>
+    <%= link_to admin_availabilities_path, class: "block p-4 rounded-lg hover:bg-white/5 transition-colors", style: "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" do %>
+      <div class="flex items-center gap-4">
+        <div class="p-3 rounded-lg" style="background: rgba(100, 210, 255, 0.2);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: var(--teal-accent);">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-white font-semibold">Availability</h3>
+          <p class="text-gray-400 text-sm">Manage bookable time slots</p>
+        </div>
+      </div>
+    <% end %>
+
     <%= link_to admin_blog_posts_path, class: "block p-4 rounded-lg hover:bg-white/5 transition-colors", style: "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" do %>
       <div class="flex items-center gap-4">
         <div class="p-3 rounded-lg bg-purple-900/50">

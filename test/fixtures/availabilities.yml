@@ -1,0 +1,25 @@
+# Times stored as UTC in DB. Pacific = UTC-8, so 14:00 PST = 22:00 UTC
+today_afternoon:
+  date: <%= Date.current + 1.day %>
+  start_time: "22:00:00"
+  end_time: "01:00:00"
+  slot_duration_minutes: 30
+  is_active: true
+  title: "Coffee Chat"
+  max_bookings_per_slot: 1
+
+next_week:
+  date: <%= Date.current + 7.days %>
+  start_time: "17:00:00"
+  end_time: "20:00:00"
+  slot_duration_minutes: 60
+  is_active: true
+  max_bookings_per_slot: 2
+
+inactive:
+  date: <%= Date.current + 2.days %>
+  start_time: "18:00:00"
+  end_time: "19:00:00"
+  slot_duration_minutes: 30
+  is_active: false
+  max_bookings_per_slot: 1

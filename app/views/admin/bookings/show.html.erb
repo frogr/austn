@@ -1,0 +1,70 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
+  <div class="mb-6">
+    <h1 class="font-black mb-1" style="font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Booking Details
+    </h1>
+  </div>
+
+  <div class="p-6 rounded-xl mb-6" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px);">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-white"><%= @booking.first_name %></h2>
+        <% case @booking.status %>
+        <% when "confirmed" %>
+          <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(29, 185, 84, 0.2); color: var(--accent-color);">Confirmed</span>
+        <% when "cancelled" %>
+          <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(255, 59, 48, 0.2); color: var(--danger-color);">Cancelled</span>
+        <% when "completed" %>
+          <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(255, 255, 255, 0.1); color: var(--text-muted);">Completed</span>
+        <% end %>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-sm" style="color: var(--text-muted);">Email</p>
+          <a href="mailto:<%= @booking.email %>" style="color: var(--accent-color);"><%= @booking.email %></a>
+        </div>
+        <div>
+          <p class="text-sm" style="color: var(--text-muted);">Phone</p>
+          <a href="tel:<%= @booking.phone_number %>" style="color: var(--accent-color);"><%= @booking.phone_number %></a>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-sm" style="color: var(--text-muted);">Date & Time</p>
+        <p class="text-white font-semibold"><%= @booking.formatted_date %></p>
+        <p style="color: var(--accent-color);"><%= @booking.formatted_time_range %></p>
+      </div>
+
+      <% if @booking.notes.present? %>
+        <div>
+          <p class="text-sm" style="color: var(--text-muted);">Notes</p>
+          <p style="color: var(--text-secondary);"><%= @booking.notes %></p>
+        </div>
+      <% end %>
+
+      <div class="text-xs" style="color: var(--text-muted);">
+        Booked: <%= @booking.created_at.strftime("%b %-d, %Y at %l:%M %p") %>
+        <% if @booking.cancelled_at %>
+          <br>Cancelled: <%= @booking.cancelled_at.strftime("%b %-d, %Y at %l:%M %p") %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if @booking.confirmed? %>
+    <div class="flex gap-3 mb-6">
+      <%= button_to "Mark Completed", admin_booking_path(@booking), method: :patch,
+            params: { booking_action: "complete" },
+            class: "btn btn-primary" %>
+      <%= button_to "Cancel Booking", admin_booking_path(@booking), method: :patch,
+            params: { booking_action: "cancel" },
+            data: { turbo_confirm: "Cancel this booking? An email will be sent to #{@booking.email}." },
+            class: "btn", style: "background: var(--danger-color); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500;" %>
+    </div>
+  <% end %>
+
+  <div class="pt-4 border-t border-gray-800">
+    <%= link_to "&larr; Back to Bookings".html_safe, admin_bookings_path, class: "text-gray-500 hover:text-gray-300 text-sm" %>
+  </div>
+</div>

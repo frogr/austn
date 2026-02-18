@@ -1,0 +1,12 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
+  <div class="mb-6">
+    <h1 class="font-black mb-1" style="font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Edit Availability
+    </h1>
+    <p class="text-gray-400 text-sm"><%= @availability.date.strftime("%A, %B %-d, %Y") %></p>
+  </div>
+
+  <div class="p-6 rounded-xl" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px);">
+    <%= render "form", availability: @availability %>
+  </div>
+</div>

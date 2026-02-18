@@ -48,6 +48,21 @@ class Rack::Attack
     end
   end
 
+  ### Throttle booking creation ###
+  # Limit: 5 bookings per hour per IP
+  throttle("bookings/create", limit: 5, period: 1.hour) do |req|
+    if req.path == "/bookings" && req.post?
+      req.ip
+    end
+  end
+
+  # Burst protection: max 2 bookings per minute per IP
+  throttle("bookings/burst", limit: 2, period: 1.minute) do |req|
+    if req.path == "/bookings" && req.post?
+      req.ip
+    end
+  end
+
   ### Custom throttle response ###
   self.throttled_responder = lambda do |request|
     match_data = request.env["rack.attack.match_data"]

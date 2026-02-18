@@ -1,0 +1,88 @@
+<div class="container mx-auto px-4 py-8 max-w-2xl" style="position: relative; z-index: 1;">
+  <div class="text-center mb-8">
+    <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Book a Time
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem;">Pick a date to see available time slots.</p>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="mb-6 p-4 rounded-lg" style="background: rgba(29, 185, 84, 0.15); border: 1px solid rgba(29, 185, 84, 0.3); color: var(--accent-color);">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="mb-6 p-4 rounded-lg" style="background: rgba(255, 59, 48, 0.15); border: 1px solid rgba(255, 59, 48, 0.3); color: var(--danger-color);">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="p-6 rounded-xl" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px);">
+    <div data-controller="booking-calendar" data-booking-calendar-available-dates-value="<%= @available_dates.map(&:to_s).to_json %>">
+      <%# Month navigation %>
+      <div class="flex items-center justify-between mb-6">
+        <%= link_to book_path(month: (@current_month - 1.month).strftime("%Y-%m")),
+              class: "p-2 rounded-lg hover:bg-white/10 transition-colors",
+              style: "color: var(--text-secondary);" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        <% end %>
+
+        <h2 class="font-semibold" style="font-size: 1.25rem; color: var(--text-primary);">
+          <%= @current_month.strftime("%B %Y") %>
+        </h2>
+
+        <%= link_to book_path(month: (@current_month + 1.month).strftime("%Y-%m")),
+              class: "p-2 rounded-lg hover:bg-white/10 transition-colors",
+              style: "color: var(--text-secondary);" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        <% end %>
+      </div>
+
+      <%# Day of week headers %>
+      <div class="grid grid-cols-7 gap-1 mb-2">
+        <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day| %>
+          <div class="text-center py-2" style="color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">
+            <%= day %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Calendar grid %>
+      <div class="grid grid-cols-7 gap-1">
+        <%# Empty cells for days before the first of the month %>
+        <% @current_month.wday.times do %>
+          <div class="aspect-square"></div>
+        <% end %>
+
+        <%# Days of the month %>
+        <% (@current_month..@current_month.end_of_month).each do |date| %>
+          <% is_available = @available_dates.include?(date) %>
+          <% is_past = date < Date.current %>
+          <% is_today = date == Date.current %>
+
+          <% if is_available && !is_past %>
+            <%= link_to book_date_path(date: date.to_s),
+                  class: "aspect-square flex items-center justify-center rounded-lg transition-all text-sm font-medium",
+                  style: "background: rgba(29, 185, 84, 0.15); color: var(--accent-color); border: 1px solid rgba(29, 185, 84, 0.3);",
+                  data: { turbo_frame: "slot_picker" } do %>
+              <%= date.day %>
+            <% end %>
+          <% else %>
+            <div class="aspect-square flex items-center justify-center rounded-lg text-sm"
+                 style="color: <%= is_past ? 'var(--text-muted)' : 'var(--text-secondary)' %>; opacity: <%= is_past ? '0.4' : '0.7' %>; <%= is_today ? 'border: 1px solid var(--border-glass);' : '' %>">
+              <%= date.day %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Turbo Frame for slot picker and booking form %>
+  <%= turbo_frame_tag "slot_picker" do %>
+  <% end %>
+</div>
