@@ -5,6 +5,62 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+
+    <%# SEO Meta Description %>
+    <% default_description = "Austin French — senior Rails engineer. Built AI features at CompanyCam (140K users), launched $10M+ ARR at CoverMyMeds. This site runs 7+ free AI tools on local GPU hardware." %>
+    <meta name="description" content="<%= content_for?(:meta_description) ? content_for(:meta_description) : default_description %>">
+
+    <%# Canonical URL %>
+    <link rel="canonical" href="<%= request.original_url %>">
+
+    <%# Open Graph Tags %>
+    <% if content_for?(:og_tags) %>
+      <%= yield :og_tags %>
+    <% end %>
+    <meta property="og:title" content="<%= content_for?(:title) ? content_for(:title) : 'Austn' %>">
+    <meta property="og:description" content="<%= content_for?(:meta_description) ? content_for(:meta_description) : default_description %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:site_name" content="Austin French - austn.net">
+    <meta property="og:image" content="<%= request.base_url %>/icon.png">
+
+    <%# Twitter Card Tags %>
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= content_for?(:title) ? content_for(:title) : 'Austn' %>">
+    <meta name="twitter:description" content="<%= content_for?(:meta_description) ? content_for(:meta_description) : default_description %>">
+    <meta name="twitter:image" content="<%= request.base_url %>/icon.png">
+
+    <%# JSON-LD Structured Data %>
+    <% if content_for?(:json_ld) %>
+      <%= yield :json_ld %>
+    <% else %>
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Person",
+              "name": "Austin French",
+              "url": "https://austn.net",
+              "jobTitle": "Senior Backend Engineer",
+              "email": "hi@austn.net",
+              "sameAs": [
+                "https://github.com/frogr",
+                "https://linkedin.com/in/austindanielfrench"
+              ],
+              "knowsAbout": ["Ruby on Rails", "Backend Engineering", "AI/ML Integration", "PostgreSQL", "React", "Local LLMs"]
+            },
+            {
+              "@type": "WebSite",
+              "name": "Austin French - Software Engineer",
+              "url": "https://austn.net",
+              "description": "Portfolio and AI tools by Austin French, senior backend engineer"
+            }
+          ]
+        }
+      </script>
+    <% end %>
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 

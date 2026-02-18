@@ -164,7 +164,58 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
             ))}
           </div>
         </div>
-        
+
+        {/* CONTACT / CTA SECTION */}
+        <div className="bento-box bento-full" style={{
+          background: isDark
+            ? 'linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(191, 90, 242, 0.08) 100%)'
+            : 'linear-gradient(135deg, rgba(0, 122, 255, 0.12) 0%, rgba(191, 90, 242, 0.12) 100%)',
+          borderBottom: 'none', borderLeft: 'none', borderRight: 'none',
+          padding: 'clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 2vw, 2rem)'
+        }}>
+          <div style={{ maxWidth: '800px' }}>
+            <h2 className="font-black mb-3" style={{
+              fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
+              letterSpacing: '-0.02em',
+              color: isDark ? '#fff' : '#000'
+            }}>Get in touch</h2>
+            <p className="mb-4" style={{
+              fontSize: 'clamp(1rem, 1.6vw, 1.2rem)',
+              lineHeight: 1.7,
+              color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'
+            }}>
+              I build Rails apps and integrate AI into real products. If you've got something interesting, I'd love to hear about it.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <a href="mailto:hi@austn.net" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
+                 style={{ backgroundColor: 'var(--accent-color)', color: '#000', fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)' }}>
+                <span className="material-icons text-lg">email</span>
+                <span>hi@austn.net</span>
+              </a>
+              <a href="/projects" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
+                 style={{
+                   background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                   border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                   color: isDark ? '#fff' : '#000',
+                   fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)'
+                 }}>
+                <span className="material-icons text-lg">rocket_launch</span>
+                <span>See My Work</span>
+              </a>
+              <a href="/resume" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
+                 style={{
+                   background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                   border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+                   color: isDark ? '#fff' : '#000',
+                   fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)'
+                 }}>
+                <span className="material-icons text-lg">description</span>
+                <span>Resume</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

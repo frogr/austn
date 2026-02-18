@@ -7,6 +7,25 @@ const Projects = () => {
 
   const projects = [
     {
+      id: 10,
+      title: 'Austn.net AI Tools Suite',
+      category: 'ai',
+      description: '7+ AI tools running on local GPU infrastructure — image generation, TTS, background removal, stem separation, 3D modeling, chat, and more',
+      technologies: ['Rails', 'Python', 'ComfyUI', 'LMStudio', 'React', 'Sidekiq'],
+      link: '/projects/ai-tools',
+      featured: true,
+      gradient: 'var(--gradient-accent)',
+      details: {
+        fullDescription: 'Self-hosted AI platform running on personal GPU infrastructure. Integrates ComfyUI for image generation, Chatterbox for voice cloning/TTS, Hunyuan3D for 3D model generation, and local LLMs via LMStudio. All tools are free to use and demonstrate real-world local LLM deployment.',
+        highlights: [
+          '7+ AI tools accessible from a single platform',
+          'Self-hosted on personal GPU — no API costs',
+          'Local LLMs that actually work in production',
+          'Free and open for anyone to try'
+        ]
+      }
+    },
+    {
       id: 1,
       title: 'Pages AI Assistant',
       category: 'ai',
@@ -21,6 +40,63 @@ const Projects = () => {
           'Grew feature adoption from 4% to 11% of companies',
           'Thousands of daily document exports',
           'Natural language UI that users actually understand'
+        ]
+      }
+    },
+    {
+      id: 11,
+      title: 'CompanyCam',
+      category: 'web',
+      description: 'Backend engineering for the #1 photo documentation app in construction (140,000+ users)',
+      technologies: ['Rails', 'PostgreSQL', 'GraphQL', 'Sidekiq', 'AWS', 'React'],
+      link: '/projects/companycam',
+      featured: true,
+      gradient: 'var(--gradient-vibrant)',
+      details: {
+        fullDescription: 'Backend engineer at CompanyCam, the industry-leading photo documentation platform for construction with 140,000+ users. Built AI features, optimized critical infrastructure, and mentored developers.',
+        highlights: [
+          'Built Pages AI Assistant (3,000+ daily generations)',
+          'Optimized PDF exports with 10x size reduction',
+          'Architected Share Link feature for all user-generated assets',
+          'Mentored 3 developers on Rails best practices'
+        ]
+      }
+    },
+    {
+      id: 12,
+      title: 'CoverMyMeds',
+      category: 'web',
+      description: '$10M+ ARR launched across 9 pharmaceutical brands, tech lead for major launches',
+      technologies: ['Rails', 'Hotwire', 'Stimulus', 'PostgreSQL', 'Kafka'],
+      link: '/projects/covermymeds',
+      featured: true,
+      gradient: 'var(--gradient-cool)',
+      details: {
+        fullDescription: 'Software engineer at CoverMyMeds, the industry standard for electronic prior authorization connected to 950,000+ providers and 50,000+ pharmacies. Led launches for major pharmaceutical brands.',
+        highlights: [
+          'Generated $10M+ ARR launching 9 pharma brands',
+          'Tech lead for Spravato, Renflexis, and Ontruzant launches',
+          'Built Configuration Station for automated brand launches',
+          'Created VEST Framework for technical debt tracking'
+        ]
+      }
+    },
+    {
+      id: 7,
+      title: 'Backlit Platform Suite',
+      category: 'web',
+      description: 'Rails apps for Super Bowl, Oscars, and Grammys production',
+      technologies: ['Rails', 'Twilio', 'Multi-tenancy', 'SMS'],
+      link: '/projects/backlit',
+      featured: false,
+      gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
+      details: {
+        fullDescription: 'Long-term contractor building Rails applications for major television events. Built COVID-compliant coordination system for 200+ Oscar nominees.',
+        highlights: [
+          'SMS system coordinating 200+ people at Dolby Theatre',
+          'Multi-tenant platform for entertainment industry',
+          'Supported Super Bowl, Oscars, Grammys broadcasts',
+          'Real-time event coordination tools'
         ]
       }
     },
@@ -81,6 +157,24 @@ const Projects = () => {
       }
     },
     {
+      id: 13,
+      title: 'T2 Modus',
+      category: 'web',
+      description: 'Data pipeline automation processing 25K daily customers, cut runtime from 6 hours to 45 minutes',
+      technologies: ['Rails', 'PostgreSQL', 'Data Pipelines'],
+      link: '/projects/t2modus',
+      featured: false,
+      gradient: 'var(--gradient-primary)',
+      details: {
+        fullDescription: 'Software engineer at T2 Modus building identity verification and compliance tools for auto dealerships. Dramatically improved data processing efficiency.',
+        highlights: [
+          'Automated data pipeline processing 25K daily customers',
+          'Reduced job runtime from 6 hours to 45 minutes',
+          'Cut onboarding time from 3 weeks to 1 week'
+        ]
+      }
+    },
+    {
       id: 6,
       title: 'AI Experiments Lab',
       category: 'ai',
@@ -98,25 +192,6 @@ const Projects = () => {
           'Games built in React and Godot (2D/3D prototypes)',
           'Arduino LED projects and network ad blocking',
           'AI image generation with ComfyUI and Stable Diffusion'
-        ]
-      }
-    },
-    {
-      id: 7,
-      title: 'Backlit Platform Suite',
-      category: 'web',
-      description: 'Rails apps for Super Bowl, Oscars, and Grammys production',
-      technologies: ['Rails', 'Twilio', 'Multi-tenancy', 'SMS'],
-      link: '/projects/backlit',
-      featured: false,
-      gradient: 'linear-gradient(135deg, var(--indigo-accent) 0%, var(--teal-accent) 100%)',
-      details: {
-        fullDescription: 'Long-term contractor building Rails applications for major television events. Built COVID-compliant coordination system for 200+ Oscar nominees.',
-        highlights: [
-          'SMS system coordinating 200+ people at Dolby Theatre',
-          'Multi-tenant platform for entertainment industry',
-          'Supported Super Bowl, Oscars, Grammys broadcasts',
-          'Real-time event coordination tools'
         ]
       }
     },

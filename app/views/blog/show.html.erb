@@ -1,3 +1,6 @@
+<% meta_title(@blog_post.title) %>
+<% meta_description(truncate(strip_tags(@blog_post.content), length: 160)) %>
+
 <div class="min-h-screen pt-16 pb-10 relative overflow-x-hidden" style="background: transparent;">
 
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
