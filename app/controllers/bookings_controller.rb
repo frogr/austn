@@ -25,11 +25,11 @@ class BookingsController < ApplicationController
         slot.merge(availability_id: avail.id, title: avail.title)
       end
     end.sort_by { |s| s[:start_time] }
-
-    respond_to do |format|
-      format.html
-      format.turbo_stream
-    end
+  rescue => e
+    Rails.logger.error("BookingsController#slots error: #{e.class}: #{e.message}")
+    @date ||= Date.current
+    @slots = []
+    @slot_error = "Something went wrong loading time slots. Please try again."
   end
 
   # POST /bookings - Create a new booking
@@ -55,20 +55,28 @@ class BookingsController < ApplicationController
       availability.lock!
 
       if @booking.save
-        # Send emails
-        BookingMailer.confirmation(@booking).deliver_later
-        BookingMailer.admin_notification(@booking).deliver_later
+        # Send emails (don't let mailer errors prevent booking confirmation)
+        begin
+          BookingMailer.confirmation(@booking).deliver_later
+          BookingMailer.admin_notification(@booking).deliver_later
+        rescue => e
+          Rails.logger.error("BookingMailer error: #{e.class}: #{e.message}")
+        end
 
         # Broadcast real-time notification to admin
-        ActionCable.server.broadcast("booking_notifications", {
-          type: "new_booking",
-          booking: {
-            id: @booking.id,
-            first_name: @booking.first_name,
-            date: @booking.formatted_date_short,
-            time: @booking.formatted_start_time
-          }
-        })
+        begin
+          ActionCable.server.broadcast("booking_notifications", {
+            type: "new_booking",
+            booking: {
+              id: @booking.id,
+              first_name: @booking.first_name,
+              date: @booking.formatted_date_short,
+              time: @booking.formatted_start_time
+            }
+          })
+        rescue => e
+          Rails.logger.error("ActionCable broadcast error: #{e.class}: #{e.message}")
+        end
 
         redirect_to confirmation_booking_path(@booking.confirmation_token)
       else
@@ -106,18 +114,26 @@ class BookingsController < ApplicationController
     if @booking.confirmed?
       @booking.cancel!
 
-      BookingMailer.cancellation(@booking).deliver_later
-      BookingMailer.admin_cancellation(@booking).deliver_later
+      begin
+        BookingMailer.cancellation(@booking).deliver_later
+        BookingMailer.admin_cancellation(@booking).deliver_later
+      rescue => e
+        Rails.logger.error("BookingMailer cancellation error: #{e.class}: #{e.message}")
+      end
 
-      ActionCable.server.broadcast("booking_notifications", {
-        type: "cancellation",
-        booking: {
-          id: @booking.id,
-          first_name: @booking.first_name,
-          date: @booking.formatted_date_short,
-          time: @booking.formatted_start_time
-        }
-      })
+      begin
+        ActionCable.server.broadcast("booking_notifications", {
+          type: "cancellation",
+          booking: {
+            id: @booking.id,
+            first_name: @booking.first_name,
+            date: @booking.formatted_date_short,
+            time: @booking.formatted_start_time
+          }
+        })
+      rescue => e
+        Rails.logger.error("ActionCable broadcast error: #{e.class}: #{e.message}")
+      end
 
       redirect_to book_path, notice: "Your booking has been cancelled."
     else
