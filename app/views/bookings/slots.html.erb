@@ -4,12 +4,17 @@
       <h3 class="font-semibold" style="font-size: 1.125rem; color: var(--text-primary);">
         <%= @date.strftime("%A, %B %-d") %>
       </h3>
-      <%= link_to book_path, style: "color: var(--text-muted); font-size: 0.875rem;" do %>
+      <%= link_to book_path, style: "color: var(--text-muted); font-size: 0.875rem;", data: { turbo_frame: "_top" } do %>
         &larr; Back to calendar
       <% end %>
     </div>
 
-    <% if @slots.any? %>
+    <% if @slot_error.present? %>
+      <div class="p-4 rounded-lg text-center" style="background: rgba(255, 59, 48, 0.15); border: 1px solid rgba(255, 59, 48, 0.3); color: var(--danger-color);">
+        <p class="mb-2"><%= @slot_error %></p>
+        <%= link_to "Back to calendar", book_path, style: "color: var(--accent-color);", data: { turbo_frame: "_top" } %>
+      </div>
+    <% elsif @slots.any? %>
       <div class="space-y-2 mb-6" data-controller="booking-slots">
         <% @slots.each do |slot| %>
           <button type="button"
@@ -43,7 +48,7 @@
           <p class="text-sm font-medium" style="color: var(--accent-color);" id="selected-slot-display"></p>
         </div>
 
-        <%= form_with url: bookings_path, method: :post, local: true, class: "space-y-4" do |f| %>
+        <%= form_with url: bookings_path, method: :post, data: { turbo: false }, class: "space-y-4" do |f| %>
           <input type="hidden" name="availability_id" id="booking_availability_id">
           <input type="hidden" name="booked_date" id="booking_booked_date" value="<%= @date.to_s %>">
           <input type="hidden" name="start_time" id="booking_start_time">
@@ -89,7 +94,7 @@
     <% else %>
       <p class="text-center py-8" style="color: var(--text-muted);">
         No available time slots for this date.
-        <%= link_to "Choose another date", book_path, style: "color: var(--accent-color);" %>
+        <%= link_to "Choose another date", book_path, style: "color: var(--accent-color);", data: { turbo_frame: "_top" } %>
       </p>
     <% end %>
   </div>

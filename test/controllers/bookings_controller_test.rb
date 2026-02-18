@@ -13,6 +13,21 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "GET /book/:date returns turbo frame for slot_picker" do
+    avail = availabilities(:today_afternoon)
+    get book_date_path(date: avail.date.to_s), headers: { "Turbo-Frame" => "slot_picker" }
+    assert_response :success
+    assert_match "turbo-frame", response.body
+    assert_match "slot_picker", response.body
+  end
+
+  test "GET /book/:date with invalid date renders error in turbo frame" do
+    get book_date_path(date: "invalid-date")
+    assert_response :success
+    assert_match "turbo-frame", response.body
+    assert_match "Something went wrong", response.body
+  end
+
   test "POST /bookings creates a booking" do
     avail = availabilities(:next_week)
 
