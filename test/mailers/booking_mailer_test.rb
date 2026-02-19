@@ -88,7 +88,7 @@ class BookingMailerTest < ActionMailer::TestCase
     booking = bookings(:confirmed_booking)
     email = BookingMailer.confirmation(booking)
 
-    from_address = ENV.fetch("MAILER_FROM", "bookings@austn.net")
+    from_address = ENV.fetch("MAILER_FROM", "hi@austn.net")
     calendar_part = email.parts.find { |p| p.content_type.include?("text/calendar") }
     assert_match from_address, calendar_part.body.to_s
   end
