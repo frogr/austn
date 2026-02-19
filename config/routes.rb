@@ -158,7 +158,11 @@ Rails.application.routes.draw do
 
     root to: "dashboard#index"
 
-    resources :availabilities, except: [ :show ]
+    resources :availabilities, except: [ :show ] do
+      collection do
+        post :bulk_create
+      end
+    end
     resources :bookings, only: [ :index, :show, :update, :destroy ]
 
     resources :tts_shares, only: [ :index, :destroy ] do
