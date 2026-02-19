@@ -67,7 +67,7 @@ class BookingMailer < ApplicationMailer
   end
 
   def mailer_from
-    ENV.fetch("MAILER_FROM", "bookings@austn.net")
+    ENV.fetch("MAILER_FROM", "hi@austn.net")
   end
 
   def build_ical(booking, attendee_email:, attendee_name:)

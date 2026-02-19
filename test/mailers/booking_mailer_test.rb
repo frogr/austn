@@ -5,7 +5,7 @@ class BookingMailerTest < ActionMailer::TestCase
     booking = bookings(:confirmed_booking)
     email = BookingMailer.confirmation(booking)
 
-    assert_equal ["jane@example.com"], email.to
+    assert_equal [ "jane@example.com" ], email.to
     assert_match "Booking Confirmed", email.subject
     assert_match booking.formatted_date_short, email.subject
 
@@ -32,7 +32,7 @@ class BookingMailerTest < ActionMailer::TestCase
     email = BookingMailer.admin_notification(booking)
 
     admin_email = ENV.fetch("ADMIN_EMAIL", "austindanielfrench@gmail.com")
-    assert_equal [admin_email], email.to
+    assert_equal [ admin_email ], email.to
     assert_match "New Booking: Jane", email.subject
 
     html_body = email.html_part.body.to_s
@@ -49,7 +49,7 @@ class BookingMailerTest < ActionMailer::TestCase
     booking = bookings(:confirmed_booking)
     email = BookingMailer.cancellation(booking)
 
-    assert_equal ["jane@example.com"], email.to
+    assert_equal [ "jane@example.com" ], email.to
     assert_match "Booking Cancelled", email.subject
 
     html_body = email.html_part.body.to_s
@@ -67,7 +67,7 @@ class BookingMailerTest < ActionMailer::TestCase
     email = BookingMailer.admin_cancellation(booking)
 
     admin_email = ENV.fetch("ADMIN_EMAIL", "austindanielfrench@gmail.com")
-    assert_equal [admin_email], email.to
+    assert_equal [ admin_email ], email.to
     assert_match "Booking Cancelled: Jane", email.subject
 
     # Check ICS cancel part
@@ -88,7 +88,7 @@ class BookingMailerTest < ActionMailer::TestCase
     booking = bookings(:confirmed_booking)
     email = BookingMailer.confirmation(booking)
 
-    from_address = ENV.fetch("MAILER_FROM", "bookings@austn.net")
+    from_address = ENV.fetch("MAILER_FROM", "hi@austn.net")
     calendar_part = email.parts.find { |p| p.content_type.include?("text/calendar") }
     assert_match from_address, calendar_part.body.to_s
   end
