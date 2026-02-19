@@ -61,18 +61,8 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "austn.net", protocol: "https" }
 
-  # Resend integration for transactional email (port 465 implicit TLS)
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp.resend.com",
-    port: 465,
-    user_name: "resend",
-    password: ENV["RESEND_API_KEY"],
-    authentication: :plain,
-    tls: true,
-    open_timeout: 10,
-    read_timeout: 10
-  }
+  # Resend for transactional email
+  config.action_mailer.delivery_method = :resend
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

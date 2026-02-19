@@ -314,6 +314,8 @@ GEM
     regexp_parser (2.10.0)
     reline (0.6.0)
       io-console (~> 0.5)
+    resend (1.0.0)
+      httparty (>= 0.21.0)
     rexml (3.4.1)
     rubocop (1.72.1)
       json (~> 2.3)
@@ -463,6 +465,7 @@ DEPENDENCIES
   react-rails (~> 3.2)
   redcarpet (~> 3.5)
   redis (~> 5.0)
+  resend
   rubocop-rails-omakase
   rubyzip (~> 2.3)
   selenium-webdriver
