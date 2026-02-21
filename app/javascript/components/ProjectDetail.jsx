@@ -6,6 +6,37 @@ const ProjectDetail = ({ projectId }) => {
   const isDark = theme === 'dark';
 
   const projects = {
+    'ai-tools': {
+      title: 'Austn.net AI Tools Suite',
+      category: 'AI Platform',
+      description: 'Self-hosted AI platform running on personal GPU infrastructure. Integrates ComfyUI for image generation, Chatterbox for voice cloning/TTS, Hunyuan3D for 3D model generation, and local LLMs via LMStudio. All tools are free to use and demonstrate real-world local LLM deployment.',
+      technologies: ['Ruby on Rails', 'Python', 'ComfyUI', 'LMStudio', 'React', 'Sidekiq'],
+      gradient: 'var(--gradient-accent)',
+      externalLink: 'https://austn.net/ai',
+      highlights: [
+        '7+ AI tools accessible from a single platform',
+        'Self-hosted on personal GPU — no API costs',
+        'Image generation with ComfyUI and Stable Diffusion',
+        'Voice cloning and text-to-speech with Chatterbox',
+        '3D model generation with Hunyuan3D',
+        'Local LLMs that actually work in production'
+      ],
+      screenshot: null,
+      accomplishments: [
+        'Built a unified platform integrating 7+ AI tools under one interface',
+        'Self-hosted everything on personal GPU infrastructure eliminating API costs',
+        'Integrated ComfyUI workflows for production-quality image generation',
+        'Set up voice cloning and TTS with Chatterbox',
+        'Deployed Hunyuan3D for 3D model generation from text and images',
+        'Made all tools free and open for anyone to try'
+      ],
+      challenges: [
+        'Challenge: Running multiple AI models on consumer GPU hardware',
+        'Solution: Optimized model loading and memory management to share GPU resources',
+        'Challenge: Making AI tools accessible to non-technical users',
+        'Solution: Built intuitive web interfaces with Rails and React for each tool'
+      ]
+    },
     'pages-ai': {
       title: 'Pages AI Assistant',
       category: 'AI-Powered Feature',
