@@ -85,12 +85,10 @@
 /* ===== BASE BOX STYLES ===== */
 .bento-box {
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: saturate(200%) blur(20px);
-  -webkit-backdrop-filter: saturate(200%) blur(20px);
   border: 0.5px solid rgba(255, 255, 255, 0.08);
   border-radius: 0;
   padding: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
   color: var(--text-primary);
@@ -352,20 +350,14 @@
 /* ===== GRADIENT BACKGROUNDS ===== */
 .bento-gradient-1 {
   background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(90, 200, 250, 0.05) 100%);
-  backdrop-filter: saturate(200%) blur(30px);
-  -webkit-backdrop-filter: saturate(200%) blur(30px);
 }
 
 .bento-gradient-2 {
   background: linear-gradient(135deg, rgba(191, 90, 242, 0.08) 0%, rgba(94, 92, 230, 0.05) 100%);
-  backdrop-filter: saturate(200%) blur(30px);
-  -webkit-backdrop-filter: saturate(200%) blur(30px);
 }
 
 .bento-gradient-3 {
   background: linear-gradient(135deg, rgba(255, 55, 95, 0.08) 0%, rgba(255, 149, 0, 0.05) 100%);
-  backdrop-filter: saturate(200%) blur(30px);
-  -webkit-backdrop-filter: saturate(200%) blur(30px);
 }
 
 /* ===== PROJECTS GRID ===== */
