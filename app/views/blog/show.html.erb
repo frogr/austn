@@ -52,18 +52,21 @@
     <!-- Related posts or CTA -->
     <div class="mt-12 text-center">
       <div class="glass-thick rounded-2xl p-4 sm:p-6 md:p-8 relative overflow-hidden">
-        <!-- Gradient mesh removed -->
         <div class="relative z-10">
-          <h3 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">Enjoyed this post?</h3>
-          <p class="mb-6" style="color: var(--text-secondary);">Check out more articles or get in touch</p>
-          <div class="flex gap-4 justify-center flex-wrap">
+          <h3 class="text-2xl font-semibold mb-2" style="color: var(--text-primary);">Enjoyed this post?</h3>
+          <p class="mb-6" style="color: var(--text-secondary);">Check out more articles, book a time to chat, or send me an email.</p>
+          <div class="flex gap-3 justify-center flex-wrap">
             <%= link_to blog_path, class: "btn btn-gradient-cool" do %>
               <span class="material-icons">article</span>
               More Articles
             <% end %>
-            <%= link_to "/#contact", class: "btn btn-secondary" do %>
-              <span class="material-icons">mail</span>
-              Contact Me
+            <%= link_to book_path, class: "btn btn-primary" do %>
+              <span class="material-icons">calendar_today</span>
+              Book a Meeting
+            <% end %>
+            <%= link_to "mailto:hi@austn.net", class: "btn btn-secondary" do %>
+              <span class="material-icons">email</span>
+              hi@austn.net
             <% end %>
           </div>
         </div>

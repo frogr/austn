@@ -176,27 +176,7 @@
       </div>
     </article>
     
-    <!-- Related links -->
-    <div class="mt-12 text-center">
-      <div class="glass-thick rounded-2xl p-8 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10"
-             style="background: var(--gradient-mesh);"></div>
-        <div class="relative z-10">
-          <h3 class="text-2xl font-semibold mb-4" style="color: var(--text-primary);">Want to know more?</h3>
-          <p class="mb-6" style="color: var(--text-secondary);">Check out my projects or get in touch</p>
-          <div class="flex gap-4 justify-center flex-wrap">
-            <%= link_to "/projects", class: "btn btn-gradient-cool" do %>
-              <span class="material-icons">folder</span>
-              View Projects
-            <% end %>
-            <%= link_to "/#contact", class: "btn btn-secondary" do %>
-              <span class="material-icons">mail</span>
-              Contact Me
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
+    <%= render "shared/cta_banner", heading: "Want to know more?" %>
   </div>
 
   <style>

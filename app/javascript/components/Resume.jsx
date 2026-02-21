@@ -318,6 +318,31 @@ const Resume = () => {
             Print Resume
           </button>
         </div>
+
+        {/* CTA */}
+        <div className="mt-10 rounded-2xl p-6 sm:p-8 text-center" style={{
+          background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(191, 90, 242, 0.08) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.08)'
+        }}>
+          <h3 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+            Interested in working together?
+          </h3>
+          <p className="mb-4" style={{ color: 'var(--text-secondary)', fontSize: 'clamp(0.9rem, 1.4vw, 1.05rem)' }}>
+            Book a time to chat or reach out directly.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <a href="/book" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all hover:scale-105"
+               style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
+              <span className="material-icons text-base">calendar_today</span>
+              Book a Meeting
+            </a>
+            <a href="mailto:hi@austn.net" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all hover:scale-105"
+               style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}>
+              <span className="material-icons text-base">email</span>
+              hi@austn.net
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

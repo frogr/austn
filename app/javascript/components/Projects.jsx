@@ -330,17 +330,27 @@ const Projects = () => {
         </div>
 
         <div className="mt-6 sm:mt-8 text-center">
-          <div className="glass-thick rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 max-w-2xl mx-auto relative overflow-hidden">            
+          <div className="glass-thick rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 max-w-2xl mx-auto relative overflow-hidden">
             <div className="relative z-10">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3"
                   style={{ color: 'var(--text-primary)' }}>
                 Have a project in mind?
               </h2>
-              <a href="/#contact" className="inline-flex items-center gap-2 transform hover:scale-105 transition-all text-sm sm:text-base px-6 py-3 rounded-lg font-medium"
-                 style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
-                <span className="material-icons text-base">send</span>
-                <span>Get in Touch</span>
-              </a>
+              <p className="mb-4 text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>
+                Book a time to chat or send me an email directly.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <a href="/book" className="inline-flex items-center gap-2 transform hover:scale-105 transition-all text-sm sm:text-base px-6 py-3 rounded-lg font-medium"
+                   style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
+                  <span className="material-icons text-base">calendar_today</span>
+                  <span>Book a Meeting</span>
+                </a>
+                <a href="mailto:hi@austn.net" className="inline-flex items-center gap-2 transform hover:scale-105 transition-all text-sm sm:text-base px-6 py-3 rounded-lg font-medium"
+                   style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}>
+                  <span className="material-icons text-base">email</span>
+                  <span>hi@austn.net</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

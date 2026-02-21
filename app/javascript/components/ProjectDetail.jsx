@@ -459,18 +459,26 @@ const ProjectDetail = ({ projectId }) => {
               Interested in this project?
             </h3>
             <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>
-              Let's discuss how I can help bring your ideas to life.
+              Book a time to chat or send me an email.
             </p>
-            <a 
-              href="/#contact" 
-              className="px-4 py-2 rounded font-medium transition-all hover:opacity-90"
-              style={{
-                background: 'var(--accent-color)',
-                color: '#000'
-              }}
-            >
-              Get in Touch
-            </a>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a
+                href="/book"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded font-medium transition-all hover:scale-105"
+                style={{ background: 'var(--accent-color)', color: '#000' }}
+              >
+                <span className="material-icons text-sm">calendar_today</span>
+                Book a Meeting
+              </a>
+              <a
+                href="mailto:hi@austn.net"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded font-medium transition-all hover:scale-105"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+              >
+                <span className="material-icons text-sm">email</span>
+                hi@austn.net
+              </a>
+            </div>
           </div>
         </div>
       </div>
