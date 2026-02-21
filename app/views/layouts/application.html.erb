@@ -142,7 +142,19 @@
         justify-content: center;
         gap: 0.75rem;
         padding: 1rem;
+        position: relative;
       }
+
+      .nav-brand {
+        display: none;
+        color: var(--text-primary);
+        font-weight: 900;
+        font-size: 1.25rem;
+        text-decoration: none;
+        letter-spacing: -0.02em;
+      }
+
+      .nav-brand:hover { color: var(--accent-color); }
 
       .nav-links {
         display: flex;
@@ -382,6 +394,8 @@
       .mobile-nav-sublink .material-icons { font-size: 1.1rem; opacity: 0.7; }
 
       @media (max-width: 767px) {
+        .navbar { justify-content: space-between; }
+        .nav-brand { display: block; }
         .nav-links { display: none; }
         .hamburger-btn { display: block; }
         .mobile-nav-overlay.open { display: block; }
@@ -392,6 +406,7 @@
     <!-- Top Navigation -->
     <header class="site-header">
       <div class="navbar">
+        <a href="/" class="nav-brand" aria-label="Home">austn</a>
         <nav class="nav-links" aria-label="Main navigation">
           <% current_path = request.path %>
           <% ai_tool_paths = ['/chat', '/images', '/tts', '/rembg', '/vtracer', '/stems', '/3d', '/midi', '/endless'] %>

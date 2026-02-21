@@ -98,12 +98,10 @@
   background: var(--glass-bg), var(--noise-pattern);
   background-repeat: no-repeat, repeat;
   background-size: auto, var(--noise-size) var(--noise-size);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 0.375rem;
   padding: 0.375rem;
-  transition: all var(--transition-base);
+  transition: background var(--transition-base), transform var(--transition-base);
   overflow: hidden;
   position: relative;
   color: var(--text-primary);

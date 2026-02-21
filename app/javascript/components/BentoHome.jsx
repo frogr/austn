@@ -12,261 +12,158 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
 
   const isDark = theme === 'dark';
 
-  // Glass card shared style
-  const glassCard = {
-    background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-    border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
-  };
+  // Fit-to-viewport sizing for desktop: hero + two rows (no scroll at full size)
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-  // AI Tools data
-  const aiTools = [
-    { label: 'Generate an Image', href: '/images', icon: 'image' },
-    { label: 'Chat with AI', href: '/chat', icon: 'chat' },
-    { label: 'Remove Background', href: '/rembg', icon: 'auto_fix_high' },
-    { label: 'Text → Speech', href: '/tts', icon: 'record_voice_over' },
-    { label: 'Split Audio into Stems', href: '/stems', icon: 'graphic_eq' },
-    { label: 'Image → 3D Model', href: '/3d', icon: 'view_in_ar' },
-    { label: 'Image → MIDI', href: '/midi', icon: 'music_note' },
-    { label: 'Endless Content', href: '/endless', icon: 'all_inclusive' },
-  ];
+    const applySizes = () => {
+      const isDesktop = window.innerWidth >= 1024;
+      if (!isDesktop) {
+        el.style.removeProperty('--hero-h');
+        el.style.removeProperty('--row-medium-h');
+        el.style.removeProperty('--row-tall-h');
+        return;
+      }
+
+      const header = document.querySelector('.site-header');
+      const headerH = header ? header.offsetHeight : 0;
+      const available = Math.max(400, window.innerHeight - headerH - 8);
+      const hero = Math.max(150, Math.round(available * 0.28));
+      const medium = Math.max(180, Math.round(available * 0.26));
+      const tall = Math.max(200, available - hero - medium);
+
+      el.style.setProperty('--hero-h', `${hero}px`);
+      el.style.setProperty('--row-medium-h', `${medium}px`);
+      el.style.setProperty('--row-tall-h', `${tall}px`);
+    };
+
+    applySizes();
+    window.addEventListener('resize', applySizes);
+    return () => window.removeEventListener('resize', applySizes);
+  }, []);
 
   return (
     <div className="min-h-screen relative" style={{ background: 'transparent' }}>
-      <div ref={containerRef} className="bento-container relative z-10" style={{ maxWidth: '1400px', margin: '0 auto', padding: 'clamp(0.75rem, 3vw, 3rem)' }}>
-
-        {/* ===== HERO SECTION ===== */}
-        <section className="bento-box bento-hero"
+      <div ref={containerRef} className="bento-container bento-grid-home relative z-10">
+        {/* HERO */}
+        <div className="bento-box bento-full bento-hero"
              style={{
                background: isDark
                  ? 'linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(191, 90, 242, 0.05) 100%)'
                  : 'linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(191, 90, 242, 0.08) 100%)',
-               borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-               padding: 'clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2.5rem)',
-               marginBottom: '0'
+               borderTop: 'none', borderLeft: 'none', borderRight: 'none'
              }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <h1 className="font-black mb-1 hero-name" style={{
-                fontSize: 'clamp(2.6rem, 9vw, 5rem)',
-                letterSpacing: '-0.03em'
-              }}>Austin French</h1>
-              <p className="font-semibold" style={{
-                fontSize: 'clamp(1.2rem, 4.2vw, 2.25rem)',
-                color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)',
-                marginBottom: '0.75rem'
-              }}>Senior Backend Engineer</p>
-            </div>
-            {/* Social links inline with hero */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer"
-                 aria-label="GitHub profile"
-                 className="inline-flex items-center gap-2 font-semibold px-4 py-2 rounded-lg transition-all hover:scale-105"
-                 style={{
-                   ...glassCard,
-                   color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)',
-                   fontSize: '0.9rem'
-                 }}>
-                <span className="material-icons" style={{ fontSize: '1.1rem', color: 'var(--accent-color)' }} aria-hidden="true">code</span>
-                <span>GitHub</span>
-              </a>
-              <a href="https://linkedin.com/in/austindanielfrench" target="_blank" rel="noopener noreferrer"
-                 aria-label="LinkedIn profile"
-                 className="inline-flex items-center gap-2 font-semibold px-4 py-2 rounded-lg transition-all hover:scale-105"
-                 style={{
-                   ...glassCard,
-                   color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)',
-                   fontSize: '0.9rem'
-                 }}>
-                <span className="material-icons" style={{ fontSize: '1.1rem', color: 'var(--accent-color)' }} aria-hidden="true">business</span>
-                <span>LinkedIn</span>
-              </a>
-            </div>
+          <div className="w-full h-full" style={{ display: 'grid', alignContent: 'center', justifyContent: 'start' }}>
+            <h1 className="font-black mb-1 hero-name" style={{
+              fontSize: 'clamp(2.6rem, 9vw, 5rem)',
+              letterSpacing: '-0.03em'
+            }}>Austin French</h1>
+            <p className="font-semibold mb-4" style={{
+              fontSize: 'clamp(1.2rem, 4.2vw, 2.25rem)',
+              color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)'
+            }}>Senior Backend Engineer</p>
           </div>
-        </section>
+        </div>
 
-        {/* ===== SECTION DIVIDER ===== */}
-        <div style={{ height: 'clamp(1.5rem, 3vw, 2.5rem)' }} aria-hidden="true" />
+        {/* ENGAGE (left half) */}
+        <div id="contact" className="bento-box bento-2x1 bento-row-medium" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
+          <h3 className="font-extrabold mb-3" style={{ fontSize: 'clamp(1.45rem, 2.2vw, 1.75rem)', color: isDark ? '#fff' : '#000' }}>Engage</h3>
+          <div className="engage-grid">
+            <a href="/projects" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
+               style={{ backgroundColor: 'var(--accent-color)', color: '#000' }}>
+              <span className="material-icons text-lg">rocket_launch</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Projects</span>
+            </a>
+            <a href="/blog" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
+               style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
+              <span className="material-icons text-lg">article</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Blog</span>
+            </a>
+            <a href="/fun-links" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
+               style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
+              <span className="material-icons text-lg">toys</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Fun Links</span>
+            </a>
+            <a href="/reading" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
+               style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
+              <span className="material-icons text-lg">menu_book</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Currently Reading</span>
+            </a>
+            <a href="/resources" className="engage-item gap-3 px-5 py-3.5 rounded-md font-semibold"
+               style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)', color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)' }}>
+              <span className="material-icons text-lg">link</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>Useful Resources</span>
+            </a>
+            <a href="mailto:hi@austn.net" className="engage-item gap-3 px-4 py-3.5 rounded-md font-semibold"
+               style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
+              <span className="material-icons text-lg" style={{ color: 'var(--accent-color)' }}>email</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>hi@austn.net</span>
+            </a>
+            <a href="https://github.com/frogr" target="_blank" rel="noopener noreferrer" className="engage-item gap-3 px-4 py-3.5 rounded-md font-semibold"
+               style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
+              <span className="material-icons text-lg" style={{ color: 'var(--accent-color)' }}>code</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>GitHub</span>
+            </a>
+            <a href="https://linkedin.com/in/austindanielfrench" target="_blank" rel="noopener noreferrer" className="engage-item gap-3 px-4 py-3.5 rounded-md font-semibold"
+               style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
+              <span className="material-icons text-lg" style={{ color: 'var(--accent-color)' }}>business</span>
+              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)' }}>LinkedIn</span>
+            </a>
+          </div>
+        </div>
 
-        {/* ===== AI TOOLS SECTION ===== */}
-        <section aria-labelledby="ai-tools-heading">
-          <h2 id="ai-tools-heading" className="font-extrabold" style={{
-            fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-            color: isDark ? '#fff' : '#000',
-            marginBottom: '0.5rem',
-            paddingLeft: '0.25rem'
-          }}>AI Tools</h2>
-          <p style={{
-            fontSize: 'clamp(0.85rem, 1.3vw, 1rem)',
-            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-            marginBottom: 'clamp(0.75rem, 1.5vw, 1.25rem)',
-            paddingLeft: '0.25rem',
-            lineHeight: 1.5
-          }}>
-            All of these tools run on my home GPU — no API costs, no sign-ups, no data collection. Just local inference on real hardware.
+        {/* ABOUT (right half next to Engage) */}
+        <div className="bento-box bento-2x1 bento-row-medium" style={{ background: isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.025)' }}>
+          <h3 className="font-extrabold mb-3" style={{ fontSize: 'clamp(1.5rem, 2.6vw, 2rem)', color: isDark ? '#fff' : '#000' }}>About</h3>
+          <p className="text-base" style={{ lineHeight: 1.8, fontSize: 'clamp(0.98rem, 1.45vw, 1.12rem)' }}>
+            Senior backend engineer with 6+ years building scalable SaaS applications and integrating AI/ML solutions. Shipped production AI features processing 5,000+ daily operations at CompanyCam, launched products generating $10M+ ARR at CoverMyMeds. Expert in Ruby on Rails, API design, and LLM integration. Currently exploring advanced ML through FastAI coursework and local LLM development.
           </p>
-          <div className="ai-tools-grid">
-            {aiTools.map(tool => (
-              <a key={tool.href} href={tool.href}
-                 className="ai-tool-card"
-                 aria-label={tool.label}
-                 style={glassCard}>
-                <span className="material-icons" aria-hidden="true"
-                      style={{ fontSize: '1.5rem', color: 'var(--accent-color)' }}>{tool.icon}</span>
-                <span style={{
-                  fontSize: 'clamp(0.9rem, 1.4vw, 1.05rem)',
-                  fontWeight: 600,
-                  color: isDark ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.9)'
-                }}>{tool.label}</span>
+          <p className="mt-3" style={{ lineHeight: 1.6, fontSize: 'clamp(0.85rem, 1.2vw, 0.95rem)', color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)' }}>
+            All AI tools on this site run on my home GPU — no API costs, no sign-ups, no data collection.
+          </p>
+        </div>
+
+        {/* PROJECTS (left half, bottom row) */}
+        <div className="bento-box bento-2x1 bento-row-tall" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
+          <div className="flex items-baseline justify-between mb-2">
+            <h3 className="font-extrabold" style={{ fontSize: 'clamp(1.35rem, 2.4vw, 1.9rem)', color: isDark ? '#fff' : '#000' }}>Projects</h3>
+            <a href="/projects" className="text-sm font-semibold" style={{ color: 'var(--accent-color)' }}>View all</a>
+          </div>
+          <div className="space-y-2">
+            {(featuredProjects || []).slice(0, 3).map(project => (
+              <a key={project.id} href={`/projects/${project.id}`} className="block p-3 rounded-md transition-all hover:scale-[1.01]"
+                 style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold truncate" style={{ color: isDark ? '#fff' : '#000', fontSize: 'clamp(1.05rem, 1.7vw, 1.25rem)' }}>{project.title}</h4>
+                    <p className="opacity-90 line-clamp-1" style={{ fontSize: 'clamp(1.05rem, 1.5vw, 1.2rem)' }}>{project.description}</p>
+                  </div>
+                </div>
               </a>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* ===== SECTION DIVIDER ===== */}
-        <div style={{ height: 'clamp(1.5rem, 3vw, 2.5rem)' }} aria-hidden="true" />
-
-        {/* ===== EXPLORE SECTION (consolidated Engage) ===== */}
-        <section aria-labelledby="explore-heading">
-          <h2 id="explore-heading" className="font-extrabold" style={{
-            fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-            color: isDark ? '#fff' : '#000',
-            marginBottom: 'clamp(0.75rem, 1.5vw, 1.25rem)',
-            paddingLeft: '0.25rem'
-          }}>Explore</h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: 'clamp(0.375rem, 1vw, 0.75rem)'
-          }}>
-            {/* Projects - primary CTA */}
-            <a href="/projects" className="bento-box"
-               aria-label="View projects"
-               style={{
-                 backgroundColor: 'var(--accent-color)',
-                 color: '#000',
-                 border: 'none',
-                 flexDirection: 'row',
-                 alignItems: 'center',
-                 gap: '0.75rem',
-                 padding: 'clamp(0.75rem, 1.5vw, 1.25rem)',
-               }}>
-              <span className="material-icons" style={{ fontSize: '1.4rem' }} aria-hidden="true">rocket_launch</span>
-              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)', fontWeight: 700, color: '#000' }}>Projects</span>
-            </a>
-
-            {/* Blog - primary CTA */}
-            <a href="/blog" className="bento-box"
-               aria-label="Read blog posts"
-               style={{
-                 ...glassCard,
-                 flexDirection: 'row',
-                 alignItems: 'center',
-                 gap: '0.75rem',
-                 padding: 'clamp(0.75rem, 1.5vw, 1.25rem)',
-               }}>
-              <span className="material-icons" style={{ fontSize: '1.4rem', color: 'var(--accent-color)' }} aria-hidden="true">article</span>
-              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)', fontWeight: 600 }}>Blog</span>
-            </a>
-
-            {/* Currently Reading */}
-            <a href="/reading" className="bento-box"
-               aria-label="See what I'm currently reading"
-               style={{
-                 ...glassCard,
-                 flexDirection: 'row',
-                 alignItems: 'center',
-                 gap: '0.75rem',
-                 padding: 'clamp(0.75rem, 1.5vw, 1.25rem)',
-               }}>
-              <span className="material-icons" style={{ fontSize: '1.4rem', color: 'var(--accent-color)' }} aria-hidden="true">menu_book</span>
-              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)', fontWeight: 600 }}>Currently Reading</span>
-            </a>
-
-            {/* Useful Resources */}
-            <a href="/resources" className="bento-box"
-               aria-label="Browse useful resources"
-               style={{
-                 ...glassCard,
-                 flexDirection: 'row',
-                 alignItems: 'center',
-                 gap: '0.75rem',
-                 padding: 'clamp(0.75rem, 1.5vw, 1.25rem)',
-               }}>
-              <span className="material-icons" style={{ fontSize: '1.4rem', color: 'var(--accent-color)' }} aria-hidden="true">link</span>
-              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)', fontWeight: 600 }}>Useful Resources</span>
-            </a>
-
-            {/* Fun Links */}
-            <a href="/fun-links" className="bento-box"
-               aria-label="Browse fun links"
-               style={{
-                 ...glassCard,
-                 flexDirection: 'row',
-                 alignItems: 'center',
-                 gap: '0.75rem',
-                 padding: 'clamp(0.75rem, 1.5vw, 1.25rem)',
-               }}>
-              <span className="material-icons" style={{ fontSize: '1.4rem', color: 'var(--accent-color)' }} aria-hidden="true">toys</span>
-              <span style={{ fontSize: 'clamp(1rem, 1.6vw, 1.15rem)', fontWeight: 600 }}>Fun Links</span>
-            </a>
+        {/* BLOG (right half, bottom row) */}
+        <div className="bento-box bento-2x1 bento-row-tall" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
+          <div className="flex items-baseline justify-between mb-2">
+            <h3 className="font-extrabold" style={{ fontSize: 'clamp(1.35rem, 2.4vw, 1.9rem)', color: isDark ? '#fff' : '#000' }}>Blog</h3>
+            <a href="/blog" className="text-sm font-semibold" style={{ color: 'var(--accent-color)' }}>View all</a>
           </div>
-        </section>
-
-        {/* ===== SECTION DIVIDER ===== */}
-        <div style={{ height: 'clamp(1.5rem, 3vw, 2.5rem)' }} aria-hidden="true" />
-
-        {/* ===== PROJECTS + BLOG ROW ===== */}
-        <section style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: 'clamp(0.375rem, 1vw, 0.75rem)'
-        }}>
-          {/* PROJECTS SECTION */}
-          <div className="bento-box" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', padding: 'clamp(0.75rem, 1.5vw, 1.25rem)' }}>
-            <div className="flex items-baseline justify-between mb-2">
-              <h3 className="font-extrabold" style={{ fontSize: 'clamp(1.35rem, 2.4vw, 1.9rem)', color: isDark ? '#fff' : '#000' }}>Projects</h3>
-              <a href="/projects" className="text-sm font-semibold" style={{ color: 'var(--accent-color)' }} aria-label="View all projects">View all</a>
-            </div>
-            <div className="space-y-2">
-              {(featuredProjects || []).slice(0, 3).map(project => (
-                <a key={project.id} href={`/projects/${project.id}`} className="block p-3 rounded-md transition-all hover:scale-[1.01]"
-                   aria-label={`View project: ${project.title}`}
-                   style={glassCard}>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold truncate" style={{ color: isDark ? '#fff' : '#000', fontSize: 'clamp(1.05rem, 1.7vw, 1.25rem)' }}>{project.title}</h4>
-                      <p className="opacity-90 line-clamp-1" style={{ fontSize: 'clamp(1.05rem, 1.5vw, 1.2rem)' }}>{project.description}</p>
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
+          <div className="space-y-2">
+            {(latestBlogPosts || []).slice(0, 3).map(post => (
+              <a key={post.id} href={`/blog/${post.slug}`} className="block p-3 rounded-md transition-all hover:scale-[1.01]"
+                 style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)', border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}>
+                <h4 className="font-semibold line-clamp-1" style={{ color: isDark ? '#fff' : '#000', fontSize: 'clamp(1.05rem, 1.7vw, 1.25rem)' }}>{post.title}</h4>
+                <p className="opacity-90 mt-1" style={{ fontSize: 'clamp(1.05rem, 1.5vw, 1.2rem)' }}>{formatDate(post.created_at)}</p>
+              </a>
+            ))}
           </div>
+        </div>
 
-          {/* BLOG SECTION */}
-          <div className="bento-box" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', padding: 'clamp(0.75rem, 1.5vw, 1.25rem)' }}>
-            <div className="flex items-baseline justify-between mb-2">
-              <h3 className="font-extrabold" style={{ fontSize: 'clamp(1.35rem, 2.4vw, 1.9rem)', color: isDark ? '#fff' : '#000' }}>Blog</h3>
-              <a href="/blog" className="text-sm font-semibold" style={{ color: 'var(--accent-color)' }} aria-label="View all blog posts">View all</a>
-            </div>
-            <div className="space-y-2">
-              {(latestBlogPosts || []).slice(0, 3).map(post => (
-                <a key={post.id} href={`/blog/${post.slug}`} className="block p-3 rounded-md transition-all hover:scale-[1.01]"
-                   aria-label={`Read blog post: ${post.title}`}
-                   style={glassCard}>
-                  <h4 className="font-semibold line-clamp-1" style={{ color: isDark ? '#fff' : '#000', fontSize: 'clamp(1.05rem, 1.7vw, 1.25rem)' }}>{post.title}</h4>
-                  <p className="opacity-90 mt-1" style={{ fontSize: 'clamp(1.05rem, 1.5vw, 1.2rem)' }}>{formatDate(post.created_at)}</p>
-                </a>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ===== SECTION DIVIDER ===== */}
-        <div style={{ height: 'clamp(1.5rem, 3vw, 2.5rem)' }} aria-hidden="true" />
-
-        {/* ===== GET IN TOUCH / CTA ===== */}
-        <section className="bento-box" style={{
+        {/* CTA FOOTER */}
+        <div className="bento-box bento-full" style={{
           background: isDark
             ? 'linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(191, 90, 242, 0.08) 100%)'
             : 'linear-gradient(135deg, rgba(0, 122, 255, 0.12) 0%, rgba(191, 90, 242, 0.12) 100%)',
@@ -278,7 +175,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
               letterSpacing: '-0.02em',
               color: isDark ? '#fff' : '#000'
-            }}>Let's work together</h2>
+            }}>Get in touch</h2>
             <p className="mb-4" style={{
               fontSize: 'clamp(1rem, 1.6vw, 1.2rem)',
               lineHeight: 1.7,
@@ -288,36 +185,33 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
               <a href="/book" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
-                 aria-label="Book a meeting"
                  style={{ backgroundColor: 'var(--accent-color)', color: '#000', fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)' }}>
-                <span className="material-icons text-lg" aria-hidden="true">calendar_today</span>
+                <span className="material-icons text-lg">calendar_today</span>
                 <span>Book a Meeting</span>
               </a>
               <a href="mailto:hi@austn.net" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
-                 aria-label="Send email to hi@austn.net"
                  style={{
                    background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
                    border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
                    color: isDark ? '#fff' : '#000',
                    fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)'
                  }}>
-                <span className="material-icons text-lg" aria-hidden="true">email</span>
+                <span className="material-icons text-lg">email</span>
                 <span>hi@austn.net</span>
               </a>
               <a href="/resume" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
-                 aria-label="View resume"
                  style={{
                    background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
                    border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
                    color: isDark ? '#fff' : '#000',
                    fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)'
                  }}>
-                <span className="material-icons text-lg" aria-hidden="true">description</span>
+                <span className="material-icons text-lg">description</span>
                 <span>Resume</span>
               </a>
             </div>
           </div>
-        </section>
+        </div>
 
       </div>
     </div>
