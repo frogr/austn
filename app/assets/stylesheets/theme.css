@@ -415,6 +415,39 @@ body::before {
 
 .engage-item { display: flex; width: 100%; align-items: center; justify-content: flex-start; }
 
+/* AI Tools grid: responsive 1 → 2 → 3 columns */
+.ai-tools-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  .ai-tools-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .ai-tools-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.ai-tool-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.625rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+
+.ai-tool-card:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-color) !important;
+}
+
 /* Apply subtle noise to page background */
 body {
   background-color: var(--bg-primary);
