@@ -32,7 +32,7 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
 
   return (
     <div className="min-h-screen relative" style={{ background: 'transparent' }}>
-      <div ref={containerRef} className="bento-container relative z-10" style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(0.75rem, 2vw, 2rem)' }}>
+      <div ref={containerRef} className="bento-container relative z-10" style={{ maxWidth: '1400px', margin: '0 auto', padding: 'clamp(0.75rem, 3vw, 3rem)' }}>
 
         {/* ===== HERO SECTION ===== */}
         <section className="bento-box bento-hero"
@@ -92,9 +92,18 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
           <h2 id="ai-tools-heading" className="font-extrabold" style={{
             fontSize: 'clamp(1.5rem, 3vw, 2rem)',
             color: isDark ? '#fff' : '#000',
-            marginBottom: 'clamp(0.75rem, 1.5vw, 1.25rem)',
+            marginBottom: '0.5rem',
             paddingLeft: '0.25rem'
           }}>AI Tools</h2>
+          <p style={{
+            fontSize: 'clamp(0.85rem, 1.3vw, 1rem)',
+            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
+            marginBottom: 'clamp(0.75rem, 1.5vw, 1.25rem)',
+            paddingLeft: '0.25rem',
+            lineHeight: 1.5
+          }}>
+            All of these tools run on my home GPU — no API costs, no sign-ups, no data collection. Just local inference on real hardware.
+          </p>
           <div className="ai-tools-grid">
             {aiTools.map(tool => (
               <a key={tool.href} href={tool.href}
@@ -269,31 +278,31 @@ const BentoHome = ({ latestBlogPosts = [], featuredProjects = [] }) => {
               fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
               letterSpacing: '-0.02em',
               color: isDark ? '#fff' : '#000'
-            }}>Get in touch</h2>
+            }}>Let's work together</h2>
             <p className="mb-4" style={{
               fontSize: 'clamp(1rem, 1.6vw, 1.2rem)',
               lineHeight: 1.7,
               color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'
             }}>
-              I build Rails apps and integrate AI into real products. If you've got something interesting, I'd love to hear about it.
+              I build Rails apps and integrate AI into real products. If you've got something interesting, book a time or send me an email.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <a href="/book" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
+                 aria-label="Book a meeting"
+                 style={{ backgroundColor: 'var(--accent-color)', color: '#000', fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)' }}>
+                <span className="material-icons text-lg" aria-hidden="true">calendar_today</span>
+                <span>Book a Meeting</span>
+              </a>
               <a href="mailto:hi@austn.net" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
                  aria-label="Send email to hi@austn.net"
-                 style={{ backgroundColor: 'var(--accent-color)', color: '#000', fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)' }}>
-                <span className="material-icons text-lg" aria-hidden="true">email</span>
-                <span>hi@austn.net</span>
-              </a>
-              <a href="/projects" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
-                 aria-label="Browse projects"
                  style={{
                    background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
                    border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
                    color: isDark ? '#fff' : '#000',
                    fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)'
                  }}>
-                <span className="material-icons text-lg" aria-hidden="true">rocket_launch</span>
-                <span>See My Work</span>
+                <span className="material-icons text-lg" aria-hidden="true">email</span>
+                <span>hi@austn.net</span>
               </a>
               <a href="/resume" className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
                  aria-label="View resume"

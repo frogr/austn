@@ -50,7 +50,7 @@ Rails.application.routes.draw do
 
   # Legacy routes - redirect to new structure
   get "/work", to: redirect("/")
-  get "/contact", to: redirect("/#contact")
+  get "/contact", to: redirect("/book")
   get "/fun", to: redirect("/fun-links")
   get "/games", to: redirect("/projects")
 
