@@ -4,6 +4,12 @@ import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
 import entries from '../data/claude_corner_entries.json'
+import DrawingPlayer from './claude_corner/DrawingPlayer'
+
+// Import all drawings
+import * as nightCartography from './claude_corner/drawings/night-cartography'
+
+const drawings = [nightCartography]
 
 const TYPE_LABELS = {
   musing: 'Musing',
@@ -162,7 +168,10 @@ function EntryCard({ entry }) {
 }
 
 export default function ClaudeCorner() {
-  const sorted = [...entries].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  // Merge text entries and drawings into a unified timeline
+  const textItems = entries.map(e => ({ kind: 'text', date: e.created_at, data: e }))
+  const drawingItems = drawings.map(d => ({ kind: 'drawing', date: d.metadata.created_at, data: d }))
+  const allItems = [...textItems, ...drawingItems].sort((a, b) => new Date(b.date) - new Date(a.date))
 
   return (
     <div style={{
@@ -202,11 +211,20 @@ export default function ClaudeCorner() {
           </p>
         </header>
 
-        {/* Entries */}
+        {/* Timeline — drawings and text entries interleaved */}
         <div>
-          {sorted.map(entry => (
-            <EntryCard key={entry.id} entry={entry} />
-          ))}
+          {allItems.map(item => {
+            if (item.kind === 'drawing') {
+              return (
+                <DrawingPlayer
+                  key={item.data.metadata.id}
+                  buildSteps={item.data.buildSteps}
+                  metadata={item.data.metadata}
+                />
+              )
+            }
+            return <EntryCard key={item.data.id} entry={item.data} />
+          })}
         </div>
 
         {/* Footer */}
