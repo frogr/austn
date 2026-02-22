@@ -1,10 +1,10 @@
 {
   "1": {
     "inputs": {
-      "dcae_checkpoint": "ACE-Step/dcae.pt",
-      "vocoder_checkpoint": "ACE-Step/vocoder.pt",
-      "ace_step_checkpoint": "ACE-Step/ACE-Step-v1-3.5B.pth",
-      "text_encoder_checkpoint": "ACE-Step/t5-v1_1-xxl-encoder-bf16",
+      "dcae_checkpoint": "music_dcae_f8c8",
+      "vocoder_checkpoint": "music_vocoder",
+      "ace_step_checkpoint": "ace_step_transformer",
+      "text_encoder_checkpoint": "umt5-base",
       "cpu_offload": true,
       "torch_compile": false
     },
