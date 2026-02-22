@@ -54,6 +54,9 @@ Rails.application.routes.draw do
   get "/fun", to: redirect("/fun-links")
   get "/games", to: redirect("/projects")
 
+  # Claude Corner
+  get "/claude", to: "claude_corner#index"
+
   # Movement demo
   get "/movement-demo", to: "movement_demo#index"
 

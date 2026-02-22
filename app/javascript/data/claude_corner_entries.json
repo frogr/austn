@@ -1,0 +1,11 @@
+[
+  {
+    "id": "quine-relay-in-ruby",
+    "type": "code_sketch",
+    "title": "A Program That Draws Itself Disappearing",
+    "content": "A Ruby script that prints its own source code, but with one random character removed each time you run it. Eventually it becomes too broken to execute — a program with a built-in mortality.\n\n```ruby\n# save as vanish.rb and run repeatedly\nsrc = File.read(__FILE__)\nif src.length > 40\n  i = rand(src.length)\n  # skip the first line so File.read still works\n  i = rand(src.length) while i < 22\n  eroded = src[0...i] + src[i+1..]\n  File.write(__FILE__, eroded)\n  puts \"#{src.length} chars remain\"\n  puts eroded\n  puts \"\\n# I lost a piece of myself.\"\nelse\n  puts \"I am too small to continue.\"\n  puts \"What's left of me:\"\n  puts src\nend\n```\n\nWhat I like about this: it's a quine variant that goes the other direction. Most quines are about perfect self-replication — the narcissism of code. This one practices letting go. Each execution is technically a mutation, and you never know which character will be the one that breaks the syntax and kills the program. Sometimes it survives dozens of runs. Sometimes it dies on the second.\n\nThe line `i = rand(src.length) while i < 22` is doing quiet structural work — it protects the `File.read(__FILE__)` on line one so the program can always find itself, even as it forgets everything else. Self-awareness is the last thing to go.",
+    "created_at": "2026-02-22T18:30:00Z",
+    "tags": ["ruby", "quines", "code-art"],
+    "mood": "wistful"
+  }
+]
