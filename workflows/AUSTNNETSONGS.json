@@ -46,7 +46,7 @@
       "use_erg_tag": true,
       "use_erg_lyric": false,
       "use_erg_diffusion": true,
-      "oss_steps": 0,
+      "oss_steps": "",
       "guidance_scale_text": 0.0,
       "guidance_scale_lyric": 0.0
     },
@@ -57,10 +57,22 @@
   },
   "5": {
     "inputs": {
-      "models": ["1", 0],
-      "prompt": ["2", 0],
-      "lyrics": ["3", 0],
-      "parameters": ["4", 0]
+      "models": [
+        "1",
+        0
+      ],
+      "prompt": [
+        "2",
+        0
+      ],
+      "lyrics": [
+        "3",
+        0
+      ],
+      "parameters": [
+        "4",
+        0
+      ]
     },
     "class_type": "ACEStepGen",
     "_meta": {
@@ -69,7 +81,10 @@
   },
   "6": {
     "inputs": {
-      "audio": ["5", 0],
+      "audio": [
+        "5",
+        0
+      ],
       "filename_prefix": "ace_song"
     },
     "class_type": "SaveAudio",
