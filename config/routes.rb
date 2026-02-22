@@ -124,6 +124,22 @@ Rails.application.routes.draw do
   get "/stems/:id/download/:stem", to: "stems#download_stem", as: :download_stem
   get "/stems/:id/download_all", to: "stems#download_all", as: :download_all_stems
 
+  # Video Generation (Wan 2.2)
+  get "/video", to: "video#index"
+  post "/video/generate", to: "video#generate"
+  get "/video/:id/status", to: "video#status", as: :video_status
+  get "/video/:id/result", to: "video#result", as: :video_result
+  get "/video/:id/download", to: "video#download", as: :video_download
+  get "/video/:id/data", to: "video#data", as: :video_data
+
+  # Music Generation (ACE-Step)
+  get "/music", to: "music#index"
+  post "/music/generate", to: "music#generate"
+  get "/music/:id/status", to: "music#status", as: :music_status
+  get "/music/:id/result", to: "music#result", as: :music_result
+  get "/music/:id/download", to: "music#download", as: :music_download
+  get "/music/:id/data", to: "music#data", as: :music_data
+
   # 3D Model Generation (Image to GLB)
   get "/3d", to: "model3d#index"
   post "/3d/generate", to: "model3d#generate"

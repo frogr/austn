@@ -1,0 +1,150 @@
+{
+  "1": {
+    "inputs": {
+      "unet_name": "wan2.2_t2v_1.3B_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "2": {
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn.safetensors",
+      "type": "wan"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "3": {
+    "inputs": {
+      "vae_name": "wan_2.2_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "4": {
+    "inputs": {
+      "text": "A beautiful landscape with flowing water and gentle breeze",
+      "clip": ["2", 0]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive)"
+    }
+  },
+  "5": {
+    "inputs": {
+      "text": "blurry, low quality, distorted, watermark, text overlay",
+      "clip": ["2", 0]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative)"
+    }
+  },
+  "6": {
+    "inputs": {
+      "width": 512,
+      "height": 320,
+      "length": 33,
+      "batch_size": 1
+    },
+    "class_type": "EmptyWanLatentVideo",
+    "_meta": {
+      "title": "Empty Wan Latent Video"
+    }
+  },
+  "7": {
+    "inputs": {
+      "shift": 8.0,
+      "model": ["1", 0]
+    },
+    "class_type": "ModelSamplingWan",
+    "_meta": {
+      "title": "Model Sampling Wan"
+    }
+  },
+  "8": {
+    "inputs": {
+      "noise_seed": 0
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "Random Noise"
+    }
+  },
+  "9": {
+    "inputs": {
+      "model": ["7", 0],
+      "conditioning": ["4", 0]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "Basic Guider"
+    }
+  },
+  "10": {
+    "inputs": {
+      "scheduler": "beta",
+      "steps": 30,
+      "denoise": 1.0,
+      "model": ["7", 0]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "Basic Scheduler"
+    }
+  },
+  "11": {
+    "inputs": {
+      "sampler_name": "uni_pc"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSampler Select"
+    }
+  },
+  "12": {
+    "inputs": {
+      "noise": ["8", 0],
+      "guider": ["9", 0],
+      "sampler": ["11", 0],
+      "sigmas": ["10", 0],
+      "latent_image": ["6", 0]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "Sampler Custom Advanced"
+    }
+  },
+  "13": {
+    "inputs": {
+      "samples": ["12", 0],
+      "vae": ["3", 0]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "14": {
+    "inputs": {
+      "fps": 16,
+      "lossless": false,
+      "quality": 85,
+      "method": "default",
+      "filename_prefix": "wan_video",
+      "images": ["13", 0]
+    },
+    "class_type": "SaveAnimatedWEBP",
+    "_meta": {
+      "title": "Save Animated WEBP"
+    }
+  }
+}
