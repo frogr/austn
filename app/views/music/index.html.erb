@@ -131,16 +131,16 @@
           </div>
         </div>
 
-        <!-- Lyrics Strength -->
+        <!-- Guidance Scale -->
         <div>
           <div class="flex items-center justify-between mb-2">
-            <label for="lyrics-strength" class="text-sm font-medium text-gray-300">Lyrics Strength</label>
-            <span id="lyrics-strength-value" class="text-sm text-green-400 font-mono">1.0</span>
+            <label for="guidance-scale" class="text-sm font-medium text-gray-300">Guidance Scale</label>
+            <span id="guidance-scale-value" class="text-sm text-green-400 font-mono">3.0</span>
           </div>
-          <input type="range" id="lyrics-strength" min="0" max="10" step="0.1" value="1"
-            oninput="document.getElementById('lyrics-strength-value').textContent = parseFloat(this.value).toFixed(1)"
+          <input type="range" id="guidance-scale" min="1" max="15" step="0.5" value="3"
+            oninput="document.getElementById('guidance-scale-value').textContent = parseFloat(this.value).toFixed(1)"
             class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
-          <p class="mt-1 text-xs text-gray-500">How strongly lyrics influence the output encoding</p>
+          <p class="mt-1 text-xs text-gray-500">How closely the output follows the prompt. Higher = more adherence</p>
         </div>
 
         <!-- Advanced Options Toggle -->
@@ -200,24 +200,11 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Denoise -->
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <label for="denoise" class="text-sm font-medium text-gray-300">Denoise</label>
-                <span id="denoise-value" class="text-sm text-green-400 font-mono">1.0</span>
-              </div>
-              <input type="range" id="denoise" min="0" max="1" step="0.05" value="1"
-                oninput="document.getElementById('denoise-value').textContent = parseFloat(this.value).toFixed(2)"
-                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
-            </div>
-            <!-- Seed -->
-            <div>
-              <label for="seed" class="block text-sm font-medium text-gray-300 mb-2">Seed</label>
-              <input type="number" id="seed" value="0" min="0" placeholder="0 = random"
-                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-              <p class="mt-1 text-xs text-gray-500">0 = random seed</p>
-            </div>
+          <div>
+            <label for="seed" class="block text-sm font-medium text-gray-300 mb-2">Seed</label>
+            <input type="number" id="seed" value="0" min="0" placeholder="0 = random"
+              class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+            <p class="mt-1 text-xs text-gray-500">0 = random seed</p>
           </div>
         </div>
 
@@ -369,7 +356,7 @@ async function generateMusic() {
       tags: tags,
       lyrics: document.getElementById('lyrics').value || '[inst]',
       audio_duration: parseFloat(document.getElementById('duration').value),
-      lyrics_strength: parseFloat(document.getElementById('lyrics-strength').value)
+      guidance_scale: parseFloat(document.getElementById('guidance-scale').value)
     };
 
     if (useAdvanced) {
@@ -377,7 +364,6 @@ async function generateMusic() {
       body.scheduler = document.getElementById('scheduler').value;
       body.guidance_scale_text = parseFloat(document.getElementById('guidance-text').value);
       body.guidance_scale_lyric = parseFloat(document.getElementById('guidance-lyric').value);
-      body.denoise = parseFloat(document.getElementById('denoise').value);
       body.seed = parseInt(document.getElementById('seed').value);
     }
 

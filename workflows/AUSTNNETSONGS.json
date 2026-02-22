@@ -1,45 +1,75 @@
 {
   "1": {
     "inputs": {
-      "ace_model_path": "ACE-Step\\ACE-Step-v1-3.5B.pth"
+      "dcae_checkpoint": "ACE-Step/dcae.pt",
+      "vocoder_checkpoint": "ACE-Step/vocoder.pt",
+      "ace_step_checkpoint": "ACE-Step/ACE-Step-v1-3.5B.pth",
+      "text_encoder_checkpoint": "ACE-Step/t5-v1_1-xxl-encoder-bf16",
+      "cpu_offload": true,
+      "torch_compile": false
     },
     "class_type": "ACEModelLoader",
     "_meta": {
-      "title": "ACE Model Loader"
+      "title": "ACE-Step Model Loader"
     }
   },
   "2": {
     "inputs": {
-      "tags": "pop, rock, energetic, upbeat",
-      "lyrics": "[inst]",
-      "lyrics_strength": 1.0,
-      "ace_model": ["1", 0]
+      "multi_line_prompt": "pop, rock, energetic, upbeat"
     },
-    "class_type": "TextEncodeAceStepAudio",
+    "class_type": "MultiLinePromptACES",
     "_meta": {
-      "title": "Text Encode ACE-Step Audio"
+      "title": "ACE-Step Prompt"
     }
   },
   "3": {
     "inputs": {
-      "audio_duration": 60.0,
-      "infer_step": 60,
-      "guidance_scale_text": 3.0,
-      "guidance_scale_lyric": 3.0,
-      "seed": 0,
-      "scheduler": "euler",
-      "denoise": 1.0,
-      "ace_model": ["1", 0],
-      "conditioning": ["2", 0]
+      "multi_line_prompt": "[inst]"
     },
-    "class_type": "ACEStepSampler",
+    "class_type": "MultiLineLyrics",
     "_meta": {
-      "title": "ACE-Step Sampler"
+      "title": "ACE-Step Lyrics"
     }
   },
   "4": {
     "inputs": {
-      "audio": ["3", 0],
+      "audio_duration": 60.0,
+      "infer_step": 60,
+      "guidance_scale": 3.0,
+      "scheduler_type": "euler",
+      "cfg_type": "apg",
+      "omega_scale": 10.0,
+      "seed": 0,
+      "guidance_interval": 0.5,
+      "guidance_interval_decay": 0.0,
+      "min_guidance_scale": 3.0,
+      "use_erg_tag": true,
+      "use_erg_lyric": false,
+      "use_erg_diffusion": true,
+      "oss_steps": 0,
+      "guidance_scale_text": 0.0,
+      "guidance_scale_lyric": 0.0
+    },
+    "class_type": "GenerationParameters",
+    "_meta": {
+      "title": "ACE-Step Parameters"
+    }
+  },
+  "5": {
+    "inputs": {
+      "models": ["1", 0],
+      "prompt": ["2", 0],
+      "lyrics": ["3", 0],
+      "parameters": ["4", 0]
+    },
+    "class_type": "ACEStepGen",
+    "_meta": {
+      "title": "ACE-Step"
+    }
+  },
+  "6": {
+    "inputs": {
+      "audio": ["5", 0],
       "filename_prefix": "ace_song"
     },
     "class_type": "SaveAudio",

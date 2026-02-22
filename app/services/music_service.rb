@@ -55,18 +55,18 @@ class MusicService
   def self.modify_workflow(workflow, params, unique_prefix, seed)
     workflow.each do |_node_id, node|
       case node["class_type"]
-      when "TextEncodeAceStepAudio"
-        node["inputs"]["tags"] = params[:tags] if params[:tags].present?
-        node["inputs"]["lyrics"] = params[:lyrics] if params[:lyrics].present?
-        node["inputs"]["lyrics_strength"] = params[:lyrics_strength].to_f if params[:lyrics_strength]
-      when "ACEStepSampler"
+      when "MultiLinePromptACES"
+        node["inputs"]["multi_line_prompt"] = params[:tags] if params[:tags].present?
+      when "MultiLineLyrics"
+        node["inputs"]["multi_line_prompt"] = params[:lyrics] if params[:lyrics].present?
+      when "GenerationParameters"
         node["inputs"]["audio_duration"] = params[:audio_duration].to_f if params[:audio_duration]
         node["inputs"]["infer_step"] = params[:infer_step].to_i if params[:infer_step]
+        node["inputs"]["guidance_scale"] = params[:guidance_scale].to_f if params[:guidance_scale]
         node["inputs"]["guidance_scale_text"] = params[:guidance_scale_text].to_f if params[:guidance_scale_text]
         node["inputs"]["guidance_scale_lyric"] = params[:guidance_scale_lyric].to_f if params[:guidance_scale_lyric]
         node["inputs"]["seed"] = seed
-        node["inputs"]["scheduler"] = params[:scheduler] if params[:scheduler].present? && SCHEDULER_OPTIONS.include?(params[:scheduler])
-        node["inputs"]["denoise"] = params[:denoise].to_f if params[:denoise]
+        node["inputs"]["scheduler_type"] = params[:scheduler] if params[:scheduler].present? && SCHEDULER_OPTIONS.include?(params[:scheduler])
       when "SaveAudio"
         node["inputs"]["filename_prefix"] = unique_prefix
       end
