@@ -8,44 +8,7 @@ class VideoController < ApplicationController
   end
 
   def generate
-    unless params[:prompt].present?
-      render json: { error: "Prompt is required" }, status: :bad_request
-      return
-    end
-
-    generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting video generation #{generation_id} with prompt: #{params[:prompt]}"
-
-    # Queue the job
-    VideoGenerationJob.perform_later(
-      generation_id,
-      {
-        "prompt" => params[:prompt],
-        "negative_prompt" => params[:negative_prompt],
-        "width" => params[:width],
-        "height" => params[:height],
-        "length" => params[:length],
-        "fps" => params[:fps],
-        "steps" => params[:steps],
-        "sampler_name" => params[:sampler_name],
-        "scheduler" => params[:scheduler],
-        "denoise" => params[:denoise],
-        "seed" => params[:seed],
-        "shift" => params[:shift],
-        "preset" => params[:preset]
-      }
-    )
-
-    render json: {
-      generation_id: generation_id,
-      status: "queued",
-      check_url: video_status_path(generation_id),
-      websocket_channel: "video_generation_#{generation_id}"
-    }
-  rescue => e
-    Rails.logger.error "Failed to queue video generation: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render json: { error: "Video generation is temporarily disabled" }, status: :service_unavailable
   end
 
   def status

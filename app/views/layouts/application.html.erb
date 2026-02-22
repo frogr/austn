@@ -289,6 +289,32 @@
 
       .nav-dropdown-item .material-icons { font-size: 1.1rem; opacity: 0.7; }
 
+      .nav-dropdown-item-disabled {
+        opacity: 0.45;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      .mobile-nav-sublink-disabled {
+        opacity: 0.45;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      .coming-soon-badge {
+        margin-left: auto;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.3rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+
       /* Hamburger menu for mobile */
       .hamburger-btn {
         display: none;
@@ -441,24 +467,35 @@
               <% ai_tools = [
                 ['Chat with AI', '/chat', 'chat'],
                 ['Generate Images', '/images', 'image'],
-                ['Generate Video', '/video', 'videocam'],
+                ['Generate Video', '/video', 'videocam', true],
                 ['Generate Music', '/music', 'library_music'],
                 ['Text to Speech', '/tts', 'record_voice_over'],
                 ['Remove Background', '/rembg', 'auto_fix_high'],
                 ['Image to SVG', '/vtracer', 'draw'],
                 ['Split Audio Stems', '/stems', 'graphic_eq'],
                 ['Image to 3D', '/3d', 'view_in_ar'],
-                ['Image to MIDI', '/midi', 'music_note'],
+                ['AI MIDI Keyboard', '/midi', 'music_note'],
                 ['Endless Content', '/endless', 'all_inclusive']
               ] %>
-              <% ai_tools.each do |label, path, icon| %>
-                <a href="<%= path %>"
-                   class="nav-dropdown-item <%= current_path.start_with?(path) ? 'active' : '' %>"
-                   role="menuitem"
-                   aria-label="<%= label %>">
-                  <span class="material-icons" aria-hidden="true"><%= icon %></span>
-                  <%= label %>
-                </a>
+              <% ai_tools.each do |label, path, icon, coming_soon| %>
+                <% if coming_soon %>
+                  <span class="nav-dropdown-item nav-dropdown-item-disabled"
+                     role="menuitem"
+                     aria-label="<%= label %> - Coming Soon"
+                     aria-disabled="true">
+                    <span class="material-icons" aria-hidden="true"><%= icon %></span>
+                    <%= label %>
+                    <span class="coming-soon-badge">Coming Soon</span>
+                  </span>
+                <% else %>
+                  <a href="<%= path %>"
+                     class="nav-dropdown-item <%= current_path.start_with?(path) ? 'active' : '' %>"
+                     role="menuitem"
+                     aria-label="<%= label %>">
+                    <span class="material-icons" aria-hidden="true"><%= icon %></span>
+                    <%= label %>
+                  </a>
+                <% end %>
               <% end %>
             </div>
           </div>
@@ -495,13 +532,23 @@
 
       <div class="mobile-nav-divider"></div>
       <div class="mobile-nav-section-title">AI Tools</div>
-      <% ai_tools.each do |label, path, icon| %>
-        <a href="<%= path %>"
-           class="mobile-nav-sublink <%= current_path.start_with?(path) ? 'active' : '' %>"
-           aria-label="<%= label %>">
-          <span class="material-icons" aria-hidden="true"><%= icon %></span>
-          <%= label %>
-        </a>
+      <% ai_tools.each do |label, path, icon, coming_soon| %>
+        <% if coming_soon %>
+          <span class="mobile-nav-sublink mobile-nav-sublink-disabled"
+             aria-label="<%= label %> - Coming Soon"
+             aria-disabled="true">
+            <span class="material-icons" aria-hidden="true"><%= icon %></span>
+            <%= label %>
+            <span class="coming-soon-badge">Coming Soon</span>
+          </span>
+        <% else %>
+          <a href="<%= path %>"
+             class="mobile-nav-sublink <%= current_path.start_with?(path) ? 'active' : '' %>"
+             aria-label="<%= label %>">
+            <span class="material-icons" aria-hidden="true"><%= icon %></span>
+            <%= label %>
+          </a>
+        <% end %>
       <% end %>
     </div>
 
