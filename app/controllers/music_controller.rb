@@ -23,14 +23,13 @@ class MusicController < ApplicationController
       {
         "tags" => params[:tags],
         "lyrics" => params[:lyrics].presence || "[inst]",
-        "lyrics_strength" => params[:lyrics_strength],
         "audio_duration" => params[:audio_duration],
+        "guidance_scale" => params[:guidance_scale],
         "infer_step" => params[:infer_step],
         "guidance_scale_text" => params[:guidance_scale_text],
         "guidance_scale_lyric" => params[:guidance_scale_lyric],
         "seed" => params[:seed],
         "scheduler" => params[:scheduler],
-        "denoise" => params[:denoise],
         "preset" => params[:preset]
       }
     )

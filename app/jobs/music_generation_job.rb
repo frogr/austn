@@ -12,14 +12,13 @@ class MusicGenerationJob < GpuJob
     result = MusicService.generate(
       tags: params["tags"],
       lyrics: params["lyrics"],
-      lyrics_strength: params["lyrics_strength"],
       audio_duration: params["audio_duration"],
       infer_step: params["infer_step"],
+      guidance_scale: params["guidance_scale"],
       guidance_scale_text: params["guidance_scale_text"],
       guidance_scale_lyric: params["guidance_scale_lyric"],
       seed: params["seed"],
       scheduler: params["scheduler"],
-      denoise: params["denoise"],
       preset: params["preset"]
     )
 
