@@ -506,6 +506,10 @@
     <script>
       // Use event delegation so listeners survive Turbo navigations
       (function() {
+        // Guard against duplicate listeners when Turbo re-executes this script
+        if (window._navDropdownInitialized) return;
+        window._navDropdownInitialized = true;
+
         // Dropdown toggle via delegation
         document.addEventListener('click', function(e) {
           var toggle = e.target.closest('.nav-dropdown-toggle');
@@ -563,8 +567,16 @@
           if (e.target.id === 'mobileNavOverlay') { closeMobileNav(); return; }
         });
 
-        // Close mobile nav on Turbo navigation
-        document.addEventListener('turbo:before-visit', closeMobileNav);
+        // Close mobile nav and dropdown on Turbo navigation
+        document.addEventListener('turbo:before-cache', function() {
+          closeMobileNav();
+          var dropdown = document.getElementById('aiToolsDropdown');
+          if (dropdown) {
+            dropdown.classList.remove('open');
+            var btn = dropdown.querySelector('.nav-dropdown-toggle');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+          }
+        });
       })();
     </script>
 
