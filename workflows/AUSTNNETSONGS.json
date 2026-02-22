@@ -1,0 +1,50 @@
+{
+  "1": {
+    "inputs": {
+      "ace_model_path": "ACE-Step\\ACE-Step-v1-3.5B.pth"
+    },
+    "class_type": "ACEModelLoader",
+    "_meta": {
+      "title": "ACE Model Loader"
+    }
+  },
+  "2": {
+    "inputs": {
+      "tags": "pop, rock, energetic, upbeat",
+      "lyrics": "[inst]",
+      "lyrics_strength": 1.0,
+      "ace_model": ["1", 0]
+    },
+    "class_type": "TextEncodeAceStepAudio",
+    "_meta": {
+      "title": "Text Encode ACE-Step Audio"
+    }
+  },
+  "3": {
+    "inputs": {
+      "audio_duration": 60.0,
+      "infer_step": 60,
+      "guidance_scale_text": 3.0,
+      "guidance_scale_lyric": 3.0,
+      "seed": 0,
+      "scheduler": "euler",
+      "denoise": 1.0,
+      "ace_model": ["1", 0],
+      "conditioning": ["2", 0]
+    },
+    "class_type": "ACEStepSampler",
+    "_meta": {
+      "title": "ACE-Step Sampler"
+    }
+  },
+  "4": {
+    "inputs": {
+      "audio": ["3", 0],
+      "filename_prefix": "ace_song"
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "Save Audio"
+    }
+  }
+}

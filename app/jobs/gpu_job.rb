@@ -7,6 +7,9 @@ class GpuJob < ApplicationJob
   # Track which service this job is for (override in subclasses)
   class_attribute :gpu_service_name, default: nil
 
+  # GPU lock timeout in seconds (override in subclasses for long-running jobs)
+  class_attribute :gpu_lock_timeout, default: 300
+
   # Retry configuration for GPU jobs
   retry_on StandardError, wait: :exponentially_longer, attempts: 3 do |job, error|
     Rails.logger.error "GPU job #{job.class.name} failed after retries: #{error.message}"
@@ -17,7 +20,7 @@ class GpuJob < ApplicationJob
   around_perform do |job, block|
     redis = Redis.new(url: Rails.application.config_for(:redis)["url"])
     lock_key = "gpu_lock"
-    lock_timeout = 300 # 5 minutes
+    lock_timeout = job.class.gpu_lock_timeout
 
     # Try to acquire lock
     acquired = redis.set(lock_key, job.job_id, nx: true, ex: lock_timeout)

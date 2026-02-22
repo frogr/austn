@@ -1,0 +1,550 @@
+<% content_for :head do %>
+  <meta name="turbo-visit-control" content="reload">
+<% end %>
+
+<style>
+  select option {
+    background-color: #1f2937;
+    color: white;
+  }
+  /* Range slider styling */
+  input[type="range"].slider-green {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.5));
+    border-radius: 0.5rem;
+  }
+  input[type="range"].slider-green::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  input[type="range"].slider-green::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  }
+  input[type="range"].slider-green::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  input[type="range"].slider-green:focus {
+    outline: none;
+  }
+  input[type="range"].slider-green:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+  }
+  .preset-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 150ms ease;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+  }
+  .preset-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+  .preset-btn.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #10b981;
+  }
+</style>
+
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Video Generation <%= render "shared/gpu_health_indicator", service: "video" %>
+    </h1>
+    <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Routed to my local GPU via ComfyUI + Wan 2.2</p>
+  </div>
+
+  <div class="max-w-4xl mx-auto">
+    <div class="rounded-lg p-3 sm:p-6 mb-4 sm:mb-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <div class="space-y-4">
+        <!-- Prompt -->
+        <div>
+          <label for="prompt" class="block text-sm font-medium text-gray-300 mb-2">
+            Describe the video you want to generate
+          </label>
+          <textarea
+            id="prompt"
+            placeholder="A cinematic shot of a mountain landscape at sunset, with clouds slowly drifting across the sky..."
+            rows="3"
+            class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+          ></textarea>
+        </div>
+
+        <!-- Resolution Presets -->
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Resolution Preset</label>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="preset-btn active" onclick="setPreset('quick')" id="preset-quick">Quick Preview (512x320, ~2s)</button>
+            <button type="button" class="preset-btn" onclick="setPreset('standard')" id="preset-standard">Standard 480p (832x480, ~5s)</button>
+            <button type="button" class="preset-btn" onclick="setPreset('hd')" id="preset-hd">HD 720p (1280x720, ~5s)</button>
+            <button type="button" class="preset-btn" onclick="setPreset('custom')" id="preset-custom">Custom</button>
+          </div>
+        </div>
+
+        <!-- Custom Resolution (hidden by default) -->
+        <div id="custom-resolution" style="display: none;">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="width" class="text-sm font-medium text-gray-300">Width</label>
+                <span id="width-value" class="text-sm text-green-400 font-mono">512</span>
+              </div>
+              <input type="range" id="width" min="128" max="1280" step="16" value="512"
+                oninput="document.getElementById('width-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="height" class="text-sm font-medium text-gray-300">Height</label>
+                <span id="height-value" class="text-sm text-green-400 font-mono">320</span>
+              </div>
+              <input type="range" id="height" min="128" max="720" step="16" value="320"
+                oninput="document.getElementById('height-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="length" class="text-sm font-medium text-gray-300">Frames</label>
+                <span id="length-value" class="text-sm text-green-400 font-mono">33</span>
+              </div>
+              <input type="range" id="length" min="1" max="121" step="4" value="33"
+                oninput="updateFrameLabel(this.value)"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+              <p class="mt-1 text-xs text-gray-500" id="length-info">~2.1s at 16fps</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FPS -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="fps" class="text-sm font-medium text-gray-300">FPS</label>
+            <span id="fps-value" class="text-sm text-green-400 font-mono">16</span>
+          </div>
+          <input type="range" id="fps" min="8" max="30" step="1" value="16"
+            oninput="document.getElementById('fps-value').textContent = this.value; updateFrameLabel(document.getElementById('length').value)"
+            class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+        </div>
+
+        <!-- Advanced Options Toggle -->
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="advanced" class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500" onchange="toggleAdvanced()">
+          <label for="advanced" class="text-sm font-medium text-gray-300">Advanced options</label>
+        </div>
+
+        <!-- Advanced Options -->
+        <div id="advanced-options" style="display: none;">
+          <!-- Negative Prompt -->
+          <div class="mb-4">
+            <label for="negative-prompt" class="block text-sm font-medium text-gray-300 mb-2">Negative Prompt</label>
+            <textarea id="negative-prompt" rows="2" placeholder="blurry, low quality, distorted, watermark, text overlay"
+              class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <!-- Steps -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="steps" class="text-sm font-medium text-gray-300">Steps</label>
+                <span id="steps-value" class="text-sm text-green-400 font-mono">30</span>
+              </div>
+              <input type="range" id="steps" min="1" max="100" step="1" value="30"
+                oninput="document.getElementById('steps-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+              <p class="mt-1 text-xs text-gray-500">More steps = higher quality but slower</p>
+            </div>
+            <!-- Shift -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="shift" class="text-sm font-medium text-gray-300">Shift</label>
+                <span id="shift-value" class="text-sm text-green-400 font-mono">8.0</span>
+              </div>
+              <input type="range" id="shift" min="1" max="20" step="0.5" value="8"
+                oninput="document.getElementById('shift-value').textContent = parseFloat(this.value).toFixed(1)"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+              <p class="mt-1 text-xs text-gray-500">Higher = more creative, lower = more coherent</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <!-- Sampler -->
+            <div>
+              <label for="sampler-name" class="block text-sm font-medium text-gray-300 mb-2">Sampler</label>
+              <select id="sampler-name"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;">
+                <option value="uni_pc" selected>uni_pc (Default)</option>
+                <option value="euler">euler</option>
+                <option value="euler_ancestral">euler_ancestral</option>
+                <option value="dpmpp_2m">dpmpp_2m</option>
+                <option value="dpmpp_2m_sde">dpmpp_2m_sde</option>
+              </select>
+            </div>
+            <!-- Scheduler -->
+            <div>
+              <label for="scheduler" class="block text-sm font-medium text-gray-300 mb-2">Scheduler</label>
+              <select id="scheduler"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;">
+                <option value="beta" selected>beta (Default)</option>
+                <option value="normal">normal</option>
+                <option value="simple">simple</option>
+                <option value="karras">karras</option>
+                <option value="sgm_uniform">sgm_uniform</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Denoise -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="denoise" class="text-sm font-medium text-gray-300">Denoise</label>
+                <span id="denoise-value" class="text-sm text-green-400 font-mono">1.0</span>
+              </div>
+              <input type="range" id="denoise" min="0" max="1" step="0.05" value="1"
+                oninput="document.getElementById('denoise-value').textContent = parseFloat(this.value).toFixed(2)"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+            </div>
+            <!-- Seed -->
+            <div>
+              <label for="seed" class="block text-sm font-medium text-gray-300 mb-2">Seed</label>
+              <input type="number" id="seed" value="0" min="0" placeholder="0 = random"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+              <p class="mt-1 text-xs text-gray-500">0 = random seed</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warning for HD -->
+        <div id="hd-warning" style="display: none;" class="p-3 rounded-md" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3);">
+          <p class="text-sm text-yellow-300">
+            <strong>Note:</strong> HD 720p uses most of the 16GB VRAM and will be significantly slower. Generation may take 10+ minutes.
+          </p>
+        </div>
+
+        <button
+          onclick="generateVideo()"
+          id="generate-btn"
+          class="w-full font-semibold py-3 px-4 rounded-md transition duration-200" style="background: linear-gradient(45deg, #10b981, #059669); color: #fff;"
+        >
+          Generate Video
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Display -->
+    <div id="status" style="display:none;" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="animate-spin h-5 w-5 mr-3 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span id="status-text" class="text-yellow-700">Generating your video...</span>
+      </div>
+      <div id="queue-position" class="mt-2 text-sm text-yellow-600"></div>
+      <div id="elapsed-time" class="mt-1 text-sm text-yellow-600"></div>
+      <p class="mt-2 text-xs text-yellow-600">Video generation can take 2-10 minutes depending on resolution and frame count.</p>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error" style="display:none;" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="h-5 w-5 text-red-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-12v4m0 4h.01"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Generation failed</h3>
+          <div id="error-message" class="mt-1 text-sm text-red-700"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" style="display:none;">
+      <div class="rounded-lg p-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <h3 class="text-lg font-semibold text-white mb-2" id="result-prompt"></h3>
+        <p class="text-sm text-gray-400 mb-4" id="result-info"></p>
+        <div class="mb-4 flex justify-center">
+          <img id="video-player" src="" alt="Generated video" style="max-width: 100%; border-radius: 0.5rem;" />
+        </div>
+        <div class="flex gap-4">
+          <a id="download-link" href="#" download
+            class="flex-1 text-center text-white font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: linear-gradient(45deg, #10b981, #059669);">
+            Download Video
+          </a>
+          <button
+            onclick="generateNew()"
+            class="flex-1 font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            Generate New
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentGenerationId = null;
+let pollingInterval = null;
+let generationStartTime = null;
+let elapsedInterval = null;
+let currentPreset = 'quick';
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+function setPreset(preset) {
+  currentPreset = preset;
+  // Update button styles
+  document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+  const btn = document.getElementById('preset-' + preset);
+  if (btn) btn.classList.add('active');
+
+  const customRes = document.getElementById('custom-resolution');
+  const hdWarning = document.getElementById('hd-warning');
+
+  if (preset === 'custom') {
+    customRes.style.display = 'block';
+    hdWarning.style.display = 'none';
+  } else {
+    customRes.style.display = 'none';
+    hdWarning.style.display = preset === 'hd' ? 'block' : 'none';
+
+    // Set values for display
+    const presets = {
+      quick: { width: 512, height: 320, length: 33 },
+      standard: { width: 832, height: 480, length: 81 },
+      hd: { width: 1280, height: 720, length: 81 }
+    };
+    if (presets[preset]) {
+      document.getElementById('width').value = presets[preset].width;
+      document.getElementById('width-value').textContent = presets[preset].width;
+      document.getElementById('height').value = presets[preset].height;
+      document.getElementById('height-value').textContent = presets[preset].height;
+      document.getElementById('length').value = presets[preset].length;
+      updateFrameLabel(presets[preset].length);
+    }
+  }
+}
+
+function updateFrameLabel(frames) {
+  const fps = parseInt(document.getElementById('fps').value) || 16;
+  const seconds = (frames / fps).toFixed(1);
+  document.getElementById('length-value').textContent = frames;
+  document.getElementById('length-info').textContent = `~${seconds}s at ${fps}fps`;
+}
+
+function toggleAdvanced() {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+  if (!checkbox || !advancedOptions) return;
+  advancedOptions.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+async function generateVideo() {
+  const prompt = document.getElementById('prompt').value;
+  if (!prompt) {
+    alert('Please enter a prompt');
+    return;
+  }
+
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+    pollingInterval = null;
+  }
+  if (elapsedInterval) {
+    clearInterval(elapsedInterval);
+    elapsedInterval = null;
+  }
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Generating...';
+
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('status-text').textContent = 'Queuing video generation...';
+  document.getElementById('queue-position').textContent = '';
+  document.getElementById('elapsed-time').textContent = '';
+
+  const advancedCheckbox = document.getElementById('advanced');
+  const useAdvanced = advancedCheckbox && advancedCheckbox.checked;
+
+  try {
+    const body = { prompt: prompt };
+
+    // Resolution
+    if (currentPreset !== 'custom') {
+      body.preset = currentPreset;
+    } else {
+      body.width = parseInt(document.getElementById('width').value);
+      body.height = parseInt(document.getElementById('height').value);
+      body.length = parseInt(document.getElementById('length').value);
+    }
+
+    body.fps = parseInt(document.getElementById('fps').value);
+
+    // Advanced options
+    if (useAdvanced) {
+      const negPrompt = document.getElementById('negative-prompt').value;
+      if (negPrompt) body.negative_prompt = negPrompt;
+      body.steps = parseInt(document.getElementById('steps').value);
+      body.shift = parseFloat(document.getElementById('shift').value);
+      body.sampler_name = document.getElementById('sampler-name').value;
+      body.scheduler = document.getElementById('scheduler').value;
+      body.denoise = parseFloat(document.getElementById('denoise').value);
+      body.seed = parseInt(document.getElementById('seed').value);
+    }
+
+    generationStartTime = Date.now();
+    startElapsedTimer();
+
+    const response = await fetch('/video/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCsrfToken()
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showError(data.error || 'Failed to start generation');
+      return;
+    }
+
+    currentGenerationId = data.generation_id;
+    console.log('Video generation started:', currentGenerationId);
+
+    startPolling();
+  } catch (error) {
+    showError('Failed to start generation: ' + error.message);
+  }
+}
+
+function startElapsedTimer() {
+  elapsedInterval = setInterval(() => {
+    if (generationStartTime) {
+      const elapsed = Math.floor((Date.now() - generationStartTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      document.getElementById('elapsed-time').textContent =
+        `Elapsed: ${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+  }, 1000);
+}
+
+function startPolling() {
+  pollingInterval = setInterval(async () => {
+    if (!currentGenerationId) {
+      clearInterval(pollingInterval);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/video/${currentGenerationId}/status`);
+      const statusData = await response.json();
+
+      if (statusData.status === 'complete') {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+        displayVideo(statusData);
+      } else if (statusData.status === 'queued' && statusData.position) {
+        document.getElementById('status-text').textContent = 'Waiting in GPU queue...';
+        document.getElementById('queue-position').textContent = `Position in queue: ${statusData.position}`;
+      } else if (statusData.status === 'processing') {
+        document.getElementById('status-text').textContent = 'Generating video...';
+        document.getElementById('queue-position').textContent = '';
+      } else if (statusData.status === 'failed') {
+        clearInterval(pollingInterval);
+        if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+        showError(statusData.error || 'Generation failed');
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+    }
+  }, 3000); // Poll every 3 seconds (video gen is slow)
+}
+
+function displayVideo(statusData) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+
+  const prompt = document.getElementById('prompt').value;
+  document.getElementById('result-prompt').textContent = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt;
+
+  const genTime = generationStartTime ? ((Date.now() - generationStartTime) / 1000).toFixed(1) : '?';
+  document.getElementById('result-info').textContent = `Generated in ${genTime}s`;
+
+  // Display the video (animated WEBP renders as an image with animation)
+  const videoPlayer = document.getElementById('video-player');
+  videoPlayer.src = `/video/${currentGenerationId}/result`;
+
+  document.getElementById('download-link').href = `/video/${currentGenerationId}/download`;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Video';
+}
+
+function showError(message) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+  document.getElementById('error-message').textContent = message;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Video';
+
+  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+  if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+}
+
+function generateNew() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  currentGenerationId = null;
+
+  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+  if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+}
+
+// Init
+document.addEventListener('turbo:load', () => {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+  if (checkbox && advancedOptions) {
+    advancedOptions.style.display = checkbox.checked ? 'block' : 'none';
+  }
+});
+</script>

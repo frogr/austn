@@ -1,0 +1,513 @@
+<% content_for :head do %>
+  <meta name="turbo-visit-control" content="reload">
+<% end %>
+
+<style>
+  select option {
+    background-color: #1f2937;
+    color: white;
+  }
+  /* Range slider styling */
+  input[type="range"].slider-green {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.5));
+    border-radius: 0.5rem;
+  }
+  input[type="range"].slider-green::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  input[type="range"].slider-green::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+  }
+  input[type="range"].slider-green::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  input[type="range"].slider-green:focus {
+    outline: none;
+  }
+  input[type="range"].slider-green:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+  }
+  .preset-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 150ms ease;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+  }
+  .preset-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+  .preset-btn.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #10b981;
+  }
+</style>
+
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="text-center mb-6 md:mb-8">
+    <h1 class="font-black mb-4" style="font-size: clamp(3rem, 6vw, 4rem); color: var(--text-primary); letter-spacing: -0.03em;">
+      Music Generation <%= render "shared/gpu_health_indicator", service: "music" %>
+    </h1>
+    <p class="font-medium" style="font-size: clamp(1.25rem, 2vw, 1.75rem); color: var(--text-secondary); letter-spacing: -0.01em;">Routed to my local GPU via ComfyUI + ACE-Step</p>
+  </div>
+
+  <div class="max-w-4xl mx-auto">
+    <div class="rounded-lg p-3 sm:p-6 mb-4 sm:mb-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <div class="space-y-4">
+        <!-- Presets -->
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Quick Presets</label>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="preset-btn" onclick="applyPreset('quick_instrumental')" id="preset-quick_instrumental">Quick Instrumental</button>
+            <button type="button" class="preset-btn" onclick="applyPreset('full_song')" id="preset-full_song">Full Song</button>
+            <button type="button" class="preset-btn" onclick="applyPreset('rap_track')" id="preset-rap_track">Rap Track</button>
+            <button type="button" class="preset-btn" onclick="applyPreset('ambient')" id="preset-ambient">Ambient</button>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div>
+          <label for="tags" class="block text-sm font-medium text-gray-300 mb-2">
+            Style Tags
+          </label>
+          <input type="text" id="tags" value="pop, rock, energetic, upbeat"
+            placeholder="e.g., country rock, acoustic guitar, 120 BPM"
+            class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+          <p class="mt-1 text-xs text-gray-500">Genre, instruments, mood, BPM, key. Example: "dark, death metal, electric guitar, drums, 140 BPM, A minor"</p>
+        </div>
+
+        <!-- Lyrics -->
+        <div>
+          <label for="lyrics" class="block text-sm font-medium text-gray-300 mb-2">
+            Lyrics
+          </label>
+          <textarea id="lyrics" rows="6"
+            placeholder="[verse]&#10;Write your verse lyrics here&#10;&#10;[chorus]&#10;Write your chorus here&#10;&#10;[inst] for instrumental only"
+            class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white font-mono text-sm" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">[inst]</textarea>
+          <p class="mt-1 text-xs text-gray-500">
+            Use structure tags: <span class="text-green-400 font-mono">[verse]</span> <span class="text-green-400 font-mono">[chorus]</span> <span class="text-green-400 font-mono">[bridge]</span> <span class="text-green-400 font-mono">[outro]</span> <span class="text-green-400 font-mono">[inst]</span> (instrumental)
+          </p>
+        </div>
+
+        <!-- Duration -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="duration" class="text-sm font-medium text-gray-300">Duration (seconds)</label>
+            <span id="duration-value" class="text-sm text-green-400 font-mono">60</span>
+          </div>
+          <input type="range" id="duration" min="10" max="240" step="5" value="60"
+            oninput="updateDurationLabel(this.value)"
+            class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+          <div class="flex justify-between text-xs text-gray-500 mt-1">
+            <span>10s</span>
+            <span>60s</span>
+            <span>120s</span>
+            <span>180s</span>
+            <span>240s</span>
+          </div>
+        </div>
+
+        <!-- Lyrics Strength -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="lyrics-strength" class="text-sm font-medium text-gray-300">Lyrics Strength</label>
+            <span id="lyrics-strength-value" class="text-sm text-green-400 font-mono">1.0</span>
+          </div>
+          <input type="range" id="lyrics-strength" min="0" max="10" step="0.1" value="1"
+            oninput="document.getElementById('lyrics-strength-value').textContent = parseFloat(this.value).toFixed(1)"
+            class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+          <p class="mt-1 text-xs text-gray-500">How strongly lyrics influence the output encoding</p>
+        </div>
+
+        <!-- Advanced Options Toggle -->
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="advanced" class="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500" onchange="toggleAdvanced()">
+          <label for="advanced" class="text-sm font-medium text-gray-300">Advanced options</label>
+        </div>
+
+        <!-- Advanced Options -->
+        <div id="advanced-options" style="display: none;">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <!-- Infer Steps -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="infer-step" class="text-sm font-medium text-gray-300">Diffusion Steps</label>
+                <span id="infer-step-value" class="text-sm text-green-400 font-mono">60</span>
+              </div>
+              <input type="range" id="infer-step" min="1" max="200" step="1" value="60"
+                oninput="document.getElementById('infer-step-value').textContent = this.value"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+              <p class="mt-1 text-xs text-gray-500">More steps = higher quality but slower</p>
+            </div>
+            <!-- Scheduler -->
+            <div>
+              <label for="scheduler" class="block text-sm font-medium text-gray-300 mb-2">Scheduler</label>
+              <select id="scheduler"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;">
+                <option value="euler" selected>euler (Default)</option>
+                <option value="euler_ancestral">euler_ancestral</option>
+                <option value="ddim">ddim</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <!-- Guidance Scale Text -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="guidance-text" class="text-sm font-medium text-gray-300">Guidance Scale (Tags)</label>
+                <span id="guidance-text-value" class="text-sm text-green-400 font-mono">3.0</span>
+              </div>
+              <input type="range" id="guidance-text" min="0" max="15" step="0.5" value="3"
+                oninput="document.getElementById('guidance-text-value').textContent = parseFloat(this.value).toFixed(1)"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+              <p class="mt-1 text-xs text-gray-500">How strongly tags/style influence the output</p>
+            </div>
+            <!-- Guidance Scale Lyric -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="guidance-lyric" class="text-sm font-medium text-gray-300">Guidance Scale (Lyrics)</label>
+                <span id="guidance-lyric-value" class="text-sm text-green-400 font-mono">3.0</span>
+              </div>
+              <input type="range" id="guidance-lyric" min="0" max="15" step="0.5" value="3"
+                oninput="document.getElementById('guidance-lyric-value').textContent = parseFloat(this.value).toFixed(1)"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+              <p class="mt-1 text-xs text-gray-500">How strongly lyrics influence the output</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Denoise -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label for="denoise" class="text-sm font-medium text-gray-300">Denoise</label>
+                <span id="denoise-value" class="text-sm text-green-400 font-mono">1.0</span>
+              </div>
+              <input type="range" id="denoise" min="0" max="1" step="0.05" value="1"
+                oninput="document.getElementById('denoise-value').textContent = parseFloat(this.value).toFixed(2)"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
+            </div>
+            <!-- Seed -->
+            <div>
+              <label for="seed" class="block text-sm font-medium text-gray-300 mb-2">Seed</label>
+              <input type="number" id="seed" value="0" min="0" placeholder="0 = random"
+                class="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-white" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+              <p class="mt-1 text-xs text-gray-500">0 = random seed</p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick="generateMusic()"
+          id="generate-btn"
+          class="w-full font-semibold py-3 px-4 rounded-md transition duration-200" style="background: linear-gradient(45deg, #10b981, #059669); color: #fff;"
+        >
+          Generate Music
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Display -->
+    <div id="status" style="display:none;" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="animate-spin h-5 w-5 mr-3 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span id="status-text" class="text-yellow-700">Generating your music...</span>
+      </div>
+      <div id="queue-position" class="mt-2 text-sm text-yellow-600"></div>
+      <div id="elapsed-time" class="mt-1 text-sm text-yellow-600"></div>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error" style="display:none;" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-start">
+        <svg class="h-5 w-5 text-red-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-12v4m0 4h.01"/>
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Generation failed</h3>
+          <div id="error-message" class="mt-1 text-sm text-red-700"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" style="display:none;">
+      <div class="rounded-lg p-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <h3 class="text-lg font-semibold text-white mb-2" id="result-tags"></h3>
+        <p class="text-sm text-gray-400 mb-4" id="result-info"></p>
+        <div class="mb-4">
+          <audio id="audio-player" controls class="w-full">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+        <div class="flex gap-4">
+          <a id="download-link" href="#" download
+            class="flex-1 text-center text-white font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: linear-gradient(45deg, #10b981, #059669);">
+            Download Audio
+          </a>
+          <button
+            onclick="generateNew()"
+            class="flex-1 font-semibold py-2 px-4 rounded transition duration-200"
+            style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.95);"
+          >
+            Generate New
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentGenerationId = null;
+let pollingInterval = null;
+let generationStartTime = null;
+let elapsedInterval = null;
+
+function getCsrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') : '';
+}
+
+const presets = {
+  quick_instrumental: { tags: 'lo-fi, chill, piano', lyrics: '[inst]', duration: 30, infer_step: 40 },
+  full_song: { duration: 120, infer_step: 60 },
+  rap_track: { tags: 'hip-hop, trap, 808, deep male voice, 130 BPM', infer_step: 60 },
+  ambient: { tags: 'ambient, atmospheric, synth pads, ethereal, 70 BPM', lyrics: '[inst]', duration: 180, infer_step: 60 }
+};
+
+function applyPreset(name) {
+  // Remove active from all presets
+  document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+  const btn = document.getElementById('preset-' + name);
+  if (btn) btn.classList.add('active');
+
+  const preset = presets[name];
+  if (!preset) return;
+
+  if (preset.tags) document.getElementById('tags').value = preset.tags;
+  if (preset.lyrics) document.getElementById('lyrics').value = preset.lyrics;
+  if (preset.duration) {
+    document.getElementById('duration').value = preset.duration;
+    updateDurationLabel(preset.duration);
+  }
+  if (preset.infer_step) {
+    document.getElementById('infer-step').value = preset.infer_step;
+    document.getElementById('infer-step-value').textContent = preset.infer_step;
+  }
+}
+
+function updateDurationLabel(value) {
+  const mins = Math.floor(value / 60);
+  const secs = value % 60;
+  let label = value + 's';
+  if (mins > 0) label += ` (${mins}m${secs > 0 ? ' ' + secs + 's' : ''})`;
+  document.getElementById('duration-value').textContent = label;
+}
+
+function toggleAdvanced() {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+  if (!checkbox || !advancedOptions) return;
+  advancedOptions.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+async function generateMusic() {
+  const tags = document.getElementById('tags').value;
+  if (!tags) {
+    alert('Please enter style tags');
+    return;
+  }
+
+  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+  if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Generating...';
+
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('status-text').textContent = 'Queuing music generation...';
+  document.getElementById('queue-position').textContent = '';
+  document.getElementById('elapsed-time').textContent = '';
+
+  const advancedCheckbox = document.getElementById('advanced');
+  const useAdvanced = advancedCheckbox && advancedCheckbox.checked;
+
+  try {
+    const body = {
+      tags: tags,
+      lyrics: document.getElementById('lyrics').value || '[inst]',
+      audio_duration: parseFloat(document.getElementById('duration').value),
+      lyrics_strength: parseFloat(document.getElementById('lyrics-strength').value)
+    };
+
+    if (useAdvanced) {
+      body.infer_step = parseInt(document.getElementById('infer-step').value);
+      body.scheduler = document.getElementById('scheduler').value;
+      body.guidance_scale_text = parseFloat(document.getElementById('guidance-text').value);
+      body.guidance_scale_lyric = parseFloat(document.getElementById('guidance-lyric').value);
+      body.denoise = parseFloat(document.getElementById('denoise').value);
+      body.seed = parseInt(document.getElementById('seed').value);
+    }
+
+    generationStartTime = Date.now();
+    startElapsedTimer();
+
+    const response = await fetch('/music/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCsrfToken()
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showError(data.error || 'Failed to start generation');
+      return;
+    }
+
+    currentGenerationId = data.generation_id;
+    console.log('Music generation started:', currentGenerationId);
+
+    startPolling();
+  } catch (error) {
+    showError('Failed to start generation: ' + error.message);
+  }
+}
+
+function startElapsedTimer() {
+  elapsedInterval = setInterval(() => {
+    if (generationStartTime) {
+      const elapsed = Math.floor((Date.now() - generationStartTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      document.getElementById('elapsed-time').textContent =
+        `Elapsed: ${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+  }, 1000);
+}
+
+function startPolling() {
+  pollingInterval = setInterval(async () => {
+    if (!currentGenerationId) {
+      clearInterval(pollingInterval);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/music/${currentGenerationId}/status`);
+      const statusData = await response.json();
+
+      if (statusData.status === 'complete') {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+        displayAudio(statusData);
+      } else if (statusData.status === 'queued' && statusData.position) {
+        document.getElementById('status-text').textContent = 'Waiting in GPU queue...';
+        document.getElementById('queue-position').textContent = `Position in queue: ${statusData.position}`;
+      } else if (statusData.status === 'processing') {
+        document.getElementById('status-text').textContent = 'Generating music...';
+        document.getElementById('queue-position').textContent = '';
+      } else if (statusData.status === 'failed') {
+        clearInterval(pollingInterval);
+        if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+        showError(statusData.error || 'Generation failed');
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+    }
+  }, 2000);
+}
+
+function displayAudio(statusData) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+
+  const tags = document.getElementById('tags').value;
+  document.getElementById('result-tags').textContent = tags;
+
+  const genTime = generationStartTime ? ((Date.now() - generationStartTime) / 1000).toFixed(1) : '?';
+  const duration = document.getElementById('duration').value;
+  document.getElementById('result-info').textContent = `${duration}s track · Generated in ${genTime}s`;
+
+  const audioPlayer = document.getElementById('audio-player');
+  audioPlayer.src = `/music/${currentGenerationId}/result`;
+
+  document.getElementById('download-link').href = `/music/${currentGenerationId}/download`;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Music';
+}
+
+function showError(message) {
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('error').style.display = 'block';
+  document.getElementById('error-message').textContent = message;
+
+  const generateBtn = document.getElementById('generate-btn');
+  generateBtn.disabled = false;
+  generateBtn.textContent = 'Generate Music';
+
+  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+  if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+}
+
+function generateNew() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error').style.display = 'none';
+  currentGenerationId = null;
+
+  // Stop audio playback
+  const audio = document.getElementById('audio-player');
+  if (audio) { audio.pause(); audio.src = ''; }
+
+  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+  if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+}
+
+// Init
+document.addEventListener('turbo:load', () => {
+  const checkbox = document.getElementById('advanced');
+  const advancedOptions = document.getElementById('advanced-options');
+  if (checkbox && advancedOptions) {
+    advancedOptions.style.display = checkbox.checked ? 'block' : 'none';
+  }
+});
+</script>
