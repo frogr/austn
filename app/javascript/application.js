@@ -23,7 +23,8 @@ const COMPONENT_LOADERS = {
   Chat: () => import('./components/Chat'),
   DAW: () => import('./components/daw/DAW'),
   EndlessStory: () => import('./components/EndlessStory'),
-  Resume: () => import('./components/Resume')
+  Resume: () => import('./components/Resume'),
+  ClaudeCorner: () => import('./components/ClaudeCorner')
 }
 
 // Store our roots so we can track which elements have been initialized
