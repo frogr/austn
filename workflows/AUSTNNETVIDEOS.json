@@ -55,9 +55,9 @@
       "length": 33,
       "batch_size": 1
     },
-    "class_type": "EmptyWanLatentVideo",
+    "class_type": "EmptyHunyuanLatentVideo",
     "_meta": {
-      "title": "Empty Wan Latent Video"
+      "title": "Empty Hunyuan Latent Video"
     }
   },
   "7": {
@@ -65,9 +65,9 @@
       "shift": 8.0,
       "model": ["1", 0]
     },
-    "class_type": "ModelSamplingWan",
+    "class_type": "ModelSamplingSD3",
     "_meta": {
-      "title": "Model Sampling Wan"
+      "title": "Model Sampling SD3"
     }
   },
   "8": {

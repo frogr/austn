@@ -62,7 +62,7 @@ class VideoService
         elsif title.include?("Negative")
           node["inputs"]["text"] = params[:negative_prompt] if params[:negative_prompt].present?
         end
-      when "EmptyWanLatentVideo"
+      when "EmptyHunyuanLatentVideo"
         node["inputs"]["width"] = params[:width].to_i if params[:width]
         node["inputs"]["height"] = params[:height].to_i if params[:height]
         node["inputs"]["length"] = params[:length].to_i if params[:length]
@@ -74,7 +74,7 @@ class VideoService
         node["inputs"]["denoise"] = params[:denoise].to_f if params[:denoise]
       when "KSamplerSelect"
         node["inputs"]["sampler_name"] = params[:sampler_name] if params[:sampler_name].present? && SAMPLER_OPTIONS.include?(params[:sampler_name])
-      when "ModelSamplingWan"
+      when "ModelSamplingSD3"
         node["inputs"]["shift"] = params[:shift].to_f if params[:shift]
       when "SaveAnimatedWEBP"
         node["inputs"]["fps"] = params[:fps].to_i if params[:fps]
