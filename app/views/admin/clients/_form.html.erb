@@ -1,0 +1,76 @@
+<%= form_with(model: [:admin, client], local: true) do |f| %>
+  <% if client.errors.any? %>
+    <div class="mb-4 p-3 rounded-md bg-red-900/50 text-red-300 border border-red-700 text-sm">
+      <p class="font-semibold mb-1"><%= pluralize(client.errors.count, "error") %> prevented this client from being saved:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <% client.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+        <%= f.text_field :name, placeholder: "Backlit LLC",
+              class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+        <%= f.email_field :email, placeholder: "billing@example.com",
+              class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-1">Address Line 1</label>
+      <%= f.text_field :address_line1, placeholder: "123 Main Street",
+            class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+            style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-1">Address Line 2 <span class="text-gray-500">(optional)</span></label>
+      <%= f.text_field :address_line2, placeholder: "Suite 200",
+            class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+            style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="col-span-2">
+        <label class="block text-sm font-medium text-gray-300 mb-1">City</label>
+        <%= f.text_field :city, placeholder: "San Francisco",
+              class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">State</label>
+        <%= f.text_field :state, placeholder: "CA", maxlength: 2,
+              class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">ZIP</label>
+        <%= f.text_field :zip, placeholder: "94105",
+              class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-1">Internal Notes <span class="text-gray-500">(not shown on invoices)</span></label>
+      <%= f.text_area :notes, rows: 3,
+            class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+            style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+    </div>
+
+    <div>
+      <%= f.submit client.persisted? ? "Update Client" : "Create Client",
+            class: "inline-flex items-center justify-center gap-2 font-semibold py-2.5 px-6 rounded-md transition duration-200 text-white bg-green-600 hover:bg-green-500 cursor-pointer" %>
+    </div>
+  </div>
+<% end %>

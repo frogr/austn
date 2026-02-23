@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; font-family: Helvetica, Arial, sans-serif; background: #f5f5f5; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .card { background: #ffffff; border-radius: 8px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .header { margin-bottom: 30px; }
+    .header h1 { font-size: 20px; color: #111; margin: 0 0 4px 0; }
+    .header p { font-size: 13px; color: #999; margin: 0; }
+    .body-text { font-size: 15px; line-height: 1.6; color: #333; margin-bottom: 20px; }
+    .details { background: #f9f9f9; border-radius: 6px; padding: 20px; margin-bottom: 25px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+    .detail-label { color: #666; }
+    .detail-value { color: #111; font-weight: 600; }
+    .total-row { border-top: 2px solid #1DB954; padding-top: 10px; margin-top: 6px; }
+    .total-value { color: #1DB954; font-size: 18px; font-weight: 700; }
+    .footer { text-align: center; margin-top: 30px; font-size: 13px; color: #999; }
+    .footer a { color: #1DB954; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <h1>Austin French</h1>
+        <p>Senior Software Engineer</p>
+      </div>
+
+      <p class="body-text">
+        Hi <%= @client.name %>,
+      </p>
+
+      <p class="body-text">
+        Please find attached invoice <strong><%= @invoice.invoice_number %></strong>
+        for <strong><%= format_money(@invoice.total_cents) %></strong>,
+        due by <strong><%= @invoice.due_date.strftime("%B %d, %Y") %></strong>.
+      </p>
+
+      <div class="details">
+        <div class="detail-row">
+          <span class="detail-label">Invoice</span>
+          <span class="detail-value"><%= @invoice.invoice_number %></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Issue Date</span>
+          <span class="detail-value"><%= @invoice.issue_date.strftime("%b %d, %Y") %></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Due Date</span>
+          <span class="detail-value"><%= @invoice.due_date.strftime("%b %d, %Y") %></span>
+        </div>
+        <div class="detail-row total-row">
+          <span class="detail-label">Amount Due</span>
+          <span class="total-value"><%= format_money(@invoice.total_cents) %></span>
+        </div>
+      </div>
+
+      <p class="body-text">
+        The PDF invoice is attached to this email. Please don't hesitate to reach out if you have any questions.
+      </p>
+
+      <p class="body-text">
+        Thank you!<br>
+        Austin
+      </p>
+    </div>
+
+    <div class="footer">
+      <p><a href="https://austn.net">austn.net</a> &middot; hi@austn.net</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<%= form_with(model: [:admin, invoice], local: true, html: { data: { controller: "invoice-form" } }) do |f| %>
+  <% if invoice.errors.any? %>
+    <div class="mb-4 p-3 rounded-md bg-red-900/50 text-red-300 border border-red-700 text-sm">
+      <p class="font-semibold mb-1"><%= pluralize(invoice.errors.count, "error") %> prevented this invoice from being saved:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <% invoice.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Client -->
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-1">Client</label>
+      <%= f.select :client_id,
+            options_from_collection_for_select(clients, :id, :name, invoice.client_id),
+            { include_blank: "Select a client..." },
+            class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+            style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+      <p class="mt-1 text-xs text-gray-500">
+        <%= link_to "Add new client", new_admin_client_path, class: "text-green-400 hover:text-green-300" %>
+      </p>
+    </div>
+
+    <!-- Dates -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Issue Date</label>
+        <%= f.date_field :issue_date,
+              class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;" %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Due Date</label>
+        <%= f.date_field :due_date,
+              class: "w-full px-3 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color-scheme: dark;" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line Items -->
+  <div class="mb-6">
+    <h3 class="text-white font-semibold mb-3">Line Items</h3>
+    <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <!-- Header -->
+      <div class="hidden sm:grid sm:grid-cols-12 gap-2 px-4 py-2 text-sm font-semibold text-gray-400" style="background: rgba(255,255,255,0.03);">
+        <div class="col-span-5">Description</div>
+        <div class="col-span-2">Quantity</div>
+        <div class="col-span-2">Unit Price</div>
+        <div class="col-span-2 text-right">Total</div>
+        <div class="col-span-1"></div>
+      </div>
+
+      <!-- Line item rows -->
+      <div data-invoice-form-target="lineItems">
+        <%= f.fields_for :line_items do |li| %>
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 px-4 py-3 items-center" style="border-top: 1px solid rgba(255,255,255,0.05);" data-invoice-form-target="lineItem">
+            <%= li.hidden_field :id %>
+            <%= li.hidden_field :_destroy, data: { invoice_form_target: "destroyField" } %>
+            <div class="sm:col-span-5">
+              <label class="sm:hidden text-xs text-gray-500 mb-1 block">Description</label>
+              <%= li.text_field :description,
+                    placeholder: "Service description",
+                    class: "w-full px-3 py-2 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500",
+                    style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="sm:hidden text-xs text-gray-500 mb-1 block">Quantity</label>
+              <%= li.number_field :quantity,
+                    step: "0.01", min: "0",
+                    class: "w-full px-3 py-2 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500",
+                    style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);",
+                    data: { action: "input->invoice-form#calculateTotals", invoice_form_target: "quantity" } %>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="sm:hidden text-xs text-gray-500 mb-1 block">Unit Price (cents)</label>
+              <%= li.number_field :unit_price_cents,
+                    step: "1", min: "0", placeholder: "e.g. 50000",
+                    class: "w-full px-3 py-2 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500",
+                    style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);",
+                    data: { action: "input->invoice-form#calculateTotals", invoice_form_target: "unitPrice" } %>
+            </div>
+            <div class="sm:col-span-2 text-right">
+              <label class="sm:hidden text-xs text-gray-500 mb-1 block">Total</label>
+              <span class="text-white text-sm font-medium" data-invoice-form-target="lineTotal">$0.00</span>
+            </div>
+            <div class="sm:col-span-1 text-right">
+              <button type="button" class="p-1.5 rounded-md transition-colors hover:bg-red-900/50 text-gray-500 hover:text-red-400" data-action="click->invoice-form#removeLineItem">
+                <span class="material-icons" style="font-size: 18px;">delete</span>
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Add line item button -->
+      <div class="px-4 py-3" style="border-top: 1px solid rgba(255,255,255,0.05);">
+        <button type="button" class="inline-flex items-center gap-1 text-sm text-green-400 hover:text-green-300 transition-colors" data-action="click->invoice-form#addLineItem">
+          <span class="material-icons" style="font-size: 18px;">add</span>
+          Add Line Item
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Totals -->
+  <div class="flex justify-end mb-6">
+    <div class="w-full sm:w-64 space-y-2 p-4 rounded-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-400">Subtotal</span>
+        <span class="text-white font-medium" data-invoice-form-target="subtotal">$0.00</span>
+      </div>
+      <div class="flex justify-between items-center text-sm gap-2">
+        <span class="text-gray-400">Tax Rate %</span>
+        <%= f.number_field :tax_rate,
+              step: "0.01", min: "0", max: "100",
+              class: "w-20 px-2 py-1 rounded-md text-white text-sm text-right focus:outline-none focus:ring-2 focus:ring-green-500",
+              style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);",
+              data: { action: "input->invoice-form#calculateTotals", invoice_form_target: "taxRate" } %>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-400">Tax</span>
+        <span class="text-white" data-invoice-form-target="taxAmount">$0.00</span>
+      </div>
+      <div class="flex justify-between text-base font-bold pt-2" style="border-top: 1px solid rgba(255,255,255,0.1);">
+        <span class="text-white">Total</span>
+        <span style="color: var(--accent-color);" data-invoice-form-target="total">$0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="mb-6">
+    <label class="block text-sm font-medium text-gray-300 mb-1">Notes (appears on invoice)</label>
+    <%= f.text_area :notes,
+          rows: 3,
+          placeholder: "Payment via bank transfer preferred.",
+          class: "w-full px-3 py-2 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500",
+          style: "background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);" %>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex flex-col sm:flex-row gap-3">
+    <%= f.submit "Save as Draft",
+          name: "commit",
+          class: "inline-flex items-center justify-center gap-2 font-semibold py-2.5 px-6 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600 cursor-pointer" %>
+    <% if invoice.persisted? %>
+      <%= link_to preview_admin_invoice_path(invoice), target: "_blank", class: "inline-flex items-center justify-center gap-2 font-semibold py-2.5 px-6 rounded-md transition duration-200 text-white bg-blue-600 hover:bg-blue-500" do %>
+        <span class="material-icons" style="font-size: 18px;">preview</span>
+        Preview PDF
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Template for new line items (hidden, used by Stimulus) -->
+  <template data-invoice-form-target="template">
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 px-4 py-3 items-center" style="border-top: 1px solid rgba(255,255,255,0.05);" data-invoice-form-target="lineItem">
+      <input type="hidden" name="invoice[line_items_attributes][NEW_IDX][_destroy]" value="false" data-invoice-form-target="destroyField">
+      <div class="sm:col-span-5">
+        <label class="sm:hidden text-xs text-gray-500 mb-1 block">Description</label>
+        <input type="text" name="invoice[line_items_attributes][NEW_IDX][description]" placeholder="Service description"
+               class="w-full px-3 py-2 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+               style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="sm:hidden text-xs text-gray-500 mb-1 block">Quantity</label>
+        <input type="number" name="invoice[line_items_attributes][NEW_IDX][quantity]" value="1" step="0.01" min="0"
+               class="w-full px-3 py-2 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+               style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+               data-action="input->invoice-form#calculateTotals" data-invoice-form-target="quantity">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="sm:hidden text-xs text-gray-500 mb-1 block">Unit Price (cents)</label>
+        <input type="number" name="invoice[line_items_attributes][NEW_IDX][unit_price_cents]" value="0" step="1" min="0" placeholder="e.g. 50000"
+               class="w-full px-3 py-2 rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+               style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"
+               data-action="input->invoice-form#calculateTotals" data-invoice-form-target="unitPrice">
+      </div>
+      <div class="sm:col-span-2 text-right">
+        <label class="sm:hidden text-xs text-gray-500 mb-1 block">Total</label>
+        <span class="text-white text-sm font-medium" data-invoice-form-target="lineTotal">$0.00</span>
+      </div>
+      <div class="sm:col-span-1 text-right">
+        <button type="button" class="p-1.5 rounded-md transition-colors hover:bg-red-900/50 text-gray-500 hover:text-red-400" data-action="click->invoice-form#removeLineItem">
+          <span class="material-icons" style="font-size: 18px;">delete</span>
+        </button>
+      </div>
+    </div>
+  </template>
+<% end %>
