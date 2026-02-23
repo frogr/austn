@@ -450,7 +450,7 @@
         <a href="/" class="nav-brand" aria-label="Home">austn</a>
         <nav class="nav-links" aria-label="Main navigation">
           <% current_path = request.path %>
-          <% ai_tool_paths = ['/chat', '/images', '/video', '/music', '/tts', '/rembg', '/vtracer', '/stems', '/3d', '/midi', '/endless'] %>
+          <% ai_tool_paths = ['/chat', '/images', '/video', '/music', '/tts', '/rembg', '/vtracer', '/stems', '/3d', '/midi', '/endless', '/pitch'] %>
           <% ai_tool_active = ai_tool_paths.any? { |p| current_path.start_with?(p) } %>
 
           <%= link_to "Home", "/", class: "nav-link #{current_path == '/' ? 'active' : ''}", aria: { label: "Go to homepage" } %>
@@ -475,7 +475,8 @@
                 ['Split Audio Stems', '/stems', 'graphic_eq'],
                 ['Image to 3D', '/3d', 'view_in_ar'],
                 ['AI MIDI Keyboard', '/midi', 'music_note'],
-                ['Endless Content', '/endless', 'all_inclusive']
+                ['Endless Content', '/endless', 'all_inclusive'],
+                ['Pitch Checker', '/pitch', 'tune']
               ] %>
               <% ai_tools.each do |label, path, icon, coming_soon| %>
                 <% if coming_soon %>
