@@ -145,4 +145,42 @@ export class PitchDetector {
     const adjustment = (s0 - s2) / denominator
     return tau + adjustment
   }
+
+  /**
+   * Analyze an entire AudioBuffer offline, returning timestamped pitch data.
+   * Runs the YIN detector in overlapping windows across the full buffer.
+   * @param {AudioBuffer} audioBuffer - Decoded audio buffer
+   * @param {number} [hopSize] - Samples between analysis windows (default bufferSize/2)
+   * @returns {Array<{ time: number, midi: number|null, freq: number|null, confidence: number }>}
+   */
+  analyzeOffline(audioBuffer, hopSize) {
+    const channelData = audioBuffer.getChannelData(0) // mono or first channel
+    const sampleRate = audioBuffer.sampleRate
+    const bufSize = this.bufferSize
+    const hop = hopSize || Math.floor(bufSize / 2)
+    const results = []
+    const frame = new Float32Array(bufSize)
+
+    for (let offset = 0; offset + bufSize <= channelData.length; offset += hop) {
+      frame.set(channelData.subarray(offset, offset + bufSize))
+
+      const rms = PitchDetector.rms(frame)
+      const time = offset / sampleRate
+
+      if (rms < 0.005) {
+        results.push({ time, midi: null, freq: null, confidence: 0 })
+        continue
+      }
+
+      const result = this.detect(frame)
+      if (result && result.confidence > 0.6) {
+        const midi = 12 * Math.log2(result.freq / 440) + 69
+        results.push({ time, midi, freq: result.freq, confidence: result.confidence })
+      } else {
+        results.push({ time, midi: null, freq: null, confidence: 0 })
+      }
+    }
+
+    return results
+  }
 }
