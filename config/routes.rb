@@ -60,6 +60,9 @@ Rails.application.routes.draw do
   # Movement demo
   get "/movement-demo", to: "movement_demo#index"
 
+  # Pitch checker
+  get "/pitch", to: "pitch#index"
+
   # Chat interface for LMStudio integration
   get "/chat", to: "chat#index"
   post "/chat/async", to: "chat#async_complete"
