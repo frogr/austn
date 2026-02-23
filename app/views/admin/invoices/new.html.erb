@@ -1,0 +1,15 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-black mb-1" style="font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        New Invoice
+      </h1>
+      <p class="text-gray-400 text-sm">Create a new invoice</p>
+    </div>
+    <%= link_to admin_invoices_path, class: "text-gray-400 hover:text-white text-sm" do %>
+      Back to Invoices
+    <% end %>
+  </div>
+
+  <%= render "form", invoice: @invoice, clients: @clients %>
+</div>

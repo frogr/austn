@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice <%= @invoice.invoice_number %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      color: #333;
+    }
+    .invoice-page {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 60px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+    .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+    .sender h1 { font-size: 24px; font-weight: 700; color: #111; margin-bottom: 4px; }
+    .sender p { font-size: 13px; color: #666; line-height: 1.6; }
+    .invoice-meta { text-align: right; }
+    .invoice-meta .label { font-size: 28px; font-weight: 700; color: #999; letter-spacing: 2px; }
+    .invoice-meta .number { font-size: 14px; color: #333; margin-top: 4px; }
+    .invoice-meta .dates { font-size: 13px; color: #666; margin-top: 12px; line-height: 1.6; }
+    .divider { height: 2px; background: #1DB954; margin-bottom: 30px; }
+    .bill-to-label { font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .bill-to { margin-bottom: 30px; }
+    .bill-to p { font-size: 14px; color: #333; line-height: 1.6; }
+    .bill-to .name { font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    thead th { text-align: left; padding: 10px 0; font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e5e5; }
+    thead th.right { text-align: right; }
+    tbody td { padding: 12px 0; font-size: 14px; color: #333; border-bottom: 1px solid #f0f0f0; }
+    tbody td.right { text-align: right; }
+    .totals { display: flex; justify-content: flex-end; }
+    .totals-box { width: 250px; }
+    .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+    .totals-row.label { color: #666; }
+    .totals-row.total { font-size: 16px; font-weight: 700; border-top: 2px solid #1DB954; padding-top: 10px; margin-top: 4px; }
+    .totals-row.total .amount { color: #1DB954; }
+    .notes { margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
+    .notes-label { font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .notes p { font-size: 13px; color: #666; }
+    .footer { margin-top: 40px; text-align: center; font-size: 13px; color: #999; }
+    .footer .thanks { margin-bottom: 4px; }
+    @media print { body { background: white; padding: 0; } .invoice-page { box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <div class="invoice-page">
+    <div class="header">
+      <div class="sender">
+        <h1>AUSTIN FRENCH</h1>
+        <p>Senior Software Engineer<br>Turlock, CA<br>hi@austn.net<br>austn.net</p>
+      </div>
+      <div class="invoice-meta">
+        <div class="label">INVOICE</div>
+        <div class="number"><%= @invoice.invoice_number %></div>
+        <div class="dates">
+          Date: <%= @invoice.issue_date.strftime("%b %d, %Y") %><br>
+          Due: <%= @invoice.due_date.strftime("%b %d, %Y") %>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="bill-to">
+      <div class="bill-to-label">Bill To</div>
+      <p class="name"><%= @invoice.client.name %></p>
+      <p><%= @invoice.client.address_line1 %></p>
+      <% if @invoice.client.address_line2.present? %>
+        <p><%= @invoice.client.address_line2 %></p>
+      <% end %>
+      <p><%= @invoice.client.city %>, <%= @invoice.client.state %> <%= @invoice.client.zip %></p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th class="right" style="width: 80px;">Qty</th>
+          <th class="right" style="width: 120px;">Rate</th>
+          <th class="right" style="width: 120px;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @invoice.line_items.each do |li| %>
+          <tr>
+            <td><%= li.description %></td>
+            <td class="right"><%= li.quantity % 1 == 0 ? li.quantity.to_i : li.quantity %></td>
+            <td class="right"><%= format_money(li.unit_price_cents) %></td>
+            <td class="right"><%= format_money(li.total_cents) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div class="totals-box">
+        <div class="totals-row">
+          <span class="label">Subtotal</span>
+          <span><%= format_money(@invoice.subtotal_cents) %></span>
+        </div>
+        <div class="totals-row">
+          <span class="label">Tax (<%= @invoice.tax_rate %>%)</span>
+          <span><%= format_money(@invoice.tax_cents) %></span>
+        </div>
+        <div class="totals-row total">
+          <span>TOTAL</span>
+          <span class="amount"><%= format_money(@invoice.total_cents) %></span>
+        </div>
+      </div>
+    </div>
+
+    <% if @invoice.notes.present? %>
+      <div class="notes">
+        <div class="notes-label">Notes</div>
+        <p><%= @invoice.notes %></p>
+      </div>
+    <% end %>
+
+    <div class="footer">
+      <p class="thanks">Thank you for your business!</p>
+      <p>austn.net</p>
+    </div>
+  </div>
+</body>
+</html>

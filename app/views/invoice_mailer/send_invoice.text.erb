@@ -1,0 +1,16 @@
+Hi <%= @client.name %>,
+
+Please find attached invoice <%= @invoice.invoice_number %> for <%= format_money(@invoice.total_cents) %>, due by <%= @invoice.due_date.strftime("%B %d, %Y") %>.
+
+Invoice: <%= @invoice.invoice_number %>
+Issue Date: <%= @invoice.issue_date.strftime("%b %d, %Y") %>
+Due Date: <%= @invoice.due_date.strftime("%b %d, %Y") %>
+Amount Due: <%= format_money(@invoice.total_cents) %>
+
+The PDF invoice is attached to this email. Please don't hesitate to reach out if you have any questions.
+
+Thank you!
+Austin
+
+---
+austn.net | hi@austn.net

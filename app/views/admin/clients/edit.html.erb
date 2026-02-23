@@ -1,0 +1,16 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-black mb-1" style="font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        Edit <%= @client.name %>
+      </h1>
+    </div>
+    <%= link_to admin_client_path(@client), class: "text-gray-400 hover:text-white text-sm" do %>
+      Back to Client
+    <% end %>
+  </div>
+
+  <div class="rounded-lg p-6" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <%= render "form", client: @client %>
+  </div>
+</div>

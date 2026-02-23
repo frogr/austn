@@ -196,6 +196,18 @@ Rails.application.routes.draw do
         post :sync_images
       end
     end
+
+    resources :invoices do
+      member do
+        get :preview
+        get :pdf
+        post :send_invoice
+        post :mark_paid
+        post :duplicate
+      end
+    end
+
+    resources :clients
   end
 
   # API v1

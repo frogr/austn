@@ -1,0 +1,123 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+    <div>
+      <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        Invoices
+      </h1>
+      <p class="text-gray-400 text-sm"><%= @invoices.count %> invoices</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to admin_root_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600 text-sm" do %>
+        Admin Home
+      <% end %>
+      <%= link_to admin_clients_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600 text-sm" do %>
+        Clients
+      <% end %>
+      <%= link_to new_admin_invoice_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-green-600 hover:bg-green-500 text-sm" do %>
+        <span class="material-icons" style="font-size: 18px;">add</span>
+        New Invoice
+      <% end %>
+    </div>
+  </div>
+
+  <% if notice.present? %>
+    <div class="mb-4 p-3 rounded-md bg-green-900/50 text-green-300 border border-green-700 text-sm"><%= notice %></div>
+  <% end %>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+    <div class="p-4 rounded-lg" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);">
+      <p class="text-2xl font-bold text-red-400"><%= format_money(@total_outstanding_cents) %></p>
+      <p class="text-gray-400 text-sm">Outstanding</p>
+    </div>
+    <div class="p-4 rounded-lg" style="background: rgba(29, 185, 84, 0.1); border: 1px solid rgba(29, 185, 84, 0.2);">
+      <p class="text-2xl font-bold" style="color: var(--accent-color);"><%= format_money(@total_paid_this_month_cents) %></p>
+      <p class="text-gray-400 text-sm">Paid This Month</p>
+    </div>
+    <div class="p-4 rounded-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+      <p class="text-2xl font-bold text-white"><%= format_money(@total_paid_all_time_cents) %></p>
+      <p class="text-gray-400 text-sm">Paid All Time</p>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+    <% %w[all draft sent paid overdue].each do |status| %>
+      <% active = (params[:status].to_s == status) || (status == "all" && params[:status].blank?) %>
+      <%= link_to admin_invoices_path(status: status == "all" ? nil : status),
+            class: "px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors #{active ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}" do %>
+        <%= status.capitalize %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Invoice Table -->
+  <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <% if @invoices.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr style="background: rgba(255,255,255,0.03);">
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Invoice #</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Client</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Date</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Due Date</th>
+              <th class="text-right px-4 py-3 text-sm font-semibold text-gray-300">Total</th>
+              <th class="text-center px-4 py-3 text-sm font-semibold text-gray-300">Status</th>
+              <th class="text-center px-4 py-3 text-sm font-semibold text-gray-300">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y" style="border-color: rgba(255,255,255,0.05);">
+            <% @invoices.each do |invoice| %>
+              <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-4 py-3 text-sm">
+                  <%= link_to invoice.invoice_number, admin_invoice_path(invoice), class: "text-white font-medium hover:text-green-400 transition-colors" %>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-300"><%= invoice.client.name %></td>
+                <td class="px-4 py-3 text-sm text-gray-400"><%= invoice.issue_date.strftime("%b %d, %Y") %></td>
+                <td class="px-4 py-3 text-sm text-gray-400">
+                  <% if invoice.due_date < Date.current && invoice.status.in?(%w[sent viewed]) %>
+                    <span class="text-red-400"><%= invoice.due_date.strftime("%b %d, %Y") %></span>
+                  <% else %>
+                    <%= invoice.due_date.strftime("%b %d, %Y") %>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 text-sm text-white text-right font-medium"><%= format_money(invoice.total_cents) %></td>
+                <td class="px-4 py-3 text-sm text-center"><%= invoice_status_badge(invoice.status) %></td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center justify-center gap-1">
+                    <%= link_to admin_invoice_path(invoice), class: "p-1.5 rounded-md transition-colors hover:bg-white/10", title: "View" do %>
+                      <span class="material-icons text-blue-400" style="font-size: 18px;">visibility</span>
+                    <% end %>
+                    <%= link_to edit_admin_invoice_path(invoice), class: "p-1.5 rounded-md transition-colors hover:bg-white/10", title: "Edit" do %>
+                      <span class="material-icons text-yellow-400" style="font-size: 18px;">edit</span>
+                    <% end %>
+                    <%= link_to duplicate_admin_invoice_path(invoice), data: { turbo_method: :post }, class: "p-1.5 rounded-md transition-colors hover:bg-white/10", title: "Duplicate" do %>
+                      <span class="material-icons text-purple-400" style="font-size: 18px;">content_copy</span>
+                    <% end %>
+                    <% if invoice.status != "paid" %>
+                      <%= link_to mark_paid_admin_invoice_path(invoice), data: { turbo_method: :post, turbo_confirm: "Mark this invoice as paid?" }, class: "p-1.5 rounded-md transition-colors hover:bg-white/10", title: "Mark Paid" do %>
+                        <span class="material-icons text-green-400" style="font-size: 18px;">paid</span>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="text-center py-12 px-4">
+        <span class="material-icons text-gray-600 mb-4" style="font-size: 64px;">receipt_long</span>
+        <h3 class="text-lg font-semibold text-gray-300 mb-2">No invoices</h3>
+        <p class="text-gray-500 mb-4">Create your first invoice to get started.</p>
+        <%= link_to new_admin_invoice_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-green-600 hover:bg-green-500" do %>
+          <span class="material-icons" style="font-size: 18px;">add</span>
+          New Invoice
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

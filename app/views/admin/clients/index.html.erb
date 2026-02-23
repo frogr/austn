@@ -1,0 +1,81 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+    <div>
+      <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        Clients
+      </h1>
+      <p class="text-gray-400 text-sm"><%= @clients.count %> clients</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to admin_invoices_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-gray-700 hover:bg-gray-600 text-sm" do %>
+        Invoices
+      <% end %>
+      <%= link_to new_admin_client_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-green-600 hover:bg-green-500 text-sm" do %>
+        <span class="material-icons" style="font-size: 18px;">add</span>
+        New Client
+      <% end %>
+    </div>
+  </div>
+
+  <% if notice.present? %>
+    <div class="mb-4 p-3 rounded-md bg-green-900/50 text-green-300 border border-green-700 text-sm"><%= notice %></div>
+  <% end %>
+
+  <div class="rounded-lg overflow-hidden" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+    <% if @clients.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr style="background: rgba(255,255,255,0.03);">
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Name</th>
+              <th class="text-left px-4 py-3 text-sm font-semibold text-gray-300">Email</th>
+              <th class="text-right px-4 py-3 text-sm font-semibold text-gray-300">Total Invoiced</th>
+              <th class="text-right px-4 py-3 text-sm font-semibold text-gray-300">Paid</th>
+              <th class="text-right px-4 py-3 text-sm font-semibold text-gray-300">Outstanding</th>
+              <th class="text-center px-4 py-3 text-sm font-semibold text-gray-300">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y" style="border-color: rgba(255,255,255,0.05);">
+            <% @clients.each do |client| %>
+              <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-4 py-3 text-sm">
+                  <%= link_to client.name, admin_client_path(client), class: "text-white font-medium hover:text-green-400 transition-colors" %>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-400"><%= client.email %></td>
+                <td class="px-4 py-3 text-sm text-white text-right"><%= format_money(client.total_invoiced_cents) %></td>
+                <td class="px-4 py-3 text-sm text-green-400 text-right"><%= format_money(client.total_paid_cents) %></td>
+                <td class="px-4 py-3 text-sm text-right">
+                  <% if client.outstanding_cents > 0 %>
+                    <span class="text-red-400"><%= format_money(client.outstanding_cents) %></span>
+                  <% else %>
+                    <span class="text-gray-500">$0.00</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center justify-center gap-1">
+                    <%= link_to admin_client_path(client), class: "p-1.5 rounded-md transition-colors hover:bg-white/10", title: "View" do %>
+                      <span class="material-icons text-blue-400" style="font-size: 18px;">visibility</span>
+                    <% end %>
+                    <%= link_to edit_admin_client_path(client), class: "p-1.5 rounded-md transition-colors hover:bg-white/10", title: "Edit" do %>
+                      <span class="material-icons text-yellow-400" style="font-size: 18px;">edit</span>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="text-center py-12 px-4">
+        <span class="material-icons text-gray-600 mb-4" style="font-size: 64px;">people</span>
+        <h3 class="text-lg font-semibold text-gray-300 mb-2">No clients yet</h3>
+        <p class="text-gray-500 mb-4">Add your first client to start creating invoices.</p>
+        <%= link_to new_admin_client_path, class: "inline-flex items-center gap-2 font-semibold py-2 px-4 rounded-md transition duration-200 text-white bg-green-600 hover:bg-green-500" do %>
+          <span class="material-icons" style="font-size: 18px;">add</span>
+          New Client
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
