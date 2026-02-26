@@ -224,6 +224,11 @@ Rails.application.routes.draw do
       get "tts/:id/status", to: "tts#status", as: :tts_status
       post "tts/batch", to: "tts#batch"
       get "tts/batch/:id/status", to: "tts#batch_status", as: :tts_batch_status
+
+      # Image generation endpoints
+      post "images/generate", to: "images#generate"            # Sync - blocks until complete
+      post "images/generate_async", to: "images#generate_async" # Async - returns generation ID
+      get "images/:id/status", to: "images#status", as: :image_status
     end
   end
 
