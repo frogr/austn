@@ -1,13 +1,41 @@
 # frozen_string_literal: true
 
-# Rate limiting configuration for API endpoints
-# Uses Rack::Attack gem for request throttling
+# Rate limiting configuration
+# Uses Rack::Attack gem for request throttling and bot blocking
 
 class Rack::Attack
   # Use Redis for tracking (shares with Rails.cache)
   Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
     url: ENV.fetch("REDIS_URL", "redis://localhost:6379/1")
   )
+
+  # Known aggressive bot user-agent patterns
+  AI_BOT_PATTERNS = %w[
+    GPTBot ChatGPT-User Google-Extended CCBot Bytespider ClaudeBot
+    anthropic-ai Applebot-Extended FacebookBot PerplexityBot Amazonbot
+    Cohere-ai Meta-ExternalAgent AhrefsBot SemrushBot DotBot MJ12bot
+    BLEXBot PetalBot YandexBot
+  ].freeze
+
+  ### Block known aggressive AI/SEO crawlers at the middleware level ###
+  blocklist("block_ai_crawlers") do |req|
+    ua = req.user_agent.to_s
+    AI_BOT_PATTERNS.any? { |pattern| ua.include?(pattern) }
+  end
+
+  ### General rate limit for all requests ###
+  # 300 requests per 5 minutes per IP (generous for humans, catches scrapers)
+  throttle("req/ip", limit: 300, period: 5.minutes) do |req|
+    req.ip unless req.path.start_with?("/assets", "/up")
+  end
+
+  ### Throttle GPU-intensive generation endpoints ###
+  # These are expensive — limit to 20 per hour per IP
+  throttle("generate/ip", limit: 20, period: 1.hour) do |req|
+    if req.post? && req.path.match?(%r{/(tts|rembg|vtracer|stems|video|music|3d|images|chat)/generate})
+      req.ip
+    end
+  end
 
   ### Throttle TTS API requests by API key ###
   # Limit: 100 requests per hour per API key
