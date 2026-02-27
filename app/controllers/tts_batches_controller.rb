@@ -31,6 +31,10 @@ class TtsBatchesController < ApplicationController
       return render json: { error: "No valid items in CSV" }, status: :unprocessable_entity
     end
 
+    if items_data.size > 200
+      return render json: { error: "CSV too large (max 200 items)" }, status: :unprocessable_entity
+    end
+
     ActiveRecord::Base.transaction do
       batch.total_items = items_data.size
       batch.save!

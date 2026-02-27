@@ -16,30 +16,37 @@ class GpuJob < ApplicationJob
     job.class.mark_service_offline(error.message) if job.class.gpu_service_name
   end
 
-  # Ensure only one GPU job runs at a time by using Redis lock
+  # Ensure only one GPU job runs at a time by using Redis lock.
+  # Instead of creating new jobs on lock failure (which caused job multiplication),
+  # we poll in-process with sleep. This ties up the worker thread but prevents
+  # the exponential job creation that was generating 75K+ jobs.
   around_perform do |job, block|
     redis = Redis.new(url: Rails.application.config_for(:redis)["url"])
     lock_key = "gpu_lock"
     lock_timeout = job.class.gpu_lock_timeout
 
-    # Try to acquire lock
-    acquired = redis.set(lock_key, job.job_id, nx: true, ex: lock_timeout)
+    # Poll for lock instead of rescheduling (max ~2 minutes of waiting)
+    acquired = false
+    24.times do
+      acquired = redis.set(lock_key, job.job_id, nx: true, ex: lock_timeout)
+      break if acquired
+      sleep 5
+    end
 
-    if acquired
-      begin
-        Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) acquired GPU lock"
-        block.call
-      ensure
-        # Only release if we still own the lock
-        if redis.get(lock_key) == job.job_id
-          redis.del(lock_key)
-          Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) released GPU lock"
-        end
+    unless acquired
+      Rails.logger.warn "GPU job #{job.class.name} (#{job.job_id}) could not acquire lock after 2 minutes, giving up"
+      raise StandardError, "GPU busy — could not acquire lock after 2 minutes"
+    end
+
+    begin
+      Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) acquired GPU lock"
+      block.call
+    ensure
+      # Only release if we still own the lock
+      if redis.get(lock_key) == job.job_id
+        redis.del(lock_key)
+        Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) released GPU lock"
       end
-    else
-      # Reschedule if couldn't acquire lock
-      Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) waiting for GPU lock, rescheduling..."
-      job.class.set(wait: 5.seconds).perform_later(*job.arguments)
     end
   end
 

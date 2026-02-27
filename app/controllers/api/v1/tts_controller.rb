@@ -125,11 +125,17 @@ module Api
       end
 
       # POST /api/v1/tts/batch
+      MAX_BATCH_SIZE = 100
+
       def batch
         items = params[:items]
 
         unless items.is_a?(Array) && items.any?
           return render_error("Items array required")
+        end
+
+        if items.size > MAX_BATCH_SIZE
+          return render_error("Batch too large (max #{MAX_BATCH_SIZE} items)")
         end
 
         batch = TtsBatch.create!(
