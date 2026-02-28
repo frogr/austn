@@ -1,7 +1,8 @@
 # Service for generating music using ComfyUI's ACE-Step workflow
 class MusicService
   WORKFLOW_NAME = "AUSTNNETSONGS.json"
-  GENERATION_TIMEOUT = 120 # 2 minutes - music gen is relatively fast
+  BASE_TIMEOUT = 300 # 5 minutes base
+  TIMEOUT_PER_SECOND = 3 # extra seconds of timeout per second of audio duration
 
   class MusicError < StandardError; end
 
@@ -38,7 +39,10 @@ class MusicService
     prompt_id = ComfyuiClient.queue_prompt(workflow)
     Rails.logger.info "Queued music generation with prompt_id: #{prompt_id}, prefix: #{unique_prefix}"
 
-    outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: GENERATION_TIMEOUT)
+    duration = params[:audio_duration].to_f
+    timeout = [ BASE_TIMEOUT, (duration * TIMEOUT_PER_SECOND).to_i ].max
+
+    outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: timeout)
 
     # Find the output audio file
     output_info = extract_output(outputs)

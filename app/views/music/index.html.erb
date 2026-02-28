@@ -119,15 +119,59 @@
             <label for="duration" class="text-sm font-medium text-gray-300">Duration (seconds)</label>
             <span id="duration-value" class="text-sm text-green-400 font-mono">60</span>
           </div>
-          <input type="range" id="duration" min="10" max="240" step="5" value="60"
+          <input type="range" id="duration" min="10" max="480" step="5" value="60"
             oninput="updateDurationLabel(this.value)"
             class="w-full h-2 rounded-lg appearance-none cursor-pointer slider-green">
           <div class="flex justify-between text-xs text-gray-500 mt-1">
             <span>10s</span>
-            <span>60s</span>
-            <span>120s</span>
-            <span>180s</span>
-            <span>240s</span>
+            <span>2m</span>
+            <span>4m</span>
+            <span>6m</span>
+            <span>8m</span>
+          </div>
+          <!-- Duration Calculator -->
+          <div class="mt-3">
+            <button type="button" onclick="toggleDurationCalc()" class="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
+              <svg id="calc-chevron" class="w-3 h-3 transition-transform" style="transform: rotate(0deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              Duration calculator (BPM &amp; bars)
+            </button>
+            <div id="duration-calc" style="display: none; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" class="mt-2 p-3 rounded-md">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">BPM</label>
+                  <input type="number" id="calc-bpm" value="120" min="40" max="300" step="1"
+                    oninput="calculateDuration()"
+                    class="w-full px-2 py-1.5 rounded text-sm text-white focus:outline-none focus:ring-1 focus:ring-green-500" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">Verse bars</label>
+                  <input type="number" id="calc-verse" value="16" min="0" max="64" step="1"
+                    oninput="calculateDuration()"
+                    class="w-full px-2 py-1.5 rounded text-sm text-white focus:outline-none focus:ring-1 focus:ring-green-500" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">Chorus bars</label>
+                  <input type="number" id="calc-chorus" value="8" min="0" max="64" step="1"
+                    oninput="calculateDuration()"
+                    class="w-full px-2 py-1.5 rounded text-sm text-white focus:outline-none focus:ring-1 focus:ring-green-500" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-400 mb-1">Other bars</label>
+                  <input type="number" id="calc-other" value="0" min="0" max="64" step="1"
+                    oninput="calculateDuration()"
+                    class="w-full px-2 py-1.5 rounded text-sm text-white focus:outline-none focus:ring-1 focus:ring-green-500" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-gray-400">
+                  <span id="calc-result" class="text-green-400 font-mono">24 bars = 48s</span>
+                  <span class="text-gray-500 ml-1">(4/4 time)</span>
+                </p>
+                <button type="button" onclick="applyCalcDuration()" class="text-xs px-3 py-1 rounded font-medium transition-colors" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981;">
+                  Apply
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -318,6 +362,44 @@ function updateDurationLabel(value) {
   let label = value + 's';
   if (mins > 0) label += ` (${mins}m${secs > 0 ? ' ' + secs + 's' : ''})`;
   document.getElementById('duration-value').textContent = label;
+}
+
+function toggleDurationCalc() {
+  const calc = document.getElementById('duration-calc');
+  const chevron = document.getElementById('calc-chevron');
+  if (!calc) return;
+  const isHidden = calc.style.display === 'none';
+  calc.style.display = isHidden ? 'block' : 'none';
+  chevron.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
+  if (isHidden) calculateDuration();
+}
+
+function calculateDuration() {
+  const bpm = parseInt(document.getElementById('calc-bpm').value) || 120;
+  const verse = parseInt(document.getElementById('calc-verse').value) || 0;
+  const chorus = parseInt(document.getElementById('calc-chorus').value) || 0;
+  const other = parseInt(document.getElementById('calc-other').value) || 0;
+  const totalBars = verse + chorus + other;
+  // 4/4 time: 4 beats per bar
+  const seconds = Math.round((totalBars * 4 * 60) / bpm);
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+  document.getElementById('calc-result').textContent = `${totalBars} bars = ${timeStr}`;
+}
+
+function applyCalcDuration() {
+  const bpm = parseInt(document.getElementById('calc-bpm').value) || 120;
+  const verse = parseInt(document.getElementById('calc-verse').value) || 0;
+  const chorus = parseInt(document.getElementById('calc-chorus').value) || 0;
+  const other = parseInt(document.getElementById('calc-other').value) || 0;
+  const totalBars = verse + chorus + other;
+  let seconds = Math.round((totalBars * 4 * 60) / bpm);
+  // Snap to nearest step of 5, clamp to slider range
+  seconds = Math.round(seconds / 5) * 5;
+  seconds = Math.max(10, Math.min(480, seconds));
+  document.getElementById('duration').value = seconds;
+  updateDurationLabel(seconds);
 }
 
 function toggleAdvanced() {
