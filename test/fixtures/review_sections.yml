@@ -1,0 +1,14 @@
+user_model_section:
+  review: complete_review
+  filename: "app/models/user.rb"
+  language: "ruby"
+  priority: "high"
+  walkthrough: "Adds email validation to user model"
+  findings:
+    - severity: warning
+      title: "Missing test"
+      explanation: "No test for this validation"
+      file: "app/models/user.rb"
+      line_range: "L2"
+  human_comments: []
+  status: "complete"

@@ -1,0 +1,21 @@
+pending_review:
+  pr_url: "https://github.com/rails/rails/pull/12345"
+  repo_name: "rails/rails"
+  pr_number: 12345
+  status: "pending"
+  triage_result: {}
+  synthesis_result: {}
+  total_findings: 0
+  red_flags: 0
+  warnings: 0
+
+complete_review:
+  pr_url: "https://github.com/rails/rails/pull/54321"
+  repo_name: "rails/rails"
+  pr_number: 54321
+  status: "complete"
+  triage_result: {}
+  synthesis_result: {}
+  total_findings: 2
+  red_flags: 0
+  warnings: 1

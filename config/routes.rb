@@ -248,6 +248,16 @@ Rails.application.routes.draw do
   get "/endless/:id/paragraphs", to: "endless#paragraphs", as: :endless_story_paragraphs
   get "/endless/:id/timer", to: "endless#timer", as: :endless_story_timer
 
+  # Code Review Harness
+  resources :reviews, only: [:index, :create, :show] do
+    member do
+      post :synthesize
+    end
+    resources :sections, only: [] do
+      post :comments, to: "reviews#add_comment"
+    end
+  end
+
   # Portfolio as root
   root "portfolio#index"
 end
