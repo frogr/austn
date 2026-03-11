@@ -4,8 +4,8 @@ module Harness
                   :on_section_complete
 
     def initialize
-      @provider = :anthropic
-      @model = "claude-sonnet-4-20250514"
+      @provider = :openai
+      @model = "gpt-4o-mini"
       @max_tokens_per_call = 4096
       @on_section_complete = nil
     end

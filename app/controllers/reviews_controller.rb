@@ -3,6 +3,11 @@ class ReviewsController < Admin::BaseController
   end
 
   def create
+    unless Harness.configuration&.api_key.present?
+      return render json: { error: "OPENAI_API_KEY is not configured on the server." },
+                    status: :service_unavailable
+    end
+
     review = Review.create!(pr_url: params[:pr_url], status: Review::PENDING)
     ReviewJob.perform_later(review.id)
     render json: { id: review.id, status: review.status }
@@ -51,8 +56,8 @@ class ReviewsController < Admin::BaseController
         {
           id: s.id, filename: s.filename, language: s.language,
           priority: s.priority, walkthrough: s.walkthrough,
-          findings: s.findings, human_comments: s.human_comments,
-          status: s.status
+          patch_text: s.patch_text, findings: s.findings,
+          human_comments: s.human_comments, status: s.status
         }
       end
     }

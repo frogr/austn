@@ -20,7 +20,8 @@ module Harness
       private
 
       def build_client
-        LLM::AnthropicClient.new(
+        client_class = @config.provider == :openai ? LLM::OpenAiClient : LLM::AnthropicClient
+        client_class.new(
           api_key: @config.api_key,
           model: @config.model,
           max_tokens: @config.max_tokens_per_call
