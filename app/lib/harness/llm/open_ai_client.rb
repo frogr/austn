@@ -3,19 +3,35 @@ module Harness
     class OpenAiClient < Client
       API_URL = "https://api.openai.com/v1/chat/completions"
 
-      def initialize(api_key:, model:, max_tokens: 4096)
+      def initialize(api_key:, model:, max_tokens: 4096, logger: nil)
         @api_key = api_key
         @model = model
         @max_tokens = max_tokens
+        @logger = logger
       end
 
       def complete(messages:, system: nil)
+        user_content = messages.map(&:content).join("\n")
+
+        if @logger
+          @logger.log(
+            provider: :openai,
+            model: @model,
+            system_prompt: system,
+            user_prompt: user_content
+          ) { do_complete(messages, system) }
+        else
+          do_complete(messages, system)
+        end
+      end
+
+      private
+
+      def do_complete(messages, system)
         body = build_body(messages, system)
         raw = post(body)
         parse_response(raw)
       end
-
-      private
 
       def build_body(messages, system)
         msgs = []

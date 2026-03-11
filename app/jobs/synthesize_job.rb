@@ -7,11 +7,13 @@ class SynthesizeJob < ApplicationJob
     human_comments = collect_comments(review)
 
     config = Harness.configuration
+    logger = Harness::LLM::RequestLogger.new(review_id: review.id, request_type: "synthesis")
     client_class = config.provider == :openai ? Harness::LLM::OpenAiClient : Harness::LLM::AnthropicClient
     llm = client_class.new(
       api_key: config.api_key,
       model: config.model,
-      max_tokens: config.max_tokens_per_call
+      max_tokens: config.max_tokens_per_call,
+      logger: logger
     )
 
     result = Harness::Review::Synthesis.new(llm_client: llm)

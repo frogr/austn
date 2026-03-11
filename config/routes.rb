@@ -252,6 +252,8 @@ Rails.application.routes.draw do
   resources :reviews, only: [:index, :create, :show] do
     member do
       post :synthesize
+      post :decide
+      get :audit
     end
     resources :sections, only: [] do
       post :comments, to: "reviews#add_comment"

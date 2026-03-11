@@ -1,24 +1,46 @@
 import React from 'react'
 
-const SEVERITY_STYLES = {
-  info: 'bg-blue-100 text-blue-800 border-blue-200',
-  warning: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  red_flag: 'bg-red-100 text-red-800 border-red-200'
-}
-
-const SEVERITY_LABELS = {
-  info: 'Info',
-  warning: 'Warning',
-  red_flag: 'Red Flag'
+const SEVERITY_CONFIG = {
+  info: {
+    label: 'Info',
+    color: '#64D2FF',
+    bg: 'rgba(100, 210, 255, 0.1)',
+    border: 'rgba(100, 210, 255, 0.25)'
+  },
+  warning: {
+    label: 'Warning',
+    color: '#FF9500',
+    bg: 'rgba(255, 149, 0, 0.1)',
+    border: 'rgba(255, 149, 0, 0.25)'
+  },
+  red_flag: {
+    label: 'Red Flag',
+    color: '#FF3B30',
+    bg: 'rgba(255, 59, 48, 0.1)',
+    border: 'rgba(255, 59, 48, 0.25)'
+  }
 }
 
 const FindingBadge = ({ severity }) => {
-  const styles = SEVERITY_STYLES[severity] || SEVERITY_STYLES.info
-  const label = SEVERITY_LABELS[severity] || severity
+  const config = SEVERITY_CONFIG[severity] || SEVERITY_CONFIG.info
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${styles}`}>
-      {label}
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '2px 8px', borderRadius: '4px',
+      fontSize: '0.65rem', fontWeight: 700,
+      textTransform: 'uppercase', letterSpacing: '0.5px',
+      color: config.color,
+      background: config.bg,
+      border: `1px solid ${config.border}`,
+      whiteSpace: 'nowrap', flexShrink: 0
+    }}>
+      <span style={{
+        display: 'inline-block', width: 5, height: 5,
+        borderRadius: '50%', background: config.color,
+        marginRight: '5px'
+      }} />
+      {config.label}
     </span>
   )
 }

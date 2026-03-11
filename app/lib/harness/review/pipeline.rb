@@ -1,9 +1,12 @@
 module Harness
   module Review
     class Pipeline
-      def initialize(config: Harness.configuration)
+      MAX_FILES_TO_REVIEW = 15
+      MAX_DIFF_CHARS = 12_000
+
+      def initialize(config: Harness.configuration, review_id: nil)
         @config = config
-        @llm = build_client
+        @review_id = review_id
         @fetcher = Diff::Fetcher.new
         @parser = Diff::Parser.new
       end
@@ -19,26 +22,32 @@ module Harness
 
       private
 
-      def build_client
+      def build_client(request_type)
+        logger = LLM::RequestLogger.new(review_id: @review_id, request_type: request_type)
         client_class = @config.provider == :openai ? LLM::OpenAiClient : LLM::AnthropicClient
         client_class.new(
           api_key: @config.api_key,
           model: @config.model,
-          max_tokens: @config.max_tokens_per_call
+          max_tokens: @config.max_tokens_per_call,
+          logger: logger
         )
       end
 
       def triage(file_changes, pr_description)
-        Triage.new(llm_client: @llm).call(
+        llm = build_client("triage")
+        Triage.new(llm_client: llm).call(
           file_changes: file_changes,
           pr_description: pr_description
         )
       end
 
       def review_sections(prioritized)
-        reviewable = prioritized[:high] + prioritized[:medium]
+        reviewable = (prioritized[:high] + prioritized[:medium]).first(MAX_FILES_TO_REVIEW)
+
         reviewable.flat_map do |file_change|
-          findings = SectionReview.new(llm_client: @llm).call(file_change: file_change)
+          llm = build_client("section_review")
+          findings = SectionReview.new(llm_client: llm, max_diff_chars: MAX_DIFF_CHARS)
+                       .call(file_change: file_change)
           notify_section(file_change, findings)
           findings
         end

@@ -31,24 +31,56 @@ const HumanComment = ({ sectionId, reviewId, existingComments = [], onCommentAdd
   }
 
   return (
-    <div className="mt-3 space-y-2">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {existingComments.map((comment, i) => (
-        <div key={i} className="bg-purple-50 border border-purple-200 rounded p-2 text-sm">
-          <span className="font-medium text-purple-700">You:</span> {comment.text}
+        <div key={i} style={{
+          display: 'flex', alignItems: 'flex-start', gap: '8px',
+          background: 'rgba(94, 92, 230, 0.06)',
+          border: '1px solid rgba(94, 92, 230, 0.15)',
+          borderRadius: 'var(--radius-sm)',
+          padding: '8px 10px', fontSize: '0.82rem'
+        }}>
+          <span style={{
+            fontSize: '0.65rem', fontWeight: 700,
+            color: '#5E5CE6', textTransform: 'uppercase',
+            letterSpacing: '0.5px', flexShrink: 0, marginTop: '2px'
+          }}>
+            You
+          </span>
+          <span style={{ color: 'var(--text-secondary)' }}>{comment.text}</span>
         </div>
       ))}
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '6px' }}>
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Add a comment..."
-          className="flex-1 text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-purple-500"
+          placeholder="Add a note..."
+          style={{
+            flex: 1, background: 'rgba(255,255,255,0.03)',
+            border: '1px solid var(--glass-border)',
+            borderRadius: 'var(--radius-sm)',
+            color: 'var(--text-primary)',
+            fontSize: '0.8rem', padding: '6px 10px',
+            outline: 'none', fontFamily: 'var(--font-sans)',
+            transition: 'border-color var(--transition-fast)'
+          }}
+          onFocus={e => e.target.style.borderColor = 'rgba(94, 92, 230, 0.4)'}
+          onBlur={e => e.target.style.borderColor = 'var(--glass-border)'}
         />
         <button
           type="submit"
           disabled={submitting || !text.trim()}
-          className="text-sm bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700 disabled:opacity-50"
+          style={{
+            background: 'rgba(94, 92, 230, 0.15)',
+            border: '1px solid rgba(94, 92, 230, 0.3)',
+            borderRadius: 'var(--radius-sm)',
+            color: '#5E5CE6', fontSize: '0.75rem',
+            fontWeight: 600, padding: '6px 12px',
+            cursor: submitting || !text.trim() ? 'not-allowed' : 'pointer',
+            opacity: submitting || !text.trim() ? 0.4 : 1,
+            transition: 'all var(--transition-fast)'
+          }}
         >
           Add
         </button>

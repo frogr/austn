@@ -1,51 +1,130 @@
 import React from 'react'
 
-const VERDICT_STYLES = {
-  approve: 'bg-green-100 text-green-800 border-green-300',
-  request_changes: 'bg-red-100 text-red-800 border-red-300',
-  needs_discussion: 'bg-yellow-100 text-yellow-800 border-yellow-300'
-}
-
-const VERDICT_LABELS = {
-  approve: 'Approved',
-  request_changes: 'Changes Requested',
-  needs_discussion: 'Needs Discussion'
+const VERDICT_CONFIG = {
+  approve: {
+    label: 'Approved',
+    color: '#34C759',
+    bg: 'rgba(52, 199, 89, 0.08)',
+    border: 'rgba(52, 199, 89, 0.3)',
+    icon: '\u2713'
+  },
+  request_changes: {
+    label: 'Changes Requested',
+    color: '#FF3B30',
+    bg: 'rgba(255, 59, 48, 0.08)',
+    border: 'rgba(255, 59, 48, 0.3)',
+    icon: '\u2717'
+  },
+  needs_discussion: {
+    label: 'Needs Discussion',
+    color: '#FF9500',
+    bg: 'rgba(255, 149, 0, 0.08)',
+    border: 'rgba(255, 149, 0, 0.3)',
+    icon: '\u2026'
+  }
 }
 
 const SynthesisSummary = ({ synthesis }) => {
   if (!synthesis || !synthesis.verdict) return null
 
-  const verdictStyle = VERDICT_STYLES[synthesis.verdict] || VERDICT_STYLES.needs_discussion
-  const verdictLabel = VERDICT_LABELS[synthesis.verdict] || synthesis.verdict
+  const v = VERDICT_CONFIG[synthesis.verdict] || VERDICT_CONFIG.needs_discussion
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 mb-4">
-      <div className="flex items-center gap-3 mb-3">
-        <h3 className="text-lg font-semibold text-gray-900">Review Summary</h3>
-        <span className={`px-3 py-1 rounded-full text-sm font-medium border ${verdictStyle}`}>
-          {verdictLabel}
+    <div style={{
+      background: v.bg,
+      border: `1px solid ${v.border}`,
+      borderRadius: 'var(--radius-lg)',
+      padding: 'var(--space-lg)',
+      position: 'relative', overflow: 'hidden'
+    }}>
+      {/* Subtle glow */}
+      <div style={{
+        position: 'absolute', top: '-50%', right: '-20%',
+        width: '200px', height: '200px', borderRadius: '50%',
+        background: v.color, opacity: 0.04, filter: 'blur(60px)',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '12px',
+        marginBottom: 'var(--space-md)'
+      }}>
+        <span style={{
+          fontSize: '1.2rem', width: 32, height: 32,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: `${v.color}20`, borderRadius: '8px', color: v.color
+        }}>
+          {v.icon}
         </span>
+        <div>
+          <h3 style={{
+            fontSize: '1rem', fontWeight: 700,
+            color: 'var(--text-primary)', margin: 0
+          }}>
+            AI Review Summary
+          </h3>
+          <span style={{
+            fontSize: '0.75rem', fontWeight: 600,
+            color: v.color, textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            {v.label}
+          </span>
+        </div>
       </div>
 
-      <p className="text-sm text-gray-700 mb-4">{synthesis.summary}</p>
+      <p style={{
+        fontSize: '0.875rem', color: 'var(--text-secondary)',
+        lineHeight: 1.65, margin: '0 0 var(--space-md)'
+      }}>
+        {synthesis.summary}
+      </p>
 
-      {synthesis.key_concerns?.length > 0 && (
-        <div className="mb-3">
-          <h4 className="text-sm font-medium text-red-700 mb-1">Key Concerns</h4>
-          <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-            {synthesis.key_concerns.map((c, i) => <li key={i}>{c}</li>)}
-          </ul>
-        </div>
-      )}
+      <div style={{ display: 'flex', gap: 'var(--space-lg)', flexWrap: 'wrap' }}>
+        {synthesis.key_concerns?.length > 0 && (
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <h4 style={{
+              fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-danger)',
+              textTransform: 'uppercase', letterSpacing: '0.5px',
+              marginBottom: '6px'
+            }}>
+              Concerns
+            </h4>
+            <ul style={{ margin: 0, paddingLeft: '16px' }}>
+              {synthesis.key_concerns.map((c, i) => (
+                <li key={i} style={{
+                  fontSize: '0.82rem', color: 'var(--text-muted)',
+                  lineHeight: 1.5, marginBottom: '4px'
+                }}>
+                  {c}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {synthesis.praise?.length > 0 && (
-        <div>
-          <h4 className="text-sm font-medium text-green-700 mb-1">Praise</h4>
-          <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-            {synthesis.praise.map((p, i) => <li key={i}>{p}</li>)}
-          </ul>
-        </div>
-      )}
+        {synthesis.praise?.length > 0 && (
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <h4 style={{
+              fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-success)',
+              textTransform: 'uppercase', letterSpacing: '0.5px',
+              marginBottom: '6px'
+            }}>
+              Praise
+            </h4>
+            <ul style={{ margin: 0, paddingLeft: '16px' }}>
+              {synthesis.praise.map((p, i) => (
+                <li key={i} style={{
+                  fontSize: '0.82rem', color: 'var(--text-muted)',
+                  lineHeight: 1.5, marginBottom: '4px'
+                }}>
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
