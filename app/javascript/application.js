@@ -24,7 +24,8 @@ const COMPONENT_LOADERS = {
   DAW: () => import('./components/daw/DAW'),
   EndlessStory: () => import('./components/EndlessStory'),
   Resume: () => import('./components/Resume'),
-  ClaudeCorner: () => import('./components/ClaudeCorner')
+  ClaudeCorner: () => import('./components/ClaudeCorner'),
+  ReviewApp: () => import('./components/review/ReviewApp')
 }
 
 // Store our roots so we can track which elements have been initialized
