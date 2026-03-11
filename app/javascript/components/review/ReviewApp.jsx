@@ -121,17 +121,30 @@ const ReviewApp = () => {
       <PrInput onSubmit={handleSubmit} disabled={isReviewing} />
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-2 mb-4 text-sm">
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-4 text-sm">
           {error}
+        </div>
+      )}
+
+      {status === 'failed' && !error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-4 text-sm">
+          Review failed. This could be a GitHub API issue or an invalid PR URL. Try again.
+        </div>
+      )}
+
+      {!reviewId && status === 'idle' && !error && (
+        <div className="text-center py-12 text-gray-400 text-sm">
+          Paste a public GitHub PR URL above to start an AI-powered code review.
         </div>
       )}
 
       {reviewId && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">Files</h2>
+            <h2 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide">Diff</h2>
             <DiffPanel
               sections={sections}
+              status={status}
               highlightFile={highlightFile}
               highlightRange={highlightRange}
             />

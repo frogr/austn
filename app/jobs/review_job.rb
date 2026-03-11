@@ -25,6 +25,7 @@ class ReviewJob < ApplicationJob
       section = review.review_sections.create!(
         filename: file.filename,
         language: file.language,
+        patch_text: file.patch_text,
         walkthrough: "",
         findings: findings.map { |f| finding_to_hash(f) },
         status: ReviewSection::COMPLETE
