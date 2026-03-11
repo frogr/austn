@@ -4,7 +4,7 @@ class ReviewsController < Admin::BaseController
 
   def create
     unless Harness.configuration&.api_key.present?
-      return render json: { error: "ANTHROPIC_API_KEY is not configured on the server." },
+      return render json: { error: "OPENAI_API_KEY is not configured on the server." },
                     status: :service_unavailable
     end
 

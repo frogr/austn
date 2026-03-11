@@ -1,6 +1,7 @@
 Rails.application.config.after_initialize do
   Harness.configure do |config|
-    config.api_key = ENV["ANTHROPIC_API_KEY"]
-    config.model = "claude-sonnet-4-20250514"
+    config.provider = :openai
+    config.api_key = ENV["OPENAI_API_KEY"]
+    config.model = "gpt-4o-mini"
   end
 end
