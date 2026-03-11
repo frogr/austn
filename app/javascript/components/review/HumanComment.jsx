@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 
-const HumanComment = ({ sectionId, reviewId, existingComments = [] }) => {
+const csrfToken = document.querySelector('[name="csrf-token"]')?.content
+
+const HumanComment = ({ sectionId, reviewId, existingComments = [], onCommentAdded }) => {
   const [text, setText] = useState('')
-  const [comments, setComments] = useState(existingComments)
   const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async (e) => {
@@ -15,13 +16,13 @@ const HumanComment = ({ sectionId, reviewId, existingComments = [] }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+          'X-CSRF-Token': csrfToken
         },
         body: JSON.stringify({ text })
       })
 
       if (response.ok) {
-        setComments([...comments, { text, created_at: new Date().toISOString() }])
+        onCommentAdded?.({ text, created_at: new Date().toISOString() })
         setText('')
       }
     } finally {
@@ -31,7 +32,7 @@ const HumanComment = ({ sectionId, reviewId, existingComments = [] }) => {
 
   return (
     <div className="mt-3 space-y-2">
-      {comments.map((comment, i) => (
+      {existingComments.map((comment, i) => (
         <div key={i} className="bg-purple-50 border border-purple-200 rounded p-2 text-sm">
           <span className="font-medium text-purple-700">You:</span> {comment.text}
         </div>

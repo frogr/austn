@@ -22,7 +22,7 @@ module Harness
       end
 
       def system_prompt
-        File.read(prompt_path("triage"))
+        Prompts::Registry.get("triage")
       end
 
       def classify(file_changes, priorities)
@@ -31,10 +31,6 @@ module Harness
           priority ? priority[:priority].to_sym : :low
         end
         { high: grouped[:high] || [], medium: grouped[:medium] || [], low: grouped[:low] || [] }
-      end
-
-      def prompt_path(name)
-        File.join(__dir__, "..", "prompts", "#{name}.txt")
       end
     end
   end

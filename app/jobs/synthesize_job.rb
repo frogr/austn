@@ -2,7 +2,7 @@ class SynthesizeJob < ApplicationJob
   queue_as :default
 
   def perform(review_id)
-    review = Review.find(review_id)
+    review = Review.includes(:review_sections).find(review_id)
     findings = build_findings(review)
     human_comments = collect_comments(review)
 
@@ -17,7 +17,7 @@ class SynthesizeJob < ApplicationJob
       .call(findings: findings, human_comments: human_comments)
 
     review.update!(synthesis_result: result)
-    ActionCable.server.broadcast("review_#{review.id}", {
+    ActionCable.server.broadcast("#{ReviewChannel::STREAM_PREFIX}#{review.id}", {
       type: "synthesis_complete",
       synthesis: result
     })

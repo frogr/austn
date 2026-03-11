@@ -28,11 +28,7 @@ module Harness
       end
 
       def system_prompt
-        File.read(prompt_path("synthesis"))
-      end
-
-      def prompt_path(name)
-        File.join(__dir__, "..", "prompts", "#{name}.txt")
+        Prompts::Registry.get("synthesis")
       end
     end
   end

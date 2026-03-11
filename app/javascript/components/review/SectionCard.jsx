@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import FindingBadge from './FindingBadge'
 import HumanComment from './HumanComment'
 
 const SectionCard = ({ section, reviewId, onFindingClick }) => {
   const [expanded, setExpanded] = useState(true)
+  const [comments, setComments] = useState(section.human_comments || [])
+
+  const handleCommentAdded = useCallback((comment) => {
+    setComments(prev => [...prev, comment])
+  }, [])
 
   const languageBadge = section.language && section.language !== 'text'
     ? <span className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded ml-2">{section.language}</span>
@@ -48,7 +53,8 @@ const SectionCard = ({ section, reviewId, onFindingClick }) => {
           <HumanComment
             sectionId={section.id}
             reviewId={reviewId}
-            existingComments={section.human_comments || []}
+            existingComments={comments}
+            onCommentAdded={handleCommentAdded}
           />
         </div>
       )}

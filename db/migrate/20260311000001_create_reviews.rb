@@ -13,6 +13,8 @@ class CreateReviews < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
+    add_index :reviews, :status
+
     create_table :review_sections do |t|
       t.references :review, null: false, foreign_key: true
       t.string :filename, null: false

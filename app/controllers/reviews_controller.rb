@@ -1,17 +1,15 @@
-class ReviewsController < ApplicationController
-  before_action :require_admin
-
+class ReviewsController < Admin::BaseController
   def index
   end
 
   def create
-    review = Review.create!(pr_url: params[:pr_url], status: "pending")
+    review = Review.create!(pr_url: params[:pr_url], status: Review::PENDING)
     ReviewJob.perform_later(review.id)
     render json: { id: review.id, status: review.status }
   end
 
   def show
-    review = Review.find(params[:id])
+    review = Review.includes(:review_sections).find(params[:id])
     render json: review_json(review)
   end
 
@@ -30,11 +28,14 @@ class ReviewsController < ApplicationController
 
   private
 
-  def require_admin
-    return if session[:admin_authenticated]
+  def authenticate_admin!
+    return true if session[:admin_authenticated]
 
     respond_to do |format|
-      format.html { redirect_to admin_login_path }
+      format.html do
+        session[:admin_return_to] = request.fullpath
+        redirect_to admin_login_path
+      end
       format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
     end
   end

@@ -22,7 +22,7 @@ module Harness
       end
 
       def system_prompt
-        File.read(prompt_path("section_review"))
+        Prompts::Registry.get("section_review")
       end
 
       def parse_findings(data, filename)
@@ -35,10 +35,6 @@ module Harness
             line_range: f[:line_range]
           )
         end
-      end
-
-      def prompt_path(name)
-        File.join(__dir__, "..", "prompts", "#{name}.txt")
       end
     end
   end

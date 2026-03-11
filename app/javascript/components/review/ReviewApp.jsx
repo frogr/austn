@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { createConsumer } from '@rails/actioncable'
 import PrInput from './PrInput'
 import DiffPanel from './DiffPanel'
@@ -6,7 +6,7 @@ import ReviewPanel from './ReviewPanel'
 
 const cable = createConsumer()
 
-const csrfToken = () => document.querySelector('[name="csrf-token"]')?.content
+const csrfToken = document.querySelector('[name="csrf-token"]')?.content
 
 const ReviewApp = () => {
   const [reviewId, setReviewId] = useState(null)
@@ -37,28 +37,29 @@ const ReviewApp = () => {
     return () => subscription.unsubscribe()
   }, [reviewId])
 
-  // Poll for status updates
+  // Poll for status updates — use ref to avoid effect re-triggering
+  const statusRef = useRef(status)
+  statusRef.current = status
+
   useEffect(() => {
-    if (!reviewId || status === 'complete' || status === 'failed') return
+    if (!reviewId) return
 
     const interval = setInterval(async () => {
+      if (statusRef.current === 'complete' || statusRef.current === 'failed') return
+
       try {
         const res = await fetch(`/reviews/${reviewId}`)
         if (res.ok) {
           const data = await res.json()
           setStatus(data.status)
-          if (data.sections?.length > sections.length) {
-            setSections(data.sections)
-          }
-          if (data.synthesis?.verdict) {
-            setSynthesis(data.synthesis)
-          }
+          if (data.sections) setSections(data.sections)
+          if (data.synthesis?.verdict) setSynthesis(data.synthesis)
         }
       } catch { /* ignore polling errors */ }
-    }, 3000)
+    }, 5000)
 
     return () => clearInterval(interval)
-  }, [reviewId, status, sections.length])
+  }, [reviewId])
 
   const handleSubmit = useCallback(async (prUrl) => {
     setError(null)
@@ -69,7 +70,7 @@ const ReviewApp = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken()
+          'X-CSRF-Token': csrfToken
         },
         body: JSON.stringify({ pr_url: prUrl })
       })
@@ -96,7 +97,7 @@ const ReviewApp = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken()
+          'X-CSRF-Token': csrfToken
         }
       })
     } catch (err) {
