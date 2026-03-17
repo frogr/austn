@@ -229,6 +229,9 @@ Rails.application.routes.draw do
       post "images/generate", to: "images#generate"            # Sync - blocks until complete
       post "images/generate_async", to: "images#generate_async" # Async - returns generation ID
       get "images/:id/status", to: "images#status", as: :image_status
+
+      # Briefing email endpoint
+      post "briefings/send", to: "briefings#send_briefing"
     end
   end
 
