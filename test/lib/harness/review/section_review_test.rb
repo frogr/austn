@@ -1,5 +1,4 @@
 require "test_helper"
-require_relative "../../../../app/lib/harness/harness"
 
 class Harness::Review::SectionReviewTest < ActiveSupport::TestCase
   setup do

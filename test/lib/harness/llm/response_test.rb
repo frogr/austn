@@ -1,5 +1,4 @@
 require "test_helper"
-require_relative "../../../../app/lib/harness/harness"
 
 class Harness::LLM::ResponseTest < ActiveSupport::TestCase
   test "stores content and metadata" do
