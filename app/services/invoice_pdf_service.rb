@@ -65,7 +65,7 @@ class InvoicePdfService
 
   def draw_divider(pdf)
     pdf.fill_color ACCENT_COLOR
-    pdf.fill_rectangle [0, pdf.cursor], pdf.bounds.width, 2
+    pdf.fill_rectangle [ 0, pdf.cursor ], pdf.bounds.width, 2
     pdf.fill_color "000000"
     pdf.move_down 20
   end
@@ -143,7 +143,7 @@ class InvoicePdfService
 
       pdf.move_down 4
       pdf.fill_color ACCENT_COLOR
-      pdf.fill_rectangle [0, pdf.cursor], 220, 2
+      pdf.fill_rectangle [ 0, pdf.cursor ], 220, 2
       pdf.fill_color "000000"
       pdf.move_down 8
 
