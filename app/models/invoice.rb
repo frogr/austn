@@ -44,13 +44,20 @@ class Invoice < ApplicationRecord
     return if invoice_number.present?
 
     year = (issue_date || Date.current).year
-    last_invoice = Invoice.where("invoice_number LIKE ?", "INV-#{year}-%").order(:invoice_number).last
-    next_num = if last_invoice
-      last_invoice.invoice_number.split("-").last.to_i + 1
-    else
-      1
+
+    # Use advisory lock to prevent race conditions when generating invoice numbers
+    ActiveRecord::Base.connection.execute("SELECT pg_advisory_lock(#{year})")
+    begin
+      last_invoice = Invoice.where("invoice_number LIKE ?", "INV-#{year}-%").order(:invoice_number).last
+      next_num = if last_invoice
+        last_invoice.invoice_number.split("-").last.to_i + 1
+      else
+        1
+      end
+      self.invoice_number = "INV-#{year}-#{next_num.to_s.rjust(4, '0')}"
+    ensure
+      ActiveRecord::Base.connection.execute("SELECT pg_advisory_unlock(#{year})")
     end
-    self.invoice_number = "INV-#{year}-#{next_num.to_s.rjust(4, '0')}"
   end
 
   def calculate_totals

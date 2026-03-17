@@ -102,23 +102,31 @@ class TtsBatchesController < ApplicationController
       return
     end
 
-    # Create a zip file in memory
+    # Stream zip to avoid loading all audio data into memory at once
     require "zip"
 
-    zip_data = Zip::OutputStream.write_buffer do |zip|
-      completed_items.each do |item|
-        filename = "#{item.position.to_s.rjust(3, '0')}-#{item.voice_preset || 'default'}.wav"
-        zip.put_next_entry(filename)
-        zip.write(Base64.decode64(item.audio_data))
+    zip_filename = "batch-#{batch.id}-#{batch.name.parameterize}.zip"
+    response.headers["Content-Type"] = "application/zip"
+    response.headers["Content-Disposition"] = "attachment; filename=\"#{zip_filename}\""
+
+    # Use a streaming approach: write zip to a temp file, then stream it
+    temp_zip = Tempfile.new([ "tts_batch", ".zip" ])
+    begin
+      Zip::OutputStream.open(temp_zip.path) do |zip|
+        completed_items.find_each do |item|
+          filename = "#{item.position.to_s.rjust(3, '0')}-#{item.voice_preset || 'default'}.wav"
+          zip.put_next_entry(filename)
+          zip.write(Base64.decode64(item.audio_data))
+        end
       end
+
+      send_file temp_zip.path,
+                type: "application/zip",
+                disposition: "attachment",
+                filename: zip_filename
+    ensure
+      temp_zip.close
     end
-
-    zip_data.rewind
-
-    send_data zip_data.read,
-              type: "application/zip",
-              disposition: "attachment",
-              filename: "batch-#{batch.id}-#{batch.name.parameterize}.zip"
   end
 
   private

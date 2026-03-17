@@ -1,6 +1,6 @@
 class BlogController < ApplicationController
   def index
-    @blog_posts = BlogPost.all.sort_by(&:created_at).reverse
+    @blog_posts = BlogPost.order(created_at: :desc)
   end
 
   def show

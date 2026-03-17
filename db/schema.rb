@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_17_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,20 +69,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
   end
 
-  create_table "clients", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "email", null: false
-    t.string "address_line1", null: false
-    t.string "address_line2"
-    t.string "city", null: false
-    t.string "state", null: false
-    t.string "zip", null: false
-    t.text "notes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_clients_on_email"
-  end
-
   create_table "bookings", force: :cascade do |t|
     t.bigint "availability_id", null: false
     t.date "booked_date", null: false
@@ -102,6 +88,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.index ["confirmation_token"], name: "index_bookings_on_confirmation_token", unique: true
     t.index ["email"], name: "index_bookings_on_email"
     t.index ["status"], name: "index_bookings_on_status"
+  end
+
+  create_table "clients", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "address_line1", null: false
+    t.string "address_line2"
+    t.string "city", null: false
+    t.string "state", null: false
+    t.string "zip", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_clients_on_email"
   end
 
   create_table "daw_patterns", force: :cascade do |t|
@@ -131,12 +131,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.index ["service_name"], name: "index_gpu_health_statuses_on_service_name", unique: true
   end
 
+  create_table "images", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.integer "position"
+    t.boolean "published"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_images_on_position"
+    t.index ["published"], name: "index_images_on_published"
+  end
+
   create_table "invoice_line_items", force: :cascade do |t|
     t.bigint "invoice_id", null: false
     t.string "description", null: false
-    t.decimal "quantity", precision: 10, scale: 2, null: false, default: "1.0"
-    t.integer "unit_price_cents", null: false, default: 0
-    t.integer "total_cents", null: false, default: 0
+    t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.integer "unit_price_cents", default: 0, null: false
+    t.integer "total_cents", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_invoice_line_items_on_invoice_id"
@@ -147,12 +158,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.string "invoice_number", null: false
     t.date "issue_date", null: false
     t.date "due_date", null: false
-    t.string "status", null: false, default: "draft"
+    t.string "status", default: "draft", null: false
     t.text "notes"
-    t.integer "subtotal_cents", null: false, default: 0
-    t.decimal "tax_rate", precision: 5, scale: 2, null: false, default: "0.0"
-    t.integer "tax_cents", null: false, default: 0
-    t.integer "total_cents", null: false, default: 0
+    t.integer "subtotal_cents", default: 0, null: false
+    t.decimal "tax_rate", precision: 5, scale: 2, default: "0.0", null: false
+    t.integer "tax_cents", default: 0, null: false
+    t.integer "total_cents", default: 0, null: false
     t.datetime "paid_at"
     t.datetime "sent_at"
     t.datetime "created_at", null: false
@@ -161,15 +172,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.index ["due_date"], name: "index_invoices_on_due_date"
     t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
     t.index ["status"], name: "index_invoices_on_status"
-  end
-
-  create_table "images", force: :cascade do |t|
-    t.string "title"
-    t.text "description"
-    t.integer "position"
-    t.boolean "published"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "review_sections", force: :cascade do |t|
@@ -185,6 +187,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.datetime "updated_at", null: false
     t.text "patch_text"
     t.index ["review_id"], name: "index_review_sections_on_review_id"
+    t.index ["status"], name: "index_review_sections_on_status"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -199,6 +202,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.integer "warnings", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["pr_url"], name: "index_reviews_on_pr_url"
     t.index ["status"], name: "index_reviews_on_status"
   end
 
@@ -209,6 +213,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
     t.jsonb "metadata", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "story_paragraphs_count", default: 0, null: false
     t.index ["active"], name: "index_stories_on_active"
   end
 

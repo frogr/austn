@@ -1,7 +1,7 @@
 module Admin
   class BlogPostsController < BaseController
     def index
-      @blog_posts = BlogPost.all.sort_by { |p| p.published_at || p.created_at }.reverse
+      @blog_posts = BlogPost.order(Arel.sql("COALESCE(published_at, created_at) DESC"))
       @total_count = BlogPost.count
       @r2_configured = R2ImageService.configured?
     end

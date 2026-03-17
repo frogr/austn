@@ -4,6 +4,15 @@ class GpuJob < ApplicationJob
   # Always use the GPU queue for these jobs
   queue_as :gpu
 
+  # Shared Redis connection — avoids creating a new connection per call
+  def self.redis
+    @redis ||= Redis.new(url: Rails.application.config_for(:redis)["url"])
+  end
+
+  def redis
+    self.class.redis
+  end
+
   # Track which service this job is for (override in subclasses)
   class_attribute :gpu_service_name, default: nil
 
@@ -18,7 +27,6 @@ class GpuJob < ApplicationJob
 
   # Ensure only one GPU job runs at a time by using Redis lock
   around_perform do |job, block|
-    redis = Redis.new(url: Rails.application.config_for(:redis)["url"])
     lock_key = "gpu_lock"
     lock_timeout = job.class.gpu_lock_timeout
 
@@ -31,8 +39,8 @@ class GpuJob < ApplicationJob
         block.call
       ensure
         # Only release if we still own the lock
-        if redis.get(lock_key) == job.job_id
-          redis.del(lock_key)
+        if job.redis.get(lock_key) == job.job_id
+          job.redis.del(lock_key)
           Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) released GPU lock"
         end
       end
@@ -45,13 +53,11 @@ class GpuJob < ApplicationJob
 
   # Helper method to store results in Redis
   def store_result(key, value, ttl: 3600)
-    redis = Redis.new(url: Rails.application.config_for(:redis)["url"])
     redis.setex(key, ttl, value.to_json)
   end
 
   # Helper method to get result from Redis
   def self.get_result(key)
-    redis = Redis.new(url: Rails.application.config_for(:redis)["url"])
     result = redis.get(key)
     JSON.parse(result) if result
   rescue JSON::ParserError

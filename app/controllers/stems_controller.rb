@@ -117,19 +117,25 @@ class StemsController < ApplicationController
       original = result_data["original_filename"] || "audio.mp3"
       basename = File.basename(original, ".*")
 
+      # Stream zip to avoid loading all decoded stems into memory at once
       require "zip"
 
-      zip_data = Zip::OutputStream.write_buffer do |zip|
-        result_data["stems"].each do |stem_name, stem_base64|
-          zip.put_next_entry("#{basename}_#{stem_name}.flac")
-          zip.write(Base64.decode64(stem_base64))
+      temp_zip = Tempfile.new([ "stems", ".zip" ])
+      begin
+        Zip::OutputStream.open(temp_zip.path) do |zip|
+          result_data["stems"].each do |stem_name, stem_base64|
+            zip.put_next_entry("#{basename}_#{stem_name}.flac")
+            zip.write(Base64.decode64(stem_base64))
+          end
         end
-      end
 
-      send_data zip_data.string,
-                type: "application/zip",
-                disposition: "attachment",
-                filename: "#{basename}_stems.zip"
+        send_file temp_zip.path,
+                  type: "application/zip",
+                  disposition: "attachment",
+                  filename: "#{basename}_stems.zip"
+      ensure
+        temp_zip.close
+      end
     else
       render json: { error: "Result not found or expired" }, status: :not_found
     end
