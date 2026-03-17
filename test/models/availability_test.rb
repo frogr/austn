@@ -65,11 +65,11 @@ class AvailabilityTest < ActiveSupport::TestCase
 
   test "available_slots_for_date excludes booked slots" do
     avail = availabilities(:today_afternoon)
-    # There's one confirmed booking at 14:00-14:30
+    # There's one confirmed booking at 22:00-22:30 UTC (14:00-14:30 PST)
     available = avail.available_slots_for_date(avail.date)
-    start_times = available.map { |s| s[:start_time].strftime("%H:%M") }
-    assert_not_includes start_times, "14:00"
-    assert_includes start_times, "14:30"
+    start_times = available.map { |s| s[:start_time].utc.strftime("%H:%M") }
+    assert_not_includes start_times, "22:00"
+    assert_includes start_times, "22:30"
   end
 
   test "scope active returns only active availabilities" do

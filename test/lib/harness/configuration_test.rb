@@ -3,8 +3,8 @@ require "test_helper"
 class Harness::ConfigurationTest < ActiveSupport::TestCase
   test "has sensible defaults" do
     config = Harness::Configuration.new
-    assert_equal :anthropic, config.provider
-    assert_equal "claude-sonnet-4-20250514", config.model
+    assert_equal :openai, config.provider
+    assert_equal "gpt-4o-mini", config.model
     assert_equal 4096, config.max_tokens_per_call
     assert_nil config.on_section_complete
   end
