@@ -1,0 +1,16 @@
+<%= @subject %>
+<%= "=" * @subject.length %>
+
+<% @sections.each_with_index do |section, index| %>
+<%= (section[:title] || section["title"]).upcase %>
+<%= "-" * (section[:title] || section["title"]).length %>
+
+<%= strip_tags(section[:content] || section["content"]) %>
+
+<% unless index == @sections.length - 1 %>
+---
+
+<% end %>
+<% end %>
+--
+Sent by Hermes Agent from austn.net
