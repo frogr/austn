@@ -26,8 +26,9 @@ class Story < ApplicationRecord
     [ (story_paragraphs.count.to_f / per_page).ceil, 1 ].max
   end
 
+  # Uses counter_cache column when available, falls back to COUNT query
   def paragraph_count
-    story_paragraphs.count
+    story_paragraphs_count || story_paragraphs.count
   end
 
   def started?

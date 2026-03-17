@@ -1,5 +1,5 @@
 class StoryParagraph < ApplicationRecord
-  belongs_to :story
+  belongs_to :story, counter_cache: true
 
   validates :content, presence: true
   validates :paragraph_number, presence: true, uniqueness: { scope: :story_id }
