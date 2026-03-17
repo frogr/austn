@@ -18,14 +18,14 @@ module Harness
       end
 
       def to_s
-        [header, *lines].join("\n")
+        [ header, *lines ].join("\n")
       end
 
       private
 
       def parse_header
         match = header.match(/@@ -(\d+)(?:,\d+)? \+(\d+)/)
-        [match[1].to_i, match[2].to_i]
+        [ match[1].to_i, match[2].to_i ]
       end
     end
   end

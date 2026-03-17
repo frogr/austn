@@ -8,8 +8,8 @@ class Harness::Review::SectionReviewTest < ActiveSupport::TestCase
   end
 
   test "parses findings from LLM response" do
-    hunk = Harness::Diff::Hunk.new(header: "@@ -1,3 +1,4 @@", lines: ["+new line"])
-    file = Harness::Diff::FileChange.new(filename: "app/models/user.rb", status: :modified, hunks: [hunk])
+    hunk = Harness::Diff::Hunk.new(header: "@@ -1,3 +1,4 @@", lines: [ "+new line" ])
+    file = Harness::Diff::FileChange.new(filename: "app/models/user.rb", status: :modified, hunks: [ hunk ])
 
     @mock_llm.stub_response({
       walkthrough: "Adds a validation to user model",

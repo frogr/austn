@@ -13,7 +13,7 @@ module Harness
       def parse_url(url)
         match = url.match(GITHUB_PR_PATTERN)
         raise Harness::Error, "Invalid GitHub PR URL: #{url}" unless match
-        [match[1], match[2], match[3]]
+        [ match[1], match[2], match[3] ]
       end
 
       def fetch_diff(owner, repo, number)

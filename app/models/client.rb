@@ -9,7 +9,7 @@ class Client < ApplicationRecord
   validates :zip, presence: true
 
   def full_address
-    parts = [address_line1]
+    parts = [ address_line1 ]
     parts << address_line2 if address_line2.present?
     parts << "#{city}, #{state} #{zip}"
     parts.join("\n")

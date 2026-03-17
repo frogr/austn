@@ -55,7 +55,7 @@ gem "httparty", "~> 0.22"
 
 # AWS SDK for Cloudflare R2 (S3-compatible)
 gem "aws-sdk-s3", "~> 1.0"
-gem "brakeman", "~> 7.1.0"
+gem "brakeman", "~> 8.0"
 
 # Markdown processing
 gem "redcarpet", "~> 3.5"

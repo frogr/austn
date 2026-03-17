@@ -7,7 +7,7 @@ module Harness
 
       def call(findings:, human_comments: [])
         prompt = build_prompt(findings, human_comments)
-        response = @llm.complete(messages: [prompt], system: system_prompt)
+        response = @llm.complete(messages: [ prompt ], system: system_prompt)
         response.parsed_json
       end
 

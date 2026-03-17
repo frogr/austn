@@ -252,7 +252,7 @@ Rails.application.routes.draw do
   get "/endless/:id/timer", to: "endless#timer", as: :endless_story_timer
 
   # Code Review Harness
-  resources :reviews, only: [:index, :create, :show] do
+  resources :reviews, only: [ :index, :create, :show ] do
     member do
       post :synthesize
     end
