@@ -1,12 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <title><%= @subject %></title>
+  <!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+  <style>
+    :root { color-scheme: light dark; supported-color-schemes: light dark; }
+    body, .body-bg { background-color: #1a1f2e !important; }
+    .card-bg { background-color: #2a2f3e !important; }
+    .weather-card-bg { background-color: #232838 !important; }
+    @media (prefers-color-scheme: dark) {
+      body, .body-bg { background-color: #1a1f2e !important; }
+      .card-bg { background-color: #2a2f3e !important; }
+      .weather-card-bg { background-color: #232838 !important; }
+      u ~ div { background-color: #1a1f2e !important; }
+    }
+    [data-ogsc] body, [data-ogsc] .body-bg { background-color: #1a1f2e !important; }
+    [data-ogsc] .card-bg { background-color: #2a2f3e !important; }
+    [data-ogsc] .weather-card-bg { background-color: #232838 !important; }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #1a1f2e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #e0e0e0;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #1a1f2e;">
+<body class="body-bg" style="margin: 0; padding: 0; background-color: #1a1f2e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #e0e0e0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="body-bg" style="background-color: #1a1f2e;">
     <tr>
       <td align="center" style="padding: 24px 16px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 620px;">
@@ -32,7 +50,7 @@
           <% @sections.each do |section| %>
             <tr>
               <td style="padding: 0 0 16px 0;">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #2a2f3e; border-radius: 10px; border: 1px solid #3a3f4e;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="card-bg" style="background-color: #2a2f3e; border-radius: 10px; border: 1px solid #3a3f4e;">
                   <tr>
                     <td style="padding: 18px 22px 14px 22px; border-bottom: 1px solid #3a3f4e;">
                       <h2 style="margin: 0; font-size: 15px; font-weight: 600; color: #00d9a3; letter-spacing: 0.3px;"><%= section[:title] || section["title"] %></h2>
