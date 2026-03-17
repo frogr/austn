@@ -57,8 +57,6 @@ Rails.application.routes.draw do
   # Claude Corner
   get "/claude", to: "claude_corner#index"
 
-  # Movement demo
-  get "/movement-demo", to: "movement_demo#index"
 
   # Pitch checker
   get "/pitch", to: "pitch#index"
