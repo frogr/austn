@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_18_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,6 +69,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_000002) do
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
   end
 
+  create_table "clients", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "address_line1", null: false
+    t.string "address_line2"
+    t.string "city", null: false
+    t.string "state", null: false
+    t.string "zip", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_clients_on_email"
+  end
+
   create_table "bookings", force: :cascade do |t|
     t.bigint "availability_id", null: false
     t.date "booked_date", null: false
@@ -117,6 +131,38 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_000002) do
     t.index ["service_name"], name: "index_gpu_health_statuses_on_service_name", unique: true
   end
 
+  create_table "invoice_line_items", force: :cascade do |t|
+    t.bigint "invoice_id", null: false
+    t.string "description", null: false
+    t.decimal "quantity", precision: 10, scale: 2, null: false, default: "1.0"
+    t.integer "unit_price_cents", null: false, default: 0
+    t.integer "total_cents", null: false, default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_invoice_line_items_on_invoice_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "invoice_number", null: false
+    t.date "issue_date", null: false
+    t.date "due_date", null: false
+    t.string "status", null: false, default: "draft"
+    t.text "notes"
+    t.integer "subtotal_cents", null: false, default: 0
+    t.decimal "tax_rate", precision: 5, scale: 2, null: false, default: "0.0"
+    t.integer "tax_cents", null: false, default: 0
+    t.integer "total_cents", null: false, default: 0
+    t.datetime "paid_at"
+    t.datetime "sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_invoices_on_client_id"
+    t.index ["due_date"], name: "index_invoices_on_due_date"
+    t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
+    t.index ["status"], name: "index_invoices_on_status"
+  end
+
   create_table "images", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -124,6 +170,36 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_000002) do
     t.boolean "published"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "review_sections", force: :cascade do |t|
+    t.bigint "review_id", null: false
+    t.string "filename", null: false
+    t.string "language"
+    t.string "priority"
+    t.text "walkthrough"
+    t.jsonb "findings", default: []
+    t.jsonb "human_comments", default: []
+    t.string "status", default: "pending"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "patch_text"
+    t.index ["review_id"], name: "index_review_sections_on_review_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.string "pr_url", null: false
+    t.string "repo_name"
+    t.integer "pr_number"
+    t.string "status", default: "pending"
+    t.jsonb "triage_result", default: {}
+    t.jsonb "synthesis_result", default: {}
+    t.integer "total_findings", default: 0
+    t.integer "red_flags", default: 0
+    t.integer "warnings", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_reviews_on_status"
   end
 
   create_table "stories", force: :cascade do |t|
@@ -212,6 +288,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_000002) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bookings", "availabilities"
+  add_foreign_key "invoice_line_items", "invoices"
+  add_foreign_key "invoices", "clients"
+  add_foreign_key "review_sections", "reviews"
   add_foreign_key "story_paragraphs", "stories"
   add_foreign_key "tts_batch_items", "tts_batches"
 end

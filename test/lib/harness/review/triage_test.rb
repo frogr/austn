@@ -1,5 +1,4 @@
 require "test_helper"
-require_relative "../../../../app/lib/harness/harness"
 
 class Harness::Review::TriageTest < ActiveSupport::TestCase
   setup do
@@ -18,7 +17,7 @@ class Harness::Review::TriageTest < ActiveSupport::TestCase
       ]
     })
 
-    result = @triage.call(file_changes: [file1, file2])
+    result = @triage.call(file_changes: [ file1, file2 ])
     assert_equal 1, result[:high].length
     assert_equal 0, result[:medium].length
     assert_equal 1, result[:low].length
@@ -30,7 +29,7 @@ class Harness::Review::TriageTest < ActiveSupport::TestCase
 
     @mock_llm.stub_response({ files: [] })
 
-    result = @triage.call(file_changes: [file])
+    result = @triage.call(file_changes: [ file ])
     assert_equal 1, result[:low].length
   end
 

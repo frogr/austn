@@ -7,7 +7,7 @@ module Harness
 
       def call(file_changes:, pr_description: "")
         prompt = build_prompt(file_changes, pr_description)
-        response = @llm.complete(messages: [prompt], system: system_prompt)
+        response = @llm.complete(messages: [ prompt ], system: system_prompt)
         classify(file_changes, response.parsed_json)
       end
 

@@ -3,7 +3,7 @@ class ReviewSection < ApplicationRecord
   REVIEWING = "reviewing"
   COMPLETE  = "complete"
 
-  STATUSES = [PENDING, REVIEWING, COMPLETE].freeze
+  STATUSES = [ PENDING, REVIEWING, COMPLETE ].freeze
 
   belongs_to :review
 

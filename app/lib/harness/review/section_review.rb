@@ -7,7 +7,7 @@ module Harness
 
       def call(file_change:, context: "")
         prompt = build_prompt(file_change, context)
-        response = @llm.complete(messages: [prompt], system: system_prompt)
+        response = @llm.complete(messages: [ prompt ], system: system_prompt)
         parse_findings(response.parsed_json, file_change.filename)
       end
 

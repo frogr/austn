@@ -35,7 +35,7 @@ class ZeitwerkComplianceTest < ActiveSupport::TestCase
 
       next if dir == AUTOLOAD_ROOT.to_s # root-level files are fine
 
-      refute_equal parent_dir, filename,
+      assert_not_equal parent_dir, filename,
         "#{file_path} has the same name as its parent directory. " \
         "Zeitwerk will expect #{camelize(filename)} inside the #{camelize(parent_dir)} namespace, " \
         "causing 'uninitialized constant' errors. Move the module definition to the parent level."

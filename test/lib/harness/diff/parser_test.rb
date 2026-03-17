@@ -1,5 +1,4 @@
 require "test_helper"
-require_relative "../../../../app/lib/harness/harness"
 
 class Harness::Diff::ParserTest < ActiveSupport::TestCase
   SAMPLE_DIFF = <<~DIFF

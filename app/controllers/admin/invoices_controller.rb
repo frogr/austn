@@ -115,7 +115,7 @@ module Admin
     def invoice_params
       params.require(:invoice).permit(
         :client_id, :issue_date, :due_date, :status, :notes, :tax_rate,
-        line_items_attributes: [:id, :description, :quantity, :unit_price_cents, :_destroy]
+        line_items_attributes: [ :id, :description, :quantity, :unit_price_cents, :_destroy ]
       )
     end
   end

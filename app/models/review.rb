@@ -4,7 +4,7 @@ class Review < ApplicationRecord
   COMPLETE  = "complete"
   FAILED    = "failed"
 
-  STATUSES = [PENDING, REVIEWING, COMPLETE, FAILED].freeze
+  STATUSES = [ PENDING, REVIEWING, COMPLETE, FAILED ].freeze
 
   has_many :review_sections, dependent: :destroy
 
