@@ -1,4 +1,6 @@
 class InvoicePdfService
+  include MoneyFormattable
+
   ACCENT_COLOR = "1DB954"
 
   def initialize(invoice)
@@ -197,14 +199,5 @@ class InvoicePdfService
       pdf.text "austn.net", align: :center
     end
     pdf.fill_color "000000"
-  end
-
-  def format_money(cents)
-    return "$0.00" if cents.nil? || cents == 0
-    dollars = cents.to_f / 100
-    formatted = format("%.2f", dollars)
-    parts = formatted.split(".")
-    parts[0] = parts[0].gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')
-    "$#{parts.join('.')}"
   end
 end

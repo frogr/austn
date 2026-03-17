@@ -1,4 +1,6 @@
 class Invoice < ApplicationRecord
+  include MoneyFormattable
+
   belongs_to :client
   has_many :line_items, class_name: "InvoiceLineItem", dependent: :destroy
 
@@ -64,16 +66,5 @@ class Invoice < ApplicationRecord
     self.subtotal_cents = line_items.reject(&:marked_for_destruction?).sum { |li| li.quantity * li.unit_price_cents }
     self.tax_cents = (subtotal_cents * (tax_rate || 0) / 100).round
     self.total_cents = subtotal_cents + tax_cents
-  end
-
-  def format_money(cents)
-    dollars = cents.to_f / 100
-    "$#{number_with_delimiter(format('%.2f', dollars))}"
-  end
-
-  def number_with_delimiter(number)
-    parts = number.to_s.split(".")
-    parts[0] = parts[0].gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')
-    parts.join(".")
   end
 end

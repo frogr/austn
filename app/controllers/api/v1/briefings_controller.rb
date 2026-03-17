@@ -1,8 +1,6 @@
 module Api
   module V1
-    class BriefingsController < ApplicationController
-      skip_before_action :verify_authenticity_token
-
+    class BriefingsController < BaseController
       RECIPIENT = "austindanielfrench@gmail.com".freeze
 
       def send_briefing
