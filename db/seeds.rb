@@ -484,3 +484,59 @@ DawPattern.find_or_create_by!(name: "Wobble Bass") do |pattern|
 end
 
 puts "Created #{DawPattern.count} DAW pattern templates"
+
+# NYC events seed — a handful of placeholder venues + events so the /nyc page
+# has something on the map before the scrapers have run.
+if defined?(Nyc::Venue) && defined?(Nyc::Event)
+  nyc_seed_venues = [
+    { name: "Bowery Ballroom",  address: "6 Delancey St, New York, NY",      lat: 40.7204, lng: -73.9937, neighborhood: "Lower East Side", venue_type: "venue" },
+    { name: "Madison Square Garden", address: "4 Pennsylvania Plaza, New York, NY", lat: 40.7505, lng: -73.9934, neighborhood: "Midtown", venue_type: "arena" },
+    { name: "The Comedy Cellar", address: "117 MacDougal St, New York, NY",  lat: 40.7305, lng: -74.0007, neighborhood: "Greenwich Village", venue_type: "comedy" },
+    { name: "Attaboy",          address: "134 Eldridge St, New York, NY",    lat: 40.7188, lng: -73.9920, neighborhood: "Lower East Side", venue_type: "bar" },
+    { name: "MoMA PS1",         address: "22-25 Jackson Ave, Long Island City, NY", lat: 40.7456, lng: -73.9476, neighborhood: "Long Island City", venue_type: "gallery" }
+  ]
+
+  nyc_seed_venues.each do |attrs|
+    key = [ attrs[:name].downcase, attrs[:address].downcase ].join("|")
+    Nyc::Venue.find_or_create_by!(geocode_key: key) do |v|
+      v.assign_attributes(attrs)
+    end
+  end
+
+  bowery = Nyc::Venue.find_by(name: "Bowery Ballroom")
+  msg    = Nyc::Venue.find_by(name: "Madison Square Garden")
+  cellar = Nyc::Venue.find_by(name: "The Comedy Cellar")
+  attaboy = Nyc::Venue.find_by(name: "Attaboy")
+  moma_ps1 = Nyc::Venue.find_by(name: "MoMA PS1")
+
+  tonight_at = ->(hour, minute = 0) { Time.current.in_time_zone("America/New_York").change(hour: hour, min: minute) }
+
+  nyc_seed_events = [
+    { venue: bowery,   title: "Indie band showcase",     start_at: tonight_at.call(20),    category: "concert",    price_text: "$20" },
+    { venue: msg,      title: "Knicks vs. Celtics",      start_at: tonight_at.call(19, 30), category: "sports",     price_text: "$$$" },
+    { venue: cellar,   title: "Late night stand-up",     start_at: tonight_at.call(22),    category: "comedy",     price_text: "$24 + 2 drink min" },
+    { venue: attaboy,  title: "Bartender's choice happy hour", start_at: tonight_at.call(17), end_at: tonight_at.call(19), category: "happy_hour", price_text: "$10 cocktails" },
+    { venue: moma_ps1, title: "Warm Up summer series",   start_at: tonight_at.call(15) + 2.days, category: "art", price_text: "$25" }
+  ]
+
+  nyc_seed_events.each do |attrs|
+    next if attrs[:venue].nil?
+    dedupe = Nyc::Event.dedupe_hash_for(title: attrs[:title], venue_id: attrs[:venue].id, start_at: attrs[:start_at])
+    Nyc::Event.find_or_create_by!(dedupe_hash: dedupe) do |e|
+      e.assign_attributes(
+        title: attrs[:title],
+        venue: attrs[:venue],
+        start_at: attrs[:start_at],
+        end_at: attrs[:end_at],
+        category: attrs[:category],
+        price_text: attrs[:price_text],
+        description: "Seed data — replaced once scrapers run.",
+        url: nil,
+        source: "seed",
+        source_id: dedupe
+      )
+    end
+  end
+
+  puts "NYC seed: #{Nyc::Venue.count} venues, #{Nyc::Event.count} events"
+end

@@ -27,6 +27,30 @@
       class: CleanupOldModel3dsJob
       queue: low
       description: "Clean up expired 3D models"
+    nyc_scrape_skint:
+      cron: '5 6 * * *'   # 6:05am ET daily
+      class: Nyc::ScrapeJob
+      args: [ "skint" ]
+      queue: low
+      description: "Scrape The Skint daily NYC events"
+    nyc_scrape_donyc:
+      cron: '15 */3 * * *' # every 3 hours
+      class: Nyc::ScrapeJob
+      args: [ "donyc" ]
+      queue: low
+      description: "Scrape DoNYC event listings"
+    nyc_scrape_time_out:
+      cron: '25 6 * * 1'  # Mondays 6:25am ET
+      class: Nyc::ScrapeJob
+      args: [ "time_out" ]
+      queue: low
+      description: "Scrape Time Out NY happy hours weekly"
+    nyc_scrape_ticketmaster:
+      cron: '35 */2 * * *' # every 2 hours (no-op until key set)
+      class: Nyc::ScrapeJob
+      args: [ "ticketmaster" ]
+      queue: low
+      description: "Pull Ticketmaster Discovery NYC events"
 
 # GPU queue configuration
 # Run a separate Sidekiq process for GPU tasks:

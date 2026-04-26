@@ -1,0 +1,217 @@
+<% content_for :title, "Tonight in NYC" %>
+<% content_for :meta_description, "What's on near you in NYC tonight: concerts, happy hours, sports, art, free events. Curated and mapped." %>
+
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin="anonymous">
+
+<div class="min-h-screen bg-gray-950 text-gray-100">
+  <header class="border-b border-gray-800 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div>
+      <h1 class="text-xl font-bold">Tonight in NYC</h1>
+      <p class="text-xs text-gray-400">
+        <%= pluralize(@initial_events.size, "event") %> loaded ·
+        sources: The Skint · DoNYC · Time Out · Ticketmaster
+      </p>
+    </div>
+
+    <form id="nyc-filters" class="flex flex-wrap items-center gap-2">
+      <select name="window" class="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-sm">
+        <option value="">Any time</option>
+        <option value="tonight">Tonight</option>
+        <option value="weekend">This weekend</option>
+      </select>
+      <% @categories.each do |cat| %>
+        <label class="text-xs flex items-center gap-1 bg-gray-800 border border-gray-700 rounded px-2 py-1 cursor-pointer">
+          <input type="checkbox" name="categories[]" value="<%= cat %>" class="accent-current" style="accent-color: <%= @category_colors[cat] %>">
+          <span style="color: <%= @category_colors[cat] %>"><%= cat.tr("_", " ") %></span>
+        </label>
+      <% end %>
+      <button type="button" id="nyc-locate" class="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded">
+        Use my location
+      </button>
+    </form>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_22rem] h-[calc(100vh-4rem)]">
+    <div id="nyc-map" class="w-full h-[60vh] lg:h-full"></div>
+    <aside id="nyc-list" class="overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-800">
+      <ul id="nyc-event-list" class="divide-y divide-gray-800">
+        <% @initial_events.each do |event| %>
+          <li class="p-3 hover:bg-gray-900 cursor-pointer" data-event-id="<%= event.id %>"
+              data-lat="<%= event.venue&.lat %>" data-lng="<%= event.venue&.lng %>">
+            <div class="flex items-baseline gap-2">
+              <span class="inline-block w-2 h-2 rounded-full mt-1" style="background: <%= event.color %>"></span>
+              <p class="font-medium text-sm leading-snug"><%= event.title %></p>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">
+              <%= event.start_at.in_time_zone("America/New_York").strftime("%a %-l:%M %p") %>
+              <% if event.venue %>· <%= event.venue.name %><% end %>
+              <% if event.price_text.present? %>· <%= event.price_text %><% end %>
+            </p>
+            <% if event.url.present? %>
+              <a href="<%= event.url %>" target="_blank" rel="noopener" class="text-xs text-blue-400 hover:underline">
+                Details &rarr;
+              </a>
+            <% end %>
+          </li>
+        <% end %>
+        <% if @initial_events.empty? %>
+          <li class="p-6 text-sm text-gray-400">
+            No events loaded yet. Scrapers run on a schedule — check back in an hour, or kick one off in the Sidekiq UI.
+          </li>
+        <% end %>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+  window.NYC_INITIAL = {
+    center: <%= raw @center.to_json %>,
+    events: <%= raw @initial_events.map(&:as_map_json).to_json %>,
+    categoryColors: <%= raw @category_colors.to_json %>,
+    maptilerKey: <%= raw @maptiler_key.to_json %>,
+    eventsUrl: "<%= nyc_events_map_path(format: :json) %>"
+  };
+</script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
+<script>
+  // Wait for the global maplibregl to be available, then bootstrap.
+  function whenReady(cb) {
+    if (window.maplibregl) return cb();
+    setTimeout(() => whenReady(cb), 30);
+  }
+  whenReady(() => {
+    const cfg = window.NYC_INITIAL;
+    const styleUrl = cfg.maptilerKey
+      ? `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${cfg.maptilerKey}`
+      : {
+          version: 8,
+          sources: {
+            osm: {
+              type: "raster",
+              tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+              tileSize: 256,
+              attribution: "© OpenStreetMap"
+            }
+          },
+          layers: [{ id: "osm", type: "raster", source: "osm" }]
+        };
+
+    const map = new maplibregl.Map({
+      container: "nyc-map",
+      style: styleUrl,
+      center: [cfg.center.lng, cfg.center.lat],
+      zoom: 13
+    });
+    map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+    const markers = new Map();
+    function renderMarkers(events) {
+      markers.forEach((m) => m.remove());
+      markers.clear();
+      events.forEach((ev) => {
+        if (!ev.venue || ev.venue.lat == null || ev.venue.lng == null) return;
+        const el = document.createElement("div");
+        el.style.width = "14px";
+        el.style.height = "14px";
+        el.style.borderRadius = "50%";
+        el.style.background = ev.color;
+        el.style.border = "2px solid white";
+        el.style.boxShadow = "0 0 4px rgba(0,0,0,0.6)";
+        el.style.cursor = "pointer";
+
+        const popupHtml = `
+          <div style="color:#111;max-width:240px">
+            <div style="font-weight:600;margin-bottom:4px">${escapeHtml(ev.title)}</div>
+            <div style="font-size:12px;color:#444">
+              ${formatDate(ev.start_at)}${ev.venue.name ? ` · ${escapeHtml(ev.venue.name)}` : ""}
+              ${ev.price_text ? ` · ${escapeHtml(ev.price_text)}` : ""}
+            </div>
+            ${ev.url ? `<a href="${ev.url}" target="_blank" rel="noopener" style="color:#2563eb;font-size:12px">Details &rarr;</a>` : ""}
+          </div>`;
+
+        const marker = new maplibregl.Marker({ element: el })
+          .setLngLat([ev.venue.lng, ev.venue.lat])
+          .setPopup(new maplibregl.Popup({ offset: 12 }).setHTML(popupHtml))
+          .addTo(map);
+        markers.set(ev.id, marker);
+      });
+    }
+    renderMarkers(cfg.events);
+
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+    function formatDate(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
+      } catch (e) { return iso; }
+    }
+
+    async function refresh() {
+      const params = new URLSearchParams();
+      const form = document.getElementById("nyc-filters");
+      const formData = new FormData(form);
+      for (const [k, v] of formData.entries()) {
+        if (v) params.append(k, v);
+      }
+      const bounds = map.getBounds();
+      params.append("min_lat", bounds.getSouth().toFixed(5));
+      params.append("max_lat", bounds.getNorth().toFixed(5));
+      params.append("min_lng", bounds.getWest().toFixed(5));
+      params.append("max_lng", bounds.getEast().toFixed(5));
+
+      const resp = await fetch(`${cfg.eventsUrl}?${params.toString()}`);
+      if (!resp.ok) return;
+      const json = await resp.json();
+      renderMarkers(json.events);
+      renderList(json.events);
+    }
+
+    function renderList(events) {
+      const list = document.getElementById("nyc-event-list");
+      if (!events.length) {
+        list.innerHTML = `<li class="p-6 text-sm text-gray-400">No events match. Try widening the map or clearing filters.</li>`;
+        return;
+      }
+      list.innerHTML = events.map((ev) => `
+        <li class="p-3 hover:bg-gray-900 cursor-pointer" data-event-id="${ev.id}"
+            data-lat="${ev.venue?.lat ?? ""}" data-lng="${ev.venue?.lng ?? ""}">
+          <div class="flex items-baseline gap-2">
+            <span class="inline-block w-2 h-2 rounded-full mt-1" style="background:${ev.color}"></span>
+            <p class="font-medium text-sm leading-snug">${escapeHtml(ev.title)}</p>
+          </div>
+          <p class="text-xs text-gray-400 mt-1">
+            ${formatDate(ev.start_at)}${ev.venue?.name ? ` · ${escapeHtml(ev.venue.name)}` : ""}
+            ${ev.price_text ? ` · ${escapeHtml(ev.price_text)}` : ""}
+          </p>
+          ${ev.url ? `<a href="${ev.url}" target="_blank" rel="noopener" class="text-xs text-blue-400 hover:underline">Details &rarr;</a>` : ""}
+        </li>
+      `).join("");
+    }
+
+    map.on("moveend", refresh);
+    document.getElementById("nyc-filters").addEventListener("change", refresh);
+    document.getElementById("nyc-locate").addEventListener("click", () => {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition((pos) => {
+        map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 14 });
+        new maplibregl.Marker({ color: "#2563eb" })
+          .setLngLat([pos.coords.longitude, pos.coords.latitude])
+          .setPopup(new maplibregl.Popup().setText("You"))
+          .addTo(map);
+      });
+    });
+
+    document.getElementById("nyc-event-list").addEventListener("click", (e) => {
+      const li = e.target.closest("li[data-event-id]");
+      if (!li) return;
+      const lat = parseFloat(li.dataset.lat);
+      const lng = parseFloat(li.dataset.lng);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        map.flyTo({ center: [lng, lat], zoom: 15 });
+        const m = markers.get(parseInt(li.dataset.eventId, 10));
+        if (m) m.togglePopup();
+      }
+    });
+  });
+</script>

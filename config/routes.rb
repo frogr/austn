@@ -259,6 +259,12 @@ Rails.application.routes.draw do
     end
   end
 
+  # NYC events aggregator
+  namespace :nyc do
+    get "/", to: "events#index", as: :root
+    get "/events.json", to: "events#map_data", as: :events_map
+  end
+
   # Portfolio as root
   root "portfolio#index"
 end
