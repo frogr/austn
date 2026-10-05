@@ -4,6 +4,9 @@ ENV["ADMIN_PASSWORD"] ||= "password"
 require_relative "../config/environment"
 require "rails/test_help"
 
+# Throttle counters must not leak between tests (or into the shared Redis).
+Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
@@ -12,6 +15,6 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    setup { Rack::Attack.reset! }
   end
 end
