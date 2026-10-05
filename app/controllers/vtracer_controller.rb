@@ -1,5 +1,8 @@
 class VtracerController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "vtracer", only: :generate
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

@@ -1,5 +1,8 @@
 class RembgController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "rembg", only: :generate
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

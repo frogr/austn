@@ -21,7 +21,20 @@ module ActiveSupport
       Rack::Attack.reset!
     end
 
+    teardown do
+      @env_to_restore&.each { |key, value| ENV[key] = value }
+    end
+
     private
+
+    # Makes a GPU tool look configured and healthy for the rest of the test.
+    def stub_gpu_online(tool)
+      env_var = Gpu::Backend::URL_ENV.fetch(Gpu::Backend.for_tool(tool))
+      @env_to_restore ||= {}
+      @env_to_restore[env_var] = ENV[env_var] unless @env_to_restore.key?(env_var)
+      ENV[env_var] = "http://gpu-box.test"
+      GpuHealthStatus.for_service(tool).mark_online!
+    end
 
     # Sets ENV vars for the duration of the block (nil unsets), then restores them.
     def with_env(vars)

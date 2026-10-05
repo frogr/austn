@@ -1,5 +1,8 @@
 class TtsController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "tts", only: :generate
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

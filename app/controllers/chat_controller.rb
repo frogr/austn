@@ -1,4 +1,7 @@
 class ChatController < ApplicationController
+  include RequiresGpu
+
+  requires_gpu "chat", only: :async_complete
   skip_before_action :verify_authenticity_token, only: [ :complete, :async_complete, :job_status ]
 
   def index

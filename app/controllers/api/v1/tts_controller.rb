@@ -1,6 +1,10 @@
 module Api
   module V1
     class TtsController < BaseController
+      include RequiresGpu
+
+      requires_gpu "tts", only: [ :generate, :synthesize, :batch ]
+
       # POST /api/v1/tts/generate (async - returns generation ID)
       def generate
         unless params[:text].present?

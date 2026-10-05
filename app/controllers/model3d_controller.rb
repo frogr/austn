@@ -1,5 +1,8 @@
 class Model3dController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "model3d", only: :generate
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

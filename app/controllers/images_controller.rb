@@ -1,5 +1,8 @@
 class ImagesController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "images", only: :generate
 
   before_action :set_image, only: [ :show, :edit, :update, :destroy ]
   skip_before_action :verify_authenticity_token, only: [ :generate ]

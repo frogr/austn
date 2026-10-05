@@ -2,6 +2,9 @@ module Api
   module V1
     class ImagesController < BaseController
       include GpuQueueStatus
+      include RequiresGpu
+
+      requires_gpu "images", only: [ :generate, :generate_async ]
 
       # POST /api/v1/images/generate
       # Synchronous — blocks until image is generated and returns result directly.
