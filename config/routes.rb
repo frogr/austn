@@ -52,6 +52,9 @@ Rails.application.routes.draw do
   get "/fun", to: redirect("/now")
   get "/games", to: redirect("/playground")
   get "/contact", to: redirect("/book")
+  get "/endless(/*rest)", to: redirect("/playground")
+  get "/video", to: redirect("/playground")
+  get "/tech-setup", to: redirect("/now")
 
   # Claude Corner
   get "/claude", to: "claude_corner#index"

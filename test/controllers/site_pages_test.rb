@@ -5,7 +5,7 @@ class SitePagesTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_select "h1", Profile.name
+    assert_select "h1", Profile.full_name
     assert_select ".eyebrow", /#{Regexp.escape(Profile.headline)}/
     WorkItem.featured.each { |item| assert_select "a[href=?]", work_item_path(item) }
   end
@@ -48,7 +48,8 @@ class SitePagesTest < ActionDispatch::IntegrationTest
   end
 
   test "old side pages redirect to their new homes" do
-    { "/projects" => "/work", "/fun-links" => "/now", "/reading" => "/now", "/resources" => "/now", "/meet" => "/book" }.each do |from, to|
+    { "/projects" => "/work", "/fun-links" => "/now", "/reading" => "/now", "/resources" => "/now", "/meet" => "/book",
+      "/tech-setup" => "/now", "/video" => "/playground", "/endless" => "/playground", "/endless/stories/1" => "/playground" }.each do |from, to|
       get from
       assert_redirected_to to
     end
