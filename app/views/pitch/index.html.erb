@@ -12,7 +12,7 @@
   <%# Start button %>
   <div class="pitch-start-container" data-pitch-detector-target="startBtn">
     <button class="pitch-start-btn" data-action="click->pitch-detector#start">
-      <span class="material-icons">mic</span>
+      <span class="material-icons" aria-hidden="true">mic</span>
       Enable Microphone
     </button>
     <p class="pitch-start-hint">Audio stays on your device. Nothing is sent to a server.</p>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="pitch-info-level">
-      <span class="material-icons pitch-level-icon">graphic_eq</span>
+      <span class="material-icons pitch-level-icon" aria-hidden="true">graphic_eq</span>
       <div class="pitch-level-meter" data-pitch-detector-target="levelMeter">
         <div class="pitch-level-fill" data-pitch-detector-target="levelFill"></div>
       </div>
@@ -94,7 +94,7 @@
         Noise Gate
         <span class="pitch-gate-val" data-pitch-detector-target="noiseGateValue">1.5</span>
       </label>
-      <input type="range" class="pitch-slider" min="0.002" max="0.1" step="0.002" value="0.015"
+      <input type="range" class="pitch-slider" aria-label="Noise gate" min="0.002" max="0.1" step="0.002" value="0.015"
              data-pitch-detector-target="noiseGate"
              data-action="input->pitch-detector#updateNoiseGate">
     </div>
@@ -108,19 +108,19 @@
              style="display: none;">
       <div class="pitch-ref-controls">
         <button class="pitch-ref-btn btn-secondary" data-action="click->pitch-detector#loadReference">
-          <span class="material-icons">upload_file</span> Load Audio
+          <span class="material-icons" aria-hidden="true">upload_file</span> Load Audio
         </button>
         <button class="pitch-ref-btn btn-primary" data-pitch-detector-target="refPlayBtn"
                 data-action="click->pitch-detector#playRef" style="display: none;">
-          <span class="material-icons">play_arrow</span> Play
+          <span class="material-icons" aria-hidden="true">play_arrow</span> Play
         </button>
         <button class="pitch-ref-btn pitch-ref-stop-btn" data-pitch-detector-target="refStopBtn"
                 data-action="click->pitch-detector#stopRef" style="display: none;">
-          <span class="material-icons">stop</span> Stop
+          <span class="material-icons" aria-hidden="true">stop</span> Stop
         </button>
         <button class="pitch-ref-clear-btn" data-action="click->pitch-detector#clearRef"
-                data-pitch-detector-target="refClearBtn" style="display: none;" title="Remove reference">
-          <span class="material-icons">close</span>
+                data-pitch-detector-target="refClearBtn" style="display: none;" title="Remove reference" aria-label="Remove reference track">
+          <span class="material-icons" aria-hidden="true">close</span>
         </button>
       </div>
       <span class="pitch-ref-name" data-pitch-detector-target="refName" style="display: none;"></span>

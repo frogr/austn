@@ -187,7 +187,7 @@ function EffectControl({ label, value, min, max, step, onChange, disabled }) {
   return (
     <div style={{ ...styles.row, ...(disabled ? styles.disabled : {}) }}>
       <span style={styles.label}>{label}</span>
-      <input
+      <input aria-label={label}
         type="range"
         min={min}
         max={max}
@@ -259,7 +259,7 @@ function DelayCard({ track, audioEngine, onUpdate }) {
       <div style={enabled ? {} : styles.disabled}>
         <div style={styles.row}>
           <span style={styles.label}>Time</span>
-          <select style={styles.select} value={effects.time || '8n'} onChange={(e) => handleUpdate('time', e.target.value)} disabled={!enabled}>
+          <select aria-label="Time" style={styles.select} value={effects.time || '8n'} onChange={(e) => handleUpdate('time', e.target.value)} disabled={!enabled}>
             {DELAY_TIMES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
@@ -295,7 +295,7 @@ function DistortionCard({ track, audioEngine, onUpdate }) {
       <div style={enabled ? {} : styles.disabled}>
         <div style={styles.row}>
           <span style={styles.label}>Type</span>
-          <select style={styles.select} value={effects.type || 'softclip'} onChange={(e) => handleUpdate('type', e.target.value)} disabled={!enabled}>
+          <select aria-label="Type" style={styles.select} value={effects.type || 'softclip'} onChange={(e) => handleUpdate('type', e.target.value)} disabled={!enabled}>
             {DISTORTION_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
@@ -454,7 +454,7 @@ function CompressorCard({ track, audioEngine, onUpdate }) {
         <EffectControl label="Thrs" value={effects.threshold || -24} min={-60} max={0} step={1} onChange={(v) => handleUpdate('threshold', v)} disabled={!enabled} />
         <div style={styles.row}>
           <span style={styles.label}>Ratio</span>
-          <select style={styles.select} value={effects.ratio || 4} onChange={(e) => handleUpdate('ratio', parseFloat(e.target.value))} disabled={!enabled}>
+          <select aria-label="Ratio" style={styles.select} value={effects.ratio || 4} onChange={(e) => handleUpdate('ratio', parseFloat(e.target.value))} disabled={!enabled}>
             {COMPRESSOR_RATIOS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
           </select>
         </div>

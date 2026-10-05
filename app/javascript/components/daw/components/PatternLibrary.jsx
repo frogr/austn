@@ -485,7 +485,7 @@ export default function PatternLibrary({ isOpen, onClose }) {
                   onChange={(e) => setSearch(e.target.value)}
                   style={styles.searchInput}
                 />
-                <select
+                <select aria-label="Filter patterns"
                   value={filterTemplates}
                   onChange={(e) => setFilterTemplates(e.target.value)}
                   style={styles.filterSelect}

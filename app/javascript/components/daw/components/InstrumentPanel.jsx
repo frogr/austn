@@ -296,7 +296,7 @@ function SynthEditor({ track, audioEngine }) {
       <CollapsibleSection title="Synthesizer" defaultOpen={true} color="#10b981">
         <div style={styles.row}>
           <span style={styles.label}>Preset</span>
-          <select onChange={(e) => loadPreset(e.target.value)} style={styles.select} defaultValue="">
+          <select aria-label="Preset" onChange={(e) => loadPreset(e.target.value)} style={styles.select} defaultValue="">
             <option value="" disabled>Load...</option>
             {Object.entries(SYNTH_PRESETS).map(([key, preset]) => (
               <option key={key} value={key}>{preset.name}</option>
@@ -305,7 +305,7 @@ function SynthEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Wave</span>
-          <select
+          <select aria-label="Waveform"
             value={track.instrument.oscillator}
             onChange={(e) => updateInstrument('oscillator', e.target.value)}
             style={styles.select}
@@ -329,7 +329,7 @@ function SynthEditor({ track, audioEngine }) {
       <CollapsibleSection title="Filter + LFO" defaultOpen={true} color="#8b5cf6">
         <div style={styles.row}>
           <span style={styles.label}>Cutoff</span>
-          <input
+          <input aria-label="Cutoff"
             type="range"
             min="100"
             max="10000"
@@ -342,7 +342,7 @@ function SynthEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Reso</span>
-          <input
+          <input aria-label="Resonance"
             type="range"
             min="0"
             max="20"
@@ -370,19 +370,19 @@ function SynthEditor({ track, audioEngine }) {
             <>
               <div style={styles.row}>
                 <span style={styles.label}>Rate</span>
-                <select value={lfo.rate} onChange={(e) => updateLFO('rate', e.target.value)} style={styles.select}>
+                <select aria-label="Rate" value={lfo.rate} onChange={(e) => updateLFO('rate', e.target.value)} style={styles.select}>
                   {LFO_RATES.map(rate => <option key={rate.value} value={rate.value}>{rate.label}</option>)}
                 </select>
               </div>
               <div style={styles.row}>
                 <span style={styles.label}>Shape</span>
-                <select value={lfo.waveform} onChange={(e) => updateLFO('waveform', e.target.value)} style={styles.select}>
+                <select aria-label="Shape" value={lfo.waveform} onChange={(e) => updateLFO('waveform', e.target.value)} style={styles.select}>
                   {LFO_WAVEFORMS.map(wf => <option key={wf.value} value={wf.value}>{wf.label}</option>)}
                 </select>
               </div>
               <div style={styles.row}>
                 <span style={styles.label}>Depth</span>
-                <input
+                <input aria-label="Depth"
                   type="range"
                   min="0"
                   max="1"
@@ -519,7 +519,7 @@ function PluckEditor({ track, audioEngine }) {
         </button>
         <div style={styles.row}>
           <span style={styles.label}>Attack</span>
-          <input
+          <input aria-label="Attack"
             type="range"
             min="0.1"
             max="10"
@@ -532,7 +532,7 @@ function PluckEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Dampen</span>
-          <input
+          <input aria-label="Dampen"
             type="range"
             min="500"
             max="10000"
@@ -545,7 +545,7 @@ function PluckEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Resonance</span>
-          <input
+          <input aria-label="Resonance"
             type="range"
             min="0"
             max="1"
@@ -558,7 +558,7 @@ function PluckEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Release</span>
-          <input
+          <input aria-label="Release"
             type="range"
             min="0.1"
             max="4"
@@ -621,7 +621,7 @@ function FMEditor({ track, audioEngine }) {
         </button>
         <div style={styles.row}>
           <span style={styles.label}>Harmonic</span>
-          <input
+          <input aria-label="Harmonic"
             type="range"
             min="0.5"
             max="10"
@@ -634,7 +634,7 @@ function FMEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Mod Idx</span>
-          <input
+          <input aria-label="Modulation index"
             type="range"
             min="0"
             max="50"
@@ -715,7 +715,7 @@ function AMEditor({ track, audioEngine }) {
         </button>
         <div style={styles.row}>
           <span style={styles.label}>Harmonic</span>
-          <input
+          <input aria-label="Harmonic"
             type="range"
             min="0.5"
             max="10"

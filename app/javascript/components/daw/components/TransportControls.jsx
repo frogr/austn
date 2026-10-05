@@ -167,7 +167,7 @@ export default function TransportControls() {
       {/* Steps */}
       <div style={styles.controlGroup}>
         <span style={styles.label}>Steps</span>
-        <select
+        <select aria-label="Steps"
           value={state.totalSteps}
           onChange={(e) => actions.setTotalSteps(parseInt(e.target.value))}
           style={styles.select}
@@ -199,7 +199,7 @@ export default function TransportControls() {
       {/* Master volume */}
       <div style={styles.controlGroup}>
         <span style={styles.label}>Master</span>
-        <input
+        <input aria-label="Master volume"
           type="range"
           min="0"
           max="1"

@@ -277,7 +277,7 @@ function ChannelStrip({ track, audioEngine, onUpdate }) {
 
       {/* Volume fader with level meter */}
       <div style={styles.faderMeterContainer}>
-        <input
+        <input aria-label="Track volume"
           type="range"
           min="0"
           max="1"

@@ -293,7 +293,7 @@ function TrackItem({ track, isSelected, onSelect, onUpdate, onDelete, audioEngin
           S
         </button>
         <div style={styles.volumeContainer}>
-          <input
+          <input aria-label="Track volume"
             type="range"
             min="0"
             max="1"
@@ -339,7 +339,7 @@ export default function TrackList({ audioEngine }) {
     <div style={styles.container}>
       <div style={styles.header}>
         <span style={styles.title}>Tracks</span>
-        <select
+        <select aria-label="Add track"
           style={styles.addSelect}
           onChange={handleAddTrack}
           defaultValue=""

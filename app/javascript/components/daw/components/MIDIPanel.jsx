@@ -85,7 +85,7 @@ export default function MIDIPanel({ onNoteOn, onNoteOff }) {
         <span style={styles.noSupport}>No MIDI devices detected</span>
       ) : (
         <>
-          <select
+          <select aria-label="MIDI input device"
             value={selectedInput || ''}
             onChange={(e) => selectInput(e.target.value)}
             style={styles.select}

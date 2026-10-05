@@ -163,7 +163,7 @@ export default function ProjectPanel() {
 
       {/* Load row */}
       <div style={styles.row}>
-        <select
+        <select aria-label="Saved projects"
           value={selectedProject}
           onChange={(e) => setSelectedProject(e.target.value)}
           style={styles.select}
