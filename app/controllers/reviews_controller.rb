@@ -33,18 +33,6 @@ class ReviewsController < Admin::BaseController
 
   private
 
-  def authenticate_admin!
-    return true if session[:admin_authenticated]
-
-    respond_to do |format|
-      format.html do
-        session[:admin_return_to] = request.fullpath
-        redirect_to admin_login_path
-      end
-      format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
-    end
-  end
-
   def review_json(review)
     {
       id: review.id,

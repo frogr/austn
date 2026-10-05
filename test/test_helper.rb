@@ -15,6 +15,21 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    setup { Rack::Attack.reset! }
+    setup do
+      Rails.cache.clear
+      Rack::Attack.reset!
+    end
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  private
+
+  def sign_in_as_admin(remember: false)
+    post admin_login_path, params: {
+      username: ENV.fetch("ADMIN_USER_NAME"),
+      password: ENV.fetch("ADMIN_PASSWORD"),
+      remember_me: remember ? "1" : "0"
+    }
   end
 end

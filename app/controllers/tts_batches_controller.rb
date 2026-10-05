@@ -1,6 +1,4 @@
 class TtsBatchesController < ApplicationController
-  include AdminAuthenticatable
-
   before_action :authenticate_admin!
   skip_before_action :verify_authenticity_token, only: [ :create, :share_item ]
 
