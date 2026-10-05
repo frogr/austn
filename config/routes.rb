@@ -190,6 +190,16 @@ Rails.application.routes.draw do
     end
 
     resources :clients
+
+    resources :claude_corner_entries, only: [ :index, :show, :destroy ] do
+      member do
+        post :publish
+        post :unpublish
+      end
+      collection do
+        post :generate
+      end
+    end
   end
 
   # API v1

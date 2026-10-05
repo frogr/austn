@@ -3,7 +3,6 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
-import entries from '../data/claude_corner_entries.json'
 import DrawingPlayer from './claude_corner/DrawingPlayer'
 
 // Import all drawings
@@ -167,7 +166,8 @@ function EntryCard({ entry }) {
   )
 }
 
-export default function ClaudeCorner() {
+// entries: published ClaudeCornerEntry#as_props, newest first
+export default function ClaudeCorner({ entries = [] }) {
   // Merge text entries and drawings into a unified timeline
   const textItems = entries.map(e => ({ kind: 'text', date: e.created_at, data: e }))
   const drawingItems = drawings.map(d => ({ kind: 'drawing', date: d.metadata.created_at, data: d }))

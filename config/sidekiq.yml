@@ -26,6 +26,11 @@
       class: LowAvailabilityAlertJob
       queue: default
       description: "Email Austin when few booking slots are open in the next 14 days"
+    claude_corner_draft:
+      cron: '0 10 1 * * America/New_York'  # 10am Eastern on the 1st of each month
+      class: ClaudeCornerDraftJob
+      queue: default
+      description: "Ask Claude for a new Claude Corner draft"
     purge_stale_uploads:
       cron: '30 3 * * *'  # Daily at 3:30am
       class: PurgeStaleUploadsJob

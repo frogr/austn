@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_05_130100) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_05_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -99,6 +99,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_130100) do
     t.index ["confirmation_token"], name: "index_bookings_on_confirmation_token", unique: true
     t.index ["email"], name: "index_bookings_on_email"
     t.index ["status"], name: "index_bookings_on_status"
+  end
+
+  create_table "claude_corner_entries", force: :cascade do |t|
+    t.string "slug", null: false
+    t.string "entry_type", null: false
+    t.string "title", null: false
+    t.text "content", null: false
+    t.string "tags", default: [], null: false, array: true
+    t.string "mood"
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["published_at"], name: "index_claude_corner_entries_on_published_at"
+    t.index ["slug"], name: "index_claude_corner_entries_on_slug", unique: true
   end
 
   create_table "clients", force: :cascade do |t|

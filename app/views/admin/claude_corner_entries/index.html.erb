@@ -1,0 +1,41 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-black mb-1" style="font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        Claude Corner
+      </h1>
+      <p class="text-gray-400 text-sm">Claude drafts one entry a month. Nothing shows on /claude until you publish it.</p>
+    </div>
+    <%= button_to "Draft one now", generate_admin_claude_corner_entries_path, class: "text-sm px-3 py-1.5 rounded-lg",
+          style: "color: var(--accent-color); border: 1px solid var(--border-glass);" %>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="mb-4 p-3 rounded-lg text-sm" style="background: rgba(29, 185, 84, 0.15); border: 1px solid rgba(29, 185, 84, 0.3); color: var(--accent-color);">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <h2 class="text-white font-semibold mb-3">Drafts</h2>
+  <div class="space-y-2 mb-8">
+    <% if @drafts.any? %>
+      <%= render partial: "entry_row", collection: @drafts, as: :entry %>
+    <% else %>
+      <p class="text-gray-500 text-sm">No drafts waiting.</p>
+    <% end %>
+  </div>
+
+  <h2 class="text-white font-semibold mb-3">Published</h2>
+  <div class="space-y-2">
+    <% if @published.any? %>
+      <%= render partial: "entry_row", collection: @published, as: :entry %>
+    <% else %>
+      <p class="text-gray-500 text-sm">Nothing published yet.</p>
+    <% end %>
+  </div>
+
+  <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between text-sm">
+    <%= link_to "View /claude", claude_path, class: "text-gray-500 hover:text-gray-300" %>
+    <%= link_to "Admin home", admin_root_path, class: "text-gray-500 hover:text-gray-300" %>
+  </div>
+</div>
