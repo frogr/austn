@@ -16,12 +16,6 @@
       class: GpuHealthCheckJob
       queue: default
       description: "Check GPU service health status"
-    # Story generation disabled - no longer using live austn.net/endless integration
-    # story_generation:
-    #   cron: '*/30 * * * *'  # Every 30 minutes
-    #   class: StoryGenerationJob
-    #   queue: default
-    #   description: "Generate next paragraph for Endless Story"
     cleanup_expired_tts_shares:
       cron: '0 3 * * *'  # Daily at 3am
       class: CleanupExpiredTtsSharesJob
