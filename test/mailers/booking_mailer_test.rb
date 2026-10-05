@@ -31,7 +31,7 @@ class BookingMailerTest < ActionMailer::TestCase
     booking = bookings(:confirmed_booking)
     email = BookingMailer.admin_notification(booking)
 
-    admin_email = ENV.fetch("ADMIN_EMAIL", "austindanielfrench@gmail.com")
+    admin_email = ENV.fetch("ADMIN_EMAIL", "hi@austn.net")
     assert_equal [ admin_email ], email.to
     assert_match "New Booking: Jane", email.subject
 
@@ -66,7 +66,7 @@ class BookingMailerTest < ActionMailer::TestCase
     booking = bookings(:confirmed_booking)
     email = BookingMailer.admin_cancellation(booking)
 
-    admin_email = ENV.fetch("ADMIN_EMAIL", "austindanielfrench@gmail.com")
+    admin_email = ENV.fetch("ADMIN_EMAIL", "hi@austn.net")
     assert_equal [ admin_email ], email.to
     assert_match "Booking Cancelled: Jane", email.subject
 

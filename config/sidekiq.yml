@@ -21,6 +21,11 @@
       class: CleanupExpiredTtsSharesJob
       queue: low
       description: "Delete expired TTS share links"
+    low_availability_alert:
+      cron: '0 9 * * * America/New_York'  # Daily at 9am Eastern
+      class: LowAvailabilityAlertJob
+      queue: default
+      description: "Email Austin when few booking slots are open in the next 14 days"
     purge_stale_uploads:
       cron: '30 3 * * *'  # Daily at 3:30am
       class: PurgeStaleUploadsJob

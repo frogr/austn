@@ -62,10 +62,6 @@ class BookingMailer < ApplicationMailer
 
   private
 
-  def admin_email
-    ENV.fetch("ADMIN_EMAIL", "austindanielfrench@gmail.com")
-  end
-
   def mailer_from
     ENV.fetch("MAILER_FROM", "hi@austn.net")
   end
