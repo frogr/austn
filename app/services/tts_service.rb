@@ -1,10 +1,8 @@
 require "httparty"
 require "base64"
 
+# Client for the Chatterbox TTS server on the GPU box.
 class TtsService
-  include HTTParty
-  base_uri ENV["TTS_URL"] || "http://100.68.94.33:5000"
-
   class TtsError < StandardError; end
 
   def self.generate_speech(text, options = {})
@@ -30,13 +28,10 @@ class TtsService
       Rails.logger.info "TtsService: Sending request with DEFAULT voice (no voice params)"
     end
 
-    Rails.logger.info "TtsService: POST #{base_uri}/generate"
-
-    response = post("/generate",
+    response = request(:post, "/generate",
       body: body.to_json,
       headers: { "Content-Type" => "application/json" },
-      timeout: 240  # TTS can take a while for long clips
-    )
+      read_timeout: 240) # long clips take a while
 
     Rails.logger.info "TTS response code: #{response.code}"
 
@@ -59,23 +54,19 @@ class TtsService
       sample_rate: response_data["sample_rate"],
       duration: response_data["duration"]
     }
-  rescue HTTParty::Error => e
-    raise TtsError, "Network error: #{e.message}"
-  rescue => e
-    Rails.logger.error "TtsService error: #{e.message}"
-    raise
   end
 
   def self.health_check
-    response = get("/health", timeout: 5)
+    response = request(:get, "/health", read_timeout: 5)
 
     if response.success?
-      response.parsed_response || JSON.parse(response.body)
+      response.parsed_response
     else
       { status: "error", code: response.code }
     end
-  rescue => e
-    { status: "unreachable", error: e.message }
+  rescue Gpu::Error => e
+    Rails.logger.warn "TtsService health check failed: #{e.class}: #{e.message}"
+    { status: "unreachable" }
   end
 
   def self.available_voices
@@ -119,7 +110,9 @@ class TtsService
   end
 
   def self.fetch_voices_from_api
-    response = get("/voices", timeout: 2)  # Quick timeout - voices list should be fast
+    return [] unless Gpu::Backend.configured?(:tts)
+
+    response = request(:get, "/voices", read_timeout: 2) # the voice list should be fast
 
     if response.success?
       data = response.parsed_response || JSON.parse(response.body)
@@ -127,8 +120,16 @@ class TtsService
     else
       []
     end
-  rescue => e
-    Rails.logger.error "Failed to fetch voices from API: #{e.message}"
+  rescue Gpu::Error, JSON::ParserError => e
+    Rails.logger.error "Failed to fetch voices from API: #{e.class}: #{e.message}"
     []
   end
+
+  def self.request(method, path, read_timeout:, **options)
+    Gpu.translating_network_errors do
+      HTTParty.public_send(method, "#{Gpu::Backend.url!(:tts)}#{path}",
+        open_timeout: 5, read_timeout: read_timeout, **options)
+    end
+  end
+  private_class_method :request
 end

@@ -6,7 +6,7 @@ class ChatService
   DEFAULT_MODEL = "qwen/qwen2.5-coder-14b"
 
   def initialize
-    @base_url = ENV.fetch("LMSTUDIO_URL", "http://100.68.94.33:1234")
+    @base_url = Gpu::Backend.url!(:lmstudio)
     @endpoint = "/v1/chat/completions"
   end
 
@@ -97,7 +97,7 @@ class ChatService
     Rails.logger.info "Request payload: #{request_payload.to_json}"
 
     request.body = request_payload.to_json
-    response = http.request(request)
+    response = Gpu.translating_network_errors { http.request(request) }
 
     Rails.logger.info "LMStudio responded with code: #{response.code}"
 

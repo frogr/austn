@@ -1,24 +1,26 @@
+# Last known state of each GPU tool, written by GpuHealthService and by GPU
+# jobs as they succeed or find the backend gone. error_message is for the
+# logs and the admin; it is never shown to visitors.
 class GpuHealthStatus < ApplicationRecord
-  SERVICES = %w[images tts chat].freeze
+  SERVICES = Gpu::Backend::TOOLS.keys.freeze
 
   validates :service_name, presence: true, uniqueness: true, inclusion: { in: SERVICES }
 
-  scope :by_service, ->(name) { find_by(service_name: name) }
-
   def self.for_service(name)
-    find_or_create_by(service_name: name)
+    find_by(service_name: name) || create_or_find_by!(service_name: name)
   end
 
+  def self.online?(name)
+    where(service_name: name, online: true).exists?
+  end
+
+  # Visitor-safe summary for the public /gpu_health endpoint.
   def self.all_statuses
-    SERVICES.each_with_object({}) do |service, hash|
-      status = for_service(service)
-      hash[service] = {
-        online: status.online,
-        last_checked_at: status.last_checked_at,
-        last_online_at: status.last_online_at,
-        error_message: status.error_message
-      }
-    end
+    SERVICES.index_with { |service| for_service(service).public_status }
+  end
+
+  def public_status
+    { online: online, last_checked_at: last_checked_at, last_online_at: last_online_at }
   end
 
   def mark_online!

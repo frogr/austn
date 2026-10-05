@@ -1,71 +1,62 @@
 require "net/http"
-require "uri"
 
+# Probes each GPU backend and records the result for every tool that runs
+# on it. A backend with no URL configured is recorded as offline without
+# making a request.
 class GpuHealthService
-  COMFYUI_URL = ENV["COMFYUI_URL"] || "http://100.68.94.33:8188"
-  TTS_URL = ENV["TTS_URL"] || "http://100.68.94.33:5000"
-  LMSTUDIO_URL = ENV["LMSTUDIO_URL"] || "http://100.68.94.33:1234"
+  TIMEOUT = 5 # seconds
 
-  TIMEOUT = 5
+  PROBE_PATHS = {
+    comfyui: "/system_stats",
+    tts: "/health",
+    lmstudio: "/v1/models"
+  }.freeze
 
   def self.check_all
     new.check_all
   end
 
+  # @return [Hash{String => Boolean}] online state per tool
   def check_all
-    {
-      images: check_images,
-      tts: check_tts,
-      chat: check_chat
-    }
-  end
-
-  def check_images
-    check_service("images") do
-      uri = URI.parse("#{COMFYUI_URL}/system_stats")
-      response = make_request(uri)
-      response.is_a?(Net::HTTPSuccess)
+    Gpu::Backend::TOOLS.values.uniq.each_with_object({}) do |backend, results|
+      online, error = probe(backend)
+      tools_on(backend).each do |tool|
+        record(tool, online, error)
+        results[tool] = online
+      end
     end
   end
 
-  def check_tts
-    check_service("tts") do
-      uri = URI.parse("#{TTS_URL}/health")
-      response = make_request(uri)
-      response.is_a?(Net::HTTPSuccess)
-    end
-  end
-
-  def check_chat
-    check_service("chat") do
-      uri = URI.parse("#{LMSTUDIO_URL}/v1/models")
-      response = make_request(uri)
-      response.is_a?(Net::HTTPSuccess)
-    end
+  # @return [Boolean] whether the tool's backend answered
+  def check(tool)
+    online, error = probe(Gpu::Backend.for_tool(tool))
+    record(tool, online, error)
+    online
   end
 
   private
 
-  def check_service(name)
-    status = GpuHealthStatus.for_service(name)
-    begin
-      if yield
-        status.mark_online!
-        true
-      else
-        status.mark_offline!("Service returned non-success response")
-        false
-      end
-    rescue StandardError => e
-      status.mark_offline!(e.message)
-      false
-    end
+  def tools_on(backend)
+    Gpu::Backend::TOOLS.select { |_tool, tool_backend| tool_backend == backend }.keys
   end
 
-  def make_request(uri)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.open_timeout = TIMEOUT
-    http.read_timeout = TIMEOUT
-    http.get(uri.path.presence || "/")
+  # @return [Array(Boolean, String)] online flag and, when offline, why
+  def probe(backend)
+    return [ false, "#{Gpu::Backend::URL_ENV.fetch(backend)} is not set" ] unless Gpu::Backend.configured?(backend)
+
+    uri = URI.join(Gpu::Backend.url(backend), PROBE_PATHS.fetch(backend))
+    response = Gpu.translating_network_errors do
+      Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https",
+                      open_timeout: TIMEOUT, read_timeout: TIMEOUT) { |http| http.get(uri.request_uri) }
+    end
+
+    response.is_a?(Net::HTTPSuccess) ? [ true, nil ] : [ false, "HTTP #{response.code}" ]
+  rescue Gpu::Error => e
+    [ false, "#{e.class}: #{e.message}" ]
+  end
+
+  def record(tool, online, error)
+    status = GpuHealthStatus.for_service(tool)
+    online ? status.mark_online! : status.mark_offline!(error)
   end
 end

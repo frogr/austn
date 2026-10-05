@@ -20,6 +20,17 @@ module ActiveSupport
       Rails.cache.clear
       Rack::Attack.reset!
     end
+
+    private
+
+    # Sets ENV vars for the duration of the block (nil unsets), then restores them.
+    def with_env(vars)
+      previous = vars.keys.index_with { |key| ENV[key] }
+      vars.each { |key, value| ENV[key] = value }
+      yield
+    ensure
+      previous.each { |key, value| ENV[key] = value }
+    end
   end
 end
 

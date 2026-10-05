@@ -12,7 +12,7 @@
 :scheduler:
   :schedule:
     gpu_health_check:
-      cron: '0 * * * *'  # Every hour at minute 0
+      cron: '*/5 * * * *'  # Every 5 minutes; free when no GPU URL is configured
       class: GpuHealthCheckJob
       queue: default
       description: "Check GPU service health status"

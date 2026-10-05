@@ -33,7 +33,7 @@ On your **production server** (austn.net), add to your environment:
 ```bash
 # In .env or deployment config
 TTS_API_KEY=your-generated-key-here
-TTS_URL=http://100.68.94.33:5000  # Your Tailscale IP for Chatterbox
+TTS_URL=http://<gpu-box-tailnet-host>:5000  # Chatterbox on the GPU box. Unset = TTS offline
 ```
 
 On your **laptop**, add to `~/.bashrc` or `~/.zshrc`:
