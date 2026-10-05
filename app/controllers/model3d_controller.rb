@@ -15,30 +15,9 @@ class Model3dController < ApplicationController
   end
 
   def generate
-    unless params[:image].present?
-      render json: { success: false, error: "No image provided" }, status: :bad_request
-      return
-    end
-
+    upload = GpuUpload.store!(params[:image], kind: :image)
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting 3D model generation #{generation_id}"
-
-    # Read and encode the uploaded file
-    uploaded_file = params[:image]
-    image_data = uploaded_file.read
-    file_data = {
-      "base64" => Base64.strict_encode64(image_data)
-    }
-
-    # Queue the job
-    Model3dJob.perform_later(
-      generation_id,
-      file_data,
-      {
-        "original_filename" => uploaded_file.original_filename
-      }
-    )
+    Model3dJob.perform_later(generation_id, upload)
 
     render json: {
       success: true,
@@ -47,6 +26,8 @@ class Model3dController < ApplicationController
       check_url: status_model3d_path(generation_id),
       websocket_channel: "model3d_#{generation_id}"
     }
+  rescue GpuUpload::Invalid => e
+    render_invalid_input(e.message)
   rescue => e
     render_gpu_error(e)
   end

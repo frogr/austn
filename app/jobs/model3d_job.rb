@@ -1,23 +1,17 @@
 class Model3dJob < GpuJob
   self.gpu_service_name = "model3d"
 
-  def perform(generation_id, file_data, options = {})
+  def perform(generation_id, upload)
     start_generation
 
-    original_filename = options["original_filename"] || "image.png"
-    uploaded_file = UploadedFileProxy.from_base64(file_data["base64"], original_filename: original_filename, prefix: "model3d")
-
-    begin
-      result = Model3dService.generate(uploaded_file)
-      redis_service.store_glb(generation_id, result[:glb_data])
-      redis_service.store_result(generation_id, {
-        original_filename: original_filename, glb_filename: result[:filename], created_at: Time.current
-      })
-    ensure
-      uploaded_file.cleanup
-    end
+    result = upload.open { |file| Model3dService.generate(file.path) }
+    redis_service.store_glb(generation_id, result[:glb_data])
+    redis_service.store_result(generation_id, {
+      original_filename: upload.filename.to_s, glb_filename: result[:filename], created_at: Time.current
+    })
 
     finish_generation
+    purge_uploads
   end
 
   private

@@ -11,31 +11,12 @@ class StemsController < ApplicationController
   end
 
   def generate
-    unless params[:audio].present?
-      render json: { success: false, error: "No audio file provided" }, status: :bad_request
-      return
-    end
+    model = params[:model].presence || StemSeparationService::DEFAULT_MODEL
+    return render_invalid_input("Unknown model.") unless StemSeparationService::AVAILABLE_MODELS.include?(model)
 
+    upload = GpuUpload.store!(params[:audio], kind: :audio)
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting stems generation #{generation_id}"
-
-    # Read and encode the uploaded file
-    uploaded_file = params[:audio]
-    file_data = {
-      "base64" => Base64.strict_encode64(uploaded_file.read)
-    }
-    uploaded_file.rewind
-
-    # Queue the job
-    StemsJob.perform_later(
-      generation_id,
-      file_data,
-      {
-        "original_filename" => uploaded_file.original_filename,
-        "model" => params[:model] || StemSeparationService::DEFAULT_MODEL
-      }
-    )
+    StemsJob.perform_later(generation_id, upload, { "model" => model })
 
     render json: {
       success: true,
@@ -44,6 +25,8 @@ class StemsController < ApplicationController
       check_url: status_stems_path(generation_id),
       websocket_channel: "stems_#{generation_id}"
     }
+  rescue GpuUpload::Invalid => e
+    render_invalid_input(e.message)
   rescue => e
     render_gpu_error(e)
   end

@@ -23,11 +23,9 @@ class ImagesController < ApplicationController
   end
 
   def generate
+    return render_invalid_input("Describe the image you want.") if params[:prompt].blank?
+
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting generation #{generation_id} with prompt: #{params[:prompt]}"
-
-    # Queue the job
     ImageGenerationJob.perform_later(
       generation_id,
       params[:prompt],
@@ -40,7 +38,6 @@ class ImagesController < ApplicationController
       }
     )
 
-    # Return immediately with generation ID
     render json: {
       generation_id: generation_id,
       status: "queued",
@@ -119,5 +116,4 @@ class ImagesController < ApplicationController
   def image_redis_service
     @image_redis_service ||= ImageRedisService.new
   end
-
 end

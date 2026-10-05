@@ -11,10 +11,7 @@ class MusicController < ApplicationController
   end
 
   def generate
-    unless params[:tags].present?
-      render json: { error: "Tags are required" }, status: :bad_request
-      return
-    end
+    return render_invalid_input("Describe the style with a few tags.") if params[:tags].blank?
 
     generation_id = SecureRandom.uuid
 

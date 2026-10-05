@@ -21,6 +21,12 @@ class TtsController < ApplicationController
   end
 
   def generate
+    text = params[:text].to_s.strip
+    return render_invalid_input("Type something to say.") if text.empty?
+    if text.length > TtsService::MAX_TEXT_LENGTH
+      return render_invalid_input("Keep it under #{TtsService::MAX_TEXT_LENGTH} characters.")
+    end
+
     generation_id = SecureRandom.uuid
 
     # Build options hash - only include values that are present
@@ -40,10 +46,7 @@ class TtsController < ApplicationController
       Rails.logger.info "TTS #{generation_id}: Using default voice"
     end
 
-    Rails.logger.info "TTS #{generation_id}: text=#{params[:text]&.first(50)}..."
-
-    # Queue the job
-    TtsGenerationJob.perform_later(generation_id, params[:text], options)
+    TtsGenerationJob.perform_later(generation_id, text, options)
 
     # Return immediately with generation ID
     render json: {

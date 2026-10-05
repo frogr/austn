@@ -3,23 +3,17 @@ class StemsJob < GpuJob
   # ComfyUI gets up to 15 minutes, then four stems are downloaded.
   self.gpu_lock_timeout = 30.minutes
 
-  def perform(generation_id, file_data, options = {})
+  def perform(generation_id, upload, options = {})
     start_generation
 
-    original_filename = options["original_filename"] || "audio.mp3"
     model = options["model"] || StemSeparationService::DEFAULT_MODEL
-    uploaded_file = UploadedFileProxy.from_base64(file_data["base64"], original_filename: original_filename, prefix: "stems")
-
-    begin
-      stems = StemSeparationService.separate_stems(uploaded_file, model: model)
-      redis_service.store_result(generation_id, {
-        stems: stems, original_filename: original_filename, model: model, created_at: Time.current
-      })
-    ensure
-      uploaded_file.cleanup
-    end
+    stems = upload.open { |file| StemSeparationService.separate_stems(file.path, model: model) }
+    redis_service.store_result(generation_id, {
+      stems: stems, original_filename: upload.filename.to_s, model: model, created_at: Time.current
+    })
 
     finish_generation
+    purge_uploads
   end
 
   private

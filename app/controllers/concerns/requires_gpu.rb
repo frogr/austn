@@ -27,6 +27,11 @@ module RequiresGpu
     Gpu::Backend.configured?(Gpu::Backend.for_tool(tool)) && GpuHealthStatus.online?(tool)
   end
 
+  # Answers a request the GPU should never see. The message must be safe to show.
+  def render_invalid_input(message)
+    render json: { success: false, **Gpu::PublicError.new(:invalid_input, message).to_h }, status: :unprocessable_entity
+  end
+
   # Logs a failure in full and answers with a visitor-safe JSON error.
   def render_gpu_error(error)
     Rails.logger.error "#{self.class.name}##{action_name} failed: #{error.class}: #{error.message}"

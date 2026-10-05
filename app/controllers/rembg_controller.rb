@@ -11,31 +11,12 @@ class RembgController < ApplicationController
   end
 
   def generate
-    unless params[:image].present?
-      render json: { success: false, error: "No image provided" }, status: :bad_request
-      return
-    end
+    model = params[:model].presence || RembgService::DEFAULT_MODEL
+    return render_invalid_input("Unknown model.") unless RembgService::AVAILABLE_MODELS.include?(model)
 
+    upload = GpuUpload.store!(params[:image], kind: :image)
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting rembg generation #{generation_id}"
-
-    # Read and encode the uploaded file
-    uploaded_file = params[:image]
-    file_data = {
-      "base64" => Base64.strict_encode64(uploaded_file.read)
-    }
-    uploaded_file.rewind
-
-    # Queue the job
-    RembgJob.perform_later(
-      generation_id,
-      file_data,
-      {
-        "original_filename" => uploaded_file.original_filename,
-        "model" => params[:model] || RembgService::DEFAULT_MODEL
-      }
-    )
+    RembgJob.perform_later(generation_id, upload, { "model" => model })
 
     render json: {
       success: true,
@@ -44,6 +25,8 @@ class RembgController < ApplicationController
       check_url: status_rembg_path(generation_id),
       websocket_channel: "rembg_#{generation_id}"
     }
+  rescue GpuUpload::Invalid => e
+    render_invalid_input(e.message)
   rescue => e
     render_gpu_error(e)
   end

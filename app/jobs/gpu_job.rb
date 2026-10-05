@@ -11,6 +11,9 @@
 #
 # Subclasses whose first argument is a generation id implement `redis_service`
 # and `channel_prefix`, and call `start_generation` / `finish_generation`.
+#
+# Uploaded inputs arrive as Active Storage blobs (see GpuUpload). They are
+# purged when the job succeeds or gives up, but kept across retries.
 class GpuJob < ApplicationJob
   queue_as :gpu
 
@@ -35,6 +38,7 @@ class GpuJob < ApplicationJob
 
   after_discard do |job, error|
     job.report_failure(error)
+    job.purge_uploads
   end
 
   around_perform :with_gpu_lock
@@ -59,6 +63,10 @@ class GpuJob < ApplicationJob
   def report_failure(error)
     Rails.logger.error "#{self.class.name} #{job_id} failed: #{error.class}: #{error.message}"
     record_failure(Gpu::PublicError.for(error))
+  end
+
+  def purge_uploads
+    arguments.grep(ActiveStorage::Blob).each(&:purge)
   end
 
   private

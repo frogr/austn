@@ -45,4 +45,15 @@ class TtsControllerTest < ActionDispatch::IntegrationTest
       post "/tts/generate", params: { text: "hello", voice_preset: "stock/narrator" }
     end
   end
+
+  test "text over the length limit is refused" do
+    stub_gpu_online("tts")
+
+    assert_no_enqueued_jobs do
+      post "/tts/generate", params: { text: "a" * (TtsService::MAX_TEXT_LENGTH + 1) }
+    end
+
+    assert_response :unprocessable_entity
+    assert_equal "invalid_input", response.parsed_body["error_code"]
+  end
 end

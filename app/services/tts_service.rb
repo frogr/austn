@@ -5,16 +5,19 @@ require "base64"
 class TtsService
   class TtsError < StandardError; end
 
+  MAX_TEXT_LENGTH = 1_000 # characters per public request
+  STYLE_RANGE = 0.0..1.0 # bounds for exaggeration and cfg_weight
+
   def self.generate_speech(text, options = {})
-    exaggeration = options[:exaggeration] || options["exaggeration"] || 0.5
-    cfg_weight = options[:cfg_weight] || options["cfg_weight"] || 1.0
+    exaggeration = (options[:exaggeration] || options["exaggeration"] || 0.5).to_f.clamp(STYLE_RANGE)
+    cfg_weight = (options[:cfg_weight] || options["cfg_weight"] || 1.0).to_f.clamp(STYLE_RANGE)
     voice_preset = options[:voice_preset] || options["voice_preset"]
     voice_audio = options[:voice_audio] || options["voice_audio"]
 
     body = {
       text: text,
-      exaggeration: exaggeration.to_f,
-      cfg_weight: cfg_weight.to_f
+      exaggeration: exaggeration,
+      cfg_weight: cfg_weight
     }
 
     # Voice handling - explicit logging

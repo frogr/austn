@@ -27,4 +27,19 @@ class ImageGenerationServiceTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "clamps the image size and batch size a request can ask for" do
+    queued_workflow = nil
+    outputs = { "images" => [ { "filename" => "a.png" } ] }
+
+    ComfyuiClient.stub(:queue_prompt, ->(workflow) { queued_workflow = workflow; "prompt-1" }) do
+      ComfyuiClient.stub(:wait_for_completion, outputs) do
+        ComfyuiClient.stub(:get_output_file, "png") do
+          ImageGenerationService.generate("a lighthouse", image_size: 8192, batch_size: 64)
+        end
+      end
+    end
+
+    assert_equal({ "width" => 1024, "height" => 1024, "batch_size" => 4 }, queued_workflow.dig("7", "inputs"))
+  end
 end

@@ -5,14 +5,18 @@ class ImageGenerationService
   OUTPUT_NODE_ID = "9".freeze
   TIMEOUT = 60 # seconds
 
+  # Bounds on what one request can ask the GPU to do.
+  IMAGE_SIZE_RANGE = 128..1024 # pixels per side, snapped to a multiple of 64
+  BATCH_SIZE_RANGE = 1..4
+
   # @return [Array<String>] base64-encoded PNGs, one per image in the batch
   def self.generate(prompt, negative_prompt: nil, seed: nil, image_size: 512, batch_size: 1)
     workflow = build_workflow(
       prompt: prompt,
       negative_prompt: negative_prompt.presence || DEFAULT_NEGATIVE_PROMPT,
-      seed: seed.presence || rand(1..1_000_000_000),
-      image_size: image_size,
-      batch_size: batch_size
+      seed: seed.present? ? seed.to_i : rand(1..1_000_000_000),
+      image_size: image_size.to_i.clamp(IMAGE_SIZE_RANGE) / 64 * 64,
+      batch_size: batch_size.to_i.clamp(BATCH_SIZE_RANGE)
     )
 
     prompt_id = ComfyuiClient.queue_prompt(workflow)

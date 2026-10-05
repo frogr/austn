@@ -21,6 +21,11 @@
       class: CleanupExpiredTtsSharesJob
       queue: low
       description: "Delete expired TTS share links"
+    purge_stale_uploads:
+      cron: '30 3 * * *'  # Daily at 3:30am
+      class: PurgeStaleUploadsJob
+      queue: low
+      description: "Delete GPU tool uploads whose job never finished"
 
 # GPU queue configuration
 # Run a separate Sidekiq process for GPU tasks:
