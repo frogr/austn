@@ -1,3 +1,5 @@
+require "net/http"
+
 # Talking to the home GPU box: the errors it can raise and how low-level
 # network failures map onto them.
 module Gpu
