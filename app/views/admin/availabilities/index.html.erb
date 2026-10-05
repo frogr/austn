@@ -24,7 +24,10 @@
       </h1>
       <p class="text-gray-400 text-sm">Click dates, pick a time, and create in bulk</p>
     </div>
-    <%= link_to "Add Single", new_admin_availability_path, class: "text-sm px-3 py-1.5 rounded-lg", style: "color: var(--text-secondary); border: 1px solid var(--border-glass);" %>
+    <div class="flex gap-2">
+      <%= link_to "Weekly hours", admin_availability_rules_path, class: "text-sm px-3 py-1.5 rounded-lg", style: "color: var(--text-secondary); border: 1px solid var(--border-glass);" %>
+      <%= link_to "Add Single", new_admin_availability_path, class: "text-sm px-3 py-1.5 rounded-lg", style: "color: var(--text-secondary); border: 1px solid var(--border-glass);" %>
+    </div>
   </div>
 
   <% if flash[:notice] %>

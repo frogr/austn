@@ -1,0 +1,49 @@
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-2xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-black mb-1" style="font-size: clamp(1.5rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+        Weekly hours
+      </h1>
+      <p class="text-gray-400 text-sm">Open booking slots repeat every week, in Eastern time.</p>
+    </div>
+    <%= link_to "Add hours", new_admin_availability_rule_path, class: "text-sm px-3 py-1.5 rounded-lg", style: "color: var(--accent-color); border: 1px solid var(--border-glass);" %>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="mb-4 p-3 rounded-lg text-sm" style="background: rgba(29, 185, 84, 0.15); border: 1px solid rgba(29, 185, 84, 0.3); color: var(--accent-color);">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <% if @rules.empty? %>
+    <p class="text-gray-400 text-sm">No weekly hours yet, so /book only shows one-off availability.</p>
+  <% else %>
+    <div class="space-y-2">
+      <% @rules.each do |rule| %>
+        <div class="flex items-center justify-between p-3 rounded-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+          <div>
+            <span class="text-white font-medium"><%= rule.weekday_name %></span>
+            <span class="text-gray-400 text-sm ml-2">
+              <%= rule.start_time.strftime("%-l:%M %p") %> to <%= rule.end_time.strftime("%-l:%M %p") %>,
+              <%= rule.slot_duration_minutes %>-minute slots
+            </span>
+            <% unless rule.active? %>
+              <span class="text-gray-500 text-xs ml-2">(paused)</span>
+            <% end %>
+          </div>
+          <div class="flex gap-3 text-sm">
+            <%= link_to "Edit", edit_admin_availability_rule_path(rule), style: "color: var(--text-secondary);" %>
+            <%= button_to "Delete", admin_availability_rule_path(rule), method: :delete,
+                  form: { data: { turbo_confirm: "Remove #{rule.weekday_name} hours?" } },
+                  class: "text-red-400" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between text-sm">
+    <%= link_to "One-off availability", admin_availabilities_path, class: "text-gray-500 hover:text-gray-300" %>
+    <%= link_to "Admin home", admin_root_path, class: "text-gray-500 hover:text-gray-300" %>
+  </div>
+</div>

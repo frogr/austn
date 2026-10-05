@@ -158,6 +158,7 @@ Rails.application.routes.draw do
 
     root to: "dashboard#index"
 
+    resources :availability_rules, except: [ :show ]
     resources :availabilities, except: [ :show ] do
       collection do
         post :bulk_create
