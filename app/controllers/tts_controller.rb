@@ -7,9 +7,6 @@ class TtsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
-    # Show list of TTS shares
-    @shares = TtsShare.active.order(created_at: :desc)
-    @voices = TtsService.available_voices
   end
 
   def new
