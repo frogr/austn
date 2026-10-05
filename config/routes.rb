@@ -58,8 +58,8 @@ Rails.application.routes.draw do
   post "/chat/async", to: "chat#async_complete"
   get "/chat/job/:id", to: "chat#job_status", as: :chat_job_status
 
-  # Images gallery
-  resources :images do
+  # Images gallery (read-only; generated images are published by the admin)
+  resources :images, only: [ :index, :show ] do
     collection do
       get "ai_generate"
       post "generate"

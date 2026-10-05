@@ -4,7 +4,6 @@ class ImagesController < ApplicationController
 
   requires_gpu "images", only: :generate
 
-  before_action :set_image, only: [ :show, :edit, :update, :destroy ]
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
@@ -15,38 +14,7 @@ class ImagesController < ApplicationController
   end
 
   def show
-  end
-
-  def new
-    @image = Image.new
-  end
-
-  def create
-    @image = Image.new(image_params)
-
-    if @image.save
-      ImageProcessingJob.perform_later(@image) if @image.file.attached?
-      redirect_to @image, notice: "Image was successfully created."
-    else
-      render :new, status: :unprocessable_entity
-    end
-  end
-
-  def edit
-  end
-
-  def update
-    if @image.update(image_params)
-      ImageProcessingJob.perform_later(@image) if @image.file.attached?
-      redirect_to @image, notice: "Image was successfully updated."
-    else
-      render :edit, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    @image.destroy
-    redirect_to images_url, notice: "Image was successfully destroyed."
+    @image = Image.published.find(params[:id])
   end
 
   # AI Generation endpoints
@@ -66,7 +34,7 @@ class ImagesController < ApplicationController
       {
         "negative_prompt" => params[:negative_prompt],
         "seed" => params[:seed],
-        "publish" => params[:publish],
+        "publish" => admin_signed_in? && ActiveModel::Type::Boolean.new.cast(params[:publish]),
         "image_size" => params[:image_size],
         "batch_size" => params[:batch_size]
       }
@@ -152,11 +120,4 @@ class ImagesController < ApplicationController
     @image_redis_service ||= ImageRedisService.new
   end
 
-  def set_image
-    @image = Image.find(params[:id])
-  end
-
-  def image_params
-    params.require(:image).permit(:title, :description, :position, :published, :file)
-  end
 end
