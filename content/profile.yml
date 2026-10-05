@@ -1,0 +1,19 @@
+# One source of truth for who Austin is. The homepage, page titles, structured
+# data, the resume page and the resume PDF all read from here and resume.yml.
+name: Austin French
+headline: Senior Product & Forward-Deployed Engineer
+location: New York, NY
+email: hi@austn.net
+description: >-
+  Austin French is a product and forward deployed engineer in New York.
+  Eight years of shipping Rails and TypeScript apps, lately with a lot of applied AI.
+links:
+  github: https://github.com/frogr
+  linkedin: https://linkedin.com/in/austindanielfrench
+knows_about:
+  - Ruby on Rails
+  - TypeScript
+  - Applied AI
+  - LLM evals
+  - Document extraction
+  - PostgreSQL
