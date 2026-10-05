@@ -7,7 +7,6 @@ import { ThemeProvider } from './components/Theme'
 // Lazy-load components to keep the main bundle small.
 // Each component becomes its own chunk and only loads when present in the DOM.
 const COMPONENT_LOADERS = {
-  HelloWorld: () => import('./components/HelloWorld'),
   Sidebar: () => import('./components/Sidebar'),
   WorkExperience: () => import('./components/WorkExperience'),
   MarkdownRenderer: () => import('./components/MarkdownRenderer'),

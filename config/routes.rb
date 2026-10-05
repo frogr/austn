@@ -66,10 +66,6 @@ Rails.application.routes.draw do
   post "/chat/async", to: "chat#async_complete"
   get "/chat/job/:id", to: "chat#job_status", as: :chat_job_status
 
-  # Dashboard for development/testing
-  get "/dashboard", to: "dashboard#hello", as: :dashboard
-  post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message
-
   # Images gallery
   resources :images do
     collection do
