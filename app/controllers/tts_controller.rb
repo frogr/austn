@@ -55,8 +55,7 @@ class TtsController < ApplicationController
       websocket_channel: "tts_generation_#{generation_id}"
     }
   rescue => e
-    Rails.logger.error "Failed to queue TTS generation: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status
@@ -143,8 +142,7 @@ class TtsController < ApplicationController
       render json: { error: "Audio not found or expired" }, status: :not_found
     end
   rescue => e
-    Rails.logger.error "Failed to create TTS share: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   private

@@ -26,4 +26,13 @@ module RequiresGpu
   def gpu_available?(tool)
     Gpu::Backend.configured?(Gpu::Backend.for_tool(tool)) && GpuHealthStatus.online?(tool)
   end
+
+  # Logs a failure in full and answers with a visitor-safe JSON error.
+  def render_gpu_error(error)
+    Rails.logger.error "#{self.class.name}##{action_name} failed: #{error.class}: #{error.message}"
+    public_error = Gpu::PublicError.for(error)
+    status = public_error.code == :gpu_offline ? :service_unavailable : :internal_server_error
+
+    render json: { success: false, **public_error.to_h }, status: status
+  end
 end

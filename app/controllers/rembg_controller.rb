@@ -45,8 +45,7 @@ class RembgController < ApplicationController
       websocket_channel: "rembg_#{generation_id}"
     }
   rescue => e
-    Rails.logger.error "Failed to queue rembg generation: #{e.message}"
-    render json: { success: false, error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status

@@ -80,8 +80,7 @@ class ImagesController < ApplicationController
       websocket_channel: "image_generation_#{generation_id}"
     }
   rescue => e
-    Rails.logger.error "Failed to queue generation: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def ai_show

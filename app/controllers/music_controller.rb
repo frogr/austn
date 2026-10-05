@@ -44,8 +44,7 @@ class MusicController < ApplicationController
       websocket_channel: "music_generation_#{generation_id}"
     }
   rescue => e
-    Rails.logger.error "Failed to queue music generation: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status
@@ -80,9 +79,8 @@ class MusicController < ApplicationController
     else
       render json: { error: "Music not found or expired" }, status: :not_found
     end
-  rescue ComfyuiClient::ComfyuiError => e
-    Rails.logger.error "Failed to proxy music: #{e.message}"
-    render json: { error: "Failed to retrieve music" }, status: :internal_server_error
+  rescue ComfyuiClient::ComfyuiError, Gpu::Error => e
+    render_gpu_error(e)
   end
 
   def download
@@ -103,9 +101,8 @@ class MusicController < ApplicationController
     else
       render json: { error: "Music not found or expired" }, status: :not_found
     end
-  rescue ComfyuiClient::ComfyuiError => e
-    Rails.logger.error "Failed to download music: #{e.message}"
-    render json: { error: "Failed to retrieve music" }, status: :internal_server_error
+  rescue ComfyuiClient::ComfyuiError, Gpu::Error => e
+    render_gpu_error(e)
   end
 
   def data

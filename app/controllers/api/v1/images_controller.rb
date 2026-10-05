@@ -51,9 +51,9 @@ module Api
           generation_time: elapsed
         }
 
-      rescue ComfyuiClient::ComfyuiError => e
-        Rails.logger.error "[Image API #{request_id}] ComfyUI error: #{e.message}"
-        render_error(e.message, status: :service_unavailable)
+      rescue ComfyuiClient::ComfyuiError, Gpu::Error => e
+        Rails.logger.error "[Image API #{request_id}] #{e.class}: #{e.message}"
+        render_error(Gpu::PublicError.for(e).message, status: :service_unavailable)
       rescue => e
         Rails.logger.error "[Image API #{request_id}] Unexpected error: #{e.class} - #{e.message}"
         Rails.logger.error e.backtrace.first(5).join("\n")

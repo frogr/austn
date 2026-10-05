@@ -54,8 +54,7 @@ class Model3dController < ApplicationController
       websocket_channel: "model3d_#{generation_id}"
     }
   rescue => e
-    Rails.logger.error "Failed to queue 3D model generation: #{e.message}"
-    render json: { success: false, error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status
