@@ -1,18 +1,10 @@
 require "sidekiq/web"
 
 Rails.application.routes.draw do
-  # Sidekiq Web UI - Protected with HTTP Basic Auth
-  Sidekiq::Web.use Rack::Auth::Basic do |username, password|
-    # Use environment variables in production, fallback for development
-    expected_username = ENV.fetch("SIDEKIQ_USERNAME", "admin")
-    expected_password = ENV.fetch("SIDEKIQ_PASSWORD", Rails.application.credentials.dig(:sidekiq, :password) || "changeme123")
-
-    # Secure comparison to prevent timing attacks
-    ActiveSupport::SecurityUtils.secure_compare(username, expected_username) &&
-      ActiveSupport::SecurityUtils.secure_compare(password, expected_password)
-  end if Rails.env.production?
-
-  mount Sidekiq::Web => "/sidekiq"
+  # Sidekiq Web UI, only routed for a signed-in admin (everyone else gets a 404)
+  constraints ->(request) { AdminSession.new(request.session).active? } do
+    mount Sidekiq::Web => "/sidekiq"
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
