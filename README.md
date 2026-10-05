@@ -1,54 +1,86 @@
-# Austn.net
+# austn.net
 
-Personal website and portfolio built with Ruby on Rails and React.
+Austin French's personal site: case studies, writing, a resume, and a playground
+of AI tools that used to run on a GPU at home.
 
-## Development
+Rails 8 on a small DigitalOcean server (deployed with Hatchbox), Postgres, Redis
+and Sidekiq. The public pages are server-rendered ERB with one stylesheet and no
+JavaScript. React is only used for the interactive pages (MIDI studio, Claude
+Corner, chat) and the admin code review tool.
 
-- Development server: `bin/dev` (starts Rails server with Foreman)
-- Build JS: `yarn build` (esbuild)
-- Build CSS: `yarn build:css` (Tailwind)
-- Tests: `bin/rails test` (run all tests)
-- Single test: `bin/rails test TEST=path/to/test.rb:line_number`
-- Lint Ruby: `bin/rubocop`
+## What's where
 
-## Image Optimization
+| Part | Where it lives |
+| --- | --- |
+| Profile (name, headline, links) | `content/profile.yml`, read by `Profile` |
+| Resume page and PDF | `content/resume.yml`, read by `Resume`; PDF by `ResumePdf` (Prawn) |
+| Case studies (`/work`) | `content/work/*.md`, markdown with front matter, read by `WorkItem` |
+| Playground write-ups (`/playground`) | `content/playground/*.md`, read by `PlaygroundItem` |
+| Blog (`/blog`) | `content/blog_posts/*.md`, imported into `BlogPost` on deploy by `ImportObsidianNotesJob` |
+| GPU tools | `app/jobs/gpu_job.rb`, `app/lib/gpu/`, the `*Service` classes and `workflows/` (ComfyUI) |
+| Booking (`/book`, short link `/meet`) | `AvailabilityRule`, `BookingSchedule`, `Booking` |
+| Claude Corner (`/claude`) | `ClaudeCornerEntry`, drafted monthly by `ClaudeCornerDraftJob`, published from admin |
+| Admin (`/admin`) | One password from ENV, rate-limited login, 30-day "remember this device" |
 
-The site includes comprehensive image optimization features:
+To change what the site says, edit the files in `content/`. Every page that shows
+a number reads it from there, so it only lives in one place.
 
-### For Developers
+## The GPU tools
 
-- React components:
-  - `ResponsiveImage`: A component that handles WebP support, lazy loading, and proper sizing
-  - Use it in JSX: `<ResponsiveImage src="/path/to/image.jpg" alt="Description" width={640} height={360} />`
+The tools (image generation, music, text to speech, stems, background removal,
+image to SVG, image to 3D, chat) ran on a GPU box at home, reached over
+Tailscale. The box isn't connected right now, so their public pages redirect to
+the write-ups in the Playground.
 
-- Rails helpers:
-  - `responsive_image_tag`: Creates a responsive image tag with WebP support
-  - `responsive_bg_image`: Creates a CSS background style with WebP fallback
+How it works when it's online:
 
-### Rake Tasks
+- Each request becomes a job on the `gpu` Sidekiq queue. `Gpu::Lock` (a Redis
+  mutex with compare-and-delete release) keeps one job on the GPU at a time.
+- Backend URLs come only from ENV (`COMFYUI_URL`, `TTS_URL`, `LMSTUDIO_URL`).
+  Unset means offline. There is no default host.
+- `RequiresGpu` refuses work with a 503 when a tool's backend is unconfigured or
+  marked offline, and `GpuHealthCheckJob` keeps the status current.
+- Visitors only ever see `Gpu::PublicError` messages. Exception details go to
+  the logs.
+- Uploads are size- and type-checked, stored with Active Storage, and passed to
+  jobs by id.
 
-The following Rake tasks are available for image optimization:
+## Running it
 
+```sh
+bin/setup          # gems, JS packages, database
+bin/dev            # web, Tailwind watcher, Sidekiq
 ```
-# Convert images to WebP format (while preserving originals)
-bin/rails images:convert_to_webp
 
-# Resize and optimize all images
-bin/rails images:optimize
+Needs Ruby 3.3, Node with Yarn, Postgres and Redis. Seed the default booking
+hours with `bin/rails runner 'AvailabilityRule.create_defaults!'`.
+
+## Tests and checks
+
+```sh
+bin/rails test     # the whole suite; no GPU needed, backends are stubbed
+bin/rubocop
+bin/brakeman
 ```
 
-### Game Assets
+CI runs all three, and deploys only happen when they pass. `test/models/site_content_test.rb`
+also checks the content files: required front matter, no broken links in case
+studies, no em dashes.
 
-The arena shooter game includes optimized asset loading:
-- Automatically uses WebP when supported
-- Implements progressive loading (essential assets first)
-- Provides fallbacks for unsupported formats
-- Reduces GPU memory usage
+## Environment
 
-## Features
+| Variable | What it's for |
+| --- | --- |
+| `ADMIN_USER_NAME`, `ADMIN_PASSWORD` | Admin login. Required; admin is closed if either is missing. |
+| `ADMIN_EMAIL` | Where booking and low-availability emails go (defaults to hi@austn.net) |
+| `RESEND_API_KEY`, `MAILER_FROM` | Outgoing email |
+| `ANTHROPIC_API_KEY`, `CLAUDE_CORNER_MODEL` | Claude Corner drafts |
+| `COMFYUI_URL`, `TTS_URL`, `LMSTUDIO_URL` | GPU backends. Leave unset while the box is offline. |
+| `TTS_API_KEY` | The TTS and image JSON APIs |
+| `LOW_AVAILABILITY_THRESHOLD` | Email a reminder when fewer open slots than this are left in the next 14 days (default 5) |
+| `REDIS_URL` | Sidekiq, caching, the GPU lock |
 
-- Dark/light theme support
-- Responsive design
-- React components
-- WebGL-based games
-- Blog with Markdown support
+## Deploying
+
+Hatchbox deploys `main`. After each deploy, `PostDeployJob` imports the blog
+posts from `content/blog_posts`. Run migrations as usual.

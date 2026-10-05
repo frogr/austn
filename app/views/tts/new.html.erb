@@ -103,7 +103,7 @@
                 </optgroup>
               <% end %>
             <% end %>
-            <option value="_custom">Custom</option>
+            <% if admin_signed_in? %><option value="_custom">Custom</option><% end %>
           </select>
         </div>
 
