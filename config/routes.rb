@@ -25,30 +25,36 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Blog routes
+  # Public site: Home, Work, Writing (blog), Playground, Resume, plus /now
+  root "pages#home"
+  get "/now", to: "pages#now", as: :now
+
+  get "/work", to: "work#index", as: :work_index
+  get "/work/:slug", to: "work#show", as: :work_item
+
   get "/blog", to: "blog#index"
   get "/blog/:slug", to: "blog#show", as: :blog_post
-  get "/blog/:slug/content", to: "blog#content", as: :blog_post_content
 
-  # Portfolio routes - Simplified structure
-  get "/projects", to: "portfolio#projects"
-  get "/projects/:id", to: "portfolio#project_detail", as: :project_detail
-  get "/tech-setup", to: "portfolio#tech_setup"
-  # Simple pages for Engage links
-  get "/fun-links", to: "portfolio#fun_links"
-  get "/reading", to: "portfolio#reading"
-  get "/resources", to: "portfolio#resources"
-  get "/resume", to: "portfolio#resume"
+  get "/playground", to: "playground#index", as: :playground
+  get "/playground/:slug", to: "playground#show", as: :playground_item
 
-  # Legacy routes - redirect to new structure
-  get "/work", to: redirect("/")
+  get "/resume", to: "resumes#show", as: :resume, defaults: { format: :html }
+
+  # Short link to send people for a call
+  get "/meet", to: redirect("/book"), as: :meet
+
+  # Old URLs from the previous version of the site
+  get "/projects", to: redirect("/work")
+  get "/projects/:id", to: "work#legacy"
+  get "/fun-links", to: redirect("/now")
+  get "/reading", to: redirect("/now")
+  get "/resources", to: redirect("/now")
+  get "/fun", to: redirect("/now")
+  get "/games", to: redirect("/playground")
   get "/contact", to: redirect("/book")
-  get "/fun", to: redirect("/fun-links")
-  get "/games", to: redirect("/projects")
 
   # Claude Corner
   get "/claude", to: "claude_corner#index"
-
 
   # Pitch checker
   get "/pitch", to: "pitch#index"
@@ -234,12 +240,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # Endless Story
-  get "/endless", to: "endless#index"
-  get "/endless/:id", to: "endless#show", as: :endless_story
-  get "/endless/:id/paragraphs", to: "endless#paragraphs", as: :endless_story_paragraphs
-  get "/endless/:id/timer", to: "endless#timer", as: :endless_story_timer
-
   # Code Review Harness
   resources :reviews, only: [ :index, :create, :show ] do
     member do
@@ -249,7 +249,4 @@ Rails.application.routes.draw do
       post :comments, to: "reviews#add_comment"
     end
   end
-
-  # Portfolio as root
-  root "portfolio#index"
 end

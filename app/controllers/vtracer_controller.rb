@@ -3,6 +3,7 @@ class VtracerController < ApplicationController
   include RequiresGpu
 
   requires_gpu "vtracer", only: :generate
+  shows_writeup_when_offline "vtracer", "image-to-svg", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

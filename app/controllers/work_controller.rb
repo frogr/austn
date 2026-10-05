@@ -1,0 +1,23 @@
+class WorkController < ApplicationController
+  include SitePage
+  site_section "work"
+
+  def index
+    @featured = WorkItem.featured
+    @more = WorkItem.more
+  end
+
+  def show
+    items = WorkItem.all
+    index = items.index { |item| item.slug == params[:slug] } || raise(ActiveRecord::RecordNotFound)
+    @item = items[index]
+    @previous_item = items[index - 1] if index.positive?
+    @next_item = items[index + 1]
+  end
+
+  # /projects/:id from the old site. Send it to the matching case study, or to /work.
+  def legacy
+    item = WorkItem.for_legacy_id(params[:id])
+    redirect_to(item ? work_item_path(item) : work_index_path, status: :moved_permanently)
+  end
+end

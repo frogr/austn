@@ -3,6 +3,7 @@ require "test_helper"
 class TtsControllerTest < ActionDispatch::IntegrationTest
   test "the TTS page does not list other people's shared clips" do
     share = TtsShare.create!(audio_data: Base64.strict_encode64("RIFF"), text: "a private message for a friend")
+    stub_gpu_online("tts")
 
     get "/tts"
 

@@ -3,6 +3,7 @@ class RembgController < ApplicationController
   include RequiresGpu
 
   requires_gpu "rembg", only: :generate
+  shows_writeup_when_offline "rembg", "background-removal", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

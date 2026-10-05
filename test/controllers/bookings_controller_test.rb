@@ -4,7 +4,7 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
   test "GET /book shows calendar" do
     get book_path
     assert_response :success
-    assert_select "h1", /Book a Time/
+    assert_select "h1", /Book a time/
   end
 
   test "GET /book/:date shows time slots" do
@@ -13,18 +13,19 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET /book/:date returns turbo frame for slot_picker" do
+  test "GET /book/:date lists open times as choices in a plain form" do
     avail = availabilities(:today_afternoon)
-    get book_date_path(date: avail.date.to_s), headers: { "Turbo-Frame" => "slot_picker" }
+    get book_date_path(date: avail.date.to_s)
     assert_response :success
-    assert_match "turbo-frame", response.body
-    assert_match "slot_picker", response.body
+    assert_select "form[action=?]", bookings_path do
+      assert_select "input[type=radio][name=start_time]"
+      assert_select "input[name=booked_date][value=?]", avail.date.to_s
+    end
   end
 
-  test "GET /book/:date with invalid date renders error in turbo frame" do
+  test "GET /book/:date with invalid date shows an error instead of failing" do
     get book_date_path(date: "invalid-date")
     assert_response :success
-    assert_match "turbo-frame", response.body
     assert_match "Something went wrong", response.body
   end
 
@@ -74,14 +75,14 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
     booking = bookings(:confirmed_booking)
     get confirmation_booking_path(booking.confirmation_token)
     assert_response :success
-    assert_select "h1", /You're Booked/
+    assert_select "h1", /You're booked/
   end
 
   test "GET /bookings/:token/cancel_confirm shows cancel confirmation" do
     booking = bookings(:confirmed_booking)
     get cancel_confirm_booking_path(booking.confirmation_token)
     assert_response :success
-    assert_select "h1", /Cancel Booking/
+    assert_select "h1", /Cancel this booking/
   end
 
   test "DELETE /bookings/:token/cancel cancels the booking" do

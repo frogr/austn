@@ -1,0 +1,7 @@
+<li>
+  <a class="row" href="<%= blog_post_path(post.slug) %>">
+    <span class="row-when"><%= post_date(post) %></span>
+    <span class="row-title"><%= post.title %></span>
+    <span class="row-summary"><%= post.summary.presence || post.excerpt(length: 140) %></span>
+  </a>
+</li>

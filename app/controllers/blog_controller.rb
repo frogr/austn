@@ -1,19 +1,12 @@
 class BlogController < ApplicationController
+  include SitePage
+  site_section "writing"
+
   def index
-    @blog_posts = BlogPost.order(created_at: :desc)
+    @blog_posts = BlogPost.published.recent
   end
 
   def show
-    @blog_post = BlogPost.find_by!(slug: params[:slug])
-
-    respond_to do |format|
-      format.html
-      format.json { render json: { content: @blog_post.content } }
-    end
-  end
-
-  def content
-    blog_post = BlogPost.find_by!(slug: params[:slug])
-    render json: { content: blog_post.content }
+    @blog_post = BlogPost.published.find_by!(slug: params[:slug])
   end
 end

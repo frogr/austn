@@ -3,6 +3,7 @@ class ImagesController < ApplicationController
   include RequiresGpu
 
   requires_gpu "images", only: :generate
+  shows_writeup_when_offline "images", "image-generation", only: [ :index, :ai_generate ]
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

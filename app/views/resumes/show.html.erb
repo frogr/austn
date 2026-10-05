@@ -1,0 +1,50 @@
+<% page_title "Resume" %>
+<% page_description "Austin French's resume: Tenex, Backlit, CompanyCam, CoverMyMeds. #{@resume.title}, New York." %>
+
+<header class="resume-header">
+  <div>
+    <h1><%= Profile.name %></h1>
+    <p class="eyebrow"><%= @resume.title %> · <%= @resume.location %></p>
+  </div>
+  <p class="no-print"><%= link_to "Download PDF", resume_path(format: :pdf), class: "button button--quiet" %></p>
+</header>
+
+<ul class="resume-contact">
+  <li><%= mail_to @resume.email %></li>
+  <% @resume.links.each do |link| %>
+    <li><%= link_to link["label"], link["url"] %></li>
+  <% end %>
+</ul>
+
+<h2>Summary</h2>
+<p><%= @resume.summary %></p>
+
+<h2>Experience</h2>
+<% @resume.experience.each do |job| %>
+  <section class="job">
+    <div class="job-head">
+      <h3><%= link_to job["company"], job["url"] %> · <%= job["title"] %></h3>
+      <span class="meta"><%= job["dates"] %> · <%= job["location"] %></span>
+    </div>
+    <% if job["note"] %><p class="job-note"><%= job["note"] %></p><% end %>
+    <% if job["about"] %><p class="muted"><%= job["about"] %></p><% end %>
+    <ul>
+      <% job["bullets"].each do |bullet| %>
+        <li><% if bullet["lead"] %><strong><%= bullet["lead"] %></strong> <% end %><%= bullet["text"] %></li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<h2>Projects</h2>
+<% @resume.projects.each do |project| %>
+  <p><strong><%= project["name"] %></strong> <span class="meta">(<%= project["dates"] %>)</span> <%= project["text"] %></p>
+<% end %>
+
+<h2>Skills</h2>
+<dl class="skills">
+  <% @resume.skills.each do |skill| %>
+    <dt><%= skill["label"] %></dt>
+    <dd><%= skill["text"] %></dd>
+  <% end %>
+</dl>

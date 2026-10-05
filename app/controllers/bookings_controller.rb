@@ -1,4 +1,6 @@
 class BookingsController < ApplicationController
+  include SitePage
+
   # Public booking pages - no auth required
 
   # GET /book - Calendar view showing available dates

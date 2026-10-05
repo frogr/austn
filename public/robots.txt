@@ -1,8 +1,7 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
+Disallow: /admin
 Disallow: /sidekiq
-Disallow: /dashboard
 Disallow: /gpu_health
 
 Sitemap: https://austn.net/sitemap.xml

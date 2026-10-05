@@ -3,6 +3,7 @@ class MusicController < ApplicationController
   include RequiresGpu
 
   requires_gpu "music", only: :generate
+  shows_writeup_when_offline "music", "music-generation", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

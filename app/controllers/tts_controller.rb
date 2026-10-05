@@ -3,6 +3,7 @@ class TtsController < ApplicationController
   include RequiresGpu
 
   requires_gpu "tts", only: :generate
+  shows_writeup_when_offline "tts", "text-to-speech", only: [ :index, :new ]
   before_action :restrict_custom_voices_to_admin, only: :generate
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]

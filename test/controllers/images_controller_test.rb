@@ -6,6 +6,7 @@ class ImagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "the gallery and published images are public" do
+    stub_gpu_online("images")
     get images_path
     assert_response :success
 

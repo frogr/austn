@@ -1,27 +1,13 @@
-<div class="container mx-auto px-4 py-8 max-w-2xl" style="position: relative; z-index: 1;">
-  <div class="text-center mb-8">
-    <h1 class="font-black mb-2" style="font-size: clamp(1.75rem, 3vw, 2rem); color: var(--text-primary); letter-spacing: -0.03em;">
-      Cancel Booking?
-    </h1>
-    <p style="color: var(--text-muted); font-size: 1rem;">Are you sure you want to cancel this booking?</p>
-  </div>
+<% page_title "Cancel booking" %>
 
-  <div class="p-6 rounded-xl mb-6" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px);">
-    <div class="space-y-4">
-      <div>
-        <p class="text-sm font-medium" style="color: var(--text-muted);">Date</p>
-        <p class="text-lg font-semibold" style="color: var(--text-primary);"><%= @booking.formatted_date %></p>
-      </div>
-      <div>
-        <p class="text-sm font-medium" style="color: var(--text-muted);">Time</p>
-        <p class="text-lg font-semibold" style="color: var(--text-primary);"><%= @booking.formatted_time_range %></p>
-      </div>
-    </div>
-  </div>
+<h1>Cancel this booking?</h1>
 
-  <div class="flex gap-3 justify-center">
-    <%= link_to "Never mind, keep it", confirmation_booking_path(@booking.confirmation_token), class: "btn btn-secondary" %>
-    <%= button_to "Yes, cancel booking", cancel_booking_path(@booking.confirmation_token), method: :delete,
-          class: "btn", style: "background: var(--danger-color); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500;" %>
-  </div>
+<dl class="facts">
+  <dt>date</dt><dd><%= @booking.formatted_date %></dd>
+  <dt>time</dt><dd><%= @booking.formatted_time_range %></dd>
+</dl>
+
+<div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+  <%= button_to "Yes, cancel it", cancel_booking_path(@booking.confirmation_token), method: :delete, class: "button" %>
+  <%= link_to "Keep it", confirmation_booking_path(@booking.confirmation_token), class: "button button--quiet" %>
 </div>

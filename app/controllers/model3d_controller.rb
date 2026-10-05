@@ -3,6 +3,7 @@ class Model3dController < ApplicationController
   include RequiresGpu
 
   requires_gpu "model3d", only: :generate
+  shows_writeup_when_offline "model3d", "image-to-3d", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

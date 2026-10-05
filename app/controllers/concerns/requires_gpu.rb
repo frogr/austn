@@ -4,6 +4,7 @@
 #   class RembgController < ApplicationController
 #     include RequiresGpu
 #     requires_gpu "rembg", only: :generate
+#     shows_writeup_when_offline "rembg", "background-removal", only: :index
 #   end
 module RequiresGpu
   extend ActiveSupport::Concern
@@ -11,6 +12,12 @@ module RequiresGpu
   class_methods do
     def requires_gpu(tool, **options)
       before_action(-> { require_gpu!(tool) }, **options)
+    end
+
+    # While the GPU is offline, send visitors to the tool's write-up in the
+    # Playground instead of a form that can't do anything.
+    def shows_writeup_when_offline(tool, playground_slug, **options)
+      before_action(-> { redirect_to playground_item_path(playground_slug) unless gpu_available?(tool) }, **options)
     end
   end
 

@@ -2,6 +2,7 @@ class ChatController < ApplicationController
   include RequiresGpu
 
   requires_gpu "chat", only: :async_complete
+  shows_writeup_when_offline "chat", "chat", only: :index
 
   def index
   end

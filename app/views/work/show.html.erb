@@ -1,0 +1,29 @@
+<% page_title @item.title %>
+<% page_description @item.summary %>
+<% content_for :og_type, "article" %>
+
+<%= link_to "← All work", work_index_path, class: "back" %>
+
+<article>
+  <h1><%= @item.title %></h1>
+  <p class="lede"><%= @item.summary %></p>
+
+  <dl class="facts">
+    <% if @item.role %><dt>role</dt><dd><%= @item.role %></dd><% end %>
+    <% if @item.timeframe %><dt>when</dt><dd><%= @item.timeframe %></dd><% end %>
+    <% if @item.stack.any? %><dt>stack</dt><dd><%= @item.stack.join(", ") %></dd><% end %>
+    <% if @item.links.any? %>
+      <dt>links</dt>
+      <dd><%= safe_join(@item.links.map { |l| link_to(l["label"], l["url"]) }, " · ") %></dd>
+    <% end %>
+  </dl>
+
+  <div class="prose">
+    <%= markdown(@item.body) %>
+  </div>
+</article>
+
+<nav class="pager" aria-label="More work">
+  <span><% if @previous_item %><%= link_to "← #{@previous_item.title}", work_item_path(@previous_item) %><% end %></span>
+  <span><% if @next_item %><%= link_to "#{@next_item.title} →", work_item_path(@next_item) %><% end %></span>
+</nav>

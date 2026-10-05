@@ -1,0 +1,17 @@
+<% page_title "Work" %>
+<% page_description "Case studies from Tenex, CompanyCam, Backlit and CoverMyMeds, plus side projects: what each one was, how it worked, and what the numbers were." %>
+
+<h1>Work</h1>
+<p class="lede">What I built at each job, how it worked, and the numbers. Side projects are further down.</p>
+
+<h2 class="section-title">case studies</h2>
+<ul class="rows">
+  <%= render partial: "shared/work_row", collection: @featured, as: :item %>
+</ul>
+
+<h2 class="section-title">more projects</h2>
+<ul class="rows">
+  <%= render partial: "shared/work_row", collection: @more, as: :item %>
+</ul>
+
+<p class="muted">The AI tools that used to run on this site have their own write-ups in the <%= link_to "Playground", playground_path %>.</p>

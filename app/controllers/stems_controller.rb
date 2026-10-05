@@ -3,6 +3,7 @@ class StemsController < ApplicationController
   include RequiresGpu
 
   requires_gpu "stems", only: :generate
+  shows_writeup_when_offline "stems", "stem-separation", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 

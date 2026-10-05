@@ -1,0 +1,32 @@
+<section class="hero">
+  <h1><%= Profile.name %></h1>
+  <p class="eyebrow"><%= Profile.headline %> · <%= Profile.location %></p>
+
+  <p class="lede">I build software and then stand next to the people using it. Eight years of production work, mostly in Ruby on Rails, lately a lot of TypeScript and applied AI.</p>
+
+  <p>Most recently I was at Tenex, an AI consultancy, as the only engineer on three client projects at once. For one of them I built an OCR and LLM pipeline with evals and autonomy gates, so over half of the documents ran without a person checking them. Before that I spent two years at CompanyCam, where I led the Pages AI assistant to about 5,000 requests a day and built the shared RubyLLM layer the rest of the product's AI features run on.</p>
+
+  <p>I'm looking for forward deployed, AI engineering and senior product engineering roles.</p>
+
+  <ul class="links">
+    <li><%= mail_to Profile.email %></li>
+    <li><%= link_to "GitHub", Profile.links["github"] %></li>
+    <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+    <li><%= link_to "Resume", resume_path %></li>
+    <li><%= link_to "Book a time", meet_path %></li>
+  </ul>
+</section>
+
+<h2 class="section-title">selected work</h2>
+<ul class="rows">
+  <%= render partial: "shared/work_row", collection: @featured_work, as: :item %>
+</ul>
+<p><%= link_to "All work, including side projects", work_index_path %></p>
+
+<% if @recent_posts.any? %>
+  <h2 class="section-title">writing</h2>
+  <ul class="rows">
+    <%= render partial: "shared/post_row", collection: @recent_posts, as: :post %>
+  </ul>
+  <p><%= link_to "All posts", blog_path %></p>
+<% end %>
