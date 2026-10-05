@@ -1,66 +1,54 @@
 require "test_helper"
 
-class GpuQueueStatusTest < ActionController::TestCase
-  # Create a test controller that includes the concern
-  class TestController < ApplicationController
+class GpuQueueStatusTest < ActiveSupport::TestCase
+  class StatusReader
     include GpuQueueStatus
 
-    def test_action
-      service = MockRedisService.new(result_exists: false, status: { "status" => "pending" })
-      render json: status_with_queue_position("test-id", service)
-    end
+    public :status_with_queue_position, :gpu_queue_position
   end
 
-  # Mock Redis service for testing
-  class MockRedisService
-    def initialize(result_exists: false, status: {})
-      @result_exists = result_exists
-      @status = status
-    end
-
-    def result_exists?(_id)
-      @result_exists
-    end
-
-    def get_status(_id)
-      @status
-    end
+  class PendingRedisService
+    def get_status(_generation_id) = { "status" => "pending" }
   end
-
-  tests TestController
 
   setup do
-    Rails.application.routes.draw do
-      get "test_action", to: "gpu_queue_status_test/test#test_action"
-    end
+    @generation_id = "gen-#{SecureRandom.hex(8)}"
+    @reader = StatusReader.new
   end
 
   teardown do
-    Rails.application.reload_routes!
+    Sidekiq::Queue.new(GpuJob.queue_name).each { |job| job.delete if job.display_args.first == @generation_id }
   end
 
-  test "status_with_queue_position returns pending status when no queue position" do
-    # The controller will use the mock service
-    # This test verifies the concern is correctly included
-    assert TestController.ancestors.include?(GpuQueueStatus)
+  test "finds a queued Active Job by its generation id" do
+    enqueue_in_sidekiq(RembgJob, @generation_id)
+
+    assert_not_nil @reader.gpu_queue_position(@generation_id)
   end
 
-  test "gpu_queue_position returns nil when job not in queue" do
-    skip "Redis not available" unless redis_available?
+  test "reports the queue position of a pending generation" do
+    enqueue_in_sidekiq(RembgJob, @generation_id)
 
-    controller = TestController.new
-    controller.request = ActionController::TestRequest.create(TestController)
+    status = @reader.status_with_queue_position(@generation_id, PendingRedisService.new)
 
-    position = controller.send(:gpu_queue_position, "nonexistent-id")
-    assert_nil position
+    assert_equal "queued", status["status"]
+    assert_operator status["position"], :>=, 1
+  end
+
+  test "returns nil for a generation that isn't queued" do
+    assert_nil @reader.gpu_queue_position(@generation_id)
   end
 
   private
 
-  def redis_available?
-    Redis.new(url: ENV.fetch("REDIS_URL", "redis://localhost:6379/2")).ping
-    true
-  rescue Redis::CannotConnectError
-    false
+  # Pushes the job the way the Sidekiq Active Job adapter does in production.
+  def enqueue_in_sidekiq(job_class, *arguments)
+    job = job_class.new(*arguments)
+    Sidekiq::Client.push(
+      "class" => Sidekiq::ActiveJob::Wrapper,
+      "wrapped" => job_class.name,
+      "queue" => job.queue_name,
+      "args" => [ job.serialize ]
+    )
   end
 end

@@ -1,3 +1,5 @@
+require "sidekiq/api"
+
 # Provides helpers for checking GPU job queue status.
 # Include in controllers that handle GPU-intensive generation requests.
 #
@@ -32,10 +34,12 @@ module GpuQueueStatus
     { "status" => "queued", "position" => queue_position + 1 }
   end
 
-  # Find position of job in GPU queue (0-indexed, nil if not found)
+  # Position of the job in the GPU queue (0-indexed), or nil if it isn't queued.
+  # Jobs are enqueued through Active Job, so Sidekiq's raw args hold the
+  # Active Job payload; display_args unwraps it to the job's own arguments.
   def gpu_queue_position(generation_id)
-    Sidekiq::Queue.new("gpu").find_index do |job|
-      job.args.first == generation_id
+    Sidekiq::Queue.new(GpuJob.queue_name).find_index do |job|
+      job.display_args.first == generation_id
     end
   end
 end
