@@ -125,14 +125,6 @@ Rails.application.routes.draw do
   get "/stems/:id/download/:stem", to: "stems#download_stem", as: :download_stem
   get "/stems/:id/download_all", to: "stems#download_all", as: :download_all_stems
 
-  # Video Generation (Wan 2.2)
-  get "/video", to: "video#index"
-  post "/video/generate", to: "video#generate"
-  get "/video/:id/status", to: "video#status", as: :video_status
-  get "/video/:id/result", to: "video#result", as: :video_result
-  get "/video/:id/download", to: "video#download", as: :video_download
-  get "/video/:id/data", to: "video#data", as: :video_data
-
   # Music Generation (ACE-Step)
   get "/music", to: "music#index"
   post "/music/generate", to: "music#generate"

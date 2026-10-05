@@ -450,7 +450,7 @@
         <a href="/" class="nav-brand" aria-label="Home">austn</a>
         <nav class="nav-links" aria-label="Main navigation">
           <% current_path = request.path %>
-          <% ai_tool_paths = ['/chat', '/images', '/video', '/music', '/tts', '/rembg', '/vtracer', '/stems', '/3d', '/midi', '/endless', '/pitch'] %>
+          <% ai_tool_paths = ['/chat', '/images', '/music', '/tts', '/rembg', '/vtracer', '/stems', '/3d', '/midi', '/endless', '/pitch'] %>
           <% ai_tool_active = ai_tool_paths.any? { |p| current_path.start_with?(p) } %>
 
           <%= link_to "Home", "/", class: "nav-link #{current_path == '/' ? 'active' : ''}", aria: { label: "Go to homepage" } %>
@@ -467,7 +467,6 @@
               <% ai_tools = [
                 ['Chat with AI', '/chat', 'chat'],
                 ['Generate Images', '/images', 'image'],
-                ['Generate Video', '/video', 'videocam', true],
                 ['Generate Music', '/music', 'library_music'],
                 ['Text to Speech', '/tts', 'record_voice_over'],
                 ['Remove Background', '/rembg', 'auto_fix_high'],
