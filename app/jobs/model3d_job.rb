@@ -13,13 +13,6 @@ class Model3dJob < GpuJob
       redis_service.store_result(generation_id, {
         original_filename: original_filename, glb_filename: result[:filename], created_at: Time.current
       })
-
-      ThreeDModel.create!(
-        generation_id: generation_id,
-        original_filename: original_filename,
-        glb_filename: result[:filename],
-        thumbnail_data: options["thumbnail_data"]
-      )
     ensure
       uploaded_file.cleanup
     end

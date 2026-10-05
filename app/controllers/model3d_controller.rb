@@ -7,8 +7,6 @@ class Model3dController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
-    # Load recent models for the index, limited to active (non-expired) ones
-    @recent_models = ThreeDModel.active.recent.limit(12)
   end
 
   def preview
@@ -33,16 +31,12 @@ class Model3dController < ApplicationController
       "base64" => Base64.strict_encode64(image_data)
     }
 
-    # Generate thumbnail for index display (resize to max 200px)
-    thumbnail_data = generate_thumbnail(image_data)
-
     # Queue the job
     Model3dJob.perform_later(
       generation_id,
       file_data,
       {
-        "original_filename" => uploaded_file.original_filename,
-        "thumbnail_data" => thumbnail_data
+        "original_filename" => uploaded_file.original_filename
       }
     )
 
@@ -126,22 +120,5 @@ class Model3dController < ApplicationController
 
   def redis_service
     @redis_service ||= Model3dRedisService.new
-  end
-
-  def generate_thumbnail(image_data)
-    # Use ImageMagick via MiniMagick to resize
-    require "mini_magick"
-
-    image = MiniMagick::Image.read(image_data)
-    image.resize "200x200>"
-    image.format "jpeg"
-    image.quality 80
-
-    "data:image/jpeg;base64,#{Base64.strict_encode64(image.to_blob)}"
-  rescue => e
-    Rails.logger.warn "Failed to generate thumbnail: #{e.message}"
-    # Fall back to original image as data URL if thumbnail generation fails
-    content_type = Marcel::MimeType.for(image_data) || "image/png"
-    "data:#{content_type};base64,#{Base64.strict_encode64(image_data)}"
   end
 end

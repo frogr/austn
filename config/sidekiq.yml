@@ -21,11 +21,6 @@
       class: CleanupExpiredTtsSharesJob
       queue: low
       description: "Delete expired TTS share links"
-    cleanup_old_model3ds:
-      cron: '0 */6 * * *'  # Every 6 hours
-      class: CleanupOldModel3dsJob
-      queue: low
-      description: "Clean up expired 3D models"
 
 # GPU queue configuration
 # Run a separate Sidekiq process for GPU tasks:
