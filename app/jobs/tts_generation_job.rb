@@ -1,4 +1,7 @@
 class TtsGenerationJob < GpuJob
+  # The admin-only custom voice clip travels in the arguments; keep it out of the logs.
+  self.log_arguments = false
+
   self.gpu_service_name = "tts"
 
   def perform(generation_id, text, options = {})

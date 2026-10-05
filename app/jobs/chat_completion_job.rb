@@ -1,6 +1,9 @@
 class ChatCompletionJob < GpuJob
   self.gpu_service_name = "chat"
 
+  # Arguments carry the visitor's messages; keep them out of the logs.
+  self.log_arguments = false
+
   RESULT_TTL = 30.minutes
 
   def perform(job_id, messages)

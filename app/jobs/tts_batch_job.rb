@@ -54,6 +54,10 @@ class TtsBatchJob < GpuJob
       broadcast_item_update(batch, item, "completed")
       self.class.mark_service_online
 
+    rescue Gpu::Offline
+      # Every remaining item would fail the same way; let GpuJob discard the
+      # batch and mark the tool offline.
+      raise
     rescue => e
       Rails.logger.error "TtsBatchJob item #{item.id} failed: #{e.class}: #{e.message}"
       error = Gpu::PublicError.for(e).message
