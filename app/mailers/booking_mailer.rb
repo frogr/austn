@@ -76,16 +76,8 @@ class BookingMailer < ApplicationMailer
     cal.append_custom_property("METHOD", "REQUEST")
 
     cal.event do |e|
-      start_dt = booking.booked_date.in_time_zone("Pacific Time (US & Canada)")
-        .change(hour: booking.start_time.hour, min: booking.start_time.min)
-        .utc
-
-      end_dt = booking.booked_date.in_time_zone("Pacific Time (US & Canada)")
-        .change(hour: booking.end_time.hour, min: booking.end_time.min)
-        .utc
-
-      e.dtstart = Icalendar::Values::DateTime.new(start_dt, "tzid" => "UTC")
-      e.dtend = Icalendar::Values::DateTime.new(end_dt, "tzid" => "UTC")
+      e.dtstart = Icalendar::Values::DateTime.new(booking.starts_at.utc, "tzid" => "UTC")
+      e.dtend = Icalendar::Values::DateTime.new(booking.ends_at.utc, "tzid" => "UTC")
       e.summary = "Meeting with #{booking.first_name} & Austin"
       e.description = booking.notes.present? ? booking.notes : "Booked via austn.net"
       e.uid = "#{booking.confirmation_token}@austn.net"
@@ -114,16 +106,8 @@ class BookingMailer < ApplicationMailer
     cal.append_custom_property("METHOD", "CANCEL")
 
     cal.event do |e|
-      start_dt = booking.booked_date.in_time_zone("Pacific Time (US & Canada)")
-        .change(hour: booking.start_time.hour, min: booking.start_time.min)
-        .utc
-
-      end_dt = booking.booked_date.in_time_zone("Pacific Time (US & Canada)")
-        .change(hour: booking.end_time.hour, min: booking.end_time.min)
-        .utc
-
-      e.dtstart = Icalendar::Values::DateTime.new(start_dt, "tzid" => "UTC")
-      e.dtend = Icalendar::Values::DateTime.new(end_dt, "tzid" => "UTC")
+      e.dtstart = Icalendar::Values::DateTime.new(booking.starts_at.utc, "tzid" => "UTC")
+      e.dtend = Icalendar::Values::DateTime.new(booking.ends_at.utc, "tzid" => "UTC")
       e.summary = "Meeting with #{booking.first_name} & Austin"
       e.uid = "#{booking.confirmation_token}@austn.net"
       e.sequence = 1
@@ -146,15 +130,7 @@ class BookingMailer < ApplicationMailer
   end
 
   def google_calendar_url(booking)
-    start_dt = booking.booked_date.in_time_zone("Pacific Time (US & Canada)")
-      .change(hour: booking.start_time.hour, min: booking.start_time.min)
-      .utc
-
-    end_dt = booking.booked_date.in_time_zone("Pacific Time (US & Canada)")
-      .change(hour: booking.end_time.hour, min: booking.end_time.min)
-      .utc
-
-    dates = "#{start_dt.strftime('%Y%m%dT%H%M%SZ')}/#{end_dt.strftime('%Y%m%dT%H%M%SZ')}"
+    dates = "#{booking.starts_at.utc.strftime('%Y%m%dT%H%M%SZ')}/#{booking.ends_at.utc.strftime('%Y%m%dT%H%M%SZ')}"
     details = booking.notes.present? ? booking.notes : "Booked via austn.net"
 
     "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{ERB::Util.url_encode("Meeting with Austin")}&dates=#{dates}&details=#{ERB::Util.url_encode(details)}"

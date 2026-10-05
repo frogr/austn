@@ -92,4 +92,16 @@ class BookingMailerTest < ActionMailer::TestCase
     calendar_part = email.parts.find { |p| p.content_type.include?("text/calendar") }
     assert_match from_address, calendar_part.body.to_s
   end
+
+  test "calendar invites use the booking's Eastern time converted to UTC" do
+    booking = bookings(:confirmed_booking)
+    booking.booked_date = Date.new(2026, 7, 1) # 2:00 PM EDT = 18:00 UTC
+
+    email = BookingMailer.confirmation(booking)
+    calendar = email.parts.find { |part| part.content_type.include?("text/calendar") }.body.to_s
+
+    assert_match "DTSTART:20260701T180000Z", calendar
+    assert_match "DTEND:20260701T183000Z", calendar
+    assert_match "EDT", email.text_part.body.to_s
+  end
 end

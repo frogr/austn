@@ -1,9 +1,9 @@
-# Times stored as UTC in DB. 14:00 PST = 22:00 UTC
+# Times are stored in UTC using January's offset (EST, UTC-5); see availabilities.yml.
 confirmed_booking:
   availability: today_afternoon
   booked_date: <%= Date.current + 1.day %>
-  start_time: "22:00:00"
-  end_time: "22:30:00"
+  start_time: "19:00:00" # 2:00 PM ET
+  end_time: "19:30:00"
   first_name: "Jane"
   email: "jane@example.com"
   phone_number: "5551234567"
@@ -14,8 +14,8 @@ confirmed_booking:
 cancelled_booking:
   availability: today_afternoon
   booked_date: <%= Date.current + 1.day %>
-  start_time: "23:00:00"
-  end_time: "23:30:00"
+  start_time: "20:00:00" # 3:00 PM ET
+  end_time: "20:30:00"
   first_name: "Bob"
   email: "bob@example.com"
   phone_number: "5559876543"

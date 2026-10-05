@@ -138,9 +138,22 @@ class BookingTest < ActiveSupport::TestCase
     assert_match(/\w+, \w+ \d+, \d{4}/, booking.formatted_date)
   end
 
-  test "formatted_time_range returns time range with PST" do
+  test "formatted_time_range shows Eastern time for the booked date" do
     booking = bookings(:confirmed_booking)
-    assert_match(/\d+:\d+ [AP]M - \d+:\d+ [AP]M PST/, booking.formatted_time_range)
+    zone = booking.starts_at.strftime("%Z")
+
+    assert_includes %w[EST EDT], zone
+    assert_equal "2:00 PM - 2:30 PM #{zone}", booking.formatted_time_range
+  end
+
+  test "starts_at keeps the wall-clock time across daylight saving" do
+    booking = bookings(:confirmed_booking)
+
+    booking.booked_date = Date.new(2026, 7, 1)
+    assert_equal "2026-07-01 14:00 EDT", booking.starts_at.strftime("%F %H:%M %Z")
+
+    booking.booked_date = Date.new(2026, 12, 1)
+    assert_equal "2026-12-01 14:00 EST", booking.starts_at.strftime("%F %H:%M %Z")
   end
 
   test "status must be valid" do

@@ -72,8 +72,9 @@ class Booking < ApplicationRecord
     booked_date.strftime("%A, %B %-d, %Y")
   end
 
+  # "2:00 PM - 2:30 PM EDT"; the zone abbreviation follows daylight saving for the booked date.
   def formatted_time_range
-    "#{start_time.strftime('%l:%M %p').strip} - #{end_time.strftime('%l:%M %p').strip} PST"
+    "#{starts_at.strftime('%l:%M %p').strip} - #{ends_at.strftime('%l:%M %p %Z').strip}"
   end
 
   def formatted_date_short
