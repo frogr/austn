@@ -3,7 +3,7 @@
 
 <header class="resume-header">
   <div>
-    <h1><%= Profile.name %></h1>
+    <h1><%= Profile.full_name %></h1>
     <p class="eyebrow"><%= @resume.title %> · <%= @resume.location %></p>
   </div>
   <p class="no-print"><%= link_to "Download PDF", resume_path(format: :pdf), class: "button button--quiet" %></p>

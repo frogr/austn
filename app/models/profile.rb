@@ -10,7 +10,7 @@ module Profile
     @data ||= YAML.safe_load_file(PATH).freeze
   end
 
-  def name = data.fetch("name")
+  def full_name = data.fetch("name")
   def headline = data.fetch("headline")
   def description = data.fetch("description")
   def email = data.fetch("email")
@@ -21,7 +21,7 @@ module Profile
     {
       "@context" => "https://schema.org",
       "@type" => "Person",
-      "name" => name,
+      "name" => full_name,
       "url" => "https://austn.net",
       "jobTitle" => headline,
       "email" => email,

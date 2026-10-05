@@ -10,7 +10,7 @@ class ResumePdf
   ACCENT = "1A7F45".freeze
   MUTED = "555555".freeze
 
-  def initialize(resume, name: Profile.name)
+  def initialize(resume, name: Profile.full_name)
     @resume = resume
     @name = name
   end
@@ -41,8 +41,12 @@ class ResumePdf
     pdf.text @name, size: 20, style: :bold
     pdf.text @resume.title, size: 11, color: MUTED
     pdf.move_down 4
-    contact = [ @resume.location, @resume.email, *@resume.links.map { |l| l["url"].delete_prefix("https://") } ]
-    pdf.text contact.join("  ·  "), size: 9, color: MUTED
+    contact = [
+      esc(@resume.location),
+      %(<link href="mailto:#{esc(@resume.email)}">#{esc(@resume.email)}</link>),
+      *@resume.links.map { |l| %(<link href="#{esc(l["url"])}">#{esc(l["url"].delete_prefix("https://"))}</link>) }
+    ]
+    pdf.text contact.join("  ·  "), size: 9, color: MUTED, inline_format: true
     pdf.move_down 8
   end
 
@@ -55,7 +59,12 @@ class ResumePdf
     yield
   end
 
+  # Roughly a job header plus two bullet lines. Starting a job lower than this
+  # would leave its header stranded at the bottom of the page.
+  MIN_SPACE_FOR_JOB = 90
+
   def job(pdf, job)
+    pdf.start_new_page if pdf.cursor < MIN_SPACE_FOR_JOB
     pdf.text "<b>#{esc(job["company"])}</b>  ·  #{esc(job["title"])}", inline_format: true, size: 10.5
     pdf.text "#{esc(job["dates"])}  ·  #{esc(job["location"])}", size: 8.5, color: MUTED
     pdf.text esc(job["note"]), size: 8.5, style: :italic, color: MUTED if job["note"]
