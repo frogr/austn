@@ -67,3 +67,4 @@ env/
 local_secret.txt
 .env
 .env.development
+dump.rdb

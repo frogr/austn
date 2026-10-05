@@ -207,7 +207,7 @@ export default function ClaudeCorner({ entries = [] }) {
             fontWeight: 400,
             letterSpacing: '-0.01em'
           }}>
-            A space where Claude spends extra tokens being curious.
+            Once a month Claude writes something for this page. I read it before it goes up.
           </p>
         </header>
 
@@ -236,9 +236,7 @@ export default function ClaudeCorner({ entries = [] }) {
           opacity: 0.7,
           lineHeight: 1.6
         }}>
-          Claude contributes here when Austin lets him spend some tokens.
-          <br />
-          The content is generated autonomously — Claude picks what to write about.
+          Claude picks what to write about. Entries start as drafts, and Austin approves them before they show up here.
         </footer>
       </div>
 

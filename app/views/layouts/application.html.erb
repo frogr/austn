@@ -1,638 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <%# Layout for the interactive pages (pitch checker, MIDI studio, Claude Corner,
+      the GPU tools when they're online) and admin. They need the app's JS and the
+      older Tailwind styles. The public content pages use layouts/site. %>
   <head>
-    <title><%= content_for(:title) || "Austn" %></title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <%# SEO Meta Description %>
-    <% default_description = "Austin French is a senior backend engineer with 6+ years building scalable Rails apps and AI-powered products. Explore free AI tools, projects, and writing." %>
-    <meta name="description" content="<%= content_for?(:meta_description) ? content_for(:meta_description) : default_description %>">
-
-    <%# Canonical URL %>
-    <link rel="canonical" href="<%= content_for?(:canonical_override) ? content_for(:canonical_override) : request.original_url %>">
-
-    <%# Open Graph Tags %>
-    <% if content_for?(:og_tags) %>
-      <%= yield :og_tags %>
-    <% end %>
-    <meta property="og:title" content="<%= content_for?(:title) ? content_for(:title) : 'Austn' %>">
-    <meta property="og:description" content="<%= content_for?(:meta_description) ? content_for(:meta_description) : default_description %>">
+    <% title = content_for?(:title) ? "#{content_for(:title)} · Austin French" : "Austin French · #{Profile.headline}" %>
+    <% description = content_for?(:meta_description) ? content_for(:meta_description) : Profile.description %>
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>">
+    <link rel="canonical" href="https://austn.net<%= request.path %>">
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="<%= description %>">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="<%= content_for?(:canonical_override) ? content_for(:canonical_override) : request.original_url %>">
-    <meta property="og:site_name" content="Austin French - austn.net">
-    <meta property="og:image" content="<%= request.base_url %>/icon.png">
-
-    <%# Twitter Card Tags %>
+    <meta property="og:url" content="https://austn.net<%= request.path %>">
+    <meta property="og:site_name" content="Austin French">
+    <meta property="og:image" content="https://austn.net/og.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= content_for?(:title) ? content_for(:title) : 'Austn' %>">
-    <meta name="twitter:description" content="<%= content_for?(:meta_description) ? content_for(:meta_description) : default_description %>">
-    <meta name="twitter:image" content="<%= request.base_url %>/icon.png">
-
-    <%# JSON-LD Structured Data %>
-    <% if content_for?(:json_ld) %>
-      <%= yield :json_ld %>
-    <% else %>
-      <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@graph": [
-            {
-              "@type": "Person",
-              "name": "Austin French",
-              "url": "https://austn.net",
-              "jobTitle": "Senior Backend Engineer",
-              "email": "hi@austn.net",
-              "sameAs": [
-                "https://github.com/frogr",
-                "https://linkedin.com/in/austindanielfrench"
-              ],
-              "knowsAbout": ["Ruby on Rails", "Backend Engineering", "AI/ML Integration", "PostgreSQL", "React", "Local LLMs"]
-            },
-            {
-              "@type": "WebSite",
-              "name": "Austin French - Software Engineer",
-              "url": "https://austn.net",
-              "description": "Portfolio and AI tools by Austin French, senior backend engineer"
-            }
-          ]
-        }
-      </script>
-    <% end %>
+    <meta name="twitter:image" content="https://austn.net/og.png">
+    <meta name="robots" content="<%= request.path.start_with?("/admin") ? "noindex" : "index,follow" %>">
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    <%# Include stylesheets in the correct order %>
     <%= javascript_include_tag esbuild_asset_path("application.js"), type: "module", defer: true %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-    
-    <%# Make sure application.css is loaded AFTER tailwind to apply our specific styles %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    
-    <%# Include theme stylesheets %>
     <%= stylesheet_link_tag "theme", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "code-theme", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "game_card_glass", "data-turbo-track": "reload" %>
+
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background: #0e100f;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .app-header { border-bottom: 1px solid #232825; position: relative; z-index: 100; }
+      .app-header-inner {
+        max-width: 64rem; margin: 0 auto; padding: 1.25rem 1.5rem;
+        display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+      }
+      .app-wordmark { color: #e6e9e6; font-weight: 600; text-decoration: none; }
+      .app-wordmark:hover { color: #4ade80; }
+      .app-nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+      .app-nav a { color: #9aa39d; text-decoration: none; font-size: 0.95rem; padding: 0.35rem 0; }
+      .app-nav a:hover, .app-nav a[aria-current="page"] { color: #e6e9e6; box-shadow: inset 0 -2px 0 #4ade80; }
+      .app-main { position: relative; z-index: 1; min-height: 80vh; }
+    </style>
   </head>
 
   <body>
-    <!-- Global background layer for all pages -->
-    <div class="site-bg" aria-hidden="true"></div>
-    <!-- Dark mode only; theme provider removed -->
-    
-    <!-- Google Fonts: Inter for modern typography & Material Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Load Google Fonts asynchronously to avoid render blocking; limit to used weights. -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap"></noscript>
-    <!-- Material Icons async as well -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></noscript>
-    
-    <style>
-      /* Base reset */
-      body {
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-        overflow-x: hidden;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      /* Global background (unified across all routes) */
-      .site-bg {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        background-color: var(--bg-primary);
-        background-image: var(--noise-pattern);
-        background-size: var(--noise-size) var(--noise-size);
-        background-repeat: repeat;
-        background-attachment: fixed;
-      }
-      .site-bg::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        background: none;
-        filter: none;
-      }
-
-      /* Minimal top nav */
-      .site-header { background: transparent; position: relative; z-index: 100; }
-
-      .navbar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        padding: 1rem;
-        position: relative;
-      }
-
-      .nav-brand {
-        display: none;
-        color: var(--text-primary);
-        font-weight: 900;
-        font-size: 1.25rem;
-        text-decoration: none;
-        letter-spacing: -0.02em;
-      }
-
-      .nav-brand:hover { color: var(--accent-color); }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem 1rem;
-      }
-
-      .nav-link {
-        color: var(--text-secondary);
-        text-decoration: none;
-        padding: 0.25rem 0.4rem;
-        border-radius: 0.4rem;
-        transition: color 150ms ease, background 150ms ease;
-        position: relative;
-        font-weight: 600;
-      }
-
-      .nav-link:hover { color: var(--text-primary); }
-
-      .nav-link::after {
-        content: '';
-        position: absolute;
-        left: 0.2rem;
-        right: 0.2rem;
-        bottom: -2px;
-        height: 2px;
-        background: transparent;
-        border-radius: 2px;
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 200ms ease;
-      }
-
-      .nav-link:hover::after { transform: scaleX(1); background: var(--glass-border); }
-      .nav-link.active { color: var(--accent-color); }
-      .nav-link.active::after { background: var(--accent-color); transform: scaleX(1); }
-
-      /* AI Tools dropdown */
-      .nav-dropdown {
-        position: relative;
-        display: inline-flex;
-      }
-
-      .nav-dropdown-toggle {
-        color: var(--text-secondary);
-        text-decoration: none;
-        padding: 0.25rem 0.4rem;
-        border-radius: 0.4rem;
-        transition: color 150ms ease, background 150ms ease;
-        font-weight: 600;
-        cursor: pointer;
-        background: none;
-        border: none;
-        font-size: inherit;
-        font-family: inherit;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        position: relative;
-      }
-
-      .nav-dropdown-toggle:hover { color: var(--text-primary); }
-      .nav-dropdown-toggle.active { color: var(--accent-color); }
-
-      .nav-dropdown-toggle::after {
-        content: '';
-        position: absolute;
-        left: 0.2rem;
-        right: 0.2rem;
-        bottom: -2px;
-        height: 2px;
-        background: transparent;
-        border-radius: 2px;
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 200ms ease;
-      }
-
-      .nav-dropdown-toggle:hover::after { transform: scaleX(1); background: var(--glass-border); }
-      .nav-dropdown-toggle.active::after { background: var(--accent-color); transform: scaleX(1); }
-
-      .nav-dropdown-arrow {
-        font-size: 0.6em;
-        transition: transform 200ms ease;
-      }
-
-      .nav-dropdown.open .nav-dropdown-arrow { transform: rotate(180deg); }
-
-      .nav-dropdown-menu {
-        display: none;
-        position: absolute;
-        top: calc(100% + 0.5rem);
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(22, 22, 35, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 0.75rem;
-        padding: 0.5rem;
-        min-width: 180px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        z-index: 200;
-      }
-
-      .nav-dropdown.open .nav-dropdown-menu { display: block; }
-
-      .nav-dropdown-item {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.5rem 0.75rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        border-radius: 0.4rem;
-        transition: background 150ms ease, color 150ms ease;
-        font-weight: 500;
-        font-size: 0.9rem;
-        white-space: nowrap;
-      }
-
-      .nav-dropdown-item:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--text-primary);
-      }
-
-      .nav-dropdown-item.active {
-        color: var(--accent-color);
-        background: rgba(29, 185, 84, 0.1);
-      }
-
-      .nav-dropdown-item .material-icons { font-size: 1.1rem; opacity: 0.7; }
-
-      .nav-dropdown-item-disabled {
-        opacity: 0.45;
-        cursor: default;
-        pointer-events: none;
-      }
-
-      .mobile-nav-sublink-disabled {
-        opacity: 0.45;
-        cursor: default;
-        pointer-events: none;
-      }
-
-      .coming-soon-badge {
-        margin-left: auto;
-        font-size: 0.65rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 0.15rem 0.45rem;
-        border-radius: 0.3rem;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        color: var(--text-muted);
-        white-space: nowrap;
-      }
-
-      /* Hamburger menu for mobile */
-      .hamburger-btn {
-        display: none;
-        background: none;
-        border: none;
-        color: var(--text-primary);
-        cursor: pointer;
-        padding: 0.5rem;
-        z-index: 101;
-      }
-
-      .hamburger-btn .material-icons { font-size: 1.75rem; }
-
-      .mobile-nav-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 99;
-      }
-
-      .mobile-nav-panel {
-        display: none;
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 280px;
-        max-width: 80vw;
-        background: rgba(18, 18, 25, 0.98);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border-left: 1px solid rgba(255, 255, 255, 0.08);
-        z-index: 100;
-        padding: 1rem;
-        overflow-y: auto;
-        transform: translateX(100%);
-        transition: transform 300ms ease;
-      }
-
-      .mobile-nav-panel.open { transform: translateX(0); }
-
-      .mobile-nav-close {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 1rem;
-      }
-
-      .mobile-nav-close button {
-        background: none;
-        border: none;
-        color: var(--text-primary);
-        cursor: pointer;
-        padding: 0.25rem;
-      }
-
-      .mobile-nav-link {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 1rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: background 150ms ease, color 150ms ease;
-      }
-
-      .mobile-nav-link:hover { background: rgba(255, 255, 255, 0.06); color: var(--text-primary); }
-      .mobile-nav-link.active { color: var(--accent-color); }
-
-      .mobile-nav-divider {
-        height: 1px;
-        background: rgba(255, 255, 255, 0.08);
-        margin: 0.75rem 0;
-      }
-
-      .mobile-nav-section-title {
-        padding: 0.5rem 1rem 0.25rem;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
-      }
-
-      .mobile-nav-sublink {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.55rem 1rem 0.55rem 1.25rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        border-radius: 0.4rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-        transition: background 150ms ease, color 150ms ease;
-      }
-
-      .mobile-nav-sublink:hover { background: rgba(255, 255, 255, 0.06); color: var(--text-primary); }
-      .mobile-nav-sublink.active { color: var(--accent-color); }
-      .mobile-nav-sublink .material-icons { font-size: 1.1rem; opacity: 0.7; }
-
-      /* Claude Corner nav link */
-      .nav-link.claude-corner-link {
-        color: #E8734A;
-        font-weight: 700;
-        text-shadow: 0 0 12px rgba(232, 115, 74, 0.15);
-      }
-      .nav-link.claude-corner-link:hover { color: #f0a070; }
-      .nav-link.claude-corner-link.active { color: #E8734A; }
-      .nav-link.claude-corner-link::after { background: #E8734A; }
-      .nav-link.claude-corner-link.active::after { background: #E8734A; }
-
-      .mobile-nav-link.claude-corner-link { color: #E8734A; font-weight: 700; }
-      .mobile-nav-link.claude-corner-link:hover { color: #f0a070; }
-      .mobile-nav-link.claude-corner-link.active { color: #E8734A; }
-
-      @media (max-width: 767px) {
-        .navbar { justify-content: space-between; }
-        .nav-brand { display: block; }
-        .nav-links { display: none; }
-        .hamburger-btn { display: block; }
-        .mobile-nav-overlay.open { display: block; }
-        .mobile-nav-panel { display: block; }
-      }
-    </style>
-
-    <!-- Top Navigation -->
-    <header class="site-header">
-      <div class="navbar">
-        <a href="/" class="nav-brand" aria-label="Home">austn</a>
-        <nav class="nav-links" aria-label="Main navigation">
-          <% current_path = request.path %>
-          <% ai_tool_paths = ['/chat', '/images', '/music', '/tts', '/rembg', '/vtracer', '/stems', '/3d', '/midi', '/endless', '/pitch'] %>
-          <% ai_tool_active = ai_tool_paths.any? { |p| current_path.start_with?(p) } %>
-
-          <%= link_to "Home", "/", class: "nav-link #{current_path == '/' ? 'active' : ''}", aria: { label: "Go to homepage" } %>
-          <%= link_to "Projects", "/projects", class: "nav-link #{current_path.start_with?('/projects') ? 'active' : ''}", aria: { label: "View projects" } %>
-
-          <div class="nav-dropdown" id="aiToolsDropdown">
-            <button class="nav-dropdown-toggle <%= ai_tool_active ? 'active' : '' %>"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                    aria-label="AI Tools menu">
-              AI Tools <span class="nav-dropdown-arrow" aria-hidden="true">&#9660;</span>
-            </button>
-            <div class="nav-dropdown-menu" role="menu">
-              <% ai_tools = [
-                ['Chat with AI', '/chat', 'chat'],
-                ['Generate Images', '/images', 'image'],
-                ['Generate Music', '/music', 'library_music'],
-                ['Text to Speech', '/tts', 'record_voice_over'],
-                ['Remove Background', '/rembg', 'auto_fix_high'],
-                ['Image to SVG', '/vtracer', 'draw'],
-                ['Split Audio Stems', '/stems', 'graphic_eq'],
-                ['Image to 3D', '/3d', 'view_in_ar'],
-                ['AI MIDI Keyboard', '/midi', 'music_note'],
-                ['Endless Content', '/endless', 'all_inclusive'],
-                ['Pitch Checker', '/pitch', 'tune']
-              ] %>
-              <% ai_tools.each do |label, path, icon, coming_soon| %>
-                <% if coming_soon %>
-                  <span class="nav-dropdown-item nav-dropdown-item-disabled"
-                     role="menuitem"
-                     aria-label="<%= label %> - Coming Soon"
-                     aria-disabled="true">
-                    <span class="material-icons" aria-hidden="true"><%= icon %></span>
-                    <%= label %>
-                    <span class="coming-soon-badge">Coming Soon</span>
-                  </span>
-                <% else %>
-                  <a href="<%= path %>"
-                     class="nav-dropdown-item <%= current_path.start_with?(path) ? 'active' : '' %>"
-                     role="menuitem"
-                     aria-label="<%= label %>">
-                    <span class="material-icons" aria-hidden="true"><%= icon %></span>
-                    <%= label %>
-                  </a>
-                <% end %>
-              <% end %>
-            </div>
-          </div>
-
-          <%= link_to "Blog", "/blog", class: "nav-link #{current_path.start_with?('/blog') ? 'active' : ''}", aria: { label: "Read blog posts" } %>
-          <%= link_to "Book", "/book", class: "nav-link #{current_path.start_with?('/book') ? 'active' : ''}", aria: { label: "Book a meeting" } %>
-          <%= link_to "Resume", "/resume", class: "nav-link #{current_path.start_with?('/resume') ? 'active' : ''}", aria: { label: "View resume" } %>
-          <%= link_to "Claude Corner", "/claude", class: "nav-link claude-corner-link #{current_path.start_with?('/claude') ? 'active' : ''}", aria: { label: "Visit Claude Corner" } %>
+    <header class="app-header">
+      <div class="app-header-inner">
+        <a class="app-wordmark" href="/">austin french</a>
+        <nav class="app-nav" aria-label="Main">
+          <%= link_to "Work", work_index_path %>
+          <%= link_to "Writing", blog_path %>
+          <%= link_to "Playground", playground_path, "aria-current": (request.path.start_with?("/admin") ? nil : "page") %>
+          <%= link_to "Resume", resume_path %>
+          <% if request.path.start_with?("/admin") %><%= link_to "Admin", admin_root_path, "aria-current": "page" %><% end %>
         </nav>
-
-        <%# Mobile hamburger button %>
-        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open navigation menu">
-          <span class="material-icons" aria-hidden="true">menu</span>
-        </button>
       </div>
     </header>
 
-    <%# Mobile navigation panel %>
-    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
-    <div class="mobile-nav-panel" id="mobileNavPanel" role="dialog" aria-label="Navigation menu">
-      <div class="mobile-nav-close">
-        <button id="mobileNavClose" aria-label="Close navigation menu">
-          <span class="material-icons" aria-hidden="true">close</span>
-        </button>
-      </div>
-
-      <% current_path = request.path %>
-      <%= link_to "Home", "/", class: "mobile-nav-link #{current_path == '/' ? 'active' : ''}", aria: { label: "Go to homepage" } %>
-      <%= link_to "Projects", "/projects", class: "mobile-nav-link #{current_path.start_with?('/projects') ? 'active' : ''}", aria: { label: "View projects" } %>
-      <%= link_to "Blog", "/blog", class: "mobile-nav-link #{current_path.start_with?('/blog') ? 'active' : ''}", aria: { label: "Read blog posts" } %>
-      <%= link_to "Book", "/book", class: "mobile-nav-link #{current_path.start_with?('/book') ? 'active' : ''}", aria: { label: "Book a meeting" } %>
-      <%= link_to "Resume", "/resume", class: "mobile-nav-link #{current_path.start_with?('/resume') ? 'active' : ''}", aria: { label: "View resume" } %>
-      <%= link_to "Claude Corner", "/claude", class: "mobile-nav-link claude-corner-link #{current_path.start_with?('/claude') ? 'active' : ''}", aria: { label: "Visit Claude Corner" } %>
-
-      <div class="mobile-nav-divider"></div>
-      <div class="mobile-nav-section-title">AI Tools</div>
-      <% ai_tools.each do |label, path, icon, coming_soon| %>
-        <% if coming_soon %>
-          <span class="mobile-nav-sublink mobile-nav-sublink-disabled"
-             aria-label="<%= label %> - Coming Soon"
-             aria-disabled="true">
-            <span class="material-icons" aria-hidden="true"><%= icon %></span>
-            <%= label %>
-            <span class="coming-soon-badge">Coming Soon</span>
-          </span>
-        <% else %>
-          <a href="<%= path %>"
-             class="mobile-nav-sublink <%= current_path.start_with?(path) ? 'active' : '' %>"
-             aria-label="<%= label %>">
-            <span class="material-icons" aria-hidden="true"><%= icon %></span>
-            <%= label %>
-          </a>
-        <% end %>
-      <% end %>
-    </div>
-
-    <script>
-      // Use event delegation so listeners survive Turbo navigations
-      (function() {
-        // Guard against duplicate listeners when Turbo re-executes this script
-        if (window._navDropdownInitialized) return;
-        window._navDropdownInitialized = true;
-
-        // Dropdown toggle via delegation
-        document.addEventListener('click', function(e) {
-          var toggle = e.target.closest('.nav-dropdown-toggle');
-          var dropdown = document.getElementById('aiToolsDropdown');
-          if (!dropdown) return;
-
-          if (toggle && dropdown.contains(toggle)) {
-            e.stopPropagation();
-            var isOpen = dropdown.classList.toggle('open');
-            toggle.setAttribute('aria-expanded', isOpen);
-            return;
-          }
-
-          // Close dropdown when clicking outside
-          if (!dropdown.contains(e.target)) {
-            dropdown.classList.remove('open');
-            var btn = dropdown.querySelector('.nav-dropdown-toggle');
-            if (btn) btn.setAttribute('aria-expanded', 'false');
-          }
-        });
-
-        // Keyboard: Escape to close dropdown
-        document.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') {
-            var dropdown = document.getElementById('aiToolsDropdown');
-            if (dropdown && dropdown.classList.contains('open')) {
-              dropdown.classList.remove('open');
-              var btn = dropdown.querySelector('.nav-dropdown-toggle');
-              if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.focus(); }
-            }
-            // Also close mobile nav on Escape
-            closeMobileNav();
-          }
-        });
-
-        // Mobile nav
-        function openMobileNav() {
-          var overlay = document.getElementById('mobileNavOverlay');
-          var panel = document.getElementById('mobileNavPanel');
-          if (overlay) overlay.classList.add('open');
-          if (panel) panel.classList.add('open');
-          document.body.style.overflow = 'hidden';
-        }
-        function closeMobileNav() {
-          var overlay = document.getElementById('mobileNavOverlay');
-          var panel = document.getElementById('mobileNavPanel');
-          if (overlay) overlay.classList.remove('open');
-          if (panel) panel.classList.remove('open');
-          document.body.style.overflow = '';
-        }
-
-        document.addEventListener('click', function(e) {
-          if (e.target.closest('#hamburgerBtn')) { openMobileNav(); return; }
-          if (e.target.closest('#mobileNavClose')) { closeMobileNav(); return; }
-          if (e.target.id === 'mobileNavOverlay') { closeMobileNav(); return; }
-        });
-
-        // Close mobile nav and dropdown on Turbo navigation
-        document.addEventListener('turbo:before-cache', function() {
-          closeMobileNav();
-          var dropdown = document.getElementById('aiToolsDropdown');
-          if (dropdown) {
-            dropdown.classList.remove('open');
-            var btn = dropdown.querySelector('.nav-dropdown-toggle');
-            if (btn) btn.setAttribute('aria-expanded', 'false');
-          }
-        });
-      })();
-    </script>
-
-    <!-- Content area -->
-    <main class="min-h-screen code-theme" style="position: relative; z-index: 1;">
+    <main class="app-main code-theme">
       <%= yield %>
     </main>
-
   </body>
 </html>

@@ -6,8 +6,6 @@
 /* Import core design system first */
 @import "design-system.css";
 @import "theme.css";
-@import "bento-system.css";
-@import "bento-grid.css";
 
 /* Directly include glass styles here to ensure they're loaded */
 /* Glass Morphism Styles */

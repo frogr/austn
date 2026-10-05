@@ -2,42 +2,18 @@ import "@hotwired/turbo-rails"
 import "./controllers"
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { ThemeProvider } from './components/Theme'
 
 // Lazy-load components to keep the main bundle small.
 // Each component becomes its own chunk and only loads when present in the DOM.
 const COMPONENT_LOADERS = {
-  Sidebar: () => import('./components/Sidebar'),
-  WorkExperience: () => import('./components/WorkExperience'),
-  MarkdownRenderer: () => import('./components/MarkdownRenderer'),
-  MarkDownRenderer: () => import('./components/markdown/MarkDownRenderer'),
-  GameCard: () => import('./components/GameCard'),
-  GamesGrid: () => import('./components/GamesGrid'),
-  AboutMe: () => import('./components/AboutMe'),
-  BentoHome: () => import('./components/BentoHome'),
-  Projects: () => import('./components/Projects'),
-  ProjectDetail: () => import('./components/ProjectDetail'),
-  ThemeLayout: () => import('./components/DarkModeLayout'),
-  DarkModeLayout: () => import('./components/DarkModeLayout'),
   Chat: () => import('./components/Chat'),
   DAW: () => import('./components/daw/DAW'),
-  EndlessStory: () => import('./components/EndlessStory'),
-  Resume: () => import('./components/Resume'),
   ClaudeCorner: () => import('./components/ClaudeCorner'),
   ReviewApp: () => import('./components/review/ReviewApp')
 }
 
 // Store our roots so we can track which elements have been initialized
 const roots = new Map()
-
-// Custom event to communicate between components
-window.sidebarEvents = {
-  TOGGLE: 'sidebar:toggle',
-  COLLAPSED: 'sidebar:collapsed',
-  EXPANDED: 'sidebar:expanded'
-};
-
-// No need for margin adjustments with grid layout
 
 document.addEventListener("turbo:load", () => {
     const reactComponents = document.querySelectorAll("[data-react-component]")
@@ -73,17 +49,11 @@ document.addEventListener("turbo:load", () => {
             roots.set(component, root)
           }
 
-          const needsThemeContext = ['BentoHome', 'Projects', 'ProjectDetail', 'AboutMe', 'WorkExperience', 'GameCard', 'Sidebar', 'DAW', 'Resume']
-          const element = needsThemeContext.includes(componentName)
-            ? <ThemeProvider><Component {...props} /></ThemeProvider>
-            : <Component {...props} />
-
-          roots.get(component).render(element)
+          roots.get(component).render(<Component {...props} />)
         }).catch(e => {
           console.error(`Failed to load component ${componentName}:`, e)
         })
-        
-        // No need for margin adjustments with grid layout
+
       } catch (e) {
         console.error(`Error rendering ${componentName}:`, e)
       }
