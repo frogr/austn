@@ -1,149 +1,62 @@
 ---
-title: How I Use Claude Code
-date: 2024-08-14
+title: "How I Use Claude Code"
+date: 2026-10-05
 slug: how-i-use-claude-code
+summary: "What my setup actually looks like after a year and a half: hooks, a status line, parallel sessions, and a pipeline with a person at the gates."
 ---
 
-# How I Use Claude Code
+I started using Claude Code in the beta, back when it was billed by API usage. One of the first things I built with it was a Three.js tool for planning Minecraft builds. I'd never touched Three.js, and we had it working in about an hour. Now it's open most of my day.
 
-I'm on the supermax ultra plan because the usage limits on the lower tiers felt a bit restrictive. Here's how I actually use Claude Code day-to-day.
+This is what my setup actually looks like. An earlier version of this post had config in it that doesn't exist, so everything below is copied from things I run.
 
-## Running Multiple Sessions
+## Hooks so I don't have to watch the terminal
 
-I typically have 2-3 Claude Code interfaces running at once. This isn't about being fancy—it just lets me work on different parts of a project without losing context. I'll use Opus 4.1 to write comprehensive prompts that Claude Code then breaks down into planning and execution phases. It's like having multiple focused assistants rather than one overwhelmed one.
+The thing that changed my day the most is small. I don't stare at a session waiting for it to finish. I built [claude-ding](https://github.com/frogr/claude-ding), which plays a sound when Claude finishes, needs my approval, or hits an error. It works through Claude Code's hooks, which live in `~/.claude/settings.json`:
 
-## The Playwright MCP
-
-The Playwright MCP has been genuinely useful for web development. Claude Code can take screenshots and click through pages autonomously, which means I can ask it to check if all my pages look consistent after a CSS change, and it'll actually do it—navigate to each page, take screenshots, click around, and report back. No manual clicking required.
-
-Here's a typical interaction:
-
-```
-Me: "Check if the navigation bar looks the same on all pages"
-
-Claude Code: 
-- Opens each route
-- Screenshots the nav area
-- Compares them
-- Tells me about any differences
-```
-
-It's particularly nice when you're tired and don't want to manually check every single page after a refactor.
-
-## Desktop Organization
-
-My desktop was a disaster. PDFs everywhere, no system, duplicates all over. I asked Claude Code to organize it, and now I have:
-
-```
-Desktop/
-├── Documents/
-│   ├── PDFs/
-│   │   ├── Receipts/
-│   │   ├── Manuals/
-│   │   └── Articles/
-│   ├── Projects/
-│   └── Archive/
-├── Screenshots/
-└── Quick Access/
+```json
+{
+  "hooks": {
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "claude-ding play task-complete" }] }
+    ],
+    "Notification": [
+      { "matcher": "permission_prompt", "hooks": [{ "type": "command", "command": "claude-ding play need-input" }] }
+    ],
+    "PostToolUseFailure": [
+      { "hooks": [{ "type": "command", "command": "claude-ding play error" }] }
+    ]
+  }
+}
 ```
 
-The key thing is that the system makes sense, so I actually maintain it. Claude Code also renamed files consistently and dealt with all the duplicates. It even left a README explaining the structure, which was thoughtful.
+Each hook is just a command that runs on an event. That's enough to go do something else and come back when it actually needs me.
 
-## Obsidian Notes
+## A status line that tells me what I need
 
-Same story with my Obsidian vault—complete chaos. Notes everywhere, broken links, no consistent tagging. Now it looks like:
+My status line shows the directory, the git branch and whether it's clean, the model, how much of the context window is used, and how close I am to the 5-hour and weekly limits. It's a small script that Claude Code runs and pipes session info into, and whatever it prints is the status line. When the context is nearly full, I wrap up and start a fresh session instead of letting it start forgetting things.
 
-```
-Notes/
-├── Areas/
-│   ├── Work/
-│   ├── Personal/
-│   └── Learning/
-├── Projects/
-│   ├── Active/
-│   └── Archived/
-├── Daily/
-│   └── 2024/
-└── Resources/
-    ├── Templates/
-    └── References/
-```
+## Several sessions at once
 
-Beyond just moving files around, Claude Code fixed all the broken internal links and added consistent frontmatter. The vault actually works as a connected system now instead of a pile of isolated markdown files.
+At Tenex I was the only engineer on three client projects, so one session at a time wasn't going to work. I built a small tool to run several Claude Code sessions in parallel, each on its own task, and a Slack-to-PR flow that turns a bug report into a pull request I can review.
 
-## Status Line Configuration
+## Product doc to pull request, with gates
 
-The status line is one of those features you don't think about until you set it up properly. Mine shows:
+The bigger experiment was a pipeline built from Claude Code skills that goes from a product doc to a pull request:
 
-```bash
-status_line: "{cwd} | {branch} | {elapsed} | {memory}"
-```
+1. Write a plan from the doc.
+2. Grade the plan, and send it back if it's weak.
+3. Turn it into tickets.
+4. Plan each ticket, and grade again.
+5. Build it and open a PR.
 
-Simple, but I always know where I am, what branch I'm on, how long I've been working, and if memory is becoming an issue. The status line changes based on context too—it'll show test results when running tests, package operations during installs, that sort of thing.
+A person signs off at the steps that matter. The grading loops are there to catch bad plans before any code gets written.
 
-## Using Subagents
+## From my phone
 
-Subagents are specialized versions of Claude Code that handle specific tasks. The main ones I use:
+I also run an agent in a Discord server that can work on my dev machine. I can send it a voice note with an idea and look at the PR later. [I wrote one post entirely that way.](/blog/hermes-agent-discord-ai-assistant)
 
-**General-purpose agent**: Great for research. If I need to understand how WebSockets are implemented in the codebase, I'll have this agent search around and compile examples rather than grep-ing myself.
+## What I do differently now
 
-**Status line agent**: Sets up your Claude Code environment. Much easier than editing config files manually.
+When I rebuilt this site, a code review turned up bugs that had gone in while I was moving fast: a retry setting that silently stopped working on Rails 8, a lock that could expire mid-job, and a "fix" for a race condition that didn't fix it. The code looked right and the PRs looked clean. [I wrote up what broke.](/blog/building-an-ai-native-web-platform)
 
-**Output style agent**: Adjusts how Claude Code formats its responses. I have mine set to be concise with code examples rather than lengthy explanations.
-
-The nice thing is you can launch multiple agents in parallel. While one is searching the codebase, another can be running tests.
-
-## Other Useful Features
-
-### Hooks
-You can set up commands to run automatically on events. For example:
-```bash
-post_save_hook: "prettier --write {file}"
-```
-
-### CLAUDE.md
-This file acts as project memory. I put coding standards, common commands, and project-specific gotchas in there. Claude Code reads it and remembers these preferences across sessions.
-
-### TodoWrite
-Claude Code maintains its own task list. It's surprisingly good at breaking down complex tasks and tracking what's done. You'll see it updating the list as it works through things.
-
-### Smart File Operations
-Claude Code always reads files before editing them, preserves formatting, and can batch operations across multiple files. It's cautious about destructive operations, which I appreciate.
-
-## Workflow Tips
-
-Start with a planning prompt when tackling something complex. Let Claude Code think through the approach before diving into code.
-
-Run complementary tasks in different interfaces. I'll have one working on backend changes while another handles frontend updates.
-
-Set up validation checks. I always ask Claude Code to run linting and tests after changes. Catches issues early.
-
-Start simple and iterate. Get the basic version working first, then add error handling, edge cases, and polish.
-
-## Common Mistakes to Avoid
-
-Don't dump everything into one massive prompt. Break it down into focused requests.
-
-Let Claude Code use its todo list for complex tasks. It helps track progress and ensures nothing gets missed.
-
-Use subagents for specialized work. They're better at their specific domains than the general interface.
-
-Automate repetitive tasks with hooks instead of asking Claude Code to do them manually each time.
-
-## Final Thoughts
-
-Claude Code works best when you think of it as a collaborator rather than a command executor. Give it context, let it plan, and leverage its ability to handle multi-step workflows autonomously. The productivity gains come not from it writing code faster, but from it handling entire workflows while you focus on the bigger picture.
-
----
-
-## Quick Reference
-
-| Feature                 | What It Does                      | Documentation                                                                       |
-| ----------------------- | --------------------------------- | ----------------------------------------------------------------------------------- |
-| **Parallel Interfaces** | Run multiple Claude Code sessions | [Common Workflows](https://docs.anthropic.com/en/docs/claude-code/common-workflows) |
-| **Playwright MCP**      | Browser automation and testing    | [MCP](https://docs.anthropic.com/en/docs/claude-code/mcp)                           |
-| **Subagents**           | Specialized task handlers         | [CLI Reference](https://docs.anthropic.com/en/docs/claude-code/cli-reference)       |
-| **Status Line**         | Customizable environment display  | [Settings](https://docs.anthropic.com/en/docs/claude-code/settings)                 |
-| **TodoWrite**           | Task management                   | [Interactive Mode](https://docs.anthropic.com/en/docs/claude-code/interactive-mode) |
-| **CLAUDE.md**           | Project memory                    | [Memory](https://docs.anthropic.com/en/docs/claude-code/memory)                     |
-| **Hooks**               | Event automation                  | [Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)                       |
+So I keep CI green before I merge, I read the diff, and I give the agent tests that can actually fail.
