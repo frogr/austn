@@ -2,138 +2,39 @@ require "net/http"
 require "json"
 require "uri"
 
+# Chat completions from LM Studio on the GPU box. Message content is never
+# logged.
 class ChatService
-  DEFAULT_MODEL = "qwen/qwen2.5-coder-14b"
+  DEFAULT_MODEL = "qwen/qwen2.5-coder-14b".freeze
+  SYSTEM_PROMPT = "You are a helpful AI assistant. Be concise, friendly, and informative.".freeze
+  ENDPOINT = "/v1/chat/completions".freeze
 
   def initialize
     @base_url = Gpu::Backend.url!(:lmstudio)
-    @endpoint = "/v1/chat/completions"
   end
 
-  def stream_completion(messages, system_prompt, &block)
-    full_messages = build_messages(messages, system_prompt)
-
-    uri = URI.parse("#{@base_url}#{@endpoint}")
-
-
-    # Simple, direct HTTP request without extra buffering
+  # @param messages [Array<Hash>] user and assistant turns, already validated by ChatRequest
+  # @return [String] the assistant's reply
+  def completion(messages)
+    uri = URI.parse("#{@base_url}#{ENDPOINT}")
     http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 120
+    http.use_ssl = uri.scheme == "https"
     http.open_timeout = 10
+    http.read_timeout = 300
 
     request = Net::HTTP::Post.new(uri.path)
     request["Content-Type"] = "application/json"
-    request["Accept"] = "text/event-stream"
-
-    request_body = {
+    request.body = {
       model: DEFAULT_MODEL,
-      messages: full_messages,
-      stream: true,
+      messages: [ { role: "system", content: SYSTEM_PROMPT }, *messages ],
+      stream: false,
       temperature: 0.7,
       max_tokens: 2000
-    }
+    }.to_json
 
-    request.body = request_body.to_json
-
-    # Direct streaming with block to avoid read_body being called twice
-    buffer = ""
-    http.request(request) do |response|
-      if response.code != "200"
-        yield({ error: "LMStudio returned #{response.code}" })
-        return
-      end
-
-      response.read_body do |chunk|
-        buffer += chunk
-
-        # Process complete lines immediately
-        while (line_end = buffer.index("\n"))
-          line = buffer[0..line_end].strip
-          buffer = buffer[(line_end + 1)..-1]
-
-          next if line.empty?
-
-          if line.start_with?("data: ")
-            data = line[6..]
-            next if data == "[DONE]"
-
-            begin
-              parsed = JSON.parse(data)
-              content = parsed.dig("choices", 0, "delta", "content")
-              yield({ content: content }) if content
-            rescue JSON::ParserError
-              # Skip non-JSON lines
-            end
-          end
-        end
-      end
-    end
-
-  rescue => e
-    Rails.logger.error "ChatService error: #{e.message}"
-    yield({ error: "Failed to connect to LMStudio: #{e.message}" })
-  end
-
-  def completion(messages, system_prompt)
-    full_messages = build_messages(messages, system_prompt)
-
-    uri = URI.parse("#{@base_url}#{@endpoint}")
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 300  # 5 minutes for completion
-    http.open_timeout = 10
-
-    request = Net::HTTP::Post.new(uri.path)
-    request["Content-Type"] = "application/json"
-
-    request_payload = {
-      model: DEFAULT_MODEL,
-      messages: full_messages,
-      stream: false,  # Explicitly set to false for non-streaming
-      temperature: 0.7,
-      max_tokens: 2000
-    }
-
-    Rails.logger.info "Sending request to LMStudio: #{uri}"
-    Rails.logger.info "Request payload: #{request_payload.to_json}"
-
-    request.body = request_payload.to_json
     response = Gpu.translating_network_errors { http.request(request) }
+    raise Gpu::Error, "LM Studio returned HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
 
-    Rails.logger.info "LMStudio responded with code: #{response.code}"
-
-    if response.code == "200"
-      parsed = JSON.parse(response.body)
-      content = parsed.dig("choices", 0, "message", "content")
-      Rails.logger.info "Successfully got response: #{content&.first(100)}..."
-      content
-    else
-      error_msg = "LMStudio returned #{response.code}: #{response.body}"
-      Rails.logger.error error_msg
-      raise error_msg
-    end
-  rescue => e
-    Rails.logger.error "ChatService completion error: #{e.message}"
-    raise
-  end
-
-  private
-
-  def build_messages(user_messages, system_prompt)
-    messages = []
-
-    # Add system prompt if provided
-    if system_prompt.present?
-      messages << { role: "system", content: system_prompt }
-    end
-
-    # Add user messages
-    user_messages.each do |msg|
-      messages << {
-        role: msg["role"] || msg[:role],
-        content: msg["content"] || msg[:content]
-      }
-    end
-
-    messages
+    JSON.parse(response.body).dig("choices", 0, "message", "content")
   end
 end

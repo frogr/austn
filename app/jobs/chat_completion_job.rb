@@ -3,10 +3,10 @@ class ChatCompletionJob < GpuJob
 
   RESULT_TTL = 30.minutes
 
-  def perform(messages, system_prompt, job_id)
+  def perform(job_id, messages)
     store("chat_job:#{job_id}:status", { status: "processing", started_at: Time.current })
 
-    content = ChatService.new.completion(messages, system_prompt)
+    content = ChatService.new.completion(messages)
 
     store("chat_job:#{job_id}", { status: "completed", content: content, completed_at: Time.current }, ttl: RESULT_TTL)
     store("chat_job:#{job_id}:status", { status: "completed" })
@@ -32,7 +32,7 @@ class ChatCompletionJob < GpuJob
   private
 
   def record_failure(public_error)
-    job_id = arguments.last
+    job_id = arguments.first
     failure = { status: "failed", failed_at: Time.current, **public_error.to_h }
     store("chat_job:#{job_id}", failure, ttl: FAILED_STATUS_TTL)
     store("chat_job:#{job_id}:status", failure, ttl: FAILED_STATUS_TTL)

@@ -56,6 +56,10 @@ class Rack::Attack
     req.ip if req.post? && req.path.match?(GPU_GENERATE_PATH)
   end
 
+  throttle("chat/ip", limit: 20, period: 1.hour) do |req|
+    req.ip if req.post? && req.path == "/chat/async"
+  end
+
   ### Throttle booking creation ###
   # Limit: 5 bookings per hour per IP
   throttle("bookings/create", limit: 5, period: 1.hour) do |req|
