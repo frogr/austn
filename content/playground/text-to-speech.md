@@ -5,6 +5,8 @@ order: 3
 kind: gpu
 model: Chatterbox, on its own Flask server
 legacy_path: /tts
+screenshot: /playground/text-to-speech.webp
+screenshot_caption: "The text to speech page when it was live."
 ---
 
 Paste text, pick a voice, and tune how it's delivered: an exaggeration control for how expressive it sounds, and a guidance weight for how closely it sticks to the voice. You could also upload a CSV and generate dozens of clips at once, and share any clip with a link.

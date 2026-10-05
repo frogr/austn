@@ -17,6 +17,13 @@
     <dl class="facts"><dt>model</dt><dd><%= @item.model %></dd></dl>
   <% end %>
 
+  <% if @item.screenshot %>
+    <figure class="figure">
+      <img src="<%= @item.screenshot %>" alt="<%= @item.screenshot_caption || @item.title %>" width="1280" loading="lazy">
+      <% if @item.screenshot_caption %><figcaption><%= @item.screenshot_caption %></figcaption><% end %>
+    </figure>
+  <% end %>
+
   <div class="prose">
     <%= markdown(@item.body) %>
   </div>

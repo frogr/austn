@@ -5,6 +5,8 @@ order: 4
 kind: gpu
 model: Demucs (htdemucs, htdemucs_ft) on ComfyUI
 legacy_path: /stems
+screenshot: /playground/stem-separation.webp
+screenshot_caption: "The stem separation page when it was live."
 ---
 
 Upload a song and get back four tracks: vocals, drums, bass, and everything else. Good for karaoke, remixes, or hearing what's buried in a mix.

@@ -5,6 +5,8 @@ order: 5
 kind: gpu
 model: rembg on ComfyUI (u2net family, ISNet)
 legacy_path: /rembg
+screenshot: /playground/background-removal.webp
+screenshot_caption: "The background removal page when it was live."
 ---
 
 Upload an image and get it back with the background removed, as a transparent PNG.
