@@ -22,6 +22,11 @@
     #   class: StoryGenerationJob
     #   queue: default
     #   description: "Generate next paragraph for Endless Story"
+    cleanup_expired_tts_shares:
+      cron: '0 3 * * *'  # Daily at 3am
+      class: CleanupExpiredTtsSharesJob
+      queue: low
+      description: "Delete expired TTS share links"
     cleanup_old_model3ds:
       cron: '0 */6 * * *'  # Every 6 hours
       class: CleanupOldModel3dsJob
