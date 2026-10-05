@@ -3,19 +3,10 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   selectSlot(event) {
     const button = event.currentTarget
-    const { availabilityId, startTime, endTime, date } = button.dataset.bookingSlotsParams
-      ? JSON.parse(button.dataset.bookingSlotsParams)
-      : {
-          availabilityId: button.dataset.bookingSlotsAvailabilityIdParam,
-          startTime: button.dataset.bookingSlotsStartTimeParam,
-          endTime: button.dataset.bookingSlotsEndTimeParam,
-          date: button.dataset.bookingSlotsDateParam
-        }
+    const { startTime, endTime, date } = event.params
 
-    // Update hidden fields
-    document.getElementById("booking_availability_id").value = availabilityId
+    // The server works out the end time and availability from the chosen slot
     document.getElementById("booking_start_time").value = startTime
-    document.getElementById("booking_end_time").value = endTime
     document.getElementById("booking_booked_date").value = date
 
     // Format display time

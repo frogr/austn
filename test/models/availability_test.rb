@@ -48,7 +48,7 @@ class AvailabilityTest < ActiveSupport::TestCase
       end_time: "16:00",
       slot_duration_minutes: 30
     )
-    slots = avail.time_slots
+    slots = avail.slots_on(avail.date)
     assert_equal 4, slots.length
   end
 
@@ -59,17 +59,28 @@ class AvailabilityTest < ActiveSupport::TestCase
       end_time: "12:00",
       slot_duration_minutes: 60
     )
-    slots = avail.time_slots
+    slots = avail.slots_on(avail.date)
     assert_equal 3, slots.length
   end
 
-  test "available_slots_for_date excludes booked slots" do
+  test "booked slots are not offered" do
     avail = availabilities(:today_afternoon)
-    # There's one confirmed booking at 22:00-22:30 UTC (14:00-14:30 PST)
-    available = avail.available_slots_for_date(avail.date)
-    start_times = available.map { |s| s[:start_time].utc.strftime("%H:%M") }
-    assert_not_includes start_times, "22:00"
-    assert_includes start_times, "22:30"
+    booked = bookings(:confirmed_booking).starts_at
+
+    start_times = BookingSchedule.new.open_slots_on(avail.date).map(&:starts_at)
+
+    assert_not_includes start_times, booked
+    assert_includes start_times, booked + 30.minutes
+  end
+
+  test "slots carry the availability's details" do
+    avail = availabilities(:next_week)
+
+    slot = avail.slots_on(avail.date).first
+
+    assert_equal avail.id, slot.availability_id
+    assert_equal 2, slot.capacity
+    assert_equal avail.date, slot.date
   end
 
   test "scope active returns only active availabilities" do

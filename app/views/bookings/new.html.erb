@@ -3,7 +3,7 @@
     <h1 class="font-black mb-2" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">
       Book a Time
     </h1>
-    <p style="color: var(--text-muted); font-size: 1rem;">Pick a date to see available time slots.</p>
+    <p style="color: var(--text-muted); font-size: 1rem;">Pick a date to see available time slots. Times are Eastern.</p>
   </div>
 
   <% if flash[:notice] %>
@@ -17,6 +17,11 @@
     </div>
   <% end %>
 
+  <% if @nothing_open %>
+    <div class="p-6 rounded-xl text-center" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px); color: var(--text-secondary);">
+      No open times right now. Email <%= mail_to "hi@austn.net", nil, style: "color: var(--accent-color);" %> and I'll find one.
+    </div>
+  <% else %>
   <div class="p-6 rounded-xl" style="background: var(--bg-glass); border: 1px solid var(--border-glass); backdrop-filter: blur(20px);">
     <div data-controller="booking-calendar" data-booking-calendar-available-dates-value="<%= @available_dates.map(&:to_s).to_json %>">
       <%# Month navigation %>
@@ -81,6 +86,8 @@
       </div>
     </div>
   </div>
+
+  <% end %>
 
   <%# Turbo Frame for slot picker and booking form %>
   <%= turbo_frame_tag "slot_picker" do %>

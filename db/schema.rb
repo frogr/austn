@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_05_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_05_130100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_120000) do
     t.index ["date"], name: "index_availabilities_on_date"
   end
 
+  create_table "availability_rules", force: :cascade do |t|
+    t.integer "weekday", null: false
+    t.time "start_time", null: false
+    t.time "end_time", null: false
+    t.integer "slot_duration_minutes", default: 30, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["weekday", "active"], name: "index_availability_rules_on_weekday_and_active"
+  end
+
   create_table "blog_posts", force: :cascade do |t|
     t.string "title", null: false
     t.text "content", null: false
@@ -70,7 +81,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_120000) do
   end
 
   create_table "bookings", force: :cascade do |t|
-    t.bigint "availability_id", null: false
+    t.bigint "availability_id"
     t.date "booked_date", null: false
     t.time "start_time", null: false
     t.time "end_time", null: false
