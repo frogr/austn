@@ -87,5 +87,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "react-rails", "~> 3.2"

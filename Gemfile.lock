@@ -91,10 +91,6 @@ GEM
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.11.0)
       aws-eventstream (~> 1, >= 1.0.2)
-    babel-source (5.8.35)
-    babel-transpiler (0.7.0)
-      babel-source (>= 4.0, < 6)
-      execjs (~> 2.0)
     base64 (0.2.0)
     benchmark (0.4.0)
     bigdecimal (3.1.9)
@@ -133,7 +129,6 @@ GEM
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
-    execjs (2.10.0)
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
@@ -286,12 +281,6 @@ GEM
     rake (13.2.1)
     rdoc (6.12.0)
       psych (>= 4.0.0)
-    react-rails (3.2.1)
-      babel-transpiler (>= 0.7.0)
-      connection_pool
-      execjs
-      railties (>= 3.2)
-      tilt
     redcarpet (3.6.1)
     redis (5.4.1)
       redis-client (>= 0.22.0)
@@ -428,7 +417,6 @@ DEPENDENCIES
   puma (>= 5.0)
   rack-attack (~> 6.7)
   rails (~> 8.0.1)
-  react-rails (~> 3.2)
   redcarpet (~> 3.5)
   redis (~> 5.0)
   resend
