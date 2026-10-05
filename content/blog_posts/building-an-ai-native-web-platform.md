@@ -1,5 +1,5 @@
 ---
-title: "Eight AI Models on One GPU in My Apartment, and What Broke"
+title: "Running AI Tools on One GPU in My Apartment, and What Broke"
 date: 2026-10-05
 slug: building-an-ai-native-web-platform
 summary: "How austn.net ran its AI tools off one home GPU for six months, the bugs a code review found afterward, and what I changed."
@@ -7,7 +7,7 @@ summary: "How austn.net ran its AI tools off one home GPU for six months, the bu
 
 For about six months, this site ran AI tools off a single GPU at my place in California: image generation, music, text to speech, stem splitting, background removal, image to SVG, image to 3D, and chat. Anyone could use them, no account needed. They handled tens of thousands of jobs.
 
-In March I wrote a post about building all of it with an AI agent. It bragged about how fast pull requests merged, a few of them in under a minute. When I moved to New York and the GPU stayed behind, I had the codebase reviewed properly, and that post didn't hold up. This is the version I should have written.
+In March I wrote a post about building all of it with an AI agent. It bragged about how fast pull requests merged, a few of them in under a minute. When I moved to New York and the GPU stayed behind, I had the codebase reviewed properly, and that post didn't hold up.
 
 ## How it worked
 
@@ -19,9 +19,9 @@ That pattern held up. Adding a tool mostly meant writing a ComfyUI workflow and 
 
 ## What the review found
 
-The architecture was fine. The details weren't.
+The overall design held up. These parts didn't:
 
-- **A retry setting that silently stopped working.** `wait: :exponentially_longer` was removed in Rails 8. The first failure of any GPU job crashed the retry handler instead of retrying.
+- **A retry setting that broke on the Rails upgrade.** `:exponentially_longer` was removed in Rails 7.2, so on Rails 8 the first failure of any GPU job raised inside the retry handler instead of retrying.
 - **A lock that could expire mid-job.** It lived for five minutes. Stem separation can take fifteen. A long job could lose the lock, and a second job would start on the same GPU, which is the one thing the lock was for.
 - **A release that wasn't atomic.** Read the lock, then delete it, with a small window to delete someone else's.
 - **Health checks that crashed on success.** The status table only knew about three of the eight tools, so for the other five, every successful job blew up at the very end and ran a second time.
@@ -29,7 +29,7 @@ The architecture was fine. The details weren't.
 - **A race-condition "fix" that didn't fix anything.** Invoice numbering took a database lock and released it before the insert.
 - **No graceful failure.** When the GPU went away, every tool kept accepting work, timed out, and showed visitors a raw error with the box's private address in it.
 
-Some of those PRs had merged while CI was failing. Fast merges were the headline of the old post, and they're also why these got through.
+Some of those PRs had merged while CI was failing. I merged fast, and that's how these got in.
 
 ## What I changed
 
@@ -39,7 +39,7 @@ Some of those PRs had merged while CI was failing. Fast merges were the headline
 - Uploads are stored, and the job gets an id.
 - Invoice numbers take a transaction-level lock.
 - Before a tool accepts work it checks that its backend is configured and up. Visitors get a plain message, never an exception.
-- Brakeman and the test suite now gate deploys.
+- Brakeman now fails the CI build too.
 
 Each fix came with a test. [The case study](/work/austn-net) has the architecture diagram and the lock code. [The Playground](/playground) has a page for each tool, with how it worked.
 
@@ -48,4 +48,3 @@ Each fix came with a test. [The case study](/work/austn-net) has the architectur
 - Put a hosted fallback behind the same client, with a daily spend cap, so a tool keeps working when the box is down.
 - Have the GPU box push a heartbeat instead of the app probing it.
 - Record a short demo of every tool on the first day it works.
-- Keep CI green before merging, no matter how good the diff looks.

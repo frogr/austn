@@ -1,15 +1,13 @@
 ---
 title: Text to speech
-summary: Speech from text with Chatterbox, with adjustable delivery, batch jobs from a CSV, and share links.
+summary: Speech from text with Chatterbox, with adjustable delivery and share links.
 order: 3
 kind: gpu
 model: Chatterbox, on its own Flask server
 legacy_path: /tts
-screenshot: /playground/text-to-speech.webp
-screenshot_caption: "The text to speech page when it was live."
 ---
 
-Paste text, pick a voice, and tune how it's delivered: an exaggeration control for how expressive it sounds, and a guidance weight for how closely it sticks to the voice. You could also upload a CSV and generate dozens of clips at once, and share any clip with a link.
+Paste text, pick a voice, and tune how it's delivered: an exaggeration control for how expressive it sounds, and a guidance weight for how closely it sticks to the voice. Any clip could be shared with a link. I could also generate clips in bulk from a CSV (admin only).
 
 ## How it worked
 
@@ -20,4 +18,4 @@ Paste text, pick a voice, and tune how it's delivered: an exaggeration control f
 
 ## Voice cloning
 
-Chatterbox can clone a voice from a short sample. On the public site that's only open to me, the admin, and every generation is logged. The samples here will use readers from [LibriVox](https://librivox.org), whose recordings are in the public domain.
+Chatterbox can clone a voice from a short sample. On the public site that's only open to me, the admin, and every generation is logged.

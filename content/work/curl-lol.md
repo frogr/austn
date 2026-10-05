@@ -3,7 +3,7 @@ title: curl.lol
 summary: A Rails URL shortener with event-based click analytics.
 tier: more
 order: 21
-when: "2024"
+when: "2023-24"
 role: Solo project
 stack: [Ruby on Rails, PostgreSQL, Ahoy]
 legacy_ids: [curl-lol]

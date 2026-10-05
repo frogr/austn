@@ -1,6 +1,6 @@
 ---
 title: CompanyCam
-summary: Led Pages AI from an idea to about 5,000 requests a day, and built the shared RubyLLM layer other teams' AI features run on.
+summary: Led Pages AI from an idea to about 5,000 requests a day, and built shared RubyLLM abstractions that were adopted across the product.
 tier: featured
 order: 2
 when: "2023-25"
@@ -16,9 +16,9 @@ CompanyCam is the photo app contractors use on job sites: 140,000+ contractors t
 
 ## Pages AI
 
-Pages is CompanyCam's document builder. Contractors use it to turn job photos into reports and other documents for their customers. Writing those on a phone at a job site is slow, and most companies weren't using it.
+Pages is CompanyCam's document builder. Contractors use it to turn job photos into reports and other documents for their customers. Writing those on a phone at a job site is slow.
 
-I led the Pages AI assistant from the first idea to production. A contractor types or talks into their phone on the job site and gets finished documentation back. It grew to about 5,000 requests a day. The share of active companies using Pages went from 4% to 11%, and customers told us it saved them 2 to 5 hours a week.
+I led the Pages AI assistant from the first idea to production. A contractor types or talks into their phone on the job site and gets finished documentation back. It grew to about 5,000 requests a day. With the assistant, the share of active companies using Pages went from 4% to 11%, and customers told us it saved them 2 to 5 hours a week.
 
 We measured adoption by company, not by user. One company can have a lot of users who never make a document, so the per-company number was the more honest one.
 
@@ -38,4 +38,3 @@ I worked on the RAG pipelines too. We indexed the backend records into pgvector 
 
 - **Share Link** (Rails, React/TypeScript): any asset a contractor has, they can share securely with clients and payers who aren't on CompanyCam.
 - **PDF exports:** cut file size 10x with streaming, compression and async processing on Sidekiq and S3, for 10,000+ exports a day.
-- Mentored three developers through code reviews and architecture discussions.

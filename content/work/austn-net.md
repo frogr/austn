@@ -1,6 +1,6 @@
 ---
 title: austn.net's GPU tools
-summary: Nine AI tools on one GPU in my apartment, behind a public website. Tens of thousands of jobs, one lock, and everything that broke.
+summary: Nine AI tools on one GPU in my apartment, open to anyone on the web. It handled tens of thousands of jobs. This page covers how it worked and what broke.
 tier: featured
 order: 5
 when: 2025-26
@@ -14,7 +14,7 @@ links:
     url: /playground
 ---
 
-From August 2025 to February 2026, anyone on the internet could use nine AI tools on this site: image generation, video, music, text to speech, stem splitting, background removal, image to SVG, image to 3D, and chat. (Video was too heavy for one GPU and came down first.) They all ran on one consumer GPU at my place in California. Together they handled tens of thousands of inference jobs.
+From August 2025 to February 2026, anyone on the internet could use nine AI tools on this site, including image generation, music, text to speech, stem splitting, background removal, image to SVG, image to 3D, and chat. They all ran on one consumer GPU at my place in California. Together they handled tens of thousands of inference jobs.
 
 Then I moved to New York and the GPU didn't come with me. The tools are offline now. This page is about how they worked, and what I'd change.
 
@@ -41,7 +41,7 @@ Then I moved to New York and the GPU didn't come with me. The tools are offline 
   <figcaption>The website and the GPU lived in different places. Everything between them went through one queue.</figcaption>
 </figure>
 
-The site is a Rails app on a small DigitalOcean server. The GPU box sat at home and was reachable only over Tailscale, so nothing on it was exposed to the internet. Six tools ran as ComfyUI workflows. Text to speech ran on its own Flask server. Chat went to LM Studio.
+The site is a Rails app on a small DigitalOcean server. The GPU box sat at home and was reachable only over Tailscale, so nothing on it was exposed to the internet. Six tools ran as ComfyUI workflows. ComfyUI is an open-source app that runs image and audio models as a graph of steps, and it has an HTTP API. Text to speech ran on its own Flask server. Chat went to LM Studio.
 
 ## One GPU, many tools, strangers on the internet
 
@@ -78,11 +78,9 @@ A health check pinged each backend (ComfyUI's system stats, the TTS server's hea
 
 ## What broke
 
-Running it for real taught me more than building it.
-
 - **The lock could expire mid-job.** It lived for five minutes, but stem separation could run for fifteen. A long job would lose the lock and a second job would start on the same GPU. Each tool now sets a lock lifetime longer than its longest run.
 - **Release wasn't atomic.** It was a read and then a delete, with a small window to delete someone else's lock. That's what the script above fixes.
-- **A retry setting quietly stopped working.** `wait: :exponentially_longer` was removed in Rails 8, so the first failure crashed the retry handler instead of retrying. Now it retries dropped connections with backoff and gives up straight away when the box is offline.
+- **A retry setting broke on the Rails upgrade.** `:exponentially_longer` was removed in Rails 7.2, so on Rails 8 the first failure raised inside the retry handler instead of retrying. Now it retries dropped connections with backoff and gives up straight away when the box is offline.
 - **Uploads rode inside the job.** Files were base64-encoded into Sidekiq's job arguments, so a 10 MB song became a 13 MB job sitting in Redis and getting re-queued every few seconds while it waited. Now the upload is stored and the job gets an id.
 - **Nothing degraded gracefully.** When I moved, every tool kept accepting work, timed out, and showed visitors a raw connection error with the GPU's private address in it. Now a tool checks its backend before taking work, visitors see a plain message, and the pages point here.
 
@@ -93,4 +91,4 @@ Most of these turned up in a code review after the move. The fixes are in the re
 - Put a hosted fallback behind the same client, with a daily spend cap, so a tool can keep working when the box is down.
 - Have the GPU box push a heartbeat instead of the app probing it, so the app never waits on a dead host.
 - Use websockets from ComfyUI for progress instead of polling it from inside a worker.
-- Record a short demo of every tool on day one. Demos don't go offline.
+- Record a short demo of every tool on day one.

@@ -11,7 +11,7 @@ links:
     url: https://github.com/frogr/murmur
 ---
 
-My own replacement for Wispr Flow and Paste, running entirely on the Mac.
+My own replacement for Wispr Flow and Paste, two Mac apps for dictation and clipboard history. Murmur runs entirely on the Mac.
 
 - **Dictation anywhere.** Hold right ⌘, speak, let go, and cleaned-up text appears at the cursor in whatever app is in front.
 - **Clipboard history.** ⌥⌘V opens a searchable list of everything you've copied.

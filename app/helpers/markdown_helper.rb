@@ -1,6 +1,7 @@
 # Renders the site's own markdown (case studies, playground pages, blog posts).
-# This content comes from files in the repo, so inline HTML is allowed, which is
-# how case studies embed their SVG diagrams.
+# Inline HTML is allowed, which is how case studies embed their SVG diagrams.
+# That's safe because only Austin can write this content: case studies come
+# from files in the repo, and blog posts from the repo or the admin.
 module MarkdownHelper
   class SiteRenderer < Redcarpet::Render::HTML
     # Links that leave the site open normally, but get rel=noopener.

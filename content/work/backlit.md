@@ -20,9 +20,9 @@ For the Super Bowl LX halftime show I was the only engineer on site. I ran talen
 
 ## 10 seconds to under 400ms
 
-Before the event, some pages were taking more than 10 seconds to load. The cause was a classic N+1: one page was making 500+ database queries.
+Under the live-event deadline, some pages were taking more than 10 seconds to load. The cause was a classic N+1: one page was making 500+ database queries.
 
-I rewrote the SQL and the ActiveRecord usage behind those pages and got them down to about 10 queries each. Load times went from 10+ seconds to under 400ms, on a live-event deadline.
+I rewrote the SQL and the ActiveRecord usage behind those pages and got them down to about 10 queries each. Load times went from 10+ seconds to under 400ms.
 
 ## Getting people paid and cleared
 
@@ -35,4 +35,4 @@ During COVID, the Oscars needed a contactless way to coordinate people at the Do
 
 ## Boys & Girls Clubs of America
 
-Through Backlit I also built the donation flow for the Boys & Girls Clubs of America's 2021 fundraiser, in Node.js and Express with Stripe. It took in over $2 million. Card details went to Stripe, never to our servers.
+Through Backlit I also built the donation flow for the Boys & Girls Clubs of America's 2021 fundraiser, in Node.js and Express with Stripe. It took in over $2 million.

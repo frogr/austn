@@ -15,7 +15,7 @@ links:
     url: https://github.com/frogr/tavus-chess-coach
 ---
 
-A chess coach you talk to over live video. You play on a real board in the browser while the coach watches every move, talks it through with you, and points at the squares it means. Ask it to play, review a game, or go back to puzzles, and it takes you there.
+A chess coach you talk to over live video, built on Tavus, which does real-time AI video. You play on a real board in the browser while the coach watches every move, talks it through with you, and points at the squares it means. Ask it to play, review a game, or go back to puzzles, and it takes you there.
 
 ## Why chess
 

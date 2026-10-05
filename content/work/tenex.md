@@ -10,13 +10,13 @@ stack: [TypeScript, Next.js, Python, Google Document AI, Databricks, Postgres]
 
 Tenex is an AI consultancy that puts engineers directly with clients. I was a forward deployed engineer there from March to June 2026, and the only engineer on three client engagements at the same time. On each one I went from discovery to architecture to delivery, and I ran the demos for the client's executives.
 
-Client names stay out of this. The work is described by what it did.
+I've left out client names.
 
 ## Reading forms people used to type in by hand
 
 One client had an outsourced team typing printed and handwritten forms into their system. Hundreds of forms a week.
 
-I built a pipeline that reads them instead. Google Document AI does the OCR, then two LLM passes pull out the fields. The hard part wasn't extraction. It was deciding when the client could trust the output without a person checking it.
+I built a pipeline that reads them instead. Google Document AI does the OCR, then two LLM passes pull out the fields. Most of the work was deciding when the client could trust the output without a person checking it.
 
 <figure class="figure">
   <div class="diagram" role="img" aria-label="Form pipeline: scan, OCR, two LLM passes, then evals and an autonomy gate decide between auto-accept and human review">
@@ -48,9 +48,9 @@ To check the model, we held out a real historical placement change and asked it 
 
 I also worked on RAG pipelines to make search across the platform's data more useful.
 
-## A warehouse instead of a person clicking around
+## Moving a manual data process into Databricks
 
-The same client was owned by a private equity firm. Together with the firm we stood up a Databricks warehouse: data moved from SQL Server into Databricks, and I wrote the Python ingestion pipelines. Those replaced a manual process that pulled the data with computer use, an AI agent clicking through screens.
+One client was owned by a private equity firm. Together with the firm we stood up a Databricks warehouse: data moved from SQL Server into Databricks, and I wrote the Python ingestion pipelines. Those replaced a manual, screen-by-screen process that pulled the data with computer use, an AI agent clicking through screens.
 
 ## Scheduling for 120 reps
 

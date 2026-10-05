@@ -1,6 +1,6 @@
 ---
 title: Follow-up engine
-summary: Decides which open quotes get a follow-up, drafts it, and sends it through guardrails it can't skip. Tests that are checked to actually fail.
+summary: Decides which open quotes get a follow-up, drafts it, and sends it through guardrails it can't skip. Includes a check that the tests catch broken guardrails.
 tier: more
 order: 11
 when: "2026"
@@ -28,6 +28,6 @@ Every re-run is a no-op: a second ingest, draft, send or retry changes nothing.
 
 ## Tests that can fail
 
-A passing test suite only means something if the tests would notice a bug. So the repo has a mutation check: it weakens the code on purpose, one guardrail at a time, and confirms the suite fails each time.
+The repo also checks its own tests: it weakens the code on purpose, one guardrail at a time, and confirms the suite fails each time.
 
 The README also covers how I'd run it for 50 shops: which follow-ups can go out on their own, and which need a person to approve them until the shop trusts it.

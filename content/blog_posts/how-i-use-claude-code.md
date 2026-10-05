@@ -11,7 +11,7 @@ This is what my setup actually looks like. An earlier version of this post had c
 
 ## Hooks so I don't have to watch the terminal
 
-The thing that changed my day the most is small. I don't stare at a session waiting for it to finish. I built [claude-ding](https://github.com/frogr/claude-ding), which plays a sound when Claude finishes, needs my approval, or hits an error. It works through Claude Code's hooks, which live in `~/.claude/settings.json`:
+The most useful change was a small one. I don't stare at a session waiting for it to finish. I built [claude-ding](https://github.com/frogr/claude-ding), which plays a sound when Claude finishes, needs my approval, or hits an error. It works through Claude Code's hooks, which live in `~/.claude/settings.json`:
 
 ```json
 {
@@ -33,7 +33,7 @@ Each hook is just a command that runs on an event. That's enough to go do someth
 
 ## A status line that tells me what I need
 
-My status line shows the directory, the git branch and whether it's clean, the model, how much of the context window is used, and how close I am to the 5-hour and weekly limits. It's a small script that Claude Code runs and pipes session info into, and whatever it prints is the status line. When the context is nearly full, I wrap up and start a fresh session instead of letting it start forgetting things.
+My status line shows the directory, the git branch and whether it's clean, the model, how much of the context window is used, and how close I am to the 5-hour and weekly limits. It's a small script that Claude Code runs and pipes session info into, and whatever it prints is the status line.
 
 ## Several sessions at once
 
@@ -57,6 +57,10 @@ I also run an agent in a Discord server that can work on my dev machine. I can s
 
 ## What I do differently now
 
-When I rebuilt this site, a code review turned up bugs that had gone in while I was moving fast: a retry setting that silently stopped working on Rails 8, a lock that could expire mid-job, and a "fix" for a race condition that didn't fix it. The code looked right and the PRs looked clean. [I wrote up what broke.](/blog/building-an-ai-native-web-platform)
+When I rebuilt this site, a code review turned up bugs that had gone in while I was moving fast: a retry option that was removed in Rails 7.2 and raised on Rails 8, a lock that could expire mid-job, and a "fix" for a race condition that didn't fix it. The code looked right and the PRs looked clean. [I wrote up what broke.](/blog/building-an-ai-native-web-platform)
 
-So I keep CI green before I merge, I read the diff, and I give the agent tests that can actually fail.
+Now I do three things:
+
+- Keep CI green before merging.
+- Read the diff.
+- Give the agent tests that can actually fail.

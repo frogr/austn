@@ -63,7 +63,7 @@ bin/rubocop
 bin/brakeman
 ```
 
-CI runs all three, and deploys only happen when they pass. `test/models/site_content_test.rb`
+CI runs all three. `test/models/site_content_test.rb`
 also checks the content files: required front matter, no broken links in case
 studies, no em dashes.
 

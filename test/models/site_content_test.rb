@@ -4,7 +4,7 @@ require "test_helper"
 # resume and profile. Cheap checks that catch the mistakes that are easy to
 # make when editing markdown by hand.
 class SiteContentTest < ActiveSupport::TestCase
-  CONTENT_FILES = Dir.glob(Rails.root.join("content/{work,playground}/*.md")) +
+  CONTENT_FILES = Dir.glob(Rails.root.join("content/{work,playground,blog_posts}/*.md")) +
                   Dir.glob(Rails.root.join("content/*.yml")) +
                   Dir.glob(Rails.root.join("app/views/{pages,work,playground,resumes,blog,bookings}/*.erb"))
 

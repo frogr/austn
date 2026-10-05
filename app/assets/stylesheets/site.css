@@ -213,6 +213,7 @@ a.row:hover .row-title { color: var(--accent); }
 .prose th { color: var(--muted); font-weight: 600; }
 
 code, pre { font-family: var(--font-mono); font-size: 0.86em; }
+:not(pre) > code { overflow-wrap: anywhere; }
 :not(pre) > code { background: var(--code-bg); border: 1px solid var(--rule); padding: 0.1em 0.35em; border-radius: 4px; }
 pre {
   background: var(--code-bg);
@@ -257,7 +258,7 @@ pre code { font-size: 0.82rem; }
   padding: 1rem;
   overflow-x: auto;
 }
-.diagram svg { display: block; margin: 0 auto; }
+.diagram svg { display: block; margin: 0 auto; min-width: 560px; }
 .diagram text { font-family: var(--font-mono); font-size: 12px; fill: var(--text); }
 .diagram .box { fill: var(--bg); stroke: var(--muted); }
 .diagram .box--accent { stroke: var(--accent); }

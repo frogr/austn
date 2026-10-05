@@ -6,7 +6,7 @@ kind: gpu
 model: ACE-Step on ComfyUI
 legacy_path: /music
 screenshot: /playground/music-generation.webp
-screenshot_caption: "The music tool as it looked when it was live."
+screenshot_caption: "An older version of the music tool, when the slider went to 8 minutes. Later versions capped tracks at four minutes."
 ---
 
 The tool that surprised people most. You write lyrics with structure tags like `[verse]`, `[chorus]` and `[bridge]`, add style tags ("dark, death metal, electric guitar, 140 BPM, A minor"), pick a length, and get back a whole song with vocals.

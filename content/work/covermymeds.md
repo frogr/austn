@@ -28,5 +28,5 @@ I built Configuration Station (Rails, React, PostgreSQL), an internal tool that 
 ## Other work
 
 - Created VEST, a framework for prioritizing technical debt that was adopted across engineering.
-- Worked on RTIV in Elixir.
+- Did some Elixir work too.
 - Mentored five developers, including helping a customer success manager move into engineering.
