@@ -327,7 +327,10 @@ export default function PatternLibrary({ isOpen, onClose }) {
     if (!confirm(`Delete "${pattern.name}"?`)) return
 
     try {
-      await fetch(`/daw/patterns/${pattern.id}`, { method: 'DELETE' })
+      await fetch(`/daw/patterns/${pattern.id}`, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content },
+      })
       fetchPatterns()
     } catch (err) {
       console.error('Failed to delete pattern:', err)
@@ -405,7 +408,10 @@ export default function PatternLibrary({ isOpen, onClose }) {
     try {
       const response = await fetch('/daw/patterns', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
+        },
         body: JSON.stringify({
           name: data.name || 'Imported Pattern',
           description: data.description || '',
