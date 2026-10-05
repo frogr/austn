@@ -1,129 +1,112 @@
-# Base class for all GPU-intensive jobs
-# Ensures proper queue assignment and resource management
+# Base class for work that runs on the home GPU box.
+#
+# - Jobs run on the `gpu` queue and hold Gpu::Lock while performing, so only
+#   one GPU job runs at a time across every Sidekiq process. A job that finds
+#   the lock taken re-enqueues itself a few seconds later.
+# - A dropped connection is retried with backoff. An offline backend is not:
+#   the job is discarded and the tool marked offline.
+# - Whenever a job gives up, `record_failure` stores a visitor-safe error
+#   (Gpu::PublicError) where the tool's status endpoint reads it. The full
+#   exception only goes to the logs.
+#
+# Subclasses whose first argument is a generation id implement `redis_service`
+# and `channel_prefix`, and call `start_generation` / `finish_generation`.
 class GpuJob < ApplicationJob
-  # Always use the GPU queue for these jobs
   queue_as :gpu
 
-  # Shared Redis connection — avoids creating a new connection per call
+  # Retries are handled by Active Job below. Anything unexpected goes
+  # straight to Sidekiq's Dead set instead of re-running GPU work.
+  sidekiq_options retry: 0
+
+  LOCK_RETRY_DELAY = 5.seconds
+  FAILED_STATUS_TTL = 10.minutes
+
+  class_attribute :gpu_service_name
+
+  # How long the GPU lock lives. It must outlast the job's longest run,
+  # otherwise a second job can take the GPU while this one is still working.
+  class_attribute :gpu_lock_timeout, default: 10.minutes
+
+  retry_on Gpu::ConnectionError, wait: :polynomially_longer, attempts: 3
+
+  discard_on Gpu::Offline do |job, error|
+    job.class.mark_service_offline(error.message)
+  end
+
+  after_discard do |job, error|
+    job.report_failure(error)
+  end
+
+  around_perform :with_gpu_lock
+
+  # Shared Redis connection, so jobs don't open one per call.
   def self.redis
     @redis ||= Redis.new(url: Rails.application.config_for(:redis)["url"])
+  end
+
+  def self.mark_service_online
+    GpuHealthStatus.for_service(gpu_service_name).mark_online! if gpu_service_name
+  end
+
+  def self.mark_service_offline(error_message = nil)
+    GpuHealthStatus.for_service(gpu_service_name).mark_offline!(error_message) if gpu_service_name
   end
 
   def redis
     self.class.redis
   end
 
-  # Track which service this job is for (override in subclasses)
-  class_attribute :gpu_service_name, default: nil
-
-  # GPU lock timeout in seconds (override in subclasses for long-running jobs)
-  class_attribute :gpu_lock_timeout, default: 300
-
-  # Retry configuration for GPU jobs
-  retry_on StandardError, wait: :exponentially_longer, attempts: 3 do |job, error|
-    Rails.logger.error "GPU job #{job.class.name} failed after retries: #{error.message}"
-    job.class.mark_service_offline(error.message) if job.class.gpu_service_name
+  def report_failure(error)
+    Rails.logger.error "#{self.class.name} #{job_id} failed: #{error.class}: #{error.message}"
+    record_failure(Gpu::PublicError.for(error))
   end
 
-  # Ensure only one GPU job runs at a time by using Redis lock
-  around_perform do |job, block|
-    lock_key = "gpu_lock"
-    lock_timeout = job.class.gpu_lock_timeout
+  private
 
-    # Try to acquire lock
-    acquired = redis.set(lock_key, job.job_id, nx: true, ex: lock_timeout)
+  def with_gpu_lock
+    lock = gpu_lock
 
-    if acquired
+    if lock.acquire(job_id, ttl: gpu_lock_timeout)
       begin
-        Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) acquired GPU lock"
-        block.call
+        yield
       ensure
-        # Only release if we still own the lock
-        if job.redis.get(lock_key) == job.job_id
-          job.redis.del(lock_key)
-          Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) released GPU lock"
-        end
+        lock.release(job_id)
       end
     else
-      # Reschedule if couldn't acquire lock
-      Rails.logger.info "GPU job #{job.class.name} (#{job.job_id}) waiting for GPU lock, rescheduling..."
-      job.class.set(wait: 5.seconds).perform_later(*job.arguments)
+      Rails.logger.info "#{self.class.name} #{job_id} is waiting for the GPU lock"
+      self.class.set(wait: LOCK_RETRY_DELAY).perform_later(*arguments)
     end
   end
 
-  # Helper method to store results in Redis
-  def store_result(key, value, ttl: 3600)
-    redis.setex(key, ttl, value.to_json)
+  def gpu_lock
+    Gpu::Lock.new(redis: redis)
   end
 
-  # Helper method to get result from Redis
-  def self.get_result(key)
-    result = redis.get(key)
-    JSON.parse(result) if result
-  rescue JSON::ParserError
-    nil
+  def generation_id
+    arguments.first
   end
 
-  # Mark the GPU service as online
-  def self.mark_service_online
-    return unless gpu_service_name
-    GpuHealthStatus.for_service(gpu_service_name).mark_online!
+  def start_generation
+    redis_service.store_status(generation_id, { status: "processing", started_at: Time.current })
+    broadcast(status: "processing", generation_id: generation_id)
   end
 
-  # Mark the GPU service as offline with error
-  def self.mark_service_offline(error_message = nil)
-    return unless gpu_service_name
-    GpuHealthStatus.for_service(gpu_service_name).mark_offline!(error_message)
-  end
-
-  # Instance method to mark online (called after successful job)
-  def mark_service_online
+  def finish_generation(**details)
+    redis_service.store_status(generation_id, { status: "completed", completed_at: Time.current, **details })
+    broadcast(status: "complete", generation_id: generation_id, **details)
     self.class.mark_service_online
   end
 
-  protected
-
-  # Standard status hashes for consistency
-  def processing_status
-    { status: "processing", started_at: Time.current }
-  end
-
-  def completed_status
-    { status: "completed", completed_at: Time.current }
-  end
-
-  def failed_status(error_message)
-    { status: "failed", error: error_message, failed_at: Time.current }
-  end
-
-  # ActionCable broadcasting helpers
-  def broadcast_processing(generation_id, channel_prefix)
-    ActionCable.server.broadcast(
-      "#{channel_prefix}_#{generation_id}",
-      { status: "processing", generation_id: generation_id }
+  def record_failure(public_error)
+    redis_service.store_status(
+      generation_id,
+      { status: "failed", failed_at: Time.current, **public_error.to_h },
+      ttl: FAILED_STATUS_TTL.to_i
     )
+    broadcast(status: "failed", generation_id: generation_id, **public_error.to_h)
   end
 
-  def broadcast_complete(generation_id, channel_prefix, extra = {})
-    ActionCable.server.broadcast(
-      "#{channel_prefix}_#{generation_id}",
-      { status: "complete", generation_id: generation_id }.merge(extra)
-    )
-  end
-
-  def broadcast_failure(generation_id, channel_prefix, error_message)
-    ActionCable.server.broadcast(
-      "#{channel_prefix}_#{generation_id}",
-      { status: "failed", error: error_message }
-    )
-  end
-
-  # Standard error handling
-  def handle_failure(error, generation_id, service, channel_prefix)
-    Rails.logger.error "#{self.class.name} #{generation_id} failed: #{error.message}"
-    Rails.logger.error error.backtrace.join("\n")
-
-    service.store_status(generation_id, failed_status(error.message), ttl: 600)
-    broadcast_failure(generation_id, channel_prefix, error.message)
+  def broadcast(payload)
+    ActionCable.server.broadcast("#{channel_prefix}_#{generation_id}", payload)
   end
 end

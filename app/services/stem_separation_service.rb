@@ -8,6 +8,7 @@ class StemSeparationService
   ].freeze
 
   DEFAULT_MODEL = "htdemucs".freeze
+  COMPLETION_TIMEOUT = 900 # seconds; Demucs on a full song is slow
 
   STEM_NAMES = %w[vocals drums bass other].freeze
 
@@ -57,8 +58,7 @@ class StemSeparationService
       prompt_id = ComfyuiClient.queue_prompt(workflow)
       Rails.logger.info "Queued stem separation prompt: #{prompt_id}"
 
-      # Wait for completion (15 minutes timeout for audio processing)
-      outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 900)
+      outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: COMPLETION_TIMEOUT)
       Rails.logger.info "Stem separation completed. Output nodes: #{outputs.keys.inspect}"
 
       # Collect all stem outputs

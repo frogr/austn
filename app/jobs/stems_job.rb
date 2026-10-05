@@ -1,48 +1,29 @@
 class StemsJob < GpuJob
   self.gpu_service_name = "stems"
-  sidekiq_options retry: 1
+  # ComfyUI gets up to 15 minutes, then four stems are downloaded.
+  self.gpu_lock_timeout = 30.minutes
 
   def perform(generation_id, file_data, options = {})
-    Rails.logger.info "Starting StemsJob #{generation_id}"
-    service = StemsRedisService.new
-
-    broadcast_processing(generation_id, "stems")
-    service.store_status(generation_id, processing_status)
+    start_generation
 
     original_filename = options["original_filename"] || "audio.mp3"
-    uploaded_file = UploadedFileProxy.from_base64(
-      file_data["base64"],
-      original_filename: original_filename,
-      prefix: "stems"
-    )
+    model = options["model"] || StemSeparationService::DEFAULT_MODEL
+    uploaded_file = UploadedFileProxy.from_base64(file_data["base64"], original_filename: original_filename, prefix: "stems")
 
     begin
-      model = options["model"] || StemSeparationService::DEFAULT_MODEL
       stems = StemSeparationService.separate_stems(uploaded_file, model: model)
-
-      result_data = {
-        stems: stems,
-        original_filename: original_filename,
-        model: model,
-        created_at: Time.current
-      }
-
-      # Log the data sizes before storing
-      total_size = stems.values.sum { |s| s.bytesize }
-      Rails.logger.info "StemsJob #{generation_id}: Storing #{stems.keys.size} stems, total base64 size: #{total_size / 1024 / 1024}MB"
-
-      service.store_result(generation_id, result_data)
-      Rails.logger.info "StemsJob #{generation_id}: Successfully stored results in Redis"
-      service.store_status(generation_id, completed_status)
-      broadcast_complete(generation_id, "stems")
-
-      Rails.logger.info "StemsJob #{generation_id} completed successfully"
-      mark_service_online
+      redis_service.store_result(generation_id, {
+        stems: stems, original_filename: original_filename, model: model, created_at: Time.current
+      })
     ensure
       uploaded_file.cleanup
     end
-  rescue => e
-    handle_failure(e, generation_id, service, "stems")
-    raise
+
+    finish_generation
   end
+
+  private
+
+  def redis_service = StemsRedisService.new
+  def channel_prefix = "stems"
 end
