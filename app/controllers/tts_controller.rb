@@ -3,6 +3,7 @@ class TtsController < ApplicationController
   include RequiresGpu
 
   requires_gpu "tts", only: :generate
+  before_action :restrict_custom_voices_to_admin, only: :generate
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
@@ -143,6 +144,14 @@ class TtsController < ApplicationController
   end
 
   private
+
+  # Cloning a voice from an uploaded clip is only for the admin.
+  def restrict_custom_voices_to_admin
+    return if params[:voice_audio].blank? || admin_signed_in?
+
+    render json: { success: false, error_code: "forbidden", error: "Custom voice uploads aren't available." },
+           status: :forbidden
+  end
 
   def tts_redis_service
     @tts_redis_service ||= TtsRedisService.new

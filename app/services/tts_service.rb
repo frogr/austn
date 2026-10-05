@@ -78,7 +78,7 @@ class TtsService
     []
   end
 
-  # Normalize voice preset - allows "jordan_peterson" to match "actors/jordan_peterson"
+  # Resolves a short voice name ("narrator") to its full preset id ("stock/narrator").
   def self.normalize_voice_preset(voice_preset)
     return nil if voice_preset.blank?
 

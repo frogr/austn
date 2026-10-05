@@ -5,7 +5,7 @@
 # Usage:
 #   ./tts_remote.sh "Your text here"
 #   ./tts_remote.sh "Your text here" output.wav
-#   ./tts_remote.sh "Your text here" output.wav jordan_peterson
+#   ./tts_remote.sh "Your text here" output.wav narrator
 #
 # Environment:
 #   TTS_API_KEY - Your API key (required)
@@ -42,7 +42,7 @@ if [ -z "$1" ]; then
     echo -e "${YELLOW}Examples:${NC}"
     echo "  $0 \"Hello from bed!\""
     echo "  $0 \"Testing TTS\" test.wav"
-    echo "  $0 \"Deep thoughts\" thoughts.wav jordan_peterson"
+    echo "  $0 \"Deep thoughts\" thoughts.wav narrator"
     echo ""
     echo -e "${YELLOW}Available commands:${NC}"
     echo "  $0 --voices     List available voices"
