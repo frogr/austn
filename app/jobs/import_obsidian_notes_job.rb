@@ -79,18 +79,19 @@ class ImportObsidianNotesJob < ApplicationJob
     # Extract frontmatter and content
     frontmatter, markdown_content = extract_frontmatter(content)
 
-    # Skip if the post has a "draft: true" in frontmatter
-    return if frontmatter["draft"] == true
-
     title = frontmatter["title"] || filename.titleize
     slug = frontmatter["slug"] || filename.parameterize
+
+    # Drafts are imported but stay unpublished, so flipping a post back to
+    # draft takes it off the site instead of leaving the old copy up.
+    published_at = frontmatter["draft"] == true ? nil : frontmatter["date"]
 
     blog_post = BlogPost.find_or_initialize_by(slug: slug)
     blog_post.assign_attributes(
       title: title,
-      content: markdown_content,
-      published_at: frontmatter["date"],
-      metadata: frontmatter
+      content: markdown_content.strip,
+      published_at: published_at,
+      metadata: frontmatter.as_json
     )
 
     if blog_post.save
@@ -172,23 +173,14 @@ class ImportObsidianNotesJob < ApplicationJob
     Dir.glob(File.join(OBSIDIAN_VAULT_ROOT, "**", filename)).first
   end
 
+  # Splits a post into its YAML front matter and markdown body. Dates in front
+  # matter are usually unquoted (date: 2026-03-17), so Date has to be allowed;
+  # without it the whole file used to land in the post body, front matter and all.
   def extract_frontmatter(content)
-    frontmatter = {}
-    markdown_content = content
-
-    # Check for YAML frontmatter (between --- markers)
-    if content.start_with?("---")
-      parts = content.split("---", 3)
-      if parts.length >= 3
-        begin
-          frontmatter = YAML.safe_load(parts[1])
-          markdown_content = parts[2..-1].join("---")
-        rescue => e
-          Rails.logger.error "Error parsing frontmatter: #{e.message}"
-        end
-      end
-    end
-
-    [ frontmatter, markdown_content ]
+    parsed = FrontMatterParser::Parser.new(:md, loader: FrontMatterParser::Loader::Yaml.new(allowlist_classes: [ Date, Time ])).call(content)
+    [ parsed.front_matter || {}, parsed.content ]
+  rescue Psych::Exception => e
+    Rails.logger.error "Error parsing frontmatter: #{e.message}"
+    [ {}, content ]
   end
 end

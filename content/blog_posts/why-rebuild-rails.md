@@ -1,3 +1,9 @@
+---
+title: "Why Rebuild Rails?"
+date: 2025-09-08
+slug: why-rebuild-rails
+---
+
 _In memory of Noah Gibbs, whose "Rebuilding Rails" book continues to inspire developers to dig deeper._
 ## The Problem with Being a "Rails Developer"
 

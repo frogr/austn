@@ -1,20 +1,23 @@
+---
+title: "Hello World"
+date: 2025-03-25
+slug: hello-world
+---
+
 Hello! This is my first blog post on austn.net.
 
 I'm Austin French, a backend developer from California. Lately I've been trying to use AI to learn as much as I possibly can. Part of that means I'll need a place to write my notes! 
 
 ## The Method: Obsidian
 
-Currently I'm using Obsidian for most of my writing. I love the markdown interface, and owning my own files makes it a tempting choice. There's, of course, great tagging system, inter and intra hyperlinks, and a mind-map. I'm less interested in those features -- but there's a lot of reason to pick Obsidian over other tools like Notion or Apple Notes.
-
-Of course, there's a time and a place for everything.
+Currently I'm using Obsidian for most of my writing. I love the markdown interface, and owning my own files makes it a tempting choice. There's a great tagging system, links between and within notes, and a mind map. I'm less interested in those features, but there's a lot of reason to pick Obsidian over other tools like Notion or Apple Notes.
 
 Eventually I will write an in-depth article about how I built this website, but for now I figure this could be a good time to discuss this specific feature!
 
 ### The code!
-A thousand miles in the sky, this website is a simple React on Rails app. I manage it with Hatchbox on my personal DigitalOcean instance.
+From 30,000 feet, this website is a simple React on Rails app. I manage it with Hatchbox on my personal DigitalOcean instance.
 
-On the other end, I write in Obsidian:
-![Obsidian Notes Screenshot](https://media.cleanshot.cloud/media/116489/NVsgdzyNI6fp5ckJPvNo9ZiNcPMDARGIQOhmVaXK.jpeg?Expires=1742991391&Signature=OoAhVHykvx276sSDPZDbVwfxAIayHQsR8d4wj16okBVEWV9Qb5NR~dWcMe0dbju2vmk-k3kvSc-898grQjQYrU-hm5T1wdJPGPHqu6gKetw6fT-6YafVyR~4M7TOkxmUHy0lQUemY1eM2l~OgAQZDKWvD-TRh~a6mhVZvZb2cW8yvk5Me-e148RuYaP5Wl1KHTXPVEPHSwZ5xaXqYRhZcWR~uSvCOTtg2AjB0REBSIngcNuynQ8KJFVGV3KVh4wxbh522HXiu1K-1LG2FNIiCeXi97a3gHf9I8mWCg6KoDJ951Ie0TuQX1XecFP9oPz-uMg80RxrB2rsVhFWGVf~XQ__&Key-Pair-Id=K269JMAT9ZF4GZ)
+On the other end, I write in Obsidian.
 
 
 Then I use this script to automatically check for new markdown files upon deploy:
@@ -110,7 +113,7 @@ Note this has two branches of logic: Locally, we're pulling directly from Obsidi
 
 
 We also hooked up a postdeploy script here:
-```js
+```json
      {
        "scripts": {
          "postdeploy": "bundle exec rails runner 'PostDeployJob.perform_now'"
