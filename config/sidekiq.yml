@@ -27,12 +27,8 @@
       queue: low
       description: "Delete GPU tool uploads whose job never finished"
 
-# GPU queue configuration
-# Run a separate Sidekiq process for GPU tasks:
-# bundle exec sidekiq -q gpu -c 1
-gpu_queue:
-  :concurrency: 1  # Only one GPU task at a time
-  :timeout: 300    # 5 minutes for GPU operations
+# GPU jobs can also run in a dedicated process (see Procfile.gpu). Either
+# way, Gpu::Lock keeps it to one GPU job at a time across processes.
 
 production:
   :concurrency: 10
