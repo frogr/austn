@@ -3,6 +3,7 @@ ENV["ADMIN_USER_NAME"] ||= "admin"
 ENV["ADMIN_PASSWORD"] ||= "password"
 require_relative "../config/environment"
 require "rails/test_help"
+require "minitest/mock"
 
 # Throttle counters must not leak between tests (or into the shared Redis).
 Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new

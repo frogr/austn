@@ -18,11 +18,11 @@ module Api
         options = build_options
 
         start_time = Time.current
-        result = ComfyService.generate_image(
+        images = ImageGenerationService.generate(
           params[:prompt],
           negative_prompt: options["negative_prompt"],
           seed: options["seed"],
-          image_size: options["image_size"],
+          image_size: options.fetch("image_size", 512),
           batch_size: 1
         )
         elapsed = (Time.current - start_time).round(2)
@@ -31,7 +31,7 @@ module Api
 
         # Store in Redis so it can be served via the image URL
         image_data = {
-          base64: result.is_a?(Array) ? result.first : result,
+          base64: images.first,
           prompt: params[:prompt],
           options: options,
           created_at: Time.current
@@ -48,7 +48,7 @@ module Api
           generation_time: elapsed
         }
 
-      rescue ComfyService::ComfyError => e
+      rescue ComfyuiClient::ComfyuiError => e
         Rails.logger.error "[Image API #{request_id}] ComfyUI error: #{e.message}"
         render_error(e.message, status: :service_unavailable)
       rescue => e

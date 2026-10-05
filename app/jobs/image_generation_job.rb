@@ -9,15 +9,15 @@ class ImageGenerationJob < GpuJob
     broadcast_processing(generation_id, "image_generation")
     service.store_status(generation_id, processing_status)
 
-    result = ComfyService.generate_image(
+    images = ImageGenerationService.generate(
       prompt,
       negative_prompt: options["negative_prompt"],
       seed: options["seed"],
-      image_size: options["image_size"],
-      batch_size: options["batch_size"]
+      image_size: (options["image_size"] || 512).to_i,
+      batch_size: (options["batch_size"] || 1).to_i
     )
 
-    image_data = build_image_data(result, prompt, options)
+    image_data = build_image_data(images, prompt, options)
     should_publish = options["publish"] == true || options["publish"] == "true"
     service.store_image(generation_id, image_data, publish: should_publish)
     service.store_status(generation_id, completed_status)
@@ -40,26 +40,16 @@ class ImageGenerationJob < GpuJob
 
   private
 
-  def build_image_data(result, prompt, options)
+  # A single image is stored under "base64" and a batch under "images",
+  # which is the shape the gallery and image pages read.
+  def build_image_data(images, prompt, options)
     should_publish = options["publish"] == true || options["publish"] == "true"
+    data = { prompt: prompt, options: options, created_at: Time.current, published: should_publish }
 
-    if result.is_a?(Array)
-      {
-        images: result,
-        prompt: prompt,
-        options: options,
-        created_at: Time.current,
-        published: should_publish,
-        batch_size: result.length
-      }
+    if images.one?
+      data.merge(base64: images.first)
     else
-      {
-        base64: result,
-        prompt: prompt,
-        options: options,
-        created_at: Time.current,
-        published: should_publish
-      }
+      data.merge(images: images, batch_size: images.length)
     end
   end
 end
