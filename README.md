@@ -3,7 +3,7 @@
 Austin French's personal site: case studies, writing, a resume, and a playground
 of AI tools that used to run on a GPU at home.
 
-Rails 8 on a small DigitalOcean server (deployed with Hatchbox), Postgres, Redis
+Rails 8 on a small DigitalOcean server (deployed with Kamal), Postgres, Redis
 and Sidekiq. The public pages are server-rendered ERB with one stylesheet and no
 JavaScript. React is only used for the interactive pages (MIDI studio, Claude
 Corner, chat) and the admin code review tool.
@@ -72,7 +72,7 @@ studies, no em dashes.
 | Variable | What it's for |
 | --- | --- |
 | `ADMIN_USER_NAME`, `ADMIN_PASSWORD` | Admin login. Required; admin is closed if either is missing. |
-| `ADMIN_EMAIL` | Where booking and low-availability emails go (defaults to hi@austn.net) |
+| `ADMIN_EMAIL` | Where booking and low-availability emails go (defaults to austindanielfrench@gmail.com) |
 | `RESEND_API_KEY`, `MAILER_FROM` | Outgoing email |
 | `ANTHROPIC_API_KEY`, `CLAUDE_CORNER_MODEL` | Claude Corner drafts |
 | `COMFYUI_URL`, `TTS_URL`, `LMSTUDIO_URL` | GPU backends. Leave unset while the box is offline. |
@@ -82,5 +82,7 @@ studies, no em dashes.
 
 ## Deploying
 
-Hatchbox deploys `main`. After each deploy, `PostDeployJob` imports the blog
-posts from `content/blog_posts`. Run migrations as usual.
+One DigitalOcean droplet, deployed with Kamal from the Dockerfile. The steps,
+the environment variables and the first-deploy checklist are in
+[docs/deploy.md](docs/deploy.md). After each deploy, run `PostDeployJob` to
+import the blog posts from `content/blog_posts`.

@@ -68,3 +68,6 @@ local_secret.txt
 .env
 .env.development
 dump.rdb
+
+# Kamal secrets live on your machine only.
+/.kamal/secrets*

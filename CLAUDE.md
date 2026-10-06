@@ -20,6 +20,39 @@ small, tested, and written plainly.
 - Content lives in `content/` (YAML and markdown with front matter). Models:
   `Profile`, `Resume`, `WorkItem`, `PlaygroundItem`, `BlogPost`.
 
+## Design
+
+The design system is two files. Read their headers first.
+
+- `palettes.css` holds every colour, as one set of tokens per palette. Visitors
+  pick a palette in the footer (a cookie, read by `current_palette`), and
+  `/palettes` shows them side by side. `app/models/palette.rb` is the list. A
+  new palette must keep the contrast contract at the top of `palettes.css`.
+- `site.css` never names a hex value. Each section has a hue (work sun, writing
+  sky, playground clay, resume moss, now and booking plum) and a page gets
+  `--accent` from `body.s-<section>`. The mark, the main button and pages
+  outside a section use `--brand`.
+- One typeface, Recursive, self-hosted in `app/assets/fonts`. Set the `--casl`
+  and `--mono` properties to change its feel. Don't add another font.
+- Reuse the pieces that exist: `.label` and `.section-title` (tape labels),
+  `.rows`, `.worklist`, `.posts`, `.toys`, `.tiles`, `.stats`, `.compare`,
+  `.diagram`, `.button`, `.note`, `.facts`.
+- Drawings on tiles live in `shared/_toy_art`, one per slug, drawn in
+  `currentColor` and animated with the `art-*` classes.
+- The home page fits on one laptop screen without scrolling. If you add to it,
+  check 1280x720 and 1470x796.
+- Motion is CSS only and must stop for `prefers-reduced-motion`. No pulsing
+  status dots.
+- `layouts/application` repeats the header in an inline style block. Keep the
+  two in step. Its pages (the tools, admin) get their colours through
+  `theme.css`, where the old names (`--accent-color`, `--bg-card`...) are
+  aliases for the palette tokens. React inline styles use `var(--brand)` and
+  friends; canvas code reads them with `token()` from `lib/palette.js`. No
+  hex values there either, except the recorded Claude Corner drawings.
+- `public/og.png` and the PNG icons are screenshots of the mark and home page
+  styles in the default palette. Regenerate them if that palette or the mark
+  changes.
+
 ## Rules
 
 - Facts about Austin come from `content/resume.yml` and `content/profile.yml`.
