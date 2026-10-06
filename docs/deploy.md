@@ -1,13 +1,41 @@
-# Deploying austn.net to DigitalOcean
+# Deploying austn.net
 
-Hatchbox used to deploy this app to a DigitalOcean droplet. Without Hatchbox
-the plan is one droplet, deployed with Kamal: the Dockerfile in this repo
-builds the image, and Kamal runs the web process, Sidekiq, Postgres and
-Redis on that one box with uploads on a volume. About $12 a month.
+The site runs on one DigitalOcean droplet (138.197.193.186, `austn-vps` in
+`~/.ssh/config`) that Hatchbox set up: Caddy in front of Puma on port 9000,
+Sidekiq, Postgres 17 and Redis on the box, Ruby and Node through asdf,
+releases under `~/austn/releases` with `~/austn/current` pointing at the
+live one, and the environment in `~/austn/.asdf-vars`. Hatchbox is gone, so
+`script/deploy_droplet.sh` does what it did.
 
-The alternative, DigitalOcean App Platform, is at the end. It costs more
-(managed Postgres and Redis are $15 each) and its disk is wiped on every
-deploy.
+## Deploy
+
+```sh
+ssh austn-vps 'bash -s' < script/deploy_droplet.sh
+```
+
+It fetches `main`, makes a new release, installs gems and node modules,
+builds the assets, dumps the database to `~/austn/shared/`, migrates, flips
+`current`, restarts the two systemd user units (`austn-server`,
+`austn-sidekiq`), makes sure the booking rules exist and imports the blog
+posts. A new Ruby version in `.ruby-version` is built first, which takes
+about fifteen minutes on the one core.
+
+To roll back, point `current` at the previous release and restart:
+
+```sh
+ssh austn-vps 'ln -sfn ~/austn/releases/PREVIOUS ~/austn/current && systemctl --user restart austn-server austn-sidekiq'
+```
+
+Useful on the box: `journalctl --user -u austn-server -f`,
+`cd ~/austn/current && bin/rails console` (after `set -a; . ~/austn/.asdf-vars; set +a`).
+
+The droplet has 1 GB of RAM and 2 GB of swap. Puma and Sidekiq use most of
+it; the 2 GB size is worth the extra $6.
+
+## If the droplet ever has to be rebuilt
+
+The rest of this document is the plan for a fresh box with Kamal, using the
+Dockerfile. It has not been run yet.
 
 ## What the app needs
 
