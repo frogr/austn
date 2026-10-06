@@ -13,6 +13,12 @@ module ActiveSupport
     # Run tests in parallel with specified workers
     parallelize(workers: :number_of_processors)
 
+    # Workers share one Redis, so each gets its own GPU lock. Otherwise a GPU
+    # job in one worker waits on a job in another and re-enqueues itself.
+    parallelize_setup do |worker|
+      GpuJob.gpu_lock_key = "test:gpu_lock:worker#{worker}"
+    end
+
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 

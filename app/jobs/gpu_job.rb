@@ -30,6 +30,9 @@ class GpuJob < ApplicationJob
   # otherwise a second job can take the GPU while this one is still working.
   class_attribute :gpu_lock_timeout, default: 10.minutes
 
+  # The Redis key of the lock. Tests give each parallel worker its own.
+  class_attribute :gpu_lock_key, default: Gpu::Lock::KEY
+
   retry_on Gpu::ConnectionError, wait: :polynomially_longer, attempts: 3
 
   discard_on Gpu::Offline do |job, error|
@@ -87,7 +90,7 @@ class GpuJob < ApplicationJob
   end
 
   def gpu_lock
-    Gpu::Lock.new(redis: redis)
+    Gpu::Lock.new(redis: redis, key: gpu_lock_key)
   end
 
   def generation_id
