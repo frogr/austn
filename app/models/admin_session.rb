@@ -30,6 +30,7 @@ class AdminSession
 
   def sign_in(remember: false)
     ttl = remember ? REMEMBERED_TTL : TTL
-    @session[SESSION_KEY] = ttl.from_now.to_i
+    # Counted in seconds, not calendar days, so a clock change doesn't move it.
+    @session[SESSION_KEY] = Time.current.to_i + ttl.to_i
   end
 end

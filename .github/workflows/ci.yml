@@ -35,8 +35,9 @@ jobs:
           node-version: 22
           cache: yarn
 
+      # yarn audit's exit code is a bitmask of the severities found; 8 and up means high or critical.
       - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: yarn audit --groups dependencies --level high
+        run: yarn audit --groups dependencies --level high || [ $? -lt 8 ]
 
   lint:
     runs-on: ubuntu-latest
