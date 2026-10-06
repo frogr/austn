@@ -40,12 +40,12 @@ class AvailabilityRuleTest < ActiveSupport::TestCase
     assert_nil slot.availability_id
   end
 
-  test "create_defaults! sets up weekdays 10 to 5 with 30-minute slots, once" do
+  test "create_defaults! sets up weekdays 11 to 5 with 30-minute slots, once" do
     AvailabilityRule.create_defaults!
     AvailabilityRule.create_defaults!
 
     assert_equal (1..5).to_a, AvailabilityRule.order(:weekday).pluck(:weekday)
     first = AvailabilityRule.first
-    assert_equal [ "10:00", "17:00", 30 ], [ first.start_time.strftime("%H:%M"), first.end_time.strftime("%H:%M"), first.slot_duration_minutes ]
+    assert_equal [ "11:00", "17:00", 30 ], [ first.start_time.strftime("%H:%M"), first.end_time.strftime("%H:%M"), first.slot_duration_minutes ]
   end
 end

@@ -114,7 +114,7 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "No open times right now. Email", response.body
-    assert_select "a[href='mailto:hi@austn.net']"
+    assert_select "a[href='mailto:austindanielfrench@gmail.com']"
   end
 
   test "GET /book shows days opened by weekly rules" do

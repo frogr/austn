@@ -1,4 +1,4 @@
-# A weekly window when people can book time, e.g. Mondays 10:00 to 17:00 in
+# A weekly window when people can book time, e.g. Mondays 11:00 to 17:00 in
 # 30-minute slots. BookingSchedule turns active rules into slots on the fly.
 class AvailabilityRule < ApplicationRecord
   include BookableWindow
@@ -12,11 +12,11 @@ class AvailabilityRule < ApplicationRecord
   scope :active, -> { where(active: true) }
   scope :ordered, -> { order(:weekday, :start_time) }
 
-  # Monday to Friday, 10:00 to 17:00, 30-minute slots.
+  # Monday to Friday, 11:00 to 17:00, 30-minute slots.
   def self.create_defaults!
     (1..5).each do |weekday|
       find_or_create_by!(weekday: weekday) do |rule|
-        rule.start_time = "10:00"
+        rule.start_time = "11:00"
         rule.end_time = "17:00"
         rule.slot_duration_minutes = 30
       end

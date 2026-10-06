@@ -6,6 +6,6 @@ class ApplicationMailer < ActionMailer::Base
 
   # Where notifications for Austin go.
   def admin_email
-    ENV.fetch("ADMIN_EMAIL", "hi@austn.net")
+    ENV.fetch("ADMIN_EMAIL", "austindanielfrench@gmail.com")
   end
 end

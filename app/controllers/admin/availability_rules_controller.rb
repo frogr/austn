@@ -7,7 +7,7 @@ module Admin
     end
 
     def new
-      @rule = AvailabilityRule.new(weekday: 1, start_time: "10:00", end_time: "17:00", slot_duration_minutes: 30)
+      @rule = AvailabilityRule.new(weekday: 1, start_time: "11:00", end_time: "17:00", slot_duration_minutes: 30)
     end
 
     def create

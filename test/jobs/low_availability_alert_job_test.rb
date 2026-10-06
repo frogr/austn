@@ -17,7 +17,7 @@ class LowAvailabilityAlertJobTest < ActiveJob::TestCase
     end
 
     email = ActionMailer::Base.deliveries.last
-    assert_equal [ ENV.fetch("ADMIN_EMAIL", "hi@austn.net") ], email.to
+    assert_equal [ ENV.fetch("ADMIN_EMAIL", "austindanielfrench@gmail.com") ], email.to
     assert_equal "Only 4 open booking slots in the next 14 days", email.subject
     assert_match "/admin/availability_rules", email.body.to_s
   end
