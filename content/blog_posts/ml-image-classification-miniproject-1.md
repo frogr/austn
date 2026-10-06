@@ -4,7 +4,7 @@ date: 2025-08-25
 slug: ml-image-classification-miniproject-1
 ---
 
-I followed along with fast.ai's "Is it a bird?" lesson ([my Kaggle notebook](https://www.kaggle.com/code/austnnet/is-it-a-bird-creating-a-model-from-your-own-data/)), then added a random sampler to check the classifier on images it hadn't seen.
+I followed along with fast.ai's ["Is it a bird?" lesson](https://www.kaggle.com/code/jhoward/is-it-a-bird-creating-a-model-from-your-own-data), then added a random sampler to check the classifier on images it hadn't seen.
 
 Getting started with fastai is incredibly fast. The course and the book teach "backwards": you build something that works first, then dig into how it works when you need to.
 

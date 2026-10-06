@@ -1,14 +1,24 @@
 ---
 title: Tenex
-summary: Only engineer on three client engagements at once. Document AI with evals and autonomy gates, retail analytics, a Databricks warehouse.
+summary: Lead engineer on three client engagements at once. Document AI with evals and autonomy gates, retail analytics, a Databricks warehouse.
+tagline: "Three client projects at once, as the lead engineer on each."
 tier: featured
 order: 1
 when: "2026"
 role: Senior Forward Deployed Engineer
+stats:
+  - value: "3"
+    label: "client engagements at once, as the lead engineer"
+  - value: "1,500+"
+    label: "stores in the placement analytics"
+  - value: "96%"
+    label: "of 300+ SKUs where the model called the direction of sales"
+  - value: "Over half"
+    label: "of documents run without human review"
 stack: [TypeScript, Next.js, Python, Google Document AI, Databricks, Postgres]
 ---
 
-Tenex is an AI consultancy that puts engineers directly with clients. I was a forward deployed engineer there from March to June 2026, and the only engineer on three client engagements at the same time. On each one I went from discovery to architecture to delivery, and I ran the demos for the client's executives.
+Tenex is an AI consultancy that puts engineers directly with clients. I was a forward deployed engineer there from March to June 2026, and the lead engineer on three client engagements at the same time. On each one I went from discovery to architecture to delivery, and I ran the demos for the client's executives.
 
 I've left out client names.
 
@@ -58,7 +68,7 @@ The third engagement replaced WhatsApp threads. Reps used to send their availabi
 
 ## Tools I built for myself
 
-Running three projects alone meant I needed help. I built:
+Leading three projects at once meant I needed help. I built:
 
 - a tool to run several Claude Code sessions in parallel
 - a Slack-to-PR flow that turns a bug report into a pull request for review

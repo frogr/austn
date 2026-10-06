@@ -1,10 +1,20 @@
 ---
 title: austn.net's GPU tools
-summary: Nine AI tools on one GPU in my apartment, open to anyone on the web. It handled tens of thousands of jobs. This page covers how it worked and what broke.
+summary: Nine AI tools I ran on one GPU in my apartment for six months, open to anyone on the web. They handled tens of thousands of jobs. This page covers how it worked and what broke.
+tagline: "Nine AI tools I ran on one GPU at home, open to anyone."
 tier: featured
 order: 5
 when: 2025-26
 role: Solo project
+stats:
+  - value: "9"
+    label: "AI tools"
+  - value: "1"
+    label: "consumer GPU"
+  - value: "Tens of thousands"
+    label: "of inference jobs"
+  - value: "6 months"
+    label: "open to anyone on the web"
 stack: [Ruby on Rails, Sidekiq, Redis, Python, Flask, ComfyUI, Tailscale]
 legacy_ids: [ai-tools, ai-lab]
 links:

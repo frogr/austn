@@ -1,6 +1,7 @@
 ---
 title: TinyRails
 summary: A small Rails-like framework on Rack, built to see what Rails is actually doing on every request.
+tagline: "Rails, rebuilt small, to see what it's really doing."
 tier: featured
 order: 6
 when: "2025"
@@ -30,6 +31,25 @@ To make sure it worked for real, I built a small app on top of it: [best_tweets]
 ## The whole request, in one method
 
 This is the entry point, trimmed a little. Rack calls it with the request, it finds a controller and an action, runs it, and hands back status, headers and body:
+
+<figure class="figure">
+  <div class="diagram" role="img" aria-label="A request goes from the browser to Rack, to Application#call, which finds the controller and action, runs TweetsController#show, renders the ERB view, and returns status, headers and body">
+    <svg viewBox="0 0 680 118" width="680" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="tr-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#6c756f"/></marker></defs>
+      <rect class="box" x="0" y="14" width="120" height="48" rx="6"/><text x="60" y="36" text-anchor="middle">Browser</text><text class="label" x="60" y="52" text-anchor="middle">/tweets/show</text>
+      <path class="edge" d="M120 38 H138" marker-end="url(#tr-arrow)"/>
+      <rect class="box" x="140" y="14" width="120" height="48" rx="6"/><text x="200" y="36" text-anchor="middle">Rack</text><text class="label" x="200" y="52" text-anchor="middle">calls the app</text>
+      <path class="edge" d="M260 38 H278" marker-end="url(#tr-arrow)"/>
+      <rect class="box box--accent" x="280" y="14" width="120" height="48" rx="6"/><text x="340" y="36" text-anchor="middle">Application#call</text><text class="label" x="340" y="52" text-anchor="middle">finds controller</text>
+      <path class="edge" d="M400 38 H418" marker-end="url(#tr-arrow)"/>
+      <rect class="box" x="420" y="14" width="120" height="48" rx="6"/><text x="480" y="36" text-anchor="middle">TweetsController</text><text class="label" x="480" y="52" text-anchor="middle">#show</text>
+      <path class="edge" d="M540 38 H558" marker-end="url(#tr-arrow)"/>
+      <rect class="box" x="560" y="14" width="120" height="48" rx="6"/><text x="620" y="36" text-anchor="middle">ERB view</text><text class="label" x="620" y="52" text-anchor="middle">show.html.erb</text>
+      <path class="edge" d="M620 62 V96 H62 V64" marker-end="url(#tr-arrow)"/><text class="label" x="340" y="112" text-anchor="middle">[status, headers, body]</text>
+    </svg>
+  </div>
+  <figcaption>One request through TinyRails. The method below is the box in the middle.</figcaption>
+</figure>
 
 ```ruby
 module Tinyrails

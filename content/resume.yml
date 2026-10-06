@@ -1,7 +1,7 @@
 # Mirrors Austin's resume (Austin_French_Resume_Sep17 in Google Drive) as written,
 # minus the phone number. Edit this file when the resume changes; /resume and
 # /resume.pdf both render from it.
-title: Senior Product & Forward-Deployed Engineer
+title: Senior Product Engineer · Forward-Deployed
 location: New York, NY
 email: austindanielfrench@gmail.com
 links:
@@ -17,7 +17,7 @@ summary: >-
   using it, from a Super Bowl check-in line to a client’s conference room.
   Self-taught, Rails-first, increasingly TypeScript and applied AI: took a
   contractor-facing assistant from idea to ~5,000 requests/day at CompanyCam,
-  served as the sole engineer on three simultaneous client engagements at Tenex,
+  led three simultaneous client engagements at Tenex,
   and was called back to Backlit every event season for seven years. Off the
   clock, built and ran nine self-hosted AI tools on my own GPU at austn.net.
 
@@ -29,7 +29,7 @@ experience:
     dates: Mar 2026 – Jun 2026
     note: Role eliminated in company-wide restructuring
     about: >-
-      AI consultancy embedding engineers directly with clients. Sole engineer on
+      AI consultancy embedding engineers directly with clients. Lead engineer on
       three simultaneous engagements, from technical discovery through
       architecture, delivery, and executive demos.
     bullets:
