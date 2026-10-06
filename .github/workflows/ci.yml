@@ -100,13 +100,3 @@ jobs:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [scan_ruby, scan_js, lint, test]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: hatchboxio/github-hatchbox-deploy-action@v2
-        with:
-          deploy_key: ${{ secrets.HATCHBOX_DEPLOY_KEY }}
