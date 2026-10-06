@@ -5,6 +5,7 @@ class Api::V1::ImagesControllerTest < ActionDispatch::IntegrationTest
     @api_key = "test-api-key-123"
     ENV["TTS_API_KEY"] = @api_key
     @headers = { "X-API-Key" => @api_key, "Content-Type" => "application/json" }
+    stub_gpu_online("images")
   end
 
   test "generate returns unauthorized without API key" do

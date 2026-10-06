@@ -1,182 +1,119 @@
-require "httparty"
-require "base64"
+require "net/http"
 
-# Shared client for ComfyUI API interactions
-# Handles file uploads, workflow queuing, and result fetching
+# Thin client for the ComfyUI API on the GPU box: upload an input file,
+# queue a workflow, wait for it to finish and fetch its outputs.
+#
+# Network failures surface as Gpu::Offline, Gpu::ConnectionError or
+# Gpu::Timeout; problems reported by ComfyUI itself raise ComfyuiError.
 class ComfyuiClient
-  include HTTParty
-  base_uri ENV["COMFYUI_URL"] || "http://100.68.94.33:8188"
-
   class ComfyuiError < StandardError; end
 
-  # Upload a file to ComfyUI's input folder
-  # @param file_path [String] Path to the local file
-  # @param subfolder [String] Optional subfolder in ComfyUI's input directory
-  # @return [Hash] Response with {name:, subfolder:, type:}
+  WORKFLOWS_DIR = Rails.root.join("workflows")
+  OPEN_TIMEOUT = 5 # seconds
+  POLL_INTERVAL = 2 # seconds
+
+  # @return [Hash] ComfyUI's {"name", "subfolder", "type"} for the stored file
   def self.upload_file(file_path, subfolder: "")
-    raise ComfyuiError, "File not found: #{file_path}" unless File.exist?(file_path)
-
-    basename = File.basename(file_path)
-    Rails.logger.info "Uploading file to ComfyUI: #{basename}"
-
-    uri = URI("#{base_uri}/upload/image")
+    uri = URI("#{base_url}/upload/image")
     request = Net::HTTP::Post.new(uri)
 
-    # Build multipart form data
-    form_data = [
-      [ "image", File.open(file_path, "rb"), { filename: basename } ]
-    ]
-    form_data << [ "subfolder", subfolder ] if subfolder.present?
+    response = File.open(file_path, "rb") do |file|
+      form = [ [ "image", file, { filename: File.basename(file_path) } ] ]
+      form << [ "subfolder", subfolder ] if subfolder.present?
+      request.set_form(form, "multipart/form-data")
 
-    request.set_form(form_data, "multipart/form-data")
-
-    response = Net::HTTP.start(uri.hostname, uri.port) do |http|
-      http.read_timeout = 30
-      http.request(request)
+      Gpu.translating_network_errors do
+        Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https",
+                        open_timeout: OPEN_TIMEOUT, read_timeout: 30) do |http|
+          http.request(request)
+        end
+      end
     end
 
-    unless response.is_a?(Net::HTTPSuccess)
-      raise ComfyuiError, "Upload failed: #{response.code} - #{response.body}"
-    end
+    raise ComfyuiError, "Upload failed with HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
 
-    result = JSON.parse(response.body)
-    Rails.logger.info "File uploaded successfully: #{result['name']}"
-    result
-  rescue JSON::ParserError => e
-    raise ComfyuiError, "Invalid response from upload: #{e.message}"
-  rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, SocketError => e
-    raise ComfyuiError, "Connection error: #{e.message}"
+    JSON.parse(response.body)
+  rescue JSON::ParserError
+    raise ComfyuiError, "Upload returned invalid JSON"
   end
 
-  # Queue a workflow prompt for execution
-  # @param workflow [Hash] The workflow JSON structure
-  # @return [String] The prompt_id for tracking
+  # @return [String] the prompt_id to wait on
   def self.queue_prompt(workflow)
-    Rails.logger.info "Queuing ComfyUI prompt"
-
-    response = post("/prompt",
+    response = request(:post, "/prompt",
       body: { prompt: workflow }.to_json,
       headers: { "Content-Type" => "application/json" },
-      timeout: 30
-    )
+      read_timeout: 30)
 
     unless response.success?
-      Rails.logger.error "ComfyUI queue error: #{response.body}"
-      raise ComfyuiError, "Failed to queue prompt: #{response.code} - #{response.body}"
+      raise ComfyuiError, "Queueing the prompt failed with HTTP #{response.code}: #{response.body.to_s.truncate(500)}"
     end
 
-    response_data = response.parsed_response || JSON.parse(response.body)
-    prompt_id = response_data["prompt_id"]
-
-    unless prompt_id
-      raise ComfyuiError, "No prompt_id returned from ComfyUI"
-    end
-
-    Rails.logger.info "Prompt queued with ID: #{prompt_id}"
-    prompt_id
-  rescue HTTParty::Error => e
-    raise ComfyuiError, "Network error: #{e.message}"
+    response.parsed_response["prompt_id"] || raise(ComfyuiError, "ComfyUI did not return a prompt_id")
   end
 
-  # Get the history/status of a prompt
-  # @param prompt_id [String] The prompt ID to check
-  # @return [Hash, nil] The history entry or nil if not ready
+  # @return [Hash, nil] the history entry, or nil while the prompt is still running
   def self.get_history(prompt_id)
-    response = get("/history/#{prompt_id}")
-    return nil unless response.success?
+    response = request(:get, "/history/#{prompt_id}", read_timeout: 30)
+    return unless response.success?
 
-    data = response.parsed_response || JSON.parse(response.body)
-    data[prompt_id]
-  rescue HTTParty::Error, JSON::ParserError
+    response.parsed_response[prompt_id]
+  rescue JSON::ParserError
     nil
   end
 
-  # Wait for a prompt to complete and return its outputs
-  # @param prompt_id [String] The prompt ID to wait for
-  # @param timeout [Integer] Timeout in seconds
-  # @param output_node_id [String] The node ID that produces output
-  # @return [Hash] The outputs from the specified node
+  # Polls until the prompt completes.
+  #
+  # @return [Hash] the outputs of output_node_id when given and present, otherwise all outputs
+  # @raise [Gpu::Timeout] if it does not complete within timeout seconds
   def self.wait_for_completion(prompt_id, timeout: 60, output_node_id: nil)
-    start_time = Time.current
+    deadline = timeout.seconds.from_now
 
     loop do
       history = get_history(prompt_id)
 
-      if history
-        # Check if the prompt completed (works even when outputs is empty)
-        status = history["status"]
-        if status && status["completed"]
-          outputs = history["outputs"] || {}
+      if history&.dig("status", "completed")
+        outputs = history["outputs"] || {}
+        return outputs[output_node_id.to_s] if output_node_id && outputs.key?(output_node_id.to_s)
 
-          # If output_node_id specified, return that node's output
-          if output_node_id && outputs[output_node_id.to_s]
-            return outputs[output_node_id.to_s]
-          end
-
-          # Return outputs (may be empty for nodes like Hy3D21ExportMesh)
-          return outputs
-        end
+        return outputs
       end
 
-      if Time.current - start_time > timeout
-        raise ComfyuiError, "Timeout waiting for completion (#{timeout}s)"
-      end
+      raise Gpu::Timeout, "ComfyUI prompt #{prompt_id} did not finish within #{timeout}s" if Time.current > deadline
 
-      sleep 2
+      sleep POLL_INTERVAL
     end
   end
 
-  # Fetch an output file from ComfyUI
-  # @param filename [String] The output filename
-  # @param subfolder [String] The subfolder (usually empty for outputs)
-  # @param type [String] The type (input, output, temp)
-  # @return [String] The raw file content
+  # @return [String] the raw file content
   def self.get_output_file(filename, subfolder: "", type: "output")
-    Rails.logger.info "ComfyUI: Fetching file #{filename} (type: #{type}, subfolder: #{subfolder.presence || 'root'})"
-    response = get("/view",
-      query: {
-        filename: filename,
-        subfolder: subfolder,
-        type: type
-      },
-      timeout: 120  # Increased timeout for large audio files (~12MB each)
-    )
+    response = request(:get, "/view",
+      query: { filename: filename, subfolder: subfolder, type: type },
+      read_timeout: 120) # stems and songs can be large
 
-    unless response.success?
-      raise ComfyuiError, "Failed to fetch output: #{response.code}"
-    end
+    raise ComfyuiError, "Fetching #{filename} failed with HTTP #{response.code}" unless response.success?
 
     response.body
-  rescue HTTParty::Error => e
-    raise ComfyuiError, "Network error fetching output: #{e.message}"
   end
 
-  # Build URL to view a file from ComfyUI
-  # @param filename [String] The filename
-  # @param subfolder [String] The subfolder
-  # @param type [String] The type (input, output, temp)
-  # @return [String] The full URL
-  def self.get_output_url(filename, subfolder: "", type: "output")
-    params = URI.encode_www_form({
-      filename: filename,
-      subfolder: subfolder,
-      type: type
-    })
-    "#{base_uri}/view?#{params}"
-  end
-
-  # Load a workflow from the workflows directory
-  # @param workflow_name [String] The workflow filename (e.g., "AUSTNNETREMBG.json")
-  # @return [Hash] The parsed workflow
+  # @param workflow_name [String] a file in workflows/, e.g. "AUSTNNETREMBG.json"
   def self.load_workflow(workflow_name)
-    workflow_path = Rails.root.join("workflows", workflow_name)
+    path = WORKFLOWS_DIR.join(workflow_name)
+    raise ComfyuiError, "Workflow not found: #{workflow_name}" unless File.exist?(path)
 
-    unless File.exist?(workflow_path)
-      raise ComfyuiError, "Workflow not found: #{workflow_name}"
-    end
-
-    JSON.parse(File.read(workflow_path))
+    JSON.parse(File.read(path))
   rescue JSON::ParserError => e
-    raise ComfyuiError, "Invalid workflow JSON: #{e.message}"
+    raise ComfyuiError, "Invalid workflow JSON in #{workflow_name}: #{e.message}"
   end
+
+  def self.base_url
+    Gpu::Backend.url!(:comfyui)
+  end
+
+  def self.request(method, path, read_timeout:, **options)
+    Gpu.translating_network_errors do
+      HTTParty.public_send(method, "#{base_url}#{path}",
+        open_timeout: OPEN_TIMEOUT, read_timeout: read_timeout, **options)
+    end
+  end
+  private_class_method :base_url, :request
 end

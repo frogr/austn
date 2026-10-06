@@ -3,8 +3,13 @@
     {
       "fingerprint": "fedd2ff2a188821bf9cc8ba7b762faeb5e4ad71cd352cbaf9c99b328ca72858b",
       "note": "Admin-only controller with authentication. Slug comes from database record, not direct user input. File paths are constrained to content directory."
+    },
+    {
+      "warning_type": "Unmaintained Dependency",
+      "fingerprint": "21ab0fe00fdd5899ffc405cff75aadb91b805ee996a614f7e27b08a287e9062d",
+      "note": "Rails 8.0 support ends 2026-11-07; Rails is already on the latest 8.0.x and the 8.1 upgrade is a separate change. This low-confidence notice is ignored on purpose: Brakeman raises it to medium confidence (a new fingerprint) 30 days before end of life, which fails CI again as the reminder to upgrade."
     }
   ],
-  "updated": "2026-01-06",
-  "brakeman_version": "7.1.2"
+  "updated": "2026-10-05",
+  "brakeman_version": "8.1.0"
 }

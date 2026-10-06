@@ -7,7 +7,7 @@ const styles = {
     alignItems: 'center',
     gap: '1rem',
     padding: '0.75rem 1rem',
-    background: 'rgba(0,0,0,0.2)',
+    background: 'var(--sunken)',
   },
   transportButtons: {
     display: 'flex',
@@ -17,9 +17,9 @@ const styles = {
     width: '40px',
     height: '40px',
     borderRadius: '50%',
-    border: '1px solid rgba(255,255,255,0.1)',
-    background: 'rgba(255,255,255,0.06)',
-    color: 'white',
+    border: '1px solid var(--line)',
+    background: 'var(--ground-3)',
+    color: 'var(--ink)',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -27,11 +27,13 @@ const styles = {
     transition: 'all 0.2s',
   },
   playButton: {
-    background: 'linear-gradient(45deg, #10b981, #059669)',
+    background: 'var(--brand)',
+    borderColor: 'var(--brand)',
+    color: 'var(--ground)',
   },
   stopButton: {
-    background: 'rgba(239, 68, 68, 0.2)',
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    color: 'var(--clay)',
+    borderColor: 'var(--clay)',
   },
   controlGroup: {
     display: 'flex',
@@ -40,53 +42,55 @@ const styles = {
   },
   label: {
     fontSize: '0.75rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   input: {
     width: '60px',
     padding: '0.5rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--sunken)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.875rem',
     textAlign: 'center',
+    fontVariationSettings: '"MONO" 1',
   },
   select: {
     padding: '0.5rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--sunken)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.875rem',
   },
   loopButton: {
     padding: '0.5rem 0.75rem',
     borderRadius: '0.25rem',
-    border: '1px solid rgba(255,255,255,0.1)',
-    background: 'rgba(255,255,255,0.06)',
-    color: 'white',
+    border: '1px solid var(--line)',
+    background: 'var(--ground-3)',
+    color: 'var(--ink)',
     cursor: 'pointer',
     fontSize: '0.75rem',
     transition: 'all 0.2s',
   },
   loopActive: {
-    background: 'rgba(59, 130, 246, 0.3)',
-    borderColor: 'rgba(59, 130, 246, 0.5)',
+    background: 'var(--sky)',
+    borderColor: 'var(--sky)',
+    color: 'var(--ground)',
   },
   stepDisplay: {
-    fontFamily: 'monospace',
+    fontVariationSettings: '"MONO" 1',
     fontSize: '1.25rem',
-    color: 'var(--accent-color)',
+    color: 'var(--brand)',
     minWidth: '80px',
     textAlign: 'center',
   },
   divider: {
     width: '1px',
     height: '24px',
-    background: 'rgba(255,255,255,0.1)',
+    background: 'var(--line)',
     margin: '0 0.5rem',
   },
 }
@@ -167,7 +171,7 @@ export default function TransportControls() {
       {/* Steps */}
       <div style={styles.controlGroup}>
         <span style={styles.label}>Steps</span>
-        <select
+        <select aria-label="Steps"
           value={state.totalSteps}
           onChange={(e) => actions.setTotalSteps(parseInt(e.target.value))}
           style={styles.select}
@@ -199,7 +203,7 @@ export default function TransportControls() {
       {/* Master volume */}
       <div style={styles.controlGroup}>
         <span style={styles.label}>Master</span>
-        <input
+        <input aria-label="Master volume"
           type="range"
           min="0"
           max="1"
@@ -208,7 +212,7 @@ export default function TransportControls() {
           onChange={(e) => actions.setMasterVolume(parseFloat(e.target.value))}
           style={{ width: '80px' }}
         />
-        <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', width: '36px' }}>
+        <span style={{ fontSize: '0.75rem', color: 'var(--ink-2)', width: '36px' }}>
           {Math.round(state.masterVolume * 100)}%
         </span>
       </div>

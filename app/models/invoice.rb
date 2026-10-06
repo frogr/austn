@@ -42,24 +42,18 @@ class Invoice < ApplicationRecord
 
   private
 
+  # Runs inside save's transaction, and the lock is held until that
+  # transaction commits, so a concurrent create waits until this number is
+  # taken before it reads the last one.
   def set_invoice_number
     return if invoice_number.present?
 
     year = (issue_date || Date.current).year
+    self.class.advisory_xact_lock(:invoice_numbers, year)
 
-    # Use advisory lock to prevent race conditions when generating invoice numbers
-    ActiveRecord::Base.connection.execute("SELECT pg_advisory_lock(#{year})")
-    begin
-      last_invoice = Invoice.where("invoice_number LIKE ?", "INV-#{year}-%").order(:invoice_number).last
-      next_num = if last_invoice
-        last_invoice.invoice_number.split("-").last.to_i + 1
-      else
-        1
-      end
-      self.invoice_number = "INV-#{year}-#{next_num.to_s.rjust(4, '0')}"
-    ensure
-      ActiveRecord::Base.connection.execute("SELECT pg_advisory_unlock(#{year})")
-    end
+    last_invoice = Invoice.where("invoice_number LIKE ?", "INV-#{year}-%").order(:invoice_number).last
+    next_num = last_invoice ? last_invoice.invoice_number.split("-").last.to_i + 1 : 1
+    self.invoice_number = "INV-#{year}-#{next_num.to_s.rjust(4, '0')}"
   end
 
   def calculate_totals

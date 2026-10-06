@@ -1,8 +1,7 @@
 class BookingNotificationsChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "booking_notifications"
-  end
+    return reject unless admin
 
-  def unsubscribed
+    stream_from "booking_notifications"
   end
 end

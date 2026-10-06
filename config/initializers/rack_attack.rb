@@ -48,6 +48,18 @@ class Rack::Attack
     end
   end
 
+  ### Throttle GPU generation requests per IP ###
+  # One GPU serves everyone, so each visitor gets a small share of it.
+  GPU_GENERATE_PATH = %r{\A/(rembg|stems|vtracer|3d|music|tts|images)/generate\z}
+
+  throttle("gpu/generate/ip", limit: 10, period: 1.hour) do |req|
+    req.ip if req.post? && req.path.match?(GPU_GENERATE_PATH)
+  end
+
+  throttle("chat/ip", limit: 20, period: 1.hour) do |req|
+    req.ip if req.post? && req.path == "/chat/async"
+  end
+
   ### Throttle booking creation ###
   # Limit: 5 bookings per hour per IP
   throttle("bookings/create", limit: 5, period: 1.hour) do |req|

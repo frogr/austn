@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
+import { cardStyle, tapeStyle, tagStyle } from './styles'
 
 const W = 580
 const H = 380
@@ -82,12 +83,9 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
   return (
     <div
       style={{
-        background: '#2a2018',
-        border: '1px solid #3d2e20',
-        borderRadius: '0.75rem',
+        ...cardStyle,
         overflow: 'hidden',
         marginBottom: '1.5rem',
-        transition: 'transform 200ms ease, box-shadow 200ms ease',
       }}
       className="claude-corner-card"
     >
@@ -97,7 +95,7 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
           position: 'relative',
           width: '100%',
           aspectRatio: `${W} / ${H}`,
-          background: '#0e0a07',
+          background: 'var(--sunken)',
           cursor: showPlayButton ? 'pointer' : 'default',
           overflow: 'hidden',
         }}
@@ -121,22 +119,21 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(14, 10, 7, 0.5)',
+            background: 'color-mix(in srgb, var(--sunken) 55%, transparent)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'opacity 200ms ease',
           }}>
             <span style={{
-              color: '#E8734A',
+              background: 'var(--clay)',
+              color: 'var(--ground)',
               fontSize: '0.95rem',
-              fontWeight: 600,
-              fontFamily: '"Inter", system-ui, sans-serif',
-              letterSpacing: '-0.01em',
+              fontWeight: 800,
+              fontVariationSettings: '"CASL" 0.8',
               padding: '0.5rem 1.25rem',
-              border: '1px solid rgba(232, 115, 74, 0.4)',
-              borderRadius: '2rem',
-              background: 'rgba(232, 115, 74, 0.08)',
+              borderRadius: 'var(--radius)',
+              boxShadow: '0 0.25rem 0 var(--shade)',
             }}>
               {buttonLabel}
             </span>
@@ -150,17 +147,15 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
             bottom: 0,
             left: 0,
             right: 0,
-            padding: '1.25rem 1.5rem 1rem',
-            background: 'linear-gradient(transparent, rgba(14, 10, 7, 0.85) 30%)',
+            padding: '1rem 1.5rem',
+            background: 'color-mix(in srgb, var(--sunken) 85%, transparent)',
           }}>
             <p style={{
-              color: '#f5efe6',
+              color: 'var(--ink)',
               fontSize: '0.85rem',
               fontStyle: 'italic',
-              fontFamily: '"Inter", system-ui, sans-serif',
               lineHeight: 1.5,
               margin: 0,
-              opacity: 0.9,
             }}>
               {currentThought}
             </p>
@@ -174,13 +169,13 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
             bottom: 0,
             left: 0,
             right: 0,
-            height: '2px',
-            background: 'rgba(232, 115, 74, 0.15)',
+            height: '3px',
+            background: 'var(--line)',
           }}>
             <div style={{
               height: '100%',
               width: `${progress * 100}%`,
-              background: '#E8734A',
+              background: 'var(--clay)',
               transition: 'width 100ms ease',
             }} />
           </div>
@@ -190,35 +185,25 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
       {/* Metadata */}
       <div style={{ padding: '1.25rem 1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-          <span style={{
-            display: 'inline-block',
-            background: 'rgba(232, 115, 74, 0.15)',
-            color: '#E8734A',
-            fontSize: '0.7rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            padding: '0.2rem 0.6rem',
-            borderRadius: '9999px',
-            border: '1px solid rgba(232, 115, 74, 0.25)',
-          }}>
+          <span style={tapeStyle}>
             Drawing
           </span>
-          <span style={{ color: '#b8a898', fontSize: '0.8rem' }}>
+          <span style={{ color: 'var(--ink-2)', fontSize: '0.8rem', fontVariationSettings: '"MONO" 1' }}>
             {timeAgo(metadata.created_at)}
           </span>
           {metadata.mood && (
-            <span style={{ color: '#b8a898', fontSize: '0.8rem', fontStyle: 'italic', marginLeft: 'auto' }}>
+            <span style={{ color: 'var(--ink-2)', fontSize: '0.8rem', fontStyle: 'italic', marginLeft: 'auto' }}>
               feeling {metadata.mood}
             </span>
           )}
         </div>
 
         <h2 style={{
-          color: '#f5efe6',
+          color: 'var(--ink)',
           fontSize: '1.2rem',
           fontWeight: 800,
-          letterSpacing: '-0.02em',
+          fontVariationSettings: '"CASL" 1',
+          letterSpacing: '-0.015em',
           marginBottom: '0.4rem',
           lineHeight: 1.3,
         }}>
@@ -227,7 +212,7 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
 
         {metadata.description && (
           <p style={{
-            color: '#b8a898',
+            color: 'var(--ink-2)',
             fontSize: '0.88rem',
             lineHeight: 1.6,
             margin: '0 0 0.75rem',
@@ -239,17 +224,7 @@ export default function DrawingPlayer({ buildSteps, metadata }) {
         {metadata.tags && metadata.tags.length > 0 && (
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {metadata.tags.map(tag => (
-              <span
-                key={tag}
-                style={{
-                  background: 'rgba(184, 168, 152, 0.1)',
-                  color: '#b8a898',
-                  fontSize: '0.7rem',
-                  padding: '0.2rem 0.55rem',
-                  borderRadius: '9999px',
-                  border: '1px solid rgba(184, 168, 152, 0.15)',
-                }}
-              >
+              <span key={tag} style={tagStyle}>
                 {tag}
               </span>
             ))}

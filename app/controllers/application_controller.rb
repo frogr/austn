@@ -1,4 +1,12 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+  include AdminAuthenticatable
+
+  helper_method :current_palette
+
+  private
+
+  # The visitor's colour palette, from a cookie set in the footer.
+  def current_palette
+    Palette.find(cookies[:palette])
+  end
 end

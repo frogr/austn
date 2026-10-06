@@ -1,0 +1,39 @@
+<% page_title "Palettes" %>
+<% page_description "Every colour palette this site comes in, side by side." %>
+<% content_for :wide, true %>
+
+<h1>Palettes</h1>
+<p class="lede">The same site in <%= @palettes.size %> sets of colours. Pick one and it follows you around.</p>
+
+<ul class="palette-grid">
+  <% @palettes.each do |palette| %>
+    <li class="palette-card <%= palette.css_class %>">
+      <div class="palette-card-head">
+        <h2><%= palette.name %></h2>
+        <% if palette == current_palette %><span class="label" data-hue="brand">In use</span><% end %>
+      </div>
+      <p class="muted"><%= palette.note %></p>
+
+      <p class="palette-card-title">I build software and then <mark>stand next to the people</mark> using it.</p>
+
+      <div class="palette-card-labels">
+        <span class="label" data-hue="sun">Work</span>
+        <span class="label" data-hue="sky">Writing</span>
+        <span class="label" data-hue="clay">Playground</span>
+        <span class="label" data-hue="moss">Resume</span>
+        <span class="label" data-hue="plum">Now</span>
+      </div>
+
+      <ul class="toys">
+        <% %w[pitch-checker midi-studio claude-corner].zip(%w[sun clay plum]).each do |slug, hue| %>
+          <li><span class="toy" data-hue="<%= hue %>"><span class="toy-art"><%= render "shared/toy_art", slug: slug %></span></span></li>
+        <% end %>
+      </ul>
+
+      <p>Body text looks like this, with <a href="#main">a link</a> in it. <span class="muted">Quieter text looks like this,</span> <span style="color: var(--ink-3);">and the faintest text like this.</span></p>
+      <p class="raised">A raised panel, with <code>inline code</code> and a <span class="live">live</span> marker.</p>
+
+      <%= button_to "Use #{palette.name}", palette_path, params: { name: palette.slug }, class: "button" %>
+    </li>
+  <% end %>
+</ul>

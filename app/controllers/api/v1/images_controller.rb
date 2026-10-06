@@ -2,6 +2,9 @@ module Api
   module V1
     class ImagesController < BaseController
       include GpuQueueStatus
+      include RequiresGpu
+
+      requires_gpu "images", only: [ :generate, :generate_async ]
 
       # POST /api/v1/images/generate
       # Synchronous — blocks until image is generated and returns result directly.
@@ -18,11 +21,11 @@ module Api
         options = build_options
 
         start_time = Time.current
-        result = ComfyService.generate_image(
+        images = ImageGenerationService.generate(
           params[:prompt],
           negative_prompt: options["negative_prompt"],
           seed: options["seed"],
-          image_size: options["image_size"],
+          image_size: options.fetch("image_size", 512),
           batch_size: 1
         )
         elapsed = (Time.current - start_time).round(2)
@@ -31,7 +34,7 @@ module Api
 
         # Store in Redis so it can be served via the image URL
         image_data = {
-          base64: result.is_a?(Array) ? result.first : result,
+          base64: images.first,
           prompt: params[:prompt],
           options: options,
           created_at: Time.current
@@ -48,9 +51,9 @@ module Api
           generation_time: elapsed
         }
 
-      rescue ComfyService::ComfyError => e
-        Rails.logger.error "[Image API #{request_id}] ComfyUI error: #{e.message}"
-        render_error(e.message, status: :service_unavailable)
+      rescue ComfyuiClient::ComfyuiError, Gpu::Error => e
+        Rails.logger.error "[Image API #{request_id}] #{e.class}: #{e.message}"
+        render_error(Gpu::PublicError.for(e).message, status: :service_unavailable)
       rescue => e
         Rails.logger.error "[Image API #{request_id}] Unexpected error: #{e.class} - #{e.message}"
         Rails.logger.error e.backtrace.first(5).join("\n")

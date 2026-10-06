@@ -1,133 +1,17 @@
-<% meta_title(@blog_post.title) %>
-<% meta_description(truncate(strip_tags(@blog_post.content), length: 160)) %>
+<% page_title @blog_post.title %>
+<% page_description(@blog_post.summary.presence || @blog_post.excerpt) %>
+<% content_for :og_type, "article" %>
 
-<div class="min-h-screen pt-16 pb-10 relative overflow-x-hidden" style="background: transparent;">
+<%= link_to "← Writing", blog_path, class: "back" %>
 
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <!-- Back link with hover effect -->
-    <div class="mb-8">
-      <%= link_to blog_path, class: "inline-flex items-center gap-2 btn btn-secondary group" do %>
-        <span class="material-icons transform group-hover:-translate-x-1 transition-transform">arrow_back</span>
-        <span>Back to Blog</span>
-      <% end %>
-    </div>
+<article>
+  <h1><%= @blog_post.title %></h1>
+  <p class="meta"><time datetime="<%= @blog_post.published_at.to_date.iso8601 %>"><%= @blog_post.published_at.strftime("%B %-d, %Y") %></time></p>
 
-    <article class="glass-thick rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 relative overflow-visible"
-             style="animation: fadeIn 0.8s ease-out;">
-      <!-- Decorative gradient removed for simpler look -->
-      <header class="mb-8 relative">
-        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 break-words"
-            style="color: var(--text-primary); word-break: break-word;">
-          <%= @blog_post.title %>
-        </h1>
-        
-        <% if @blog_post.published_at %>
-          <div class="flex items-center gap-2" style="color: var(--text-muted);">
-            <span class="material-icons text-sm" style="color: var(--accent-secondary);">schedule</span>
-            <%= @blog_post.published_at.strftime("%B %d, %Y") %>
-          </div>
-        <% end %>
-      </header>
-
-      <div class="prose-container max-w-full">
-        <% 
-          # Store content as a hidden JSON element that can be safely accessed
-          content_id = "blog-content-#{@blog_post.id}" 
-        %>
-        
-        <script id="<%= content_id %>" type="application/json">
-          <%= raw @blog_post.content.to_json %>
-        </script>
-        
-        <div 
-          id="markdown-container"
-          class="prose code-theme max-w-full readable-content"
-          style="color: var(--text-secondary); word-break: break-word; overflow-wrap: anywhere;"
-          data-react-component="MarkdownRenderer" 
-          data-props='<%= raw({ useElementId: content_id }.to_json) %>'
-        ></div>
-      </div>
-    </article>
-    
-    <!-- Related posts or CTA -->
-    <div class="mt-12 text-center">
-      <div class="glass-thick rounded-2xl p-4 sm:p-6 md:p-8 relative overflow-hidden">
-        <div class="relative z-10">
-          <h3 class="text-2xl font-semibold mb-2" style="color: var(--text-primary);">Enjoyed this post?</h3>
-          <p class="mb-6" style="color: var(--text-secondary);">Check out more articles, book a time to chat, or send me an email.</p>
-          <div class="flex gap-3 justify-center flex-wrap">
-            <%= link_to blog_path, class: "btn btn-gradient-cool" do %>
-              <span class="material-icons">article</span>
-              More Articles
-            <% end %>
-            <%= link_to book_path, class: "btn btn-primary" do %>
-              <span class="material-icons">calendar_today</span>
-              Book a Meeting
-            <% end %>
-            <%= link_to "mailto:hi@austn.net", class: "btn btn-secondary" do %>
-              <span class="material-icons">email</span>
-              hi@austn.net
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="prose">
+    <%= markdown(@blog_post.content) %>
   </div>
+</article>
 
-  <style>
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Ensure responsive layout on mobile */
-    @media (max-width: 767px) {
-      .prose-container {
-        padding: 0;
-        width: 100%;
-      }
-      
-      .prose {
-        max-width: 100%;
-        word-break: break-word;
-      }
-      
-      /* Force all content to wrap */
-      .prose * {
-        max-width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: anywhere;
-      }
-      
-      /* Ensure code blocks are scrollable */
-      .prose pre {
-        max-width: 100%;
-        overflow-x: auto;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      
-      .prose code {
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      
-      .prose img {
-        max-width: 100%;
-        height: auto;
-      }
-      
-      /* Prevent wide tables from breaking layout */
-      .prose table {
-        display: block;
-        overflow-x: auto;
-        max-width: 100%;
-      }
-      
-      /* Ensure long URLs break properly */
-      .prose a {
-        word-break: break-all;
-      }
-    }
-  </style>
-</div>
+<hr>
+<p class="muted">Thanks for reading. If you want to talk about any of this, <%= mail_to Profile.email, "email me" %>.</p>

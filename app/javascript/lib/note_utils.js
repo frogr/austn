@@ -132,7 +132,7 @@ export function isBlackKey(midi) {
  */
 export function getCentsColor(cents) {
   const absCents = Math.abs(cents)
-  if (absCents <= 5) return '#1DB954'   // green - on pitch
-  if (absCents <= 15) return '#FFD700'  // yellow - close
-  return '#FF6B35'                       // orange - off
+  if (absCents <= 5) return 'var(--moss)'   // on pitch
+  if (absCents <= 15) return 'var(--sun)'   // close
+  return 'var(--clay)'                      // off
 }

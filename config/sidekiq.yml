@@ -12,28 +12,33 @@
 :scheduler:
   :schedule:
     gpu_health_check:
-      cron: '0 * * * *'  # Every hour at minute 0
+      cron: '*/5 * * * *'  # Every 5 minutes; free when no GPU URL is configured
       class: GpuHealthCheckJob
       queue: default
       description: "Check GPU service health status"
-    # Story generation disabled - no longer using live austn.net/endless integration
-    # story_generation:
-    #   cron: '*/30 * * * *'  # Every 30 minutes
-    #   class: StoryGenerationJob
-    #   queue: default
-    #   description: "Generate next paragraph for Endless Story"
-    cleanup_old_model3ds:
-      cron: '0 */6 * * *'  # Every 6 hours
-      class: CleanupOldModel3dsJob
+    cleanup_expired_tts_shares:
+      cron: '0 3 * * *'  # Daily at 3am
+      class: CleanupExpiredTtsSharesJob
       queue: low
-      description: "Clean up expired 3D models"
+      description: "Delete expired TTS share links"
+    low_availability_alert:
+      cron: '0 9 * * * America/New_York'  # Daily at 9am Eastern
+      class: LowAvailabilityAlertJob
+      queue: default
+      description: "Email Austin when few booking slots are open in the next 14 days"
+    claude_corner_draft:
+      cron: '0 10 1 * * America/New_York'  # 10am Eastern on the 1st of each month
+      class: ClaudeCornerDraftJob
+      queue: default
+      description: "Ask Claude for a new Claude Corner draft"
+    purge_stale_uploads:
+      cron: '30 3 * * *'  # Daily at 3:30am
+      class: PurgeStaleUploadsJob
+      queue: low
+      description: "Delete GPU tool uploads whose job never finished"
 
-# GPU queue configuration
-# Run a separate Sidekiq process for GPU tasks:
-# bundle exec sidekiq -q gpu -c 1
-gpu_queue:
-  :concurrency: 1  # Only one GPU task at a time
-  :timeout: 300    # 5 minutes for GPU operations
+# GPU jobs can also run in a dedicated process (see Procfile.gpu). Either
+# way, Gpu::Lock keeps it to one GPU job at a time across processes.
 
 production:
   :concurrency: 10

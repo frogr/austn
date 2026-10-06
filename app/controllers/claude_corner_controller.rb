@@ -1,5 +1,5 @@
 class ClaudeCornerController < ApplicationController
   def index
-    # Render the Claude Corner view
+    @entries = ClaudeCornerEntry.published.newest_first.map(&:as_props)
   end
 end

@@ -8,9 +8,9 @@ const styles = {
     gap: '0.35rem',
   },
   section: {
-    background: 'rgba(255,255,255,0.03)',
+    background: 'var(--ground-2)',
     borderRadius: '0.375rem',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--line)',
     overflow: 'hidden',
   },
   sectionHeader: {
@@ -19,20 +19,20 @@ const styles = {
     justifyContent: 'space-between',
     padding: '0.5rem',
     cursor: 'pointer',
-    background: 'rgba(255,255,255,0.02)',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--ground-2)',
+    borderBottom: '1px solid var(--line)',
     transition: 'background 0.15s',
   },
   sectionTitle: {
     fontSize: '0.7rem',
-    color: 'rgba(255,255,255,0.7)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     fontWeight: 600,
   },
   chevron: {
     fontSize: '0.6rem',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
     transition: 'transform 0.2s',
   },
   sectionContent: {
@@ -46,7 +46,7 @@ const styles = {
   },
   label: {
     fontSize: '0.6rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     width: '50px',
     flexShrink: 0,
   },
@@ -54,10 +54,10 @@ const styles = {
     flex: 1,
     minWidth: 0,
     padding: '0.25rem 0.35rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.6rem',
   },
   knobContainer: {
@@ -75,8 +75,8 @@ const styles = {
     width: '32px',
     height: '32px',
     borderRadius: '50%',
-    background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(0,0,0,0.2))',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     position: 'relative',
     cursor: 'pointer',
   },
@@ -84,7 +84,7 @@ const styles = {
     position: 'absolute',
     width: '2px',
     height: '10px',
-    background: 'var(--accent-color, #10b981)',
+    background: 'var(--brand)',
     left: '50%',
     top: '3px',
     transformOrigin: 'bottom center',
@@ -92,12 +92,12 @@ const styles = {
   },
   knobLabel: {
     fontSize: '0.55rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
   },
   knobValue: {
     fontSize: '0.5rem',
-    color: 'rgba(255,255,255,0.4)',
-    fontFamily: 'monospace',
+    color: 'var(--ink-3)',
+    fontVariationSettings: '"MONO" 1',
   },
   slider: {
     flex: 1,
@@ -113,10 +113,10 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.375rem',
-    color: 'rgba(255,255,255,0.7)',
+    color: 'var(--ink-2)',
     fontSize: '0.6rem',
     cursor: 'pointer',
     transition: 'all 0.1s',
@@ -125,16 +125,16 @@ const styles = {
     width: '32px',
     height: '18px',
     borderRadius: '9px',
-    background: 'rgba(255,255,255,0.1)',
-    border: '1px solid rgba(255,255,255,0.2)',
+    background: 'var(--line)',
+    border: '1px solid var(--line)',
     cursor: 'pointer',
     position: 'relative',
     transition: 'all 0.2s',
     flexShrink: 0,
   },
   toggleActive: {
-    background: 'rgba(139, 92, 246, 0.6)',
-    borderColor: 'rgba(139, 92, 246, 0.8)',
+    background: 'color-mix(in srgb, var(--plum) 60%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--plum) 80%, transparent)',
   },
   toggleKnob: {
     width: '14px',
@@ -150,11 +150,11 @@ const styles = {
     transform: 'translateX(14px)',
   },
   lfoSection: {
-    background: 'rgba(139, 92, 246, 0.08)',
+    background: 'color-mix(in srgb, var(--plum) 8%, transparent)',
     borderRadius: '0.375rem',
     padding: '0.5rem',
     marginTop: '0.5rem',
-    border: '1px solid rgba(139, 92, 246, 0.2)',
+    border: '1px solid color-mix(in srgb, var(--plum) 20%, transparent)',
   },
 }
 
@@ -202,10 +202,10 @@ function CollapsibleSection({ title, children, defaultOpen = true, color }) {
       <div
         style={styles.sectionHeader}
         onClick={() => setIsOpen(!isOpen)}
-        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+        onMouseOver={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
+        onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-2)'}
       >
-        <span style={{ ...styles.sectionTitle, color: color || 'rgba(255,255,255,0.7)' }}>{title}</span>
+        <span style={{ ...styles.sectionTitle, color: color || 'var(--ink-2)' }}>{title}</span>
         <span style={{ ...styles.chevron, transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }}>▼</span>
       </div>
       {isOpen && <div style={styles.sectionContent}>{children}</div>}
@@ -293,10 +293,10 @@ function SynthEditor({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <CollapsibleSection title="Synthesizer" defaultOpen={true} color="#10b981">
+      <CollapsibleSection title="Synthesizer" defaultOpen={true} color="var(--brand)">
         <div style={styles.row}>
           <span style={styles.label}>Preset</span>
-          <select onChange={(e) => loadPreset(e.target.value)} style={styles.select} defaultValue="">
+          <select aria-label="Preset" onChange={(e) => loadPreset(e.target.value)} style={styles.select} defaultValue="">
             <option value="" disabled>Load...</option>
             {Object.entries(SYNTH_PRESETS).map(([key, preset]) => (
               <option key={key} value={key}>{preset.name}</option>
@@ -305,7 +305,7 @@ function SynthEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Wave</span>
-          <select
+          <select aria-label="Waveform"
             value={track.instrument.oscillator}
             onChange={(e) => updateInstrument('oscillator', e.target.value)}
             style={styles.select}
@@ -317,7 +317,7 @@ function SynthEditor({ track, audioEngine }) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Envelope" defaultOpen={false} color="#3b82f6">
+      <CollapsibleSection title="Envelope" defaultOpen={false} color="var(--sky)">
         <div style={styles.knobContainer}>
           <Knob label="Atk" value={track.instrument.attack} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('attack', v)} />
           <Knob label="Dec" value={track.instrument.decay} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('decay', v)} />
@@ -326,10 +326,10 @@ function SynthEditor({ track, audioEngine }) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Filter + LFO" defaultOpen={true} color="#8b5cf6">
+      <CollapsibleSection title="Filter + LFO" defaultOpen={true} color="var(--plum)">
         <div style={styles.row}>
           <span style={styles.label}>Cutoff</span>
-          <input
+          <input aria-label="Cutoff"
             type="range"
             min="100"
             max="10000"
@@ -342,7 +342,7 @@ function SynthEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Reso</span>
-          <input
+          <input aria-label="Resonance"
             type="range"
             min="0"
             max="20"
@@ -357,7 +357,7 @@ function SynthEditor({ track, audioEngine }) {
         {/* LFO Wobble */}
         <div style={styles.lfoSection}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.65rem', color: 'rgba(139, 92, 246, 0.9)', fontWeight: 600 }}>LFO WOBBLE</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--plum)', fontWeight: 600 }}>LFO WOBBLE</span>
             <div
               style={{ ...styles.toggle, ...(lfo.enabled ? styles.toggleActive : {}) }}
               onClick={() => updateLFO('enabled', !lfo.enabled)}
@@ -370,19 +370,19 @@ function SynthEditor({ track, audioEngine }) {
             <>
               <div style={styles.row}>
                 <span style={styles.label}>Rate</span>
-                <select value={lfo.rate} onChange={(e) => updateLFO('rate', e.target.value)} style={styles.select}>
+                <select aria-label="Rate" value={lfo.rate} onChange={(e) => updateLFO('rate', e.target.value)} style={styles.select}>
                   {LFO_RATES.map(rate => <option key={rate.value} value={rate.value}>{rate.label}</option>)}
                 </select>
               </div>
               <div style={styles.row}>
                 <span style={styles.label}>Shape</span>
-                <select value={lfo.waveform} onChange={(e) => updateLFO('waveform', e.target.value)} style={styles.select}>
+                <select aria-label="Shape" value={lfo.waveform} onChange={(e) => updateLFO('waveform', e.target.value)} style={styles.select}>
                   {LFO_WAVEFORMS.map(wf => <option key={wf.value} value={wf.value}>{wf.label}</option>)}
                 </select>
               </div>
               <div style={styles.row}>
                 <span style={styles.label}>Depth</span>
-                <input
+                <input aria-label="Depth"
                   type="range"
                   min="0"
                   max="1"
@@ -403,14 +403,14 @@ function SynthEditor({ track, audioEngine }) {
 
 function DrumEditor({ track, audioEngine }) {
   const DRUMS = [
-    { name: 'Kick', type: 'kick', color: '#ef4444' },
-    { name: 'Snare', type: 'snare', color: '#f59e0b' },
-    { name: 'HiHat', type: 'hihat', color: '#10b981' },
-    { name: 'Clap', type: 'clap', color: '#3b82f6' },
-    { name: 'Tom', type: 'tom', color: '#8b5cf6' },
-    { name: 'Crash', type: 'crash', color: '#ec4899' },
-    { name: 'Ride', type: 'ride', color: '#06b6d4' },
-    { name: 'Bell', type: 'cowbell', color: '#f97316' },
+    { name: 'Kick', type: 'kick', color: 'var(--sun)' },
+    { name: 'Snare', type: 'snare', color: 'var(--sky)' },
+    { name: 'HiHat', type: 'hihat', color: 'var(--clay)' },
+    { name: 'Clap', type: 'clap', color: 'var(--moss)' },
+    { name: 'Tom', type: 'tom', color: 'var(--plum)' },
+    { name: 'Crash', type: 'crash', color: 'var(--sun)' },
+    { name: 'Ride', type: 'ride', color: 'var(--sky)' },
+    { name: 'Bell', type: 'cowbell', color: 'var(--clay)' },
   ]
 
   const playDrum = (drumType) => {
@@ -425,7 +425,7 @@ function DrumEditor({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <CollapsibleSection title="Drum Machine" defaultOpen={true} color="#f59e0b">
+      <CollapsibleSection title="Drum Machine" defaultOpen={true} color="var(--sun)">
         <div style={styles.drumPads}>
           {DRUMS.map((drum, idx) => (
             <button
@@ -433,15 +433,15 @@ function DrumEditor({ track, audioEngine }) {
               style={{ ...styles.drumPad, borderColor: drum.color }}
               onClick={() => playDrum(drum.type)}
               onMouseDown={(e) => {
-                e.currentTarget.style.background = `${drum.color}40`
+                e.currentTarget.style.background = `color-mix(in srgb, ${drum.color} 25%, transparent)`
                 e.currentTarget.style.transform = 'scale(0.95)'
               }}
               onMouseUp={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                e.currentTarget.style.background = 'var(--ground-3)'
                 e.currentTarget.style.transform = 'scale(1)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                e.currentTarget.style.background = 'var(--ground-3)'
                 e.currentTarget.style.transform = 'scale(1)'
               }}
             >
@@ -457,14 +457,14 @@ function DrumEditor({ track, audioEngine }) {
 function AudioEditor({ track }) {
   return (
     <div style={styles.container}>
-      <CollapsibleSection title="Audio Track" defaultOpen={true} color="#06b6d4">
+      <CollapsibleSection title="Audio Track" defaultOpen={true} color="var(--sky)">
         <div style={styles.row}>
           <span style={styles.label}>Duration</span>
           <span style={styles.knobValue}>
             {track.audioData?.duration ? `${track.audioData.duration.toFixed(1)}s` : '-'}
           </span>
         </div>
-        <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+        <p style={{ fontSize: '0.6rem', color: 'var(--ink-3)', margin: 0 }}>
           Use mixer to adjust volume/pan
         </p>
       </CollapsibleSection>
@@ -500,8 +500,8 @@ function PluckEditor({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <CollapsibleSection title="Pluck / Guitar" defaultOpen={true} color="#f59e0b">
-        <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', margin: '0 0 0.5rem 0' }}>
+      <CollapsibleSection title="Pluck / Guitar" defaultOpen={true} color="var(--sun)">
+        <p style={{ fontSize: '0.6rem', color: 'var(--ink-2)', margin: '0 0 0.5rem 0' }}>
           Karplus-Strong string synthesis for guitar-like sounds
         </p>
         <button
@@ -511,15 +511,15 @@ function PluckEditor({ track, audioEngine }) {
             cursor: 'pointer',
             textAlign: 'center',
             marginBottom: '0.5rem',
-            background: 'rgba(245, 158, 11, 0.2)',
-            borderColor: 'rgba(245, 158, 11, 0.4)',
+            background: 'color-mix(in srgb, var(--sun) 20%, transparent)',
+            borderColor: 'color-mix(in srgb, var(--sun) 40%, transparent)',
           }}
         >
           Preview Sound
         </button>
         <div style={styles.row}>
           <span style={styles.label}>Attack</span>
-          <input
+          <input aria-label="Attack"
             type="range"
             min="0.1"
             max="10"
@@ -532,7 +532,7 @@ function PluckEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Dampen</span>
-          <input
+          <input aria-label="Dampen"
             type="range"
             min="500"
             max="10000"
@@ -545,7 +545,7 @@ function PluckEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Resonance</span>
-          <input
+          <input aria-label="Resonance"
             type="range"
             min="0"
             max="1"
@@ -558,7 +558,7 @@ function PluckEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Release</span>
-          <input
+          <input aria-label="Release"
             type="range"
             min="0.1"
             max="4"
@@ -602,8 +602,8 @@ function FMEditor({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <CollapsibleSection title="FM Synthesis" defaultOpen={true} color="#8b5cf6">
-        <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', margin: '0 0 0.5rem 0' }}>
+      <CollapsibleSection title="FM Synthesis" defaultOpen={true} color="var(--plum)">
+        <p style={{ fontSize: '0.6rem', color: 'var(--ink-2)', margin: '0 0 0.5rem 0' }}>
           Frequency modulation for rich, evolving timbres
         </p>
         <button
@@ -613,15 +613,15 @@ function FMEditor({ track, audioEngine }) {
             cursor: 'pointer',
             textAlign: 'center',
             marginBottom: '0.5rem',
-            background: 'rgba(139, 92, 246, 0.2)',
-            borderColor: 'rgba(139, 92, 246, 0.4)',
+            background: 'color-mix(in srgb, var(--plum) 20%, transparent)',
+            borderColor: 'color-mix(in srgb, var(--plum) 40%, transparent)',
           }}
         >
           Preview Sound
         </button>
         <div style={styles.row}>
           <span style={styles.label}>Harmonic</span>
-          <input
+          <input aria-label="Harmonic"
             type="range"
             min="0.5"
             max="10"
@@ -634,7 +634,7 @@ function FMEditor({ track, audioEngine }) {
         </div>
         <div style={styles.row}>
           <span style={styles.label}>Mod Idx</span>
-          <input
+          <input aria-label="Modulation index"
             type="range"
             min="0"
             max="50"
@@ -647,7 +647,7 @@ function FMEditor({ track, audioEngine }) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Carrier Envelope" defaultOpen={false} color="#3b82f6">
+      <CollapsibleSection title="Carrier Envelope" defaultOpen={false} color="var(--sky)">
         <div style={styles.knobContainer}>
           <Knob label="Atk" value={track.instrument.attack} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('attack', v)} />
           <Knob label="Dec" value={track.instrument.decay} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('decay', v)} />
@@ -656,7 +656,7 @@ function FMEditor({ track, audioEngine }) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Modulator Envelope" defaultOpen={false} color="#ec4899">
+      <CollapsibleSection title="Modulator Envelope" defaultOpen={false} color="var(--plum)">
         <div style={styles.knobContainer}>
           <Knob label="Atk" value={track.instrument.modulationAttack} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('modulationAttack', v)} />
           <Knob label="Dec" value={track.instrument.modulationDecay} min={0} max={2} step={0.01} onChange={(v) => updateInstrument('modulationDecay', v)} />
@@ -696,8 +696,8 @@ function AMEditor({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <CollapsibleSection title="AM Synthesis" defaultOpen={true} color="#06b6d4">
-        <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.5)', margin: '0 0 0.5rem 0' }}>
+      <CollapsibleSection title="AM Synthesis" defaultOpen={true} color="var(--sky)">
+        <p style={{ fontSize: '0.6rem', color: 'var(--ink-2)', margin: '0 0 0.5rem 0' }}>
           Amplitude modulation for tremolo-like effects
         </p>
         <button
@@ -707,15 +707,15 @@ function AMEditor({ track, audioEngine }) {
             cursor: 'pointer',
             textAlign: 'center',
             marginBottom: '0.5rem',
-            background: 'rgba(6, 182, 212, 0.2)',
-            borderColor: 'rgba(6, 182, 212, 0.4)',
+            background: 'color-mix(in srgb, var(--sky) 20%, transparent)',
+            borderColor: 'color-mix(in srgb, var(--sky) 40%, transparent)',
           }}
         >
           Preview Sound
         </button>
         <div style={styles.row}>
           <span style={styles.label}>Harmonic</span>
-          <input
+          <input aria-label="Harmonic"
             type="range"
             min="0.5"
             max="10"
@@ -728,7 +728,7 @@ function AMEditor({ track, audioEngine }) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Carrier Envelope" defaultOpen={false} color="#3b82f6">
+      <CollapsibleSection title="Carrier Envelope" defaultOpen={false} color="var(--sky)">
         <div style={styles.knobContainer}>
           <Knob label="Atk" value={track.instrument.attack} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('attack', v)} />
           <Knob label="Dec" value={track.instrument.decay} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('decay', v)} />
@@ -737,7 +737,7 @@ function AMEditor({ track, audioEngine }) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Modulator Envelope" defaultOpen={false} color="#ec4899">
+      <CollapsibleSection title="Modulator Envelope" defaultOpen={false} color="var(--plum)">
         <div style={styles.knobContainer}>
           <Knob label="Atk" value={track.instrument.modulationAttack} min={0.001} max={2} step={0.01} onChange={(v) => updateInstrument('modulationAttack', v)} />
           <Knob label="Dec" value={track.instrument.modulationDecay} min={0} max={2} step={0.01} onChange={(v) => updateInstrument('modulationDecay', v)} />

@@ -1,0 +1,34 @@
+<% page_title "Work" %>
+<% page_description "Case studies from Tenex, CompanyCam, Backlit and CoverMyMeds, plus side projects: what each one was, how it worked, and what the numbers were." %>
+
+<h1>Work</h1>
+<p class="lede">What I built at each job, how it worked, and the numbers. Side projects are further down.</p>
+
+<h2 class="section-title">case studies</h2>
+<ul class="rows">
+  <%= render partial: "shared/work_row", collection: @featured, as: :item %>
+</ul>
+
+<h2 class="section-title">applied ai, by job</h2>
+<div class="prose">
+  <table>
+    <thead><tr><th scope="col">What</th><th scope="col">Where</th></tr></thead>
+    <tbody>
+      <tr><td>Evals and autonomy gates (deciding when AI output can skip a person)</td><td><%= link_to "Tenex", work_item_path("tenex") %>, <%= link_to "CompanyCam", work_item_path("companycam") %></td></tr>
+      <tr><td>OCR and LLM document extraction</td><td><%= link_to "Tenex", work_item_path("tenex") %></td></tr>
+      <tr><td>RAG and vector search (pgvector, photo search)</td><td><%= link_to "CompanyCam", work_item_path("companycam") %>, <%= link_to "Tenex", work_item_path("tenex") %></td></tr>
+      <tr><td>Shared LLM layer for a large Rails app (RubyLLM; Anthropic, OpenAI, Groq)</td><td><%= link_to "CompanyCam", work_item_path("companycam") %></td></tr>
+      <tr><td>Tool calling, voice input</td><td><%= link_to "CompanyCam", work_item_path("companycam") %>, <%= link_to "Coach Rook", work_item_path("coach-rook") %></td></tr>
+      <tr><td>Data warehouse and ingestion pipelines (Databricks, Python)</td><td><%= link_to "Tenex", work_item_path("tenex") %></td></tr>
+      <tr><td>Agent workflows with human approval (PRD to PR, parallel sessions)</td><td><%= link_to "Tenex", work_item_path("tenex") %></td></tr>
+      <tr><td>Self-hosted inference (ComfyUI, LM Studio, Whisper)</td><td><%= link_to "austn.net", work_item_path("austn-net") %>, <%= link_to "Murmur", work_item_path("murmur") %></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 class="section-title">more projects</h2>
+<ul class="rows">
+  <%= render partial: "shared/work_row", collection: @more, as: :item %>
+</ul>
+
+<p class="muted">The AI tools that used to run on this site have their own write-ups in the <%= link_to "Playground", playground_path %>.</p>

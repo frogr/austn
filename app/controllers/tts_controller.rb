@@ -1,12 +1,14 @@
 class TtsController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "tts", only: :generate
+  shows_writeup_when_offline "tts", "text-to-speech", only: [ :index, :new ]
+  before_action :restrict_custom_voices_to_admin, only: :generate
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
-    # Show list of TTS shares
-    @shares = TtsShare.active.order(created_at: :desc)
-    @voices = TtsService.available_voices
   end
 
   def new
@@ -20,6 +22,12 @@ class TtsController < ApplicationController
   end
 
   def generate
+    text = params[:text].to_s.strip
+    return render_invalid_input("Type something to say.") if text.empty?
+    if text.length > TtsService::MAX_TEXT_LENGTH
+      return render_invalid_input("Keep it under #{TtsService::MAX_TEXT_LENGTH} characters.")
+    end
+
     generation_id = SecureRandom.uuid
 
     # Build options hash - only include values that are present
@@ -39,10 +47,7 @@ class TtsController < ApplicationController
       Rails.logger.info "TTS #{generation_id}: Using default voice"
     end
 
-    Rails.logger.info "TTS #{generation_id}: text=#{params[:text]&.first(50)}..."
-
-    # Queue the job
-    TtsGenerationJob.perform_later(generation_id, params[:text], options)
+    TtsGenerationJob.perform_later(generation_id, text, options)
 
     # Return immediately with generation ID
     render json: {
@@ -52,8 +57,7 @@ class TtsController < ApplicationController
       websocket_channel: "tts_generation_#{generation_id}"
     }
   rescue => e
-    Rails.logger.error "Failed to queue TTS generation: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status
@@ -140,11 +144,18 @@ class TtsController < ApplicationController
       render json: { error: "Audio not found or expired" }, status: :not_found
     end
   rescue => e
-    Rails.logger.error "Failed to create TTS share: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   private
+
+  # Cloning a voice from an uploaded clip is only for the admin.
+  def restrict_custom_voices_to_admin
+    return if params[:voice_audio].blank? || admin_signed_in?
+
+    render json: { success: false, error_code: "forbidden", error: "Custom voice uploads aren't available." },
+           status: :forbidden
+  end
 
   def tts_redis_service
     @tts_redis_service ||= TtsRedisService.new

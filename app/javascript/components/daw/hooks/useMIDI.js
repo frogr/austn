@@ -34,8 +34,9 @@ export function useMIDI(onNoteOn, onNoteOff, onCC) {
           updateInputs(access)
         }
       })
-      .catch((err) => {
-        setError(`MIDI access denied: ${err.message}`)
+      .catch(() => {
+        // Usually the browser asking for permission, not a real failure.
+        setError('Plug in a MIDI keyboard to play along.')
       })
   }, [])
 

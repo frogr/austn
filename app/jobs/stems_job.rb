@@ -1,48 +1,23 @@
 class StemsJob < GpuJob
   self.gpu_service_name = "stems"
-  sidekiq_options retry: 1
+  # ComfyUI gets up to 15 minutes, then four stems are downloaded.
+  self.gpu_lock_timeout = 30.minutes
 
-  def perform(generation_id, file_data, options = {})
-    Rails.logger.info "Starting StemsJob #{generation_id}"
-    service = StemsRedisService.new
+  def perform(generation_id, upload, options = {})
+    start_generation
 
-    broadcast_processing(generation_id, "stems")
-    service.store_status(generation_id, processing_status)
+    model = options["model"] || StemSeparationService::DEFAULT_MODEL
+    stems = upload.open { |file| StemSeparationService.separate_stems(file.path, model: model) }
+    redis_service.store_result(generation_id, {
+      stems: stems, original_filename: upload.filename.to_s, model: model, created_at: Time.current
+    })
 
-    original_filename = options["original_filename"] || "audio.mp3"
-    uploaded_file = UploadedFileProxy.from_base64(
-      file_data["base64"],
-      original_filename: original_filename,
-      prefix: "stems"
-    )
-
-    begin
-      model = options["model"] || StemSeparationService::DEFAULT_MODEL
-      stems = StemSeparationService.separate_stems(uploaded_file, model: model)
-
-      result_data = {
-        stems: stems,
-        original_filename: original_filename,
-        model: model,
-        created_at: Time.current
-      }
-
-      # Log the data sizes before storing
-      total_size = stems.values.sum { |s| s.bytesize }
-      Rails.logger.info "StemsJob #{generation_id}: Storing #{stems.keys.size} stems, total base64 size: #{total_size / 1024 / 1024}MB"
-
-      service.store_result(generation_id, result_data)
-      Rails.logger.info "StemsJob #{generation_id}: Successfully stored results in Redis"
-      service.store_status(generation_id, completed_status)
-      broadcast_complete(generation_id, "stems")
-
-      Rails.logger.info "StemsJob #{generation_id} completed successfully"
-      mark_service_online
-    ensure
-      uploaded_file.cleanup
-    end
-  rescue => e
-    handle_failure(e, generation_id, service, "stems")
-    raise
+    finish_generation
+    purge_uploads
   end
+
+  private
+
+  def redis_service = StemsRedisService.new
+  def channel_prefix = "stems"
 end

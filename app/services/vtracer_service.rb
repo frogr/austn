@@ -1,5 +1,3 @@
-require "tempfile"
-
 # Service for converting raster images to SVG using ComfyUI's VTracer node
 class VtracerService
   DEFAULT_OPTIONS = {
@@ -17,73 +15,35 @@ class VtracerService
 
   class VtracerError < StandardError; end
 
-  # Convert an image to SVG
-  # @param image_file [ActionDispatch::Http::UploadedFile] The uploaded image
-  # @param options [Hash] VTracer parameters
-  # @return [String] SVG content as string
-  def self.convert_to_svg(image_file, options = {})
-    opts = DEFAULT_OPTIONS.merge(normalize_options(options))
-    validate_options!(opts)
+  # @param image_path [String] the input image on disk
+  # @param options [Hash] VTracer parameters (see DEFAULT_OPTIONS)
+  # @return [String] SVG markup
+  def self.convert_to_svg(image_path, options = {})
+    opts = options_for(options)
 
-    # Save uploaded file to temp location
-    temp_file = create_temp_file(image_file)
+    workflow = ComfyuiClient.load_workflow("AUSTNNETTOSVG.json")
+    workflow["1"]["inputs"]["image"] = ComfyuiClient.upload_file(image_path)["name"]
+    workflow["2"]["inputs"].merge!(opts.stringify_keys)
+    workflow["3"]["inputs"]["filename_prefix"] = "vtracer_#{SecureRandom.hex(4)}"
 
-    begin
-      # Upload to ComfyUI
-      upload_result = ComfyuiClient.upload_file(temp_file.path)
-      uploaded_filename = upload_result["name"]
+    prompt_id = ComfyuiClient.queue_prompt(workflow)
+    outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 30, output_node_id: "3")
 
-      Rails.logger.info "Uploaded image for vtracer: #{uploaded_filename}"
+    # ComfyUI sometimes reports the filename as an array of characters.
+    filename = outputs["saved_svg"] || outputs.dig("ui", "saved_svg")
+    raise VtracerError, "No SVG output returned from ComfyUI" if filename.blank?
 
-      # Load and modify workflow
-      workflow = ComfyuiClient.load_workflow("AUSTNNETTOSVG.json")
-
-      # Update input image (node 1)
-      workflow["1"]["inputs"]["image"] = uploaded_filename
-
-      # Update VTracer parameters (node 2)
-      workflow["2"]["inputs"]["hierarchical"] = opts[:hierarchical]
-      workflow["2"]["inputs"]["mode"] = opts[:mode]
-      workflow["2"]["inputs"]["filter_speckle"] = opts[:filter_speckle].to_i
-      workflow["2"]["inputs"]["color_precision"] = opts[:color_precision].to_i
-      workflow["2"]["inputs"]["layer_difference"] = opts[:layer_difference].to_i
-      workflow["2"]["inputs"]["corner_threshold"] = opts[:corner_threshold].to_i
-      workflow["2"]["inputs"]["length_threshold"] = opts[:length_threshold].to_f
-      workflow["2"]["inputs"]["max_iterations"] = opts[:max_iterations].to_i
-      workflow["2"]["inputs"]["splice_threshold"] = opts[:splice_threshold].to_i
-      workflow["2"]["inputs"]["path_precision"] = opts[:path_precision].to_i
-
-      # Generate unique output prefix
-      output_prefix = "vtracer_#{SecureRandom.hex(4)}"
-      workflow["3"]["inputs"]["filename_prefix"] = output_prefix
-
-      # Queue the workflow
-      prompt_id = ComfyuiClient.queue_prompt(workflow)
-
-      # Wait for completion (30s timeout)
-      outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: 30, output_node_id: "3")
-
-      # Get the SVG output
-      if outputs && outputs["saved_svg"]
-        # Handle character array (ComfyUI list output quirk)
-        filename = outputs["saved_svg"].is_a?(Array) ? outputs["saved_svg"].join : outputs["saved_svg"]
-        Rails.logger.info "VTracer output ready: #{filename}"
-        ComfyuiClient.get_output_file(filename, subfolder: "", type: "output")
-      elsif outputs && outputs.dig("ui", "saved_svg")
-        # Fallback for different output format
-        filename = outputs["ui"]["saved_svg"]
-        ComfyuiClient.get_output_file(filename, subfolder: "", type: "output")
-      else
-        raise VtracerError, "No SVG output returned from ComfyUI"
-      end
-
-    ensure
-      temp_file.close
-      temp_file.unlink
-    end
-
+    ComfyuiClient.get_output_file(Array(filename).join)
   rescue ComfyuiClient::ComfyuiError => e
     raise VtracerError, e.message
+  end
+
+  # Merges, type-casts and validates options from request params.
+  # @raise [VtracerError] naming the first option that is out of range
+  def self.options_for(options)
+    opts = DEFAULT_OPTIONS.merge(normalize_options(options))
+    validate_options!(opts)
+    opts
   end
 
   # Get default options for reference
@@ -158,15 +118,5 @@ class VtracerService
     if opts[:path_precision] < 1 || opts[:path_precision] > 10
       raise VtracerError, "path_precision must be between 1 and 10"
     end
-  end
-
-  def self.create_temp_file(uploaded_file)
-    extension = File.extname(uploaded_file.original_filename).presence || ".png"
-    temp_file = Tempfile.new([ "vtracer_input", extension ])
-    temp_file.binmode
-    temp_file.write(uploaded_file.read)
-    temp_file.rewind
-    uploaded_file.rewind if uploaded_file.respond_to?(:rewind)
-    temp_file
   end
 end

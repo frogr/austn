@@ -33,7 +33,7 @@ On your **production server** (austn.net), add to your environment:
 ```bash
 # In .env or deployment config
 TTS_API_KEY=your-generated-key-here
-TTS_URL=http://100.68.94.33:5000  # Your Tailscale IP for Chatterbox
+TTS_URL=http://<gpu-box-tailnet-host>:5000  # Chatterbox on the GPU box. Unset = TTS offline
 ```
 
 On your **laptop**, add to `~/.bashrc` or `~/.zshrc`:
@@ -52,7 +52,7 @@ Synchronous endpoint that returns audio directly. Best for simple use cases.
 ```json
 {
   "text": "Hello world",
-  "voice": "jordan_peterson",  // optional
+  "voice": "narrator",  // optional
   "exaggeration": 0.5,         // optional, 0.0-1.0
   "cfg_weight": 0.5            // optional, 0.0-1.0
 }
@@ -73,7 +73,7 @@ Async endpoint for longer texts. Returns a generation ID for polling.
 ```json
 {
   "text": "Your text here",
-  "voice_preset": "actors/morgan_freeman",
+  "voice_preset": "stock/narrator",
   "exaggeration": 0.5,
   "cfg_weight": 0.5
 }
@@ -118,8 +118,8 @@ List available voice presets.
 ```json
 {
   "voices": [
-    {"id": "actors/jordan_peterson", "name": "Jordan Peterson"},
-    {"id": "actors/morgan_freeman", "name": "Morgan Freeman"}
+    {"id": "stock/narrator", "name": "Narrator"},
+    {"id": "stock/calm", "name": "Calm"}
   ]
 }
 ```
@@ -161,7 +161,7 @@ A convenience script is available at `scripts/tts_remote.sh`:
 ./scripts/tts_remote.sh "Hello world" output.wav
 
 # With voice
-./scripts/tts_remote.sh "Hello world" output.wav jordan_peterson
+./scripts/tts_remote.sh "Hello world" output.wav narrator
 
 # List voices
 ./scripts/tts_remote.sh --voices
@@ -186,8 +186,8 @@ curl -X POST https://austn.net/api/v1/tts/synthesize \
 curl -X POST https://austn.net/api/v1/tts/synthesize \
   -H "X-API-Key: $TTS_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"text": "Clean your room", "voice": "jordan_peterson"}' \
-  -o peterson.wav
+  -d '{"text": "Hello there", "voice": "narrator"}' \
+  -o narrator.wav
 
 # Check voices
 curl -X GET https://austn.net/api/v1/tts/voices \
@@ -230,7 +230,7 @@ def synthesize(text, voice=None, output_path='output.wav'):
         print(f'Error: {response.status_code} - {response.text}')
 
 # Usage
-synthesize("Hello from Python!", voice="jordan_peterson")
+synthesize("Hello from Python!", voice="narrator")
 ```
 
 ### Node.js Example
@@ -272,7 +272,7 @@ function synthesize(text, voice = null) {
   req.end();
 }
 
-synthesize("Hello from Node.js!", "jordan_peterson");
+synthesize("Hello from Node.js!", "narrator");
 ```
 
 ## Troubleshooting

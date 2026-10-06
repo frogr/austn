@@ -8,11 +8,9 @@ Rails.application.config.assets.version = "1.0"
 
 # Precompile additional assets
 Rails.application.config.assets.precompile += %w[
-  game_card_glass.css
   theme.css
   code-theme.css
   application.css
   design-system.css
-  bento-system.css
-  bento-grid.css
+  site.css
 ]

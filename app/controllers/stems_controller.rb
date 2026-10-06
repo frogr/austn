@@ -1,5 +1,9 @@
 class StemsController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "stems", only: :generate
+  shows_writeup_when_offline "stems", "stem-separation", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
@@ -8,31 +12,12 @@ class StemsController < ApplicationController
   end
 
   def generate
-    unless params[:audio].present?
-      render json: { success: false, error: "No audio file provided" }, status: :bad_request
-      return
-    end
+    model = params[:model].presence || StemSeparationService::DEFAULT_MODEL
+    return render_invalid_input("Unknown model.") unless StemSeparationService::AVAILABLE_MODELS.include?(model)
 
+    upload = GpuUpload.store!(params[:audio], kind: :audio)
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting stems generation #{generation_id}"
-
-    # Read and encode the uploaded file
-    uploaded_file = params[:audio]
-    file_data = {
-      "base64" => Base64.strict_encode64(uploaded_file.read)
-    }
-    uploaded_file.rewind
-
-    # Queue the job
-    StemsJob.perform_later(
-      generation_id,
-      file_data,
-      {
-        "original_filename" => uploaded_file.original_filename,
-        "model" => params[:model] || StemSeparationService::DEFAULT_MODEL
-      }
-    )
+    StemsJob.perform_later(generation_id, upload, { "model" => model })
 
     render json: {
       success: true,
@@ -41,9 +26,10 @@ class StemsController < ApplicationController
       check_url: status_stems_path(generation_id),
       websocket_channel: "stems_#{generation_id}"
     }
+  rescue GpuUpload::Invalid => e
+    render_invalid_input(e.message)
   rescue => e
-    Rails.logger.error "Failed to queue stems generation: #{e.message}"
-    render json: { success: false, error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status

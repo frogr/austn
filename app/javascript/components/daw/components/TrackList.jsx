@@ -15,17 +15,17 @@ const styles = {
   },
   title: {
     fontSize: '0.7rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   addSelect: {
     padding: '0.3rem 0.5rem',
     fontSize: '0.65rem',
-    background: 'rgba(16, 185, 129, 0.15)',
-    border: '1px solid rgba(16, 185, 129, 0.25)',
+    background: 'color-mix(in srgb, var(--brand) 15%, transparent)',
+    border: '1px solid color-mix(in srgb, var(--brand) 25%, transparent)',
     borderRadius: '0.25rem',
-    color: '#10b981',
+    color: 'var(--brand)',
     cursor: 'pointer',
     fontWeight: 500,
   },
@@ -39,15 +39,15 @@ const styles = {
   },
   track: {
     padding: '0.5rem',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--ground-2)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
     cursor: 'pointer',
     transition: 'all 0.15s',
   },
   trackSelected: {
-    background: 'rgba(16, 185, 129, 0.1)',
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    background: 'color-mix(in srgb, var(--brand) 10%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 30%, transparent)',
   },
   trackTop: {
     display: 'flex',
@@ -62,7 +62,7 @@ const styles = {
   trackName: {
     fontSize: '0.75rem',
     fontWeight: 500,
-    color: 'white',
+    color: 'var(--ink)',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
@@ -70,9 +70,9 @@ const styles = {
   trackNameInput: {
     fontSize: '0.75rem',
     fontWeight: 500,
-    color: 'white',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(16, 185, 129, 0.4)',
+    color: 'var(--ink)',
+    background: 'var(--sunken)',
+    border: '1px solid color-mix(in srgb, var(--brand) 40%, transparent)',
     borderRadius: '0.2rem',
     padding: '0.1rem 0.25rem',
     width: '100%',
@@ -80,14 +80,14 @@ const styles = {
   },
   trackType: {
     fontSize: '0.55rem',
-    color: 'rgba(255,255,255,0.35)',
+    color: 'var(--ink-3)',
     textTransform: 'uppercase',
     letterSpacing: '0.03em',
   },
   deleteBtn: {
     background: 'none',
     border: 'none',
-    color: 'rgba(255,255,255,0.25)',
+    color: 'var(--ink-3)',
     cursor: 'pointer',
     fontSize: '0.9rem',
     padding: '0',
@@ -107,22 +107,22 @@ const styles = {
     justifyContent: 'center',
     fontSize: '0.55rem',
     fontWeight: 700,
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.2rem',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
     cursor: 'pointer',
     transition: 'all 0.15s',
   },
   muteActive: {
-    background: 'rgba(239, 68, 68, 0.25)',
-    borderColor: 'rgba(239, 68, 68, 0.4)',
-    color: '#ef4444',
+    background: 'color-mix(in srgb, var(--clay) 25%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--clay) 40%, transparent)',
+    color: 'var(--clay)',
   },
   soloActive: {
-    background: 'rgba(59, 130, 246, 0.25)',
-    borderColor: 'rgba(59, 130, 246, 0.4)',
-    color: '#3b82f6',
+    background: 'color-mix(in srgb, var(--sky) 25%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--sky) 40%, transparent)',
+    color: 'var(--sky)',
   },
   volumeContainer: {
     flex: 1,
@@ -135,13 +135,13 @@ const styles = {
     flex: 1,
     height: '3px',
     appearance: 'none',
-    background: 'rgba(255,255,255,0.1)',
+    background: 'var(--line)',
     borderRadius: '2px',
     cursor: 'pointer',
   },
   volumeLabel: {
     fontSize: '0.5rem',
-    color: 'rgba(255,255,255,0.35)',
+    color: 'var(--ink-3)',
     width: '22px',
     textAlign: 'right',
   },
@@ -263,8 +263,8 @@ function TrackItem({ track, isSelected, onSelect, onUpdate, onDelete, audioEngin
             e.stopPropagation()
             onDelete(track.id)
           }}
-          onMouseOver={(e) => e.currentTarget.style.color = '#ef4444'}
-          onMouseOut={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
+          onMouseOver={(e) => e.currentTarget.style.color = 'var(--clay)'}
+          onMouseOut={(e) => e.currentTarget.style.color = 'var(--ink-3)'}
           title="Delete track"
         >
           ×
@@ -293,7 +293,7 @@ function TrackItem({ track, isSelected, onSelect, onUpdate, onDelete, audioEngin
           S
         </button>
         <div style={styles.volumeContainer}>
-          <input
+          <input aria-label="Track volume"
             type="range"
             min="0"
             max="1"
@@ -339,7 +339,7 @@ export default function TrackList({ audioEngine }) {
     <div style={styles.container}>
       <div style={styles.header}>
         <span style={styles.title}>Tracks</span>
-        <select
+        <select aria-label="Add track"
           style={styles.addSelect}
           onChange={handleAddTrack}
           defaultValue=""

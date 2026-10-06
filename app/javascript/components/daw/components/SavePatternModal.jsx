@@ -13,41 +13,41 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(0,0,0,0.85)',
+    background: 'color-mix(in srgb, var(--sunken) 80%, transparent)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
   },
   modal: {
-    background: 'linear-gradient(180deg, rgba(20,20,25,1) 0%, rgba(12,12,16,1) 100%)',
+    background: 'var(--ground-2)',
     borderRadius: '0.5rem',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--line)',
     width: '90%',
     maxWidth: '420px',
     overflow: 'hidden',
-    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+    boxShadow: '0 0.4rem 0 var(--shade)',
   },
   header: {
     padding: '0.75rem 1rem',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    borderBottom: '1px solid var(--line)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.02)',
+    background: 'var(--ground-2)',
   },
   title: {
     fontSize: '0.75rem',
     fontWeight: 600,
-    color: 'rgba(255,255,255,0.7)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   closeButton: {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     fontSize: '1rem',
     cursor: 'pointer',
     padding: '0.25rem 0.5rem',
@@ -67,25 +67,25 @@ const styles = {
   },
   label: {
     fontSize: '0.65rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.03em',
     fontWeight: 500,
   },
   input: {
     padding: '0.5rem 0.625rem',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--sunken)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.8rem',
   },
   textarea: {
     padding: '0.5rem 0.625rem',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--sunken)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.75rem',
     minHeight: '60px',
     resize: 'vertical',
@@ -98,10 +98,10 @@ const styles = {
   },
   tagButton: {
     padding: '0.2rem 0.5rem',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.2rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     fontSize: '0.6rem',
     cursor: 'pointer',
     transition: 'all 0.15s',
@@ -109,18 +109,18 @@ const styles = {
     letterSpacing: '0.02em',
   },
   tagSelected: {
-    background: 'rgba(16, 185, 129, 0.2)',
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-    color: '#10b981',
+    background: 'color-mix(in srgb, var(--brand) 20%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 30%, transparent)',
+    color: 'var(--brand)',
   },
   meta: {
     display: 'flex',
     gap: '0.75rem',
     padding: '0.5rem 0.625rem',
-    background: 'rgba(0,0,0,0.2)',
+    background: 'var(--sunken)',
     borderRadius: '0.25rem',
     fontSize: '0.65rem',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
   },
   actions: {
     display: 'flex',
@@ -140,30 +140,30 @@ const styles = {
     transition: 'all 0.15s',
   },
   primaryButton: {
-    background: 'rgba(16, 185, 129, 0.2)',
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-    color: '#10b981',
+    background: 'color-mix(in srgb, var(--brand) 20%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 30%, transparent)',
+    color: 'var(--brand)',
   },
   secondaryButton: {
-    background: 'rgba(255,255,255,0.06)',
-    borderColor: 'rgba(255,255,255,0.1)',
-    color: 'rgba(255,255,255,0.7)',
+    background: 'var(--ground-3)',
+    borderColor: 'var(--line)',
+    color: 'var(--ink-2)',
   },
   error: {
-    color: '#f87171',
+    color: 'var(--clay)',
     fontSize: '0.65rem',
     padding: '0.5rem',
-    background: 'rgba(239, 68, 68, 0.1)',
+    background: 'color-mix(in srgb, var(--clay) 10%, transparent)',
     borderRadius: '0.25rem',
-    border: '1px solid rgba(239, 68, 68, 0.2)',
+    border: '1px solid color-mix(in srgb, var(--clay) 20%, transparent)',
   },
   success: {
-    color: '#34d399',
+    color: 'var(--brand)',
     fontSize: '0.65rem',
     padding: '0.5rem',
-    background: 'rgba(16, 185, 129, 0.1)',
+    background: 'color-mix(in srgb, var(--brand) 10%, transparent)',
     borderRadius: '0.25rem',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
+    border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)',
   },
 }
 
@@ -225,7 +225,10 @@ export default function SavePatternModal({ isOpen, onClose }) {
 
       const response = await fetch('/daw/patterns', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
+        },
         body: JSON.stringify(patternData),
       })
 
@@ -260,12 +263,12 @@ export default function SavePatternModal({ isOpen, onClose }) {
             style={styles.closeButton}
             onClick={onClose}
             onMouseOver={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+              e.currentTarget.style.background = 'var(--line)'
               e.currentTarget.style.color = 'white'
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
-              e.currentTarget.style.color = 'rgba(255,255,255,0.5)'
+              e.currentTarget.style.background = 'var(--ground-3)'
+              e.currentTarget.style.color = 'var(--ink-2)'
             }}
           >
             ×
@@ -326,8 +329,8 @@ export default function SavePatternModal({ isOpen, onClose }) {
             <button
               style={{ ...styles.button, ...styles.secondaryButton }}
               onClick={onClose}
-              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-              onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+              onMouseOver={(e) => e.currentTarget.style.background = 'var(--line)'}
+              onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
             >
               Cancel
             </button>
@@ -335,8 +338,8 @@ export default function SavePatternModal({ isOpen, onClose }) {
               style={{ ...styles.button, ...styles.primaryButton }}
               onClick={handleSave}
               disabled={saving}
-              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.35)'}
-              onMouseOut={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
+              onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 35%, transparent)'}
+              onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 20%, transparent)'}
             >
               {saving ? 'Saving...' : 'Save'}
             </button>

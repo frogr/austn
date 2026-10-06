@@ -1,5 +1,9 @@
 class RembgController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "rembg", only: :generate
+  shows_writeup_when_offline "rembg", "background-removal", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
@@ -8,31 +12,12 @@ class RembgController < ApplicationController
   end
 
   def generate
-    unless params[:image].present?
-      render json: { success: false, error: "No image provided" }, status: :bad_request
-      return
-    end
+    model = params[:model].presence || RembgService::DEFAULT_MODEL
+    return render_invalid_input("Unknown model.") unless RembgService::AVAILABLE_MODELS.include?(model)
 
+    upload = GpuUpload.store!(params[:image], kind: :image)
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting rembg generation #{generation_id}"
-
-    # Read and encode the uploaded file
-    uploaded_file = params[:image]
-    file_data = {
-      "base64" => Base64.strict_encode64(uploaded_file.read)
-    }
-    uploaded_file.rewind
-
-    # Queue the job
-    RembgJob.perform_later(
-      generation_id,
-      file_data,
-      {
-        "original_filename" => uploaded_file.original_filename,
-        "model" => params[:model] || RembgService::DEFAULT_MODEL
-      }
-    )
+    RembgJob.perform_later(generation_id, upload, { "model" => model })
 
     render json: {
       success: true,
@@ -41,9 +26,10 @@ class RembgController < ApplicationController
       check_url: status_rembg_path(generation_id),
       websocket_channel: "rembg_#{generation_id}"
     }
+  rescue GpuUpload::Invalid => e
+    render_invalid_input(e.message)
   rescue => e
-    Rails.logger.error "Failed to queue rembg generation: #{e.message}"
-    render json: { success: false, error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status

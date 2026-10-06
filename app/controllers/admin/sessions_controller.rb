@@ -1,21 +1,20 @@
 module Admin
   class SessionsController < ApplicationController
+    rate_limit to: 10, within: 3.minutes, only: :create, with: -> {
+      flash.now[:alert] = "Too many sign-in attempts. Try again in a few minutes."
+      render :new, status: :too_many_requests
+    }
+
     def new
-      # If already authenticated, redirect to admin dashboard
-      if session[:admin_authenticated]
-        redirect_to admin_root_path
-      end
+      redirect_to admin_root_path if admin_signed_in?
     end
 
     def create
-      expected_username = ENV["ADMIN_USER_NAME"]
-      expected_password = ENV["ADMIN_PASSWORD"]
-
-      if expected_username.present? && expected_password.present? &&
-         ActiveSupport::SecurityUtils.secure_compare(params[:username].to_s, expected_username) &&
-         ActiveSupport::SecurityUtils.secure_compare(params[:password].to_s, expected_password)
-        session[:admin_authenticated] = true
-        redirect_to session.delete(:admin_return_to) || admin_root_path, notice: "Logged in."
+      if AdminSession.valid_credentials?(params[:username], params[:password])
+        return_to = session[:admin_return_to]
+        reset_session
+        admin_session.sign_in(remember: params[:remember_me] == "1")
+        redirect_to return_to || admin_root_path, notice: "Logged in."
       else
         flash.now[:alert] = "Invalid credentials"
         render :new, status: :unprocessable_entity
@@ -23,7 +22,7 @@ module Admin
     end
 
     def destroy
-      session[:admin_authenticated] = nil
+      reset_session
       redirect_to root_path, notice: "Logged out."
     end
   end

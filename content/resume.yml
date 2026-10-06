@@ -1,0 +1,168 @@
+# Mirrors Austin's resume (Austin_French_Resume_Sep17 in Google Drive) as written,
+# minus the phone number. Edit this file when the resume changes; /resume and
+# /resume.pdf both render from it.
+title: Senior Product Engineer · Forward-Deployed
+location: New York, NY
+email: austindanielfrench@gmail.com
+links:
+  - label: austn.net
+    url: https://austn.net
+  - label: GitHub
+    url: https://github.com/frogr
+  - label: LinkedIn
+    url: https://linkedin.com/in/austindanielfrench
+
+summary: >-
+  I’ve spent eight years building software and then standing next to the people
+  using it, from a Super Bowl check-in line to a client’s conference room.
+  Self-taught, Rails-first, increasingly TypeScript and applied AI: took a
+  contractor-facing assistant from idea to ~5,000 requests/day at CompanyCam,
+  led three simultaneous client engagements at Tenex,
+  and was called back to Backlit every event season for seven years. Off the
+  clock, built and ran nine self-hosted AI tools on my own GPU at austn.net.
+
+experience:
+  - company: Tenex
+    url: https://tenex.co
+    title: Senior Forward Deployed Engineer
+    location: New York, NY
+    dates: Mar 2026 – Jun 2026
+    note: Role eliminated in company-wide restructuring
+    about: >-
+      AI consultancy embedding engineers directly with clients. Lead engineer on
+      three simultaneous engagements, from technical discovery through
+      architecture, delivery, and executive demos.
+    bullets:
+      - lead: Built retail placement analytics across 1,500+ stores
+        text: >-
+          and several million historical sales records (TypeScript/Next.js), with
+          gondola-level heatmaps that let account execs compare store, field vs.
+          non-field, and placement performance. In use by the client; on a
+          held-out historical placement change, the model matched the observed
+          direction of sales movement for 96% of 300+ SKUs.
+      - lead: Deployed a TypeScript/Next.js mobile scheduling system
+        text: >-
+          that replaced WhatsApp-based availability collection and manual
+          schedule assembly, generating hundreds of monthly shifts for 120
+          representatives across 425 stores
+      - lead: Built an OCR and two-stage LLM pipeline
+        text: >-
+          (Google Document AI + LLM extraction) processing hundreds of printed and
+          handwritten forms weekly, enabling the client to wind down an outsourced
+          data-entry workflow; wrote evals and autonomy gates so over half of
+          documents ran without human review
+      - lead: "Built internal tooling used across engagements:"
+        text: >-
+          a parallel Claude Code session orchestrator, Slack-to-PR bug automation,
+          and git provenance tracking
+
+  - company: Backlit
+    url: https://backlit.com
+    title: Full Stack / Forward Deployed Engineer
+    location: Remote + on-site
+    dates: Oct 2018 – Feb 2026
+    note: Recurring seasonal contract for seven years, concurrent with the full-time roles below
+    about: >-
+      Talent logistics for major live productions: onboarding, scheduling,
+      payments, and compliance for 10,000+ performers across the Super Bowl,
+      Oscars, and Grammys.
+    bullets:
+      - lead: "Sole on-site engineer at Super Bowl LX:"
+        text: >-
+          ran talent check-in on the platform, caught workflow friction live, and
+          turned operational needs into same-day technical decisions
+      - lead: Cut page loads from 10+ seconds to under 400ms
+        text: >-
+          by rewriting SQL and ActiveRecord usage, reducing 500+ queries per page
+          to ~10, under live-event deadlines
+      - lead: Paid 100% of the halftime show’s non-union performers
+        text: >-
+          through the platform via Zeal; integrated Twilio, Yardstik background
+          checks, and NFL SEMS APIs for onboarding and event compliance
+      - text: >-
+          Processed $2MM+ in donations for Boys & Girls Clubs of America’s 2021
+          fundraiser (Node.js, Express, Stripe)
+
+  - company: CompanyCam
+    url: https://companycam.com
+    title: Backend Engineer, Workflows & Outputs
+    location: Remote
+    dates: Nov 2023 – Aug 2025
+    about: "#1 photo documentation app in construction, used by 140,000+ contractors."
+    bullets:
+      - lead: "Led the Pages AI Assistant from ideation to production:"
+        text: >-
+          contractors speak or type on a job site and get finished documentation
+          instantly. Scaled to ~5,000 requests/day; customers reported saving 2–5
+          hours per week
+      - lead: Built shared Rails abstractions on top of RubyLLM
+        text: >-
+          that were adopted across the product suite; shipped voice commands,
+          context-aware invoice generation, and tool-calling workflows on
+          Anthropic, OpenAI, and Groq
+      - text: >-
+          Architected Share Link (Rails, React/TypeScript) so users could securely
+          share any asset with clients and payers off-platform
+      - text: >-
+          Cut PDF export size 10x with streaming, compression, and Sidekiq/S3 async
+          processing for 10,000+ daily exports
+
+  - company: CoverMyMeds
+    url: https://www.covermymeds.com
+    title: Software Engineer, Launch team
+    location: Remote
+    dates: Jul 2021 – Oct 2023
+    about: >-
+      Industry standard for electronic prior authorization, connected to 950,000+
+      providers, 50,000+ pharmacies, and nearly every US health plan.
+    bullets:
+      - lead: Launched nine pharmaceutical brands representing $10M+ ARR,
+        text: expanding supported platform coverage by 40%
+      - lead: Built Configuration Station
+        text: >-
+          (Rails, React, PostgreSQL), reducing technical brand onboarding from
+          months to hours and enabling nontechnical staff to configure launches
+          without engineering
+      - text: >-
+          Technical lead for the Spravato, Renflexis, and Ontruzant launches,
+          owning implementation planning and coordination across engineering and
+          launch stakeholders
+      - text: >-
+          Created VEST, a technical-debt prioritization framework adopted across
+          engineering; mentored 5 developers, including transitioning a CSM into
+          engineering
+
+  - company: T2 Modus
+    url: https://t2modus.com
+    title: Software Engineer
+    location: Remote
+    dates: Jul 2019 – Sep 2020
+    bullets:
+      - text: >-
+          Cut a daily pipeline processing 25,000+ customer records from six hours
+          to 45 minutes through batch processing and database partitioning
+
+projects:
+  - name: austn.net
+    dates: Aug 2025 – Feb 2026
+    text: >-
+      Built and ran a self-hosted suite of 9 AI tools (image generation,
+      image-to-3D, voice cloning, stem separation, songwriting) on a Python/Flask
+      backend, on personal GPU hardware tunneled via Tailscale to a DigitalOcean
+      VPS; processed tens of thousands of inference jobs while publicly available.
+  - name: Tinyrails
+    dates: "2025"
+    text: >-
+      Built a Rails-inspired MVC framework in Ruby and Rack to study framework
+      internals, including convention-based routing, controller resolution,
+      typo-aware errors, and a file-backed ORM.
+
+skills:
+  - label: Languages & Frameworks
+    text: Ruby, Rails, TypeScript, JavaScript, React, Node.js, Python, SQL
+  - label: Data & Infrastructure
+    text: PostgreSQL, Redis, Sidekiq, Docker, AWS, Heroku, GitHub Actions
+  - label: Applied AI
+    text: >-
+      OpenAI, Anthropic, and Groq APIs; RubyLLM; OCR/document extraction;
+      tool-calling workflows; eval pipelines; autonomy gating; self-hosted inference

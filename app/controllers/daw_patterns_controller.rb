@@ -1,5 +1,6 @@
+# Anyone can browse and load patterns; only the admin can change the library.
 class DawPatternsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [ :create, :update, :destroy ]
+  before_action :authenticate_admin!, only: [ :create, :update, :destroy ]
 
   def index
     patterns = DawPattern.recent

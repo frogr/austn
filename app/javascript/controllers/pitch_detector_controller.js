@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { PitchDetector } from "../lib/pitch_detection"
+import { token, tokenAlpha } from "../lib/palette"
 import {
   getNearestNote,
   getNearestGuitarString,
@@ -18,7 +19,23 @@ const MIDI_LOW = 36  // C2
 const MIDI_HIGH = 84 // C6
 const MIDI_RANGE = MIDI_HIGH - MIDI_LOW
 const SMOOTHING_FACTOR = 0.35 // exponential smoothing (0=no smoothing, 1=frozen)
+
 const MEDIAN_WINDOW = 5 // median filter window size
+
+// A palette token as [r, g, b], so the trails can fade each dot by age
+// without reading the stylesheet for every dot. Tokens are hex; anything
+// else comes back as the plain string, like tokenAlpha does.
+function rgbOf(name) {
+  const value = token(name)
+  const hex = value.replace('#', '')
+  if (hex.length !== 6) return value
+  return [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16))
+}
+
+function withAlpha(rgb, alpha) {
+  if (!Array.isArray(rgb)) return rgb
+  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`
+}
 
 export default class extends Controller {
   static targets = [
@@ -339,7 +356,6 @@ export default class extends Controller {
 
     const color = getCentsColor(cents)
     this.centsNeedleTarget.style.background = color
-    this.centsNeedleTarget.style.boxShadow = `0 0 8px ${color}`
     this.centsValueTarget.textContent = `${cents > 0 ? '+' : ''}${cents.toFixed(0)}c`
     this.centsValueTarget.style.color = color
   }
@@ -381,6 +397,17 @@ export default class extends Controller {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.clearRect(0, 0, w, h)
 
+    // Palette tokens, read once a frame so the grid follows the visitor's
+    // palette without a getComputedStyle call for every dot on the trail.
+    this.colors = {
+      line: token('line'),
+      lineSoft: tokenAlpha('line', 0.6),
+      lineFaint: tokenAlpha('line', 0.35),
+      inkFaint: token('ink-3'),
+      brand: rgbOf('brand'),
+      plum: rgbOf('plum')
+    }
+
     // Current time for scrolling
     const now = this.startTime ? (performance.now() - this.startTime) / 1000 : 0
     const timeRight = now
@@ -406,7 +433,7 @@ export default class extends Controller {
     if (this.mode === 'guitar') {
       for (const gs of GUITAR_STRINGS) {
         const y = midiToY(gs.midi)
-        ctx.fillStyle = 'rgba(29, 185, 84, 0.06)'
+        ctx.fillStyle = withAlpha(this.colors.brand, 0.1)
         ctx.fillRect(0, y - 3, w, 6)
       }
     }
@@ -424,7 +451,7 @@ export default class extends Controller {
 
     // Playhead line (right edge)
     if (this.running) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
+      ctx.strokeStyle = this.colors.inkFaint
       ctx.lineWidth = 1
       ctx.setLineDash([4, 4])
       ctx.beginPath()
@@ -443,12 +470,12 @@ export default class extends Controller {
 
       // C notes get a slightly brighter line
       if (noteIdx === 0) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)'
+        ctx.strokeStyle = this.colors.line
         ctx.lineWidth = 1
       } else {
         ctx.strokeStyle = black
-          ? 'rgba(255, 255, 255, 0.03)'
-          : 'rgba(255, 255, 255, 0.05)'
+          ? this.colors.lineFaint
+          : this.colors.lineSoft
         ctx.lineWidth = 0.5
       }
 
@@ -460,8 +487,8 @@ export default class extends Controller {
   }
 
   _drawTimeMarkers(ctx, w, h, timeLeft, timeRight, timeToX) {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'
-    ctx.font = '9px Inter, sans-serif'
+    ctx.fillStyle = this.colors.inkFaint
+    ctx.font = '9px Recursive, sans-serif'
     ctx.textAlign = 'center'
 
     const startSec = Math.ceil(timeLeft)
@@ -469,7 +496,7 @@ export default class extends Controller {
       const x = timeToX(t)
       if (x < 0 || x > w) continue
 
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)'
+      ctx.strokeStyle = this.colors.lineSoft
       ctx.lineWidth = 0.5
       ctx.beginPath()
       ctx.moveTo(x, 0)
@@ -513,7 +540,7 @@ export default class extends Controller {
 
       // Connecting line
       if (prevX !== null && Math.abs(y - prevY) < h * 0.3) {
-        ctx.strokeStyle = `rgba(29, 185, 84, ${alpha * 0.5})`
+        ctx.strokeStyle = withAlpha(this.colors.brand, alpha * 0.5)
         ctx.lineWidth = 2
         ctx.beginPath()
         ctx.moveTo(prevX, prevY)
@@ -524,14 +551,14 @@ export default class extends Controller {
       // Dot
       ctx.beginPath()
       ctx.arc(x, y, 3, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(29, 185, 84, ${alpha})`
+      ctx.fillStyle = withAlpha(this.colors.brand, alpha)
       ctx.fill()
 
       // Glow on recent points
       if (age < 0.15) {
         ctx.beginPath()
         ctx.arc(x, y, 7, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(29, 185, 84, ${0.2 * (1 - age / 0.15)})`
+        ctx.fillStyle = withAlpha(this.colors.brand, 0.2 * (1 - age / 0.15))
         ctx.fill()
       }
 
@@ -576,9 +603,9 @@ export default class extends Controller {
       const age = (elapsed - canvasTime) / VISIBLE_SECONDS
       const alpha = Math.max(0.15, 1 - age * 0.8)
 
-      // Connecting line in purple
+      // Connecting line in plum
       if (prevX !== null && Math.abs(y - prevY) < h * 0.3) {
-        ctx.strokeStyle = `rgba(191, 90, 242, ${alpha * 0.5})`
+        ctx.strokeStyle = withAlpha(this.colors.plum, alpha * 0.5)
         ctx.lineWidth = 2
         ctx.beginPath()
         ctx.moveTo(prevX, prevY)
@@ -586,10 +613,10 @@ export default class extends Controller {
         ctx.stroke()
       }
 
-      // Dot in purple
+      // Dot in plum
       ctx.beginPath()
       ctx.arc(x, y, 3, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(191, 90, 242, ${alpha})`
+      ctx.fillStyle = withAlpha(this.colors.plum, alpha)
       ctx.fill()
 
       prevX = x
@@ -620,7 +647,7 @@ export default class extends Controller {
       const y = midiToY(point.midi)
 
       if (prevX !== null && Math.abs(y - prevY) < h * 0.3) {
-        ctx.strokeStyle = 'rgba(191, 90, 242, 0.35)'
+        ctx.strokeStyle = withAlpha(this.colors.plum, 0.35)
         ctx.lineWidth = 2
         ctx.beginPath()
         ctx.moveTo(prevX, prevY)
@@ -630,7 +657,7 @@ export default class extends Controller {
 
       ctx.beginPath()
       ctx.arc(x, y, 2.5, 0, Math.PI * 2)
-      ctx.fillStyle = 'rgba(191, 90, 242, 0.5)'
+      ctx.fillStyle = withAlpha(this.colors.plum, 0.5)
       ctx.fill()
 
       prevX = x

@@ -1,15 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react'
 
+// Must match ChatRequest on the server.
+const MAX_HISTORY = 20
+const MAX_MESSAGE_LENGTH = 4000
+const NETWORK_ERROR = "Couldn't reach the server. Check your connection and try again."
+
+// The server answers failures with a plain `error` sentence that is safe to show.
+const errorMessageFrom = async (response) => {
+  try {
+    const data = await response.json()
+    if (data.error) return data.error
+  } catch (_) {
+    // Not JSON; fall through to the generic message.
+  }
+  return response.status === 429 ? 'Too many messages. Try again later.' : 'Something went wrong. Try again later.'
+}
+
 const Chat = () => {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
-  const [systemPrompt, setSystemPrompt] = useState(
-    'You are a helpful AI assistant. Be concise, friendly, and informative.'
-  )
-  const [showSystemPrompt, setShowSystemPrompt] = useState(false)
   const messagesEndRef = useRef(null)
-  const eventSourceRef = useRef(null)
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -27,10 +38,15 @@ const Chat = () => {
   const clearChat = () => {
     setMessages([])
     setInput('')
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close()
-      eventSourceRef.current = null
-    }
+    setIsStreaming(false)
+  }
+
+  const showError = (content) => {
+    setMessages(prev => {
+      const newMessages = [...prev]
+      newMessages[newMessages.length - 1] = { ...newMessages[newMessages.length - 1], content, error: true }
+      return newMessages
+    })
     setIsStreaming(false)
   }
 
@@ -39,74 +55,36 @@ const Chat = () => {
 
     const userMessage = { role: 'user', content: input.trim() }
     const updatedMessages = [...messages, userMessage]
-    setMessages(updatedMessages)
+    setMessages([...updatedMessages, { role: 'assistant', content: '', timestamp: Date.now() }])
     setInput('')
     setIsStreaming(true)
 
-    // Add placeholder for assistant response
-    const assistantMessage = { role: 'assistant', content: '', timestamp: Date.now() }
-    setMessages([...updatedMessages, assistantMessage])
+    // Error placeholders are not part of the conversation.
+    const history = updatedMessages
+      .filter(message => !message.error)
+      .slice(-MAX_HISTORY)
+      .map(({ role, content }) => ({ role, content }))
 
     try {
-      // Use async endpoint
       const response = await fetch('/chat/async', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
         },
-        body: JSON.stringify({
-          messages: updatedMessages,
-          system_prompt: systemPrompt,
-          async: true  // Enable async processing
-        })
+        body: JSON.stringify({ messages: history })
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        showError(await errorMessageFrom(response))
+        return
       }
 
       const data = await response.json()
-
-      if (data.job_id) {
-        // Poll for job completion
-        pollForCompletion(data.job_id)
-      } else if (data.error) {
-        // Immediate error
-        setMessages(prev => {
-          const newMessages = [...prev]
-          newMessages[newMessages.length - 1] = {
-            ...newMessages[newMessages.length - 1],
-            content: `Error: ${data.error}`,
-            error: true
-          }
-          return newMessages
-        })
-        setIsStreaming(false)
-      } else if (data.content) {
-        // Immediate response (fallback to sync)
-        setMessages(prev => {
-          const newMessages = [...prev]
-          newMessages[newMessages.length - 1] = {
-            ...newMessages[newMessages.length - 1],
-            content: data.content
-          }
-          return newMessages
-        })
-        setIsStreaming(false)
-      }
+      pollForCompletion(data.job_id)
     } catch (error) {
       console.error('Chat error:', error)
-      setMessages(prev => {
-        const newMessages = [...prev]
-        newMessages[newMessages.length - 1] = {
-          ...newMessages[newMessages.length - 1],
-          content: `Error: ${error.message}`,
-          error: true
-        }
-        return newMessages
-      })
-      setIsStreaming(false)
+      showError(NETWORK_ERROR)
     }
   }
 
@@ -114,17 +92,13 @@ const Chat = () => {
     const maxAttempts = 60
     let attempts = 0
 
-    const updateLastMessage = (content, error = false) => {
+    const showReply = (content) => {
       setMessages(prev => {
         const newMessages = [...prev]
-        newMessages[newMessages.length - 1] = {
-          ...newMessages[newMessages.length - 1],
-          content,
-          ...(error && { error: true })
-        }
+        newMessages[newMessages.length - 1] = { ...newMessages[newMessages.length - 1], content }
         return newMessages
       })
-      if (error || content) setIsStreaming(false)
+      setIsStreaming(false)
     }
 
     const poll = async () => {
@@ -134,21 +108,21 @@ const Chat = () => {
 
         switch (data.status) {
           case 'completed':
-            updateLastMessage(data.content)
+            showReply(data.content)
             break
           case 'failed':
-            updateLastMessage(`Error: ${data.error || 'Job failed'}`, true)
+            showError(data.error || 'Something went wrong. Try again later.')
             break
           default:
             if (attempts++ < maxAttempts) {
               setTimeout(poll, 1000)
             } else {
-              updateLastMessage('Error: Request timed out', true)
+              showError('No reply yet. The GPU may be busy, so try again in a bit.')
             }
         }
       } catch (error) {
         console.error('Polling error:', error)
-        updateLastMessage(`Error: ${error.message}`, true)
+        showError(NETWORK_ERROR)
       }
     }
 
@@ -165,59 +139,23 @@ const Chat = () => {
   return (
     <div className="min-h-screen p-2 sm:p-4 md:p-8">
       <div className="w-full max-w-4xl mx-auto">
-        <div className="glass-card rounded-lg overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="glass overflow-hidden">
           {/* Header */}
-          <div className="px-3 sm:px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="px-3 sm:px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--line)' }}>
             <div className="flex gap-2">
               <button
-                onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-                className="px-3 py-1.5 text-sm font-medium rounded transition-all hover:opacity-80"
-                style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'rgba(255,255,255,0.9)'
-                }}
-                title="Configure system prompt"
-              >
-                System
-              </button>
-              <button
                 onClick={clearChat}
-                className="px-3 py-1.5 text-sm font-medium rounded transition-all hover:opacity-80"
-                style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'rgba(255,255,255,0.9)'
-                }}
+                className="btn btn-secondary"
               >
                 Clear
               </button>
             </div>
           </div>
 
-          {/* System Prompt Editor */}
-          {showSystemPrompt && (
-            <div className="px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
-              <label className="block text-sm font-medium mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                System Prompt
-              </label>
-              <textarea
-                value={systemPrompt}
-                onChange={(e) => setSystemPrompt(e.target.value)}
-                className="w-full h-20 px-3 py-2 rounded text-white resize-none focus:outline-none"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)'
-                }}
-                placeholder="Enter system prompt..."
-              />
-            </div>
-          )}
-
           {/* Messages */}
           <div className="h-[50vh] sm:h-[60vh] md:h-[500px] overflow-y-auto px-3 sm:px-6 py-4 space-y-3">
             {messages.length === 0 ? (
-              <div className="text-center mt-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <div className="text-center mt-8" style={{ color: 'var(--ink-2)' }}>
                 <p className="text-lg mb-2">No messages yet</p>
                 <p className="text-sm">Start a conversation</p>
               </div>
@@ -228,25 +166,20 @@ const Chat = () => {
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className="max-w-[85%] sm:max-w-[80%] rounded px-3 py-2"
+                    className="max-w-[85%] sm:max-w-[80%] px-3 py-2"
                     style={{
-                      background: message.role === 'user'
-                        ? 'var(--accent-color)'
-                        : message.error
-                        ? 'rgba(255,59,48,0.15)'
-                        : 'rgba(255,255,255,0.06)',
-                      border: message.role === 'user'
-                        ? 'none'
-                        : '1px solid rgba(255,255,255,0.08)',
-                      color: message.role === 'user' ? '#000' : '#fff'
+                      borderRadius: 'var(--radius)',
+                      background: message.role === 'user' ? 'var(--ground-3)' : 'var(--ground-2)',
+                      border: `1px solid ${message.error ? 'var(--clay)' : 'var(--line)'}`,
+                      color: message.error ? 'var(--clay)' : 'var(--ink)'
                     }}
                   >
-                    <div className="text-xs font-medium mb-1" style={{ opacity: message.role === 'user' ? 0.8 : 0.6 }}>
+                    <div className="text-xs font-bold mb-1" style={{ color: 'var(--ink-3)' }}>
                       {message.role === 'user' ? 'You' : 'AI'}
                     </div>
                     <div className="whitespace-pre-wrap break-words text-sm">
                       {message.content || (
-                        <span style={{ opacity: 0.5 }}>Processing...</span>
+                        <span style={{ color: 'var(--ink-3)' }}>Processing...</span>
                       )}
                     </div>
                   </div>
@@ -255,8 +188,8 @@ const Chat = () => {
             )}
             {isStreaming && (
               <div className="flex justify-start">
-                <div className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                  <span className="inline-block animate-pulse">•••</span>
+                <div className="text-sm" style={{ color: 'var(--ink-3)' }}>
+                  <span className="inline-block motion-safe:animate-pulse">•••</span>
                 </div>
               </div>
             )}
@@ -264,32 +197,35 @@ const Chat = () => {
           </div>
 
           {/* Input */}
-          <div className="px-3 sm:px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="px-3 sm:px-6 py-4" style={{ borderTop: '1px solid var(--line)' }}>
             <div className="flex flex-col sm:flex-row gap-2">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="Type a message..."
-                className="w-full sm:flex-1 px-3 py-2 rounded text-white resize-none focus:outline-none"
+                className="w-full sm:flex-1 px-3 py-2 resize-none focus:outline-none"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)'
+                  background: 'var(--sunken)',
+                  border: '1px solid var(--line)',
+                  borderRadius: 'var(--radius)',
+                  color: 'var(--ink)'
                 }}
                 rows={2}
+                maxLength={MAX_MESSAGE_LENGTH}
                 disabled={isStreaming}
               />
               <button
                 onClick={sendMessage}
                 disabled={isStreaming || !input.trim()}
-                className="w-full sm:w-auto px-4 py-2 rounded font-medium transition-all hover:opacity-90"
-                style={{
-                  background: (isStreaming || !input.trim())
-                    ? 'rgba(255,255,255,0.05)'
-                    : 'var(--accent-color)',
-                  color: (isStreaming || !input.trim()) ? 'rgba(255,255,255,0.3)' : '#000',
-                  cursor: (isStreaming || !input.trim()) ? 'not-allowed' : 'pointer'
-                }}
+                className="btn btn-primary w-full sm:w-auto justify-center"
+                style={(isStreaming || !input.trim()) ? {
+                  background: 'var(--ground-3)',
+                  color: 'var(--ink-3)',
+                  boxShadow: 'none',
+                  transform: 'none',
+                  cursor: 'not-allowed'
+                } : undefined}
               >
                 {isStreaming ? '...' : 'Send'}
               </button>
@@ -298,7 +234,7 @@ const Chat = () => {
         </div>
 
         {/* Connection Info */}
-        <div className="mt-4 text-center text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <div className="mt-4 text-center text-xs" style={{ color: 'var(--ink-3)', fontVariationSettings: '"MONO" 1' }}>
           LMStudio • qwen2.5-coder-14b • GPU Queue
         </div>
       </div>

@@ -38,6 +38,7 @@
               Advanced options
             </label>
           </div>
+<% if admin_signed_in? %>
           <div class="flex items-center gap-3">
             <input
               type="checkbox"
@@ -48,6 +49,7 @@
               Publish to gallery (keeps in gallery for 10 minutes)
             </label>
           </div>
+          <% end %>
         </div>
 
         <div id="advanced-options" style="display: none;">
@@ -183,7 +185,7 @@ async function generateImage() {
   const prompt = document.getElementById('prompt').value;
   const negativePrompt = document.getElementById('negative-prompt').value;
   const seed = document.getElementById('seed').value;
-  const publish = document.getElementById('publish').checked;
+  const publish = document.getElementById('publish')?.checked || false;
   const imageSize = document.getElementById('image-size').value;
   const batchSize = document.getElementById('batch-size').value;
 

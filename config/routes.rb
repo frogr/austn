@@ -1,18 +1,10 @@
 require "sidekiq/web"
 
 Rails.application.routes.draw do
-  # Sidekiq Web UI - Protected with HTTP Basic Auth
-  Sidekiq::Web.use Rack::Auth::Basic do |username, password|
-    # Use environment variables in production, fallback for development
-    expected_username = ENV.fetch("SIDEKIQ_USERNAME", "admin")
-    expected_password = ENV.fetch("SIDEKIQ_PASSWORD", Rails.application.credentials.dig(:sidekiq, :password) || "changeme123")
-
-    # Secure comparison to prevent timing attacks
-    ActiveSupport::SecurityUtils.secure_compare(username, expected_username) &&
-      ActiveSupport::SecurityUtils.secure_compare(password, expected_password)
-  end if Rails.env.production?
-
-  mount Sidekiq::Web => "/sidekiq"
+  # Sidekiq Web UI, only routed for a signed-in admin (everyone else gets a 404)
+  constraints ->(request) { AdminSession.new(request.session).active? } do
+    mount Sidekiq::Web => "/sidekiq"
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -33,30 +25,41 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Blog routes
+  # Public site: Home, Work, Writing (blog), Playground, Resume, plus /now
+  root "pages#home"
+  get "/now", to: "pages#now", as: :now
+  get "/palettes", to: "palettes#index", as: :palettes
+  post "/palette", to: "palettes#update", as: :palette
+
+  get "/work", to: "work#index", as: :work_index
+  get "/work/:slug", to: "work#show", as: :work_item
+
   get "/blog", to: "blog#index"
   get "/blog/:slug", to: "blog#show", as: :blog_post
-  get "/blog/:slug/content", to: "blog#content", as: :blog_post_content
 
-  # Portfolio routes - Simplified structure
-  get "/projects", to: "portfolio#projects"
-  get "/projects/:id", to: "portfolio#project_detail", as: :project_detail
-  get "/tech-setup", to: "portfolio#tech_setup"
-  # Simple pages for Engage links
-  get "/fun-links", to: "portfolio#fun_links"
-  get "/reading", to: "portfolio#reading"
-  get "/resources", to: "portfolio#resources"
-  get "/resume", to: "portfolio#resume"
+  get "/playground", to: "playground#index", as: :playground
+  get "/playground/:slug", to: "playground#show", as: :playground_item
 
-  # Legacy routes - redirect to new structure
-  get "/work", to: redirect("/")
+  get "/resume", to: "resumes#show", as: :resume, defaults: { format: :html }
+
+  # Short link to send people for a call
+  get "/meet", to: redirect("/book"), as: :meet
+
+  # Old URLs from the previous version of the site
+  get "/projects", to: redirect("/work")
+  get "/projects/:id", to: "work#legacy"
+  get "/fun-links", to: redirect("/now")
+  get "/reading", to: redirect("/now")
+  get "/resources", to: redirect("/now")
+  get "/fun", to: redirect("/now")
+  get "/games", to: redirect("/playground")
   get "/contact", to: redirect("/book")
-  get "/fun", to: redirect("/fun-links")
-  get "/games", to: redirect("/projects")
+  get "/endless(/*rest)", to: redirect("/playground")
+  get "/video", to: redirect("/playground")
+  get "/tech-setup", to: redirect("/now")
 
   # Claude Corner
   get "/claude", to: "claude_corner#index"
-
 
   # Pitch checker
   get "/pitch", to: "pitch#index"
@@ -66,12 +69,8 @@ Rails.application.routes.draw do
   post "/chat/async", to: "chat#async_complete"
   get "/chat/job/:id", to: "chat#job_status", as: :chat_job_status
 
-  # Dashboard for development/testing
-  get "/dashboard", to: "dashboard#hello", as: :dashboard
-  post "turbo_message", to: "dashboard#turbo_message", as: :turbo_message
-
-  # Images gallery
-  resources :images do
+  # Images gallery (read-only; generated images are published by the admin)
+  resources :images, only: [ :index, :show ] do
     collection do
       get "ai_generate"
       post "generate"
@@ -125,14 +124,6 @@ Rails.application.routes.draw do
   get "/stems/:id/download/:stem", to: "stems#download_stem", as: :download_stem
   get "/stems/:id/download_all", to: "stems#download_all", as: :download_all_stems
 
-  # Video Generation (Wan 2.2)
-  get "/video", to: "video#index"
-  post "/video/generate", to: "video#generate"
-  get "/video/:id/status", to: "video#status", as: :video_status
-  get "/video/:id/result", to: "video#result", as: :video_result
-  get "/video/:id/download", to: "video#download", as: :video_download
-  get "/video/:id/data", to: "video#data", as: :video_data
-
   # Music Generation (ACE-Step)
   get "/music", to: "music#index"
   post "/music/generate", to: "music#generate"
@@ -178,6 +169,7 @@ Rails.application.routes.draw do
 
     root to: "dashboard#index"
 
+    resources :availability_rules, except: [ :show ]
     resources :availabilities, except: [ :show ] do
       collection do
         post :bulk_create
@@ -209,6 +201,16 @@ Rails.application.routes.draw do
     end
 
     resources :clients
+
+    resources :claude_corner_entries, only: [ :index, :show, :destroy ] do
+      member do
+        post :publish
+        post :unpublish
+      end
+      collection do
+        post :generate
+      end
+    end
   end
 
   # API v1
@@ -243,12 +245,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # Endless Story
-  get "/endless", to: "endless#index"
-  get "/endless/:id", to: "endless#show", as: :endless_story
-  get "/endless/:id/paragraphs", to: "endless#paragraphs", as: :endless_story_paragraphs
-  get "/endless/:id/timer", to: "endless#timer", as: :endless_story_timer
-
   # Code Review Harness
   resources :reviews, only: [ :index, :create, :show ] do
     member do
@@ -258,7 +254,4 @@ Rails.application.routes.draw do
       post :comments, to: "reviews#add_comment"
     end
   end
-
-  # Portfolio as root
-  root "portfolio#index"
 end

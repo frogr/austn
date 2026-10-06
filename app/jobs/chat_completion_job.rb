@@ -1,52 +1,47 @@
 class ChatCompletionJob < GpuJob
   self.gpu_service_name = "chat"
 
-  def perform(messages, system_prompt, job_id)
-    Rails.logger.info "Starting ChatCompletionJob #{job_id}"
+  # Arguments carry the visitor's messages; keep them out of the logs.
+  self.log_arguments = false
 
-    # Store initial status
-    store_result("chat_job:#{job_id}:status", { status: "processing", started_at: Time.current })
+  RESULT_TTL = 30.minutes
 
-    begin
-      # Use the existing ChatService to make the API call
-      chat_service = ChatService.new
-      response_content = chat_service.completion(messages, system_prompt)
+  def perform(job_id, messages)
+    store("chat_job:#{job_id}:status", { status: "processing", started_at: Time.current })
 
-      # Store successful result
-      result = {
-        status: "completed",
-        content: response_content,
-        completed_at: Time.current
-      }
-      store_result("chat_job:#{job_id}", result, ttl: 1800) # Keep for 30 minutes
-      store_result("chat_job:#{job_id}:status", { status: "completed" })
+    content = ChatService.new.completion(messages)
 
-      Rails.logger.info "ChatCompletionJob #{job_id} completed successfully"
-      mark_service_online
-    rescue => e
-      Rails.logger.error "ChatCompletionJob #{job_id} failed: #{e.message}"
-
-      # Store error result
-      error_result = {
-        status: "failed",
-        error: e.message,
-        failed_at: Time.current
-      }
-      store_result("chat_job:#{job_id}", error_result, ttl: 600) # Keep errors for 10 minutes
-      store_result("chat_job:#{job_id}:status", { status: "failed", error: e.message })
-
-      # Re-raise to trigger retry logic
-      raise
-    end
+    store("chat_job:#{job_id}", { status: "completed", content: content, completed_at: Time.current }, ttl: RESULT_TTL)
+    store("chat_job:#{job_id}:status", { status: "completed" })
+    self.class.mark_service_online
   end
 
-  # Class method to check job status
   def self.check_status(job_id)
-    get_result("chat_job:#{job_id}:status") || { status: "pending" }
+    read("chat_job:#{job_id}:status") || { "status" => "pending" }
   end
 
-  # Class method to get job result
   def self.get_chat_result(job_id)
-    get_result("chat_job:#{job_id}")
+    read("chat_job:#{job_id}")
+  end
+
+  def self.read(key)
+    value = redis.get(key)
+    JSON.parse(value) if value
+  rescue JSON::ParserError
+    nil
+  end
+  private_class_method :read
+
+  private
+
+  def record_failure(public_error)
+    job_id = arguments.first
+    failure = { status: "failed", failed_at: Time.current, **public_error.to_h }
+    store("chat_job:#{job_id}", failure, ttl: FAILED_STATUS_TTL)
+    store("chat_job:#{job_id}:status", failure, ttl: FAILED_STATUS_TTL)
+  end
+
+  def store(key, value, ttl: 1.hour)
+    redis.setex(key, ttl.to_i, value.to_json)
   end
 end

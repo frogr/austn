@@ -1,45 +1,32 @@
 class GpuHealthController < ApplicationController
+  before_action :authenticate_admin!, only: :check
+  before_action :require_known_service, only: [ :show, :check ]
+
   def index
     render json: GpuHealthStatus.all_statuses
   end
 
   def show
-    service = params[:service]
-    unless GpuHealthStatus::SERVICES.include?(service)
-      return render json: { error: "Unknown service" }, status: :not_found
-    end
-
-    status = GpuHealthStatus.for_service(service)
-    render json: {
-      service: service,
-      online: status.online,
-      last_checked_at: status.last_checked_at,
-      last_online_at: status.last_online_at,
-      error_message: status.error_message
-    }
+    render json: { service: params[:service], **GpuHealthStatus.for_service(params[:service]).public_status }
   end
 
+  # Admin-only: probes the backends right now instead of waiting for the schedule.
   def check
-    service = params[:service]
-
-    if service.present?
-      unless GpuHealthStatus::SERVICES.include?(service)
-        return render json: { error: "Unknown service" }, status: :not_found
-      end
-
-      health_service = GpuHealthService.new
-      result = health_service.public_send("check_#{service}")
-      status = GpuHealthStatus.for_service(service)
-
-      render json: {
-        service: service,
-        online: result,
-        last_checked_at: status.last_checked_at,
-        last_online_at: status.last_online_at
-      }
+    if params[:service].present?
+      GpuHealthService.new.check(params[:service])
+      render json: { service: params[:service], **GpuHealthStatus.for_service(params[:service]).public_status }
     else
-      results = GpuHealthService.check_all
+      GpuHealthService.check_all
       render json: GpuHealthStatus.all_statuses
     end
+  end
+
+  private
+
+  def require_known_service
+    return if params[:service].blank? && action_name == "check"
+    return if GpuHealthStatus::SERVICES.include?(params[:service])
+
+    render json: { error: "Unknown service" }, status: :not_found
   end
 end

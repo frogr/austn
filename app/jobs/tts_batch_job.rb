@@ -1,6 +1,8 @@
+# Generates one pending item per run and re-enqueues itself until the batch
+# is done, so other GPU jobs can take the lock between items. Item failures
+# are recorded on the item.
 class TtsBatchJob < GpuJob
   self.gpu_service_name = "tts"
-  sidekiq_options retry: 0 # Handle retries manually per item
 
   def perform(batch_id)
     batch = TtsBatch.find_by(id: batch_id)
@@ -30,12 +32,14 @@ class TtsBatchJob < GpuJob
 
   private
 
+  # Failures that escape a single item (the batch itself is broken) are only logged.
+  def record_failure(_public_error); end
+
   def process_item(batch, item)
     item.mark_processing!
     broadcast_item_update(batch, item, "processing")
 
     begin
-      # Normalize voice preset to handle shorthand names like "jordan_peterson" -> "actors/jordan_peterson"
       normalized_voice = TtsService.normalize_voice_preset(item.voice_preset)
 
       result = TtsService.generate_speech(
@@ -48,13 +52,18 @@ class TtsBatchJob < GpuJob
       item.mark_completed!(audio_data: result[:audio], duration: result[:duration])
       batch.increment!(:completed_items)
       broadcast_item_update(batch, item, "completed")
-      mark_service_online
+      self.class.mark_service_online
 
+    rescue Gpu::Offline
+      # Every remaining item would fail the same way; let GpuJob discard the
+      # batch and mark the tool offline.
+      raise
     rescue => e
-      Rails.logger.error "TtsBatchJob item #{item.id} failed: #{e.message}"
-      item.mark_failed!(e.message)
+      Rails.logger.error "TtsBatchJob item #{item.id} failed: #{e.class}: #{e.message}"
+      error = Gpu::PublicError.for(e).message
+      item.mark_failed!(error)
       batch.increment!(:failed_items)
-      broadcast_item_update(batch, item, "failed", e.message)
+      broadcast_item_update(batch, item, "failed", error)
     end
   end
 

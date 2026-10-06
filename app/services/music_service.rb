@@ -4,6 +4,16 @@ class MusicService
   BASE_TIMEOUT = 300 # 5 minutes base
   TIMEOUT_PER_SECOND = 3 # extra seconds of timeout per second of audio duration
 
+  PARAMS = %i[
+    tags lyrics audio_duration infer_step guidance_scale guidance_scale_text guidance_scale_lyric seed scheduler preset
+  ].freeze
+
+  # Bounds on what one request can ask the GPU to do.
+  AUDIO_DURATION_RANGE = 10.0..240.0 # seconds of audio
+  INFER_STEP_RANGE = 1..100
+  GUIDANCE_RANGE = 0.0..15.0
+  MAX_COMPLETION_TIMEOUT = [ BASE_TIMEOUT, (AUDIO_DURATION_RANGE.max * TIMEOUT_PER_SECOND).to_i ].max
+
   class MusicError < StandardError; end
 
   SCHEDULER_OPTIONS = %w[euler euler_ancestral ddim].freeze
@@ -39,8 +49,7 @@ class MusicService
     prompt_id = ComfyuiClient.queue_prompt(workflow)
     Rails.logger.info "Queued music generation with prompt_id: #{prompt_id}, prefix: #{unique_prefix}"
 
-    duration = params[:audio_duration].to_f
-    timeout = [ BASE_TIMEOUT, (duration * TIMEOUT_PER_SECOND).to_i ].max
+    timeout = completion_timeout(params[:audio_duration])
 
     outputs = ComfyuiClient.wait_for_completion(prompt_id, timeout: timeout)
 
@@ -54,6 +63,11 @@ class MusicService
     raise MusicError, e.message
   end
 
+  def self.completion_timeout(audio_duration)
+    duration = audio_duration ? audio_duration.to_f.clamp(AUDIO_DURATION_RANGE) : 0
+    [ BASE_TIMEOUT, (duration * TIMEOUT_PER_SECOND).to_i ].max
+  end
+
   private
 
   def self.modify_workflow(workflow, params, unique_prefix, seed)
@@ -64,11 +78,11 @@ class MusicService
       when "MultiLineLyrics"
         node["inputs"]["multi_line_prompt"] = params[:lyrics] if params[:lyrics].present?
       when "GenerationParameters"
-        node["inputs"]["audio_duration"] = params[:audio_duration].to_f if params[:audio_duration]
-        node["inputs"]["infer_step"] = params[:infer_step].to_i if params[:infer_step]
-        node["inputs"]["guidance_scale"] = params[:guidance_scale].to_f if params[:guidance_scale]
-        node["inputs"]["guidance_scale_text"] = params[:guidance_scale_text].to_f if params[:guidance_scale_text]
-        node["inputs"]["guidance_scale_lyric"] = params[:guidance_scale_lyric].to_f if params[:guidance_scale_lyric]
+        node["inputs"]["audio_duration"] = params[:audio_duration].to_f.clamp(AUDIO_DURATION_RANGE) if params[:audio_duration]
+        node["inputs"]["infer_step"] = params[:infer_step].to_i.clamp(INFER_STEP_RANGE) if params[:infer_step]
+        %i[guidance_scale guidance_scale_text guidance_scale_lyric].each do |key|
+          node["inputs"][key.to_s] = params[key].to_f.clamp(GUIDANCE_RANGE) if params[key]
+        end
         node["inputs"]["seed"] = seed
         node["inputs"]["scheduler_type"] = params[:scheduler] if params[:scheduler].present? && SCHEDULER_OPTIONS.include?(params[:scheduler])
       when "SaveAudio"

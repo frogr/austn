@@ -1,50 +1,27 @@
 class VtracerController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "vtracer", only: :generate
+  shows_writeup_when_offline "vtracer", "image-to-svg", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
+
+  # Includes the legacy names gradient_step and segment_length.
+  VTRACER_PARAMS = %i[
+    hierarchical mode filter_speckle color_precision layer_difference corner_threshold
+    length_threshold max_iterations splice_threshold path_precision gradient_step segment_length
+  ].freeze
 
   def index
     # Show the vtracer form
   end
 
   def generate
-    unless params[:image].present?
-      render json: { success: false, error: "No image provided" }, status: :bad_request
-      return
-    end
-
+    options = VtracerService.options_for(params.permit(*VTRACER_PARAMS).to_h)
+    upload = GpuUpload.store!(params[:image], kind: :image)
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting vtracer generation #{generation_id}"
-
-    # Read and encode the uploaded file
-    uploaded_file = params[:image]
-    file_data = {
-      "base64" => Base64.strict_encode64(uploaded_file.read)
-    }
-    uploaded_file.rewind
-
-    # Build options from params
-    options = {
-      "original_filename" => uploaded_file.original_filename
-    }
-
-    # Add VTracer parameters if provided (includes both new and legacy param names)
-    vtracer_params = %w[
-      hierarchical mode filter_speckle color_precision layer_difference
-      corner_threshold length_threshold max_iterations splice_threshold path_precision
-      gradient_step segment_length
-    ]
-    vtracer_params.each do |key|
-      options[key] = params[key] if params[key].present?
-    end
-
-    # Queue the job
-    VtracerJob.perform_later(
-      generation_id,
-      file_data,
-      options
-    )
+    VtracerJob.perform_later(generation_id, upload, options.stringify_keys)
 
     render json: {
       success: true,
@@ -53,9 +30,10 @@ class VtracerController < ApplicationController
       check_url: status_vtracer_path(generation_id),
       websocket_channel: "vtracer_#{generation_id}"
     }
+  rescue VtracerService::VtracerError, GpuUpload::Invalid => e
+    render_invalid_input(e.message)
   rescue => e
-    Rails.logger.error "Failed to queue vtracer generation: #{e.message}"
-    render json: { success: false, error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status

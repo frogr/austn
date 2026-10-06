@@ -1,6 +1,10 @@
 module Api
   module V1
     class TtsController < BaseController
+      include RequiresGpu
+
+      requires_gpu "tts", only: [ :generate, :synthesize, :batch ]
+
       # POST /api/v1/tts/generate (async - returns generation ID)
       def generate
         unless params[:text].present?
@@ -71,9 +75,9 @@ module Api
                   disposition: params[:download] == "true" ? "attachment" : "inline",
                   filename: "tts-#{request_id}.wav"
 
-      rescue TtsService::TtsError => e
-        Rails.logger.error "[TTS API #{request_id}] TTS error: #{e.message}"
-        render_error(e.message, status: :service_unavailable)
+      rescue TtsService::TtsError, Gpu::Error => e
+        Rails.logger.error "[TTS API #{request_id}] #{e.class}: #{e.message}"
+        render_error(Gpu::PublicError.for(e).message, status: :service_unavailable)
       rescue => e
         Rails.logger.error "[TTS API #{request_id}] Unexpected error: #{e.class} - #{e.message}"
         Rails.logger.error e.backtrace.first(5).join("\n")
@@ -93,7 +97,7 @@ module Api
         else
           render json: {
             status: "unavailable",
-            error: health_status[:error] || health_status["error"] || "Service unreachable",
+            error: "Service unreachable",
             timestamp: Time.current.iso8601
           }, status: :service_unavailable
         end

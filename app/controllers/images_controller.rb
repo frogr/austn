@@ -1,7 +1,10 @@
 class ImagesController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
 
-  before_action :set_image, only: [ :show, :edit, :update, :destroy ]
+  requires_gpu "images", only: :generate
+  shows_writeup_when_offline "images", "image-generation", only: [ :index, :ai_generate ]
+
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
@@ -12,38 +15,7 @@ class ImagesController < ApplicationController
   end
 
   def show
-  end
-
-  def new
-    @image = Image.new
-  end
-
-  def create
-    @image = Image.new(image_params)
-
-    if @image.save
-      ImageProcessingJob.perform_later(@image) if @image.file.attached?
-      redirect_to @image, notice: "Image was successfully created."
-    else
-      render :new, status: :unprocessable_entity
-    end
-  end
-
-  def edit
-  end
-
-  def update
-    if @image.update(image_params)
-      ImageProcessingJob.perform_later(@image) if @image.file.attached?
-      redirect_to @image, notice: "Image was successfully updated."
-    else
-      render :edit, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    @image.destroy
-    redirect_to images_url, notice: "Image was successfully destroyed."
+    @image = Image.published.find(params[:id])
   end
 
   # AI Generation endpoints
@@ -52,24 +24,21 @@ class ImagesController < ApplicationController
   end
 
   def generate
+    return render_invalid_input("Describe the image you want.") if params[:prompt].blank?
+
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting generation #{generation_id} with prompt: #{params[:prompt]}"
-
-    # Queue the job
     ImageGenerationJob.perform_later(
       generation_id,
       params[:prompt],
       {
         "negative_prompt" => params[:negative_prompt],
         "seed" => params[:seed],
-        "publish" => params[:publish],
+        "publish" => admin_signed_in? && ActiveModel::Type::Boolean.new.cast(params[:publish]),
         "image_size" => params[:image_size],
         "batch_size" => params[:batch_size]
       }
     )
 
-    # Return immediately with generation ID
     render json: {
       generation_id: generation_id,
       status: "queued",
@@ -77,8 +46,7 @@ class ImagesController < ApplicationController
       websocket_channel: "image_generation_#{generation_id}"
     }
   rescue => e
-    Rails.logger.error "Failed to queue generation: #{e.message}"
-    render json: { error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def ai_show
@@ -148,13 +116,5 @@ class ImagesController < ApplicationController
 
   def image_redis_service
     @image_redis_service ||= ImageRedisService.new
-  end
-
-  def set_image
-    @image = Image.find(params[:id])
-  end
-
-  def image_params
-    params.require(:image).permit(:title, :description, :position, :published, :file)
   end
 end

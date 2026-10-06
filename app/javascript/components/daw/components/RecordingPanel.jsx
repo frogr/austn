@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchDetector } from 'pitchy'
 import { useDAW } from '../context/DAWContext'
+import { token } from '../../../lib/palette'
 
 const styles = {
   container: {
@@ -8,8 +9,8 @@ const styles = {
     flexDirection: 'column',
     gap: '0.75rem',
     padding: '1rem',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--ground-2)',
+    border: '1px solid var(--line)',
     borderRadius: '0.5rem',
   },
   header: {
@@ -19,14 +20,14 @@ const styles = {
   },
   title: {
     fontSize: '0.875rem',
-    color: 'rgba(255,255,255,0.6)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     fontWeight: 500,
   },
   waveformContainer: {
     height: '80px',
-    background: 'rgba(0,0,0,0.3)',
+    background: 'var(--sunken)',
     borderRadius: '0.375rem',
     position: 'relative',
     overflow: 'hidden',
@@ -40,11 +41,11 @@ const styles = {
     top: '8px',
     right: '8px',
     padding: '4px 8px',
-    background: 'rgba(0,0,0,0.6)',
+    background: 'var(--sunken)',
     borderRadius: '4px',
     fontSize: '0.8rem',
-    fontFamily: 'monospace',
-    color: 'var(--accent-color, #10b981)',
+    fontVariationSettings: '"MONO" 1',
+    color: 'var(--brand)',
   },
   controls: {
     display: 'flex',
@@ -55,8 +56,8 @@ const styles = {
     width: '48px',
     height: '48px',
     borderRadius: '50%',
-    border: '2px solid rgba(239, 68, 68, 0.5)',
-    background: 'rgba(239, 68, 68, 0.2)',
+    border: '2px solid color-mix(in srgb, var(--clay) 50%, transparent)',
+    background: 'color-mix(in srgb, var(--clay) 20%, transparent)',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -65,19 +66,19 @@ const styles = {
     flexShrink: 0,
   },
   recordButtonActive: {
-    background: 'rgba(239, 68, 68, 0.6)',
-    boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)',
+    background: 'color-mix(in srgb, var(--clay) 60%, transparent)',
+    borderColor: 'var(--clay)',
   },
   recordIcon: {
     width: '20px',
     height: '20px',
     borderRadius: '50%',
-    background: '#ef4444',
+    background: 'var(--clay)',
   },
   stopIcon: {
     width: '18px',
     height: '18px',
-    background: '#ef4444',
+    background: 'var(--clay)',
     borderRadius: '3px',
   },
   controlGroup: {
@@ -88,27 +89,27 @@ const styles = {
   },
   label: {
     fontSize: '0.7rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
   },
   toggleButton: {
     padding: '0.5rem 1rem',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.375rem',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'var(--ink-2)',
     fontSize: '0.8rem',
     cursor: 'pointer',
     transition: 'all 0.2s',
   },
   toggleActive: {
-    background: 'rgba(16, 185, 129, 0.2)',
-    borderColor: 'rgba(16, 185, 129, 0.4)',
-    color: '#10b981',
+    background: 'color-mix(in srgb, var(--brand) 20%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 40%, transparent)',
+    color: 'var(--brand)',
   },
   status: {
     fontSize: '0.8rem',
-    color: 'rgba(255,255,255,0.6)',
+    color: 'var(--ink-2)',
     textAlign: 'center',
   },
   audioPlayer: {
@@ -117,10 +118,11 @@ const styles = {
   },
   processButton: {
     padding: '0.5rem 1rem',
-    background: 'linear-gradient(45deg, #10b981, #059669)',
+    background: 'var(--brand)',
     border: 'none',
     borderRadius: '0.375rem',
-    color: 'white',
+    color: 'var(--ground)',
+    boxShadow: '0 0.2rem 0 var(--shade)',
     fontSize: '0.8rem',
     fontWeight: 500,
     cursor: 'pointer',
@@ -197,12 +199,12 @@ export default function RecordingPanel() {
         }
       }
 
-      // Draw waveform
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'
+      // Draw waveform (canvas can't read CSS variables, so read the palette here)
+      ctx.fillStyle = token('sunken')
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       ctx.lineWidth = 2
-      ctx.strokeStyle = '#ef4444'
+      ctx.strokeStyle = token('clay')
       ctx.beginPath()
 
       const sliceWidth = canvas.width / bufferLength
@@ -558,7 +560,7 @@ export default function RecordingPanel() {
         <div style={styles.controlGroup}>
           <span style={styles.status}>
             {error ? (
-              <span style={{ color: '#ef4444' }}>{error}</span>
+              <span style={{ color: 'var(--clay)' }}>{error}</span>
             ) : isRecording ? (
               `Recording: ${formatDuration(duration)}`
             ) : hasRecording ? (
@@ -588,13 +590,13 @@ export default function RecordingPanel() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {audioUrl && (
             <div>
-              <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>Original:</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--ink-2)' }}>Original:</span>
               <audio controls src={audioUrl} style={styles.audioPlayer} />
             </div>
           )}
           {processedUrl && (
             <div>
-              <span style={{ fontSize: '0.7rem', color: '#10b981' }}>Autotuned:</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--brand)' }}>Autotuned:</span>
               <audio controls src={processedUrl} style={styles.audioPlayer} />
             </div>
           )}
@@ -602,7 +604,8 @@ export default function RecordingPanel() {
             style={{
               ...styles.processButton,
               opacity: addedToTrack ? 0.6 : 1,
-              background: addedToTrack ? 'rgba(255,255,255,0.1)' : 'linear-gradient(45deg, #3b82f6, #2563eb)',
+              background: addedToTrack ? 'var(--ground-3)' : 'var(--sky)',
+              color: addedToTrack ? 'var(--ink-2)' : 'var(--ground)',
             }}
             onClick={addToTrack}
             disabled={addedToTrack}

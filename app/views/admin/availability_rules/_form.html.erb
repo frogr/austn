@@ -1,0 +1,45 @@
+<%= form_with model: [ :admin, rule ], class: "space-y-4" do |f| %>
+  <% if rule.errors.any? %>
+    <div class="p-3 rounded-lg text-sm" style="background: rgba(255, 59, 48, 0.15); border: 1px solid rgba(255, 59, 48, 0.3); color: var(--danger-color);">
+      <% rule.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% field_style = "background: var(--bg-secondary); border: 1px solid var(--border-glass); color: var(--text-primary); outline: none;" %>
+
+  <div>
+    <%= f.label :weekday, "Day", class: "block text-sm font-medium mb-1 text-gray-300" %>
+    <%= f.select :weekday, Date::DAYNAMES.each_with_index.to_a, {}, class: "w-full px-4 py-3 rounded-lg text-sm", style: field_style %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :start_time, "From", class: "block text-sm font-medium mb-1 text-gray-300" %>
+      <%= f.time_field :start_time, value: rule.start_time&.strftime("%H:%M"), required: true,
+            class: "w-full px-4 py-3 rounded-lg text-sm", style: field_style %>
+    </div>
+    <div>
+      <%= f.label :end_time, "To", class: "block text-sm font-medium mb-1 text-gray-300" %>
+      <%= f.time_field :end_time, value: rule.end_time&.strftime("%H:%M"), required: true,
+            class: "w-full px-4 py-3 rounded-lg text-sm", style: field_style %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :slot_duration_minutes, "Slot length", class: "block text-sm font-medium mb-1 text-gray-300" %>
+    <%= f.select :slot_duration_minutes, BookableWindow::SLOT_DURATIONS.map { |minutes| [ "#{minutes} minutes", minutes ] }, {},
+          class: "w-full px-4 py-3 rounded-lg text-sm", style: field_style %>
+  </div>
+
+  <label class="flex items-center gap-2 text-sm text-gray-300">
+    <%= f.check_box :active %>
+    Open for booking
+  </label>
+
+  <div class="flex items-center gap-4">
+    <%= f.submit "Save", class: "py-2.5 px-5 rounded-md font-semibold text-white", style: "background: linear-gradient(45deg, #10b981, #059669);" %>
+    <%= link_to "Cancel", admin_availability_rules_path, class: "text-sm text-gray-400" %>
+  </div>
+<% end %>

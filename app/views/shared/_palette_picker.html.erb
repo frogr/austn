@@ -1,0 +1,16 @@
+<%# Footer control for the colour palette. A <details> element, so it opens without JavaScript. %>
+<details class="palette-picker">
+  <summary>
+    <span class="palette-chips" aria-hidden="true"><i data-hue="sun"></i><i data-hue="clay"></i><i data-hue="moss"></i><i data-hue="sky"></i><i data-hue="plum"></i></span>
+    Palette<span class="visually-hidden">: <%= current_palette.name %></span>
+  </summary>
+  <div class="palette-menu">
+    <% Palette.all.each do |palette| %>
+      <%= button_to palette_path, params: { name: palette.slug }, class: "palette-option #{palette.css_class}", "aria-pressed": (palette == current_palette).to_s do %>
+        <span class="palette-chips" aria-hidden="true"><i data-hue="sun"></i><i data-hue="clay"></i><i data-hue="moss"></i><i data-hue="sky"></i><i data-hue="plum"></i></span>
+        <%= palette.name %>
+      <% end %>
+    <% end %>
+    <%= link_to "Compare them all", palettes_path %>
+  </div>
+</details>

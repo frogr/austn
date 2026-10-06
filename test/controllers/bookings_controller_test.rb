@@ -4,7 +4,7 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
   test "GET /book shows calendar" do
     get book_path
     assert_response :success
-    assert_select "h1", /Book a Time/
+    assert_select "h1", /Book a time/
   end
 
   test "GET /book/:date shows time slots" do
@@ -13,18 +13,19 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET /book/:date returns turbo frame for slot_picker" do
+  test "GET /book/:date lists open times as choices in a plain form" do
     avail = availabilities(:today_afternoon)
-    get book_date_path(date: avail.date.to_s), headers: { "Turbo-Frame" => "slot_picker" }
+    get book_date_path(date: avail.date.to_s)
     assert_response :success
-    assert_match "turbo-frame", response.body
-    assert_match "slot_picker", response.body
+    assert_select "form[action=?]", bookings_path do
+      assert_select "input[type=radio][name=start_time]"
+      assert_select "input[name=booked_date][value=?]", avail.date.to_s
+    end
   end
 
-  test "GET /book/:date with invalid date renders error in turbo frame" do
+  test "GET /book/:date with invalid date shows an error instead of failing" do
     get book_date_path(date: "invalid-date")
     assert_response :success
-    assert_match "turbo-frame", response.body
     assert_match "Something went wrong", response.body
   end
 
@@ -74,14 +75,14 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
     booking = bookings(:confirmed_booking)
     get confirmation_booking_path(booking.confirmation_token)
     assert_response :success
-    assert_select "h1", /You're Booked/
+    assert_select "h1", /You're booked/
   end
 
   test "GET /bookings/:token/cancel_confirm shows cancel confirmation" do
     booking = bookings(:confirmed_booking)
     get cancel_confirm_booking_path(booking.confirmation_token)
     assert_response :success
-    assert_select "h1", /Cancel Booking/
+    assert_select "h1", /Cancel this booking/
   end
 
   test "DELETE /bookings/:token/cancel cancels the booking" do
@@ -103,5 +104,58 @@ class BookingsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to book_path
     follow_redirect!
     assert_match "already been cancelled", response.body
+  end
+
+  test "GET /book says how to get in touch when nothing is open" do
+    Booking.delete_all
+    Availability.delete_all
+
+    get book_path
+
+    assert_response :success
+    assert_match "No open times right now. Email", response.body
+    assert_select "a[href='mailto:austindanielfrench@gmail.com']"
+  end
+
+  test "GET /book shows days opened by weekly rules" do
+    travel_to Time.zone.local(2026, 10, 9, 9, 0) do
+      AvailabilityRule.create!(weekday: 1, start_time: "10:00", end_time: "12:00", slot_duration_minutes: 30)
+
+      get book_path(month: "2026-10")
+
+      assert_select "a[href='#{book_date_path(date: '2026-10-12')}']"
+      assert_no_match "No open times right now", response.body
+    end
+  end
+
+  test "GET /book with a malformed month falls back to this month" do
+    get book_path(month: "garbage")
+
+    assert_response :success
+    assert_match Date.current.strftime("%B %Y"), response.body
+  end
+
+  test "POST /bookings books a rule-generated slot" do
+    travel_to Time.zone.local(2026, 10, 9, 9, 0) do
+      AvailabilityRule.create!(weekday: 1, start_time: "10:00", end_time: "12:00", slot_duration_minutes: 30)
+
+      assert_difference "Booking.count", 1 do
+        post bookings_path, params: { booked_date: "2026-10-12", start_time: "10:30", first_name: "Ada",
+                                      email: "ada@example.com", phone_number: "5551234567" }
+      end
+      assert_redirected_to confirmation_booking_path(Booking.last.confirmation_token)
+    end
+  end
+
+  test "POST /bookings rejects a time outside the open slots" do
+    avail = availabilities(:next_week)
+
+    assert_no_difference "Booking.count" do
+      post bookings_path, params: { availability_id: avail.id, booked_date: avail.date.to_s, start_time: "03:07",
+                                    end_time: "11:07", first_name: "Mallory", email: "m@example.com",
+                                    phone_number: "5550000000" }
+    end
+    assert_response :unprocessable_entity
+    assert_match "no longer available", response.body
   end
 end

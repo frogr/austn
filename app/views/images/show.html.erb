@@ -30,17 +30,6 @@
         </span>
         <span><%= @image.created_at.strftime("%B %d, %Y") %></span>
       </div>
-
-      <div class="flex gap-2">
-        <%= link_to "Edit", edit_image_path(@image),
-                    class: "px-3 py-1.5 text-sm font-medium rounded transition-all hover:opacity-90",
-                    style: "background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.9);" %>
-        <%= link_to "Delete", image_path(@image),
-                    method: :delete,
-                    data: { "turbo-method": :delete, "turbo-confirm": "Delete this image?" },
-                    class: "px-3 py-1.5 text-sm font-medium rounded transition-all hover:opacity-90",
-                    style: "background: rgba(255,59,48,0.15); border: 1px solid rgba(255,59,48,0.3); color: rgba(255,255,255,0.9);" %>
-      </div>
     </div>
   </div>
 </div>

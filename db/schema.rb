@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_17_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_05_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_17_000002) do
     t.index ["date"], name: "index_availabilities_on_date"
   end
 
+  create_table "availability_rules", force: :cascade do |t|
+    t.integer "weekday", null: false
+    t.time "start_time", null: false
+    t.time "end_time", null: false
+    t.integer "slot_duration_minutes", default: 30, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["weekday", "active"], name: "index_availability_rules_on_weekday_and_active"
+  end
+
   create_table "blog_posts", force: :cascade do |t|
     t.string "title", null: false
     t.text "content", null: false
@@ -70,7 +81,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_17_000002) do
   end
 
   create_table "bookings", force: :cascade do |t|
-    t.bigint "availability_id", null: false
+    t.bigint "availability_id"
     t.date "booked_date", null: false
     t.time "start_time", null: false
     t.time "end_time", null: false
@@ -88,6 +99,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_17_000002) do
     t.index ["confirmation_token"], name: "index_bookings_on_confirmation_token", unique: true
     t.index ["email"], name: "index_bookings_on_email"
     t.index ["status"], name: "index_bookings_on_status"
+  end
+
+  create_table "claude_corner_entries", force: :cascade do |t|
+    t.string "slug", null: false
+    t.string "entry_type", null: false
+    t.string "title", null: false
+    t.text "content", null: false
+    t.string "tags", default: [], null: false, array: true
+    t.string "mood"
+    t.datetime "published_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["published_at"], name: "index_claude_corner_entries_on_published_at"
+    t.index ["slug"], name: "index_claude_corner_entries_on_slug", unique: true
   end
 
   create_table "clients", force: :cascade do |t|
@@ -229,19 +254,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_17_000002) do
     t.index ["created_at"], name: "index_story_paragraphs_on_created_at"
     t.index ["story_id", "paragraph_number"], name: "index_story_paragraphs_on_story_id_and_paragraph_number", unique: true
     t.index ["story_id"], name: "index_story_paragraphs_on_story_id"
-  end
-
-  create_table "three_d_models", force: :cascade do |t|
-    t.string "generation_id", null: false
-    t.string "original_filename"
-    t.string "glb_filename"
-    t.text "thumbnail_data"
-    t.datetime "expires_at", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["created_at"], name: "index_three_d_models_on_created_at"
-    t.index ["expires_at"], name: "index_three_d_models_on_expires_at"
-    t.index ["generation_id"], name: "index_three_d_models_on_generation_id", unique: true
   end
 
   create_table "tts_batch_items", force: :cascade do |t|

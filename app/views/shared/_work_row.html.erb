@@ -1,0 +1,8 @@
+<li>
+  <a class="row" href="<%= work_item_path(item) %>">
+    <span class="row-when"><%= item.timeframe %></span>
+    <span class="row-title"><%= item.title %></span>
+    <span class="row-summary"><%= item.summary %></span>
+    <% if item.stack.any? %><span class="row-stack"><%= item.stack.first(4).join(" · ") %></span><% end %>
+  </a>
+</li>

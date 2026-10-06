@@ -1,11 +1,13 @@
 class Model3dController < ApplicationController
   include GpuQueueStatus
+  include RequiresGpu
+
+  requires_gpu "model3d", only: :generate
+  shows_writeup_when_offline "model3d", "image-to-3d", only: :index
 
   skip_before_action :verify_authenticity_token, only: [ :generate ]
 
   def index
-    # Load recent models for the index, limited to active (non-expired) ones
-    @recent_models = ThreeDModel.active.recent.limit(12)
   end
 
   def preview
@@ -14,34 +16,9 @@ class Model3dController < ApplicationController
   end
 
   def generate
-    unless params[:image].present?
-      render json: { success: false, error: "No image provided" }, status: :bad_request
-      return
-    end
-
+    upload = GpuUpload.store!(params[:image], kind: :image)
     generation_id = SecureRandom.uuid
-
-    Rails.logger.info "Starting 3D model generation #{generation_id}"
-
-    # Read and encode the uploaded file
-    uploaded_file = params[:image]
-    image_data = uploaded_file.read
-    file_data = {
-      "base64" => Base64.strict_encode64(image_data)
-    }
-
-    # Generate thumbnail for index display (resize to max 200px)
-    thumbnail_data = generate_thumbnail(image_data)
-
-    # Queue the job
-    Model3dJob.perform_later(
-      generation_id,
-      file_data,
-      {
-        "original_filename" => uploaded_file.original_filename,
-        "thumbnail_data" => thumbnail_data
-      }
-    )
+    Model3dJob.perform_later(generation_id, upload)
 
     render json: {
       success: true,
@@ -50,9 +27,10 @@ class Model3dController < ApplicationController
       check_url: status_model3d_path(generation_id),
       websocket_channel: "model3d_#{generation_id}"
     }
+  rescue GpuUpload::Invalid => e
+    render_invalid_input(e.message)
   rescue => e
-    Rails.logger.error "Failed to queue 3D model generation: #{e.message}"
-    render json: { success: false, error: e.message }, status: :internal_server_error
+    render_gpu_error(e)
   end
 
   def status
@@ -124,22 +102,5 @@ class Model3dController < ApplicationController
 
   def redis_service
     @redis_service ||= Model3dRedisService.new
-  end
-
-  def generate_thumbnail(image_data)
-    # Use ImageMagick via MiniMagick to resize
-    require "mini_magick"
-
-    image = MiniMagick::Image.read(image_data)
-    image.resize "200x200>"
-    image.format "jpeg"
-    image.quality 80
-
-    "data:image/jpeg;base64,#{Base64.strict_encode64(image.to_blob)}"
-  rescue => e
-    Rails.logger.warn "Failed to generate thumbnail: #{e.message}"
-    # Fall back to original image as data URL if thumbnail generation fails
-    content_type = Marcel::MimeType.for(image_data) || "image/png"
-    "data:#{content_type};base64,#{Base64.strict_encode64(image_data)}"
   end
 end

@@ -1,0 +1,15 @@
+<div class="flex items-center justify-between p-3 rounded-lg" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+  <%= link_to admin_claude_corner_entry_path(entry), class: "min-w-0" do %>
+    <p class="text-white font-medium truncate"><%= entry.title %></p>
+    <p class="text-gray-500 text-xs"><%= entry.entry_type.humanize %> &middot; <%= l((entry.published_at || entry.created_at).to_date, format: :long) %></p>
+  <% end %>
+  <div class="flex gap-3 text-sm shrink-0 ml-3">
+    <% if entry.published? %>
+      <%= button_to "Unpublish", unpublish_admin_claude_corner_entry_path(entry), class: "text-gray-400" %>
+    <% else %>
+      <%= button_to "Publish", publish_admin_claude_corner_entry_path(entry), style: "color: var(--accent-color);" %>
+    <% end %>
+    <%= button_to "Delete", admin_claude_corner_entry_path(entry), method: :delete,
+          form: { data: { turbo_confirm: "Delete \"#{entry.title}\"?" } }, class: "text-red-400" %>
+  </div>
+</div>

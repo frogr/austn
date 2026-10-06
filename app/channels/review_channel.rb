@@ -3,11 +3,8 @@ class ReviewChannel < ApplicationCable::Channel
 
   def subscribed
     review_id = params[:review_id]
+    return reject unless admin && review_id.present?
 
-    if review_id.present?
-      stream_from "#{STREAM_PREFIX}#{review_id}"
-    else
-      reject
-    end
+    stream_from "#{STREAM_PREFIX}#{review_id}"
   end
 end
