@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="<%= current_palette.css_class %>">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <% title = content_for?(:title) ? "#{content_for(:title)} · Austin French" : "Austin French · #{Profile.headline}" %>
+    <% title = content_for?(:title) ? safe_join([ content_for(:title), "Austin French" ], " · ") : "Austin French · #{Profile.headline}" %>
     <% description = content_for?(:meta_description) ? content_for(:meta_description) : Profile.description %>
     <% canonical = "https://austn.net#{request.path == "/" ? "/" : request.path}" %>
     <title><%= title %></title>
@@ -32,27 +32,30 @@
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
-
-    <%= stylesheet_link_tag "site" %>
+    <link rel="preload" href="<%= asset_path("recursive-latin.woff2") %>" as="font" type="font/woff2" crossorigin>
+    <%= stylesheet_link_tag "recursive", "palettes", "site" %>
     <% if content_for?(:javascript) %>
       <%= javascript_include_tag esbuild_asset_path("application.js"), type: "module", defer: true %>
     <% end %>
     <%= yield :head %>
   </head>
 
-  <body>
+  <% home = current_page?(root_path) %>
+  <% section = current_section || (controller_name == "bookings" ? "book" : (home ? "home" : (action_name == "now" ? "now" : "page"))) %>
+  <% wrap = content_for?(:wide) ? "wrap wrap--wide" : "wrap" %>
+  <body class="s-<%= section %>">
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
-      <div class="wrap">
-        <a class="wordmark" href="/">austin french</a>
+      <div class="<%= wrap %>">
+        <a class="mark" href="/" aria-label="Austin French, home">
+          <span class="mark-glyph" aria-hidden="true">a</span>
+          <% unless home %><span class="mark-name">Austin French</span><% end %>
+        </a>
         <nav class="site-nav" aria-label="Main">
           <ul>
-            <% [ [ "Work", work_index_path ], [ "Writing", blog_path ], [ "Playground", playground_path ], [ "Resume", resume_path ] ].each do |label, path| %>
-              <li><%= link_to label, path, "aria-current": (current_section == label.downcase ? "page" : nil) %></li>
+            <% [ [ "Work", work_index_path, "sun" ], [ "Writing", blog_path, "sky" ], [ "Playground", playground_path, "clay" ], [ "Resume", resume_path, "moss" ] ].each do |label, path, hue| %>
+              <li><%= link_to label, path, "data-hue": hue, "aria-current": (current_section == label.downcase ? "page" : nil) %></li>
             <% end %>
           </ul>
         </nav>
@@ -60,7 +63,7 @@
     </header>
 
     <main id="main">
-      <div class="<%= content_for?(:wide) ? "wrap wrap--wide" : "wrap" %>">
+      <div class="<%= wrap %>">
         <% if notice.present? %><p class="flash flash--notice"><%= notice %></p><% end %>
         <% if alert.present? %><p class="flash flash--alert"><%= alert %></p><% end %>
         <%= yield %>
@@ -68,14 +71,19 @@
     </main>
 
     <footer class="site-footer">
-      <div class="wrap">
-        <ul>
-          <li><%= mail_to Profile.email %></li>
-          <li><%= link_to "GitHub", Profile.links["github"] %></li>
-          <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
-          <li><%= link_to "Book a time", meet_path %></li>
-          <li><%= link_to "Now", now_path %></li>
-        </ul>
+      <div class="<%= wrap %>">
+        <% if home %>
+          <p style="margin: 0;">No JavaScript on this page. <%= link_to "Read the source", "https://github.com/frogr/austn" %>.</p>
+        <% else %>
+          <ul>
+            <li><%= mail_to Profile.email %></li>
+            <li><%= link_to "GitHub", Profile.links["github"] %></li>
+            <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+            <li><%= link_to "Book a time", book_path %></li>
+            <li><%= link_to "Now", now_path %></li>
+          </ul>
+        <% end %>
+        <%= render "shared/palette_picker" %>
         <a class="admin-link" href="<%= admin_root_path %>" aria-label="Admin" title="Admin">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         </a>

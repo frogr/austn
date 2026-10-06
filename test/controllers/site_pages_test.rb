@@ -84,4 +84,41 @@ class SitePagesTest < ActionDispatch::IntegrationTest
     assert_select "title", "Austin French · #{Profile.headline}"
     assert_not_includes response.body, "Senior Backend Engineer"
   end
+
+  test "an apostrophe in a page title is escaped once, in the title and the share tags" do
+    get work_item_path("austn-net")
+
+    assert_select "title", "austn.net's GPU tools · Austin French"
+    assert_select "meta[property='og:title'][content=?]", "austn.net's GPU tools · Austin French"
+    assert_not_includes response.body, "&amp;#39;"
+  end
+
+  test "the homepage links straight to the things that still run" do
+    get root_path
+
+    PlaygroundItem.all.select(&:live_path).each { |toy| assert_select "a.toy[href=?]", toy.live_path }
+    assert_select "a[href=?]", playground_path
+    assert_select "a[href=?]", book_path
+  end
+
+  test "the homepage says what happened at each job and asks for a call" do
+    get root_path
+
+    WorkItem.featured.each { |item| assert_select ".worklist-line", item.tagline }
+    assert_select ".home-now a.button[href=?]", book_path
+  end
+
+  test "a case study leads with its numbers" do
+    get work_item_path("backlit")
+
+    WorkItem.find("backlit").stats.each { |stat| assert_select ".stats strong", stat["value"] }
+  end
+
+  test "the name is spelled out in the header everywhere except the homepage" do
+    get root_path
+    assert_select ".site-header .mark-name", count: 0
+
+    get work_index_path
+    assert_select ".site-header .mark-name", "Austin French"
+  end
 end

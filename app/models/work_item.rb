@@ -2,7 +2,8 @@
 #
 # Front matter keys:
 #   title, summary (one line), tier (featured | more), order, when (e.g. "2023-25"),
-#   role, stack (list), links (list of {label, url}), legacy_ids (old /projects/:id slugs)
+#   role, stack (list), links (list of {label, url}), legacy_ids (old /projects/:id slugs),
+#   tagline (one short line for the home page), stats (list of {value, label})
 class WorkItem
   include MarkdownDocument
 
@@ -19,9 +20,13 @@ class WorkItem
 
   def tier = attributes.fetch("tier", "more")
   def featured? = tier == "featured"
+  # One short line for the home page. Falls back to the longer summary.
+  def tagline = attributes["tagline"] || summary
   def timeframe = attributes["when"]
   def role = attributes["role"]
   def stack = Array(attributes["stack"])
   def links = Array(attributes["links"])
+  # Headline numbers shown above the write-up: a list of {value, label}.
+  def stats = Array(attributes["stats"])
   def legacy_ids = Array(attributes["legacy_ids"]).map(&:to_s)
 end

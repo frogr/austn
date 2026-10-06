@@ -18,6 +18,14 @@
     <% end %>
   </dl>
 
+  <% if @item.stats.any? %>
+    <ul class="stats">
+      <% @item.stats.each_with_index do |stat, index| %>
+        <li style="--i: <%= index %>"><strong><%= stat["value"] %></strong> <span><%= stat["label"] %></span></li>
+      <% end %>
+    </ul>
+  <% end %>
+
   <div class="prose">
     <%= markdown(@item.body) %>
   </div>

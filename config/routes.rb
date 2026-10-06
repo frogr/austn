@@ -28,6 +28,8 @@ Rails.application.routes.draw do
   # Public site: Home, Work, Writing (blog), Playground, Resume, plus /now
   root "pages#home"
   get "/now", to: "pages#now", as: :now
+  get "/palettes", to: "palettes#index", as: :palettes
+  post "/palette", to: "palettes#update", as: :palette
 
   get "/work", to: "work#index", as: :work_index
   get "/work/:slug", to: "work#show", as: :work_item

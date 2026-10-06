@@ -1,32 +1,40 @@
 <% page_title "Playground" %>
 <% page_description "Self-hosted AI tools that ran on one GPU, plus browser tools that still work: pitch checker, MIDI studio, Claude Corner." %>
+<% content_for :wide, true %>
 
 <h1>Playground</h1>
-<p class="lede">Things I built for fun. Some still run in your browser. The AI tools ran on a GPU at my place in California, and they've been offline since I moved to New York, so each one has a write-up of how it worked instead.</p>
-<p>The engineering behind them, and what broke, is in <%= link_to "austn.net's GPU tools", work_item_path("austn-net") %>.</p>
+<p class="lede" style="max-width: 44rem;">Things I built for fun. Some still run in your browser. The AI tools ran on a GPU at my place in California, and they've been offline since I moved to New York, so each one has a write-up of how it worked instead.</p>
 
 <h2 class="section-title">works right now</h2>
-<ul class="rows">
-  <% @items.reject(&:gpu?).each do |item| %>
+<ul class="toys toys--big">
+  <% @items.reject(&:gpu?).zip(%w[sun clay plum]).each do |item, hue| %>
     <li>
-      <a class="row" href="<%= playground_item_path(item) %>">
-        <span class="row-when"><span class="status status--live">live</span></span>
-        <span class="row-title"><%= item.title %></span>
-        <span class="row-summary"><%= item.summary %></span>
+      <a class="toy" href="<%= playground_item_path(item) %>" data-hue="<%= hue %>">
+        <span class="toy-art"><%= render "shared/toy_art", slug: item.slug %></span>
+        <span class="toy-name"><%= item.title %> <span class="live">live</span></span>
+        <span class="toy-text"><%= item.summary %></span>
       </a>
     </li>
   <% end %>
 </ul>
 
 <h2 class="section-title">ran on my GPU</h2>
-<ul class="rows">
-  <% @items.select(&:gpu?).each do |item| %>
+<ul class="tiles">
+  <li class="tile--wide-item" style="grid-column: 1 / -1;">
+    <a class="tile tile--wide" href="<%= work_item_path("austn-net") %>">
+      <span class="tile-title">austn.net's GPU tools</span>
+      <span class="tile-foot">case study</span>
+      <span class="tile-text" style="grid-column: 1 / -1;">How all of these shared one GPU, what broke, and what I changed.</span>
+    </a>
+  </li>
+  <% hues = %w[sun sky clay moss plum] %>
+  <% @items.select(&:gpu?).each_with_index do |item, index| %>
     <li>
-      <a class="row" href="<%= playground_item_path(item) %>">
-        <span class="row-when"><span class="status">offline</span></span>
-        <span class="row-title"><%= item.title %></span>
-        <span class="row-summary"><%= item.summary %></span>
-        <% if item.model %><span class="row-stack"><%= item.model %></span><% end %>
+      <a class="tile" href="<%= playground_item_path(item) %>" data-hue="<%= hues[index % hues.size] %>">
+        <span class="tile-art"><%= render "shared/toy_art", slug: item.slug %></span>
+        <span class="tile-title"><%= item.title %></span>
+        <span class="tile-text"><%= item.summary %></span>
+        <span class="tile-foot">offline<% if item.model %> · <%= item.model %><% end %></span>
       </a>
     </li>
   <% end %>

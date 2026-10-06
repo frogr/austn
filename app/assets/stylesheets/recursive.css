@@ -1,0 +1,12 @@
+/*
+  Recursive (SIL Open Font License), self-hosted so the site makes no
+  third-party requests. One variable file covers weight 300-1000 plus the
+  casual (CASL) and monospace (MONO) axes. Latin subset.
+*/
+@font-face {
+  font-family: "Recursive";
+  font-style: normal;
+  font-weight: 300 1000;
+  font-display: swap;
+  src: url("recursive-latin.woff2") format("woff2");
+}

@@ -1,0 +1,148 @@
+/*
+  palettes.css: every colour on the site, as one set of tokens per palette.
+
+  A palette is a class on <html> (p-<slug>, chosen in the footer and listed in
+  app/models/palette.rb). The same class on any element repaints just that
+  element, which is how /palettes shows them side by side.
+
+  The contract every palette keeps, so all of them stay readable:
+    ink on ground, ground-2 and sunken    at least 7:1
+    ink-2 and ink-3 on ground and ground-2  at least 4.5:1
+    every hue and brand on ground and ground-2  at least 4.5:1
+  Hues are used both ways round: as text on the ground, and as a fill with
+  ground-coloured text on top. That is why a dark palette has light hues and
+  the light one has deep hues.
+*/
+
+/* Pond (the default) */
+:root,
+.p-pond {
+  --ground: #131a17;
+  --ground-2: #1a2420;
+  --ground-3: #23302b;
+  --sunken: #0e1411;
+  --ink: #e8efe6;
+  --ink-2: #adbcb0;
+  --ink-3: #84968a;
+  --line: #30413a;
+  --sun: #e4c468;
+  --sky: #86c6d6;
+  --clay: #f0a083;
+  --moss: #7fd99a;
+  --plum: #c4acec;
+  --brand: var(--moss);
+  --shade: rgba(0, 0, 0, 0.4);
+  --dot: rgba(255, 255, 255, 0.05);
+  --accent: var(--brand);
+  color-scheme: dark;
+}
+
+/* Fern */
+.p-fern {
+  --ground: #1c1a17;
+  --ground-2: #252220;
+  --ground-3: #302c28;
+  --sunken: #151310;
+  --ink: #efe6d5;
+  --ink-2: #bdb19c;
+  --ink-3: #968b78;
+  --line: #3d3832;
+  --sun: #e8b84f;
+  --sky: #8fbad0;
+  --clay: #ec8f70;
+  --moss: #9bcf86;
+  --plum: #c9a6dc;
+  --brand: var(--moss);
+  --shade: rgba(0, 0, 0, 0.4);
+  --dot: rgba(255, 255, 255, 0.05);
+  --accent: var(--brand);
+  color-scheme: dark;
+}
+
+/* Workbench */
+.p-workbench {
+  --ground: #1c1a17;
+  --ground-2: #252220;
+  --ground-3: #302c28;
+  --sunken: #151310;
+  --ink: #efe6d5;
+  --ink-2: #bdb19c;
+  --ink-3: #968b78;
+  --line: #3d3832;
+  --sun: #e8b84f;
+  --sky: #8fbad0;
+  --clay: #ec8f70;
+  --moss: #a9c47f;
+  --plum: #c9a6dc;
+  --brand: var(--sun);
+  --shade: rgba(0, 0, 0, 0.4);
+  --dot: rgba(255, 255, 255, 0.05);
+  --accent: var(--brand);
+  color-scheme: dark;
+}
+
+/* Ink */
+.p-ink {
+  --ground: #141824;
+  --ground-2: #1c2231;
+  --ground-3: #272e40;
+  --sunken: #0f121b;
+  --ink: #e9ebf3;
+  --ink-2: #adb4c8;
+  --ink-3: #868ea6;
+  --line: #353d53;
+  --sun: #f0c768;
+  --sky: #8ec3f0;
+  --clay: #f49c86;
+  --moss: #93d8a8;
+  --plum: #c9aaf2;
+  --brand: var(--sun);
+  --shade: rgba(0, 0, 0, 0.4);
+  --dot: rgba(255, 255, 255, 0.05);
+  --accent: var(--brand);
+  color-scheme: dark;
+}
+
+/* Plum */
+.p-plum {
+  --ground: #1c1721;
+  --ground-2: #261f2d;
+  --ground-3: #32293a;
+  --sunken: #151119;
+  --ink: #f1e8f0;
+  --ink-2: #bfb0c2;
+  --ink-3: #988a9c;
+  --line: #40364a;
+  --sun: #eec062;
+  --sky: #93bfe0;
+  --clay: #f39a8c;
+  --moss: #a4d49a;
+  --plum: #d2a8ea;
+  --brand: var(--clay);
+  --shade: rgba(0, 0, 0, 0.4);
+  --dot: rgba(255, 255, 255, 0.05);
+  --accent: var(--brand);
+  color-scheme: dark;
+}
+
+/* Paper */
+.p-paper {
+  --ground: #f5f0e4;
+  --ground-2: #ece5d4;
+  --ground-3: #e1d8c3;
+  --sunken: #e9e1cf;
+  --ink: #231f19;
+  --ink-2: #544c3f;
+  --ink-3: #6f6656;
+  --line: #cfc4ac;
+  --sun: #84580a;
+  --sky: #2a6585;
+  --clay: #a83c26;
+  --moss: #346b2d;
+  --plum: #7445a0;
+  --brand: var(--moss);
+  --shade: rgba(70, 52, 20, 0.28);
+  --dot: rgba(60, 45, 20, 0.09);
+  --accent: var(--brand);
+  color-scheme: light;
+}

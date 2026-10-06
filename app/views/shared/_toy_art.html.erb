@@ -1,0 +1,114 @@
+<%# Small drawings for tiles, drawn in the tile's ink colour and animated in site.css.
+    pathLength="100" on a path lets .art-draw and .art-circle draw it without knowing its real length. %>
+<% case slug %>
+<% when "pitch-checker" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke art-soft" d="M22.3 59.6 A46 46 0 0 1 97.7 59.6"/>
+    <path class="art-stroke" d="M60 40 V48 M80.9 45 L77.3 52.1 M39.1 45 L42.7 52.1 M97.7 59.6 L91.1 64.2 M22.3 59.6 L28.9 64.2"/>
+    <path class="art-stroke art-needle" d="M60 86 V46"/>
+    <circle class="art-fill" cx="60" cy="86" r="6"/>
+    <path class="art-stroke art-thin" d="M30 104 H90"/>
+  </svg>
+<% when "midi-studio" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <rect class="art-stroke art-thin" x="12" y="22" width="14" height="78" rx="3"/>
+    <path class="art-fill" d="M12 35h9v8h-9z M12 61h9v8h-9z M12 79h9v8h-9z"/>
+    <g class="art-fill">
+      <rect x="34" y="26" width="22" height="9" rx="3"/>
+      <rect x="60" y="39" width="14" height="9" rx="3"/>
+      <rect x="78" y="52" width="26" height="9" rx="3"/>
+      <rect x="40" y="65" width="18" height="9" rx="3"/>
+      <rect x="62" y="78" width="30" height="9" rx="3"/>
+      <rect x="34" y="91" width="12" height="9" rx="3"/>
+    </g>
+    <path class="art-stroke art-thin art-playhead" d="M32 18 V104"/>
+  </svg>
+<% when "claude-corner" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke art-thin art-soft" d="M24 84 L44 58 L66 68 L84 40 L100 52 M44 58 L38 30"/>
+    <circle class="art-fill art-star" cx="24" cy="84" r="4"/>
+    <circle class="art-fill art-star" cx="44" cy="58" r="5"/>
+    <circle class="art-fill art-star" cx="66" cy="68" r="4"/>
+    <circle class="art-fill art-star" cx="84" cy="40" r="5"/>
+    <circle class="art-fill art-star" cx="100" cy="52" r="3.5"/>
+    <circle class="art-fill art-star" cx="38" cy="30" r="3.5"/>
+    <path class="art-fill art-star" d="M88 76 Q90 86 100 88 Q90 90 88 100 Q86 90 76 88 Q86 86 88 76Z"/>
+  </svg>
+<% when "book-a-call" %>
+  <%# A calendar page with one day getting circled. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <rect class="art-stroke" x="18" y="28" width="84" height="74" rx="9"/>
+    <path class="art-stroke" d="M18 46 H102 M40 20 V34 M80 20 V34"/>
+    <g class="art-fill art-soft">
+      <rect x="29" y="55" width="9" height="9" rx="2"/><rect x="47" y="55" width="9" height="9" rx="2"/><rect x="65" y="55" width="9" height="9" rx="2"/><rect x="83" y="55" width="9" height="9" rx="2"/>
+      <rect x="29" y="70" width="9" height="9" rx="2"/><rect x="47" y="70" width="9" height="9" rx="2"/><rect x="83" y="70" width="9" height="9" rx="2"/>
+      <rect x="29" y="85" width="9" height="9" rx="2"/><rect x="47" y="85" width="9" height="9" rx="2"/><rect x="65" y="85" width="9" height="9" rx="2"/>
+    </g>
+    <rect class="art-fill" x="65" y="70" width="9" height="9" rx="2"/>
+    <path class="art-stroke art-circle" pathLength="100" d="M70 61 C79 60 84 67 83 75 C82 84 74 89 66 87 C58 85 55 77 58 69 C60 63 66 60 74 62"/>
+  </svg>
+<% when "image-generation" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <rect class="art-stroke" x="20" y="24" width="80" height="72" rx="9"/>
+    <circle class="art-fill art-star" cx="78" cy="46" r="8"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M26 88 L48 58 L62 74 L74 62 L94 88"/>
+  </svg>
+<% when "music-generation" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <rect class="art-fill art-bar" x="22" y="46" width="11" height="52" rx="5"/>
+    <rect class="art-fill art-bar" x="39" y="26" width="11" height="72" rx="5"/>
+    <rect class="art-fill art-bar" x="56" y="40" width="11" height="58" rx="5"/>
+    <rect class="art-fill art-bar" x="73" y="22" width="11" height="76" rx="5"/>
+    <rect class="art-fill art-bar" x="90" y="52" width="11" height="46" rx="5"/>
+  </svg>
+<% when "text-to-speech" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke" d="M26 24 H94 a9 9 0 0 1 9 9 V71 a9 9 0 0 1 -9 9 H58 L42 98 V80 H26 a9 9 0 0 1 -9 -9 V33 a9 9 0 0 1 9 -9 Z"/>
+    <rect class="art-fill art-bar art-bar--mid" x="34" y="42" width="7" height="20" rx="3.5"/>
+    <rect class="art-fill art-bar art-bar--mid" x="47" y="36" width="7" height="32" rx="3.5"/>
+    <rect class="art-fill art-bar art-bar--mid" x="60" y="44" width="7" height="16" rx="3.5"/>
+    <rect class="art-fill art-bar art-bar--mid" x="73" y="34" width="7" height="36" rx="3.5"/>
+    <rect class="art-fill art-bar art-bar--mid" x="86" y="45" width="7" height="14" rx="3.5"/>
+  </svg>
+<% when "stem-separation" %>
+  <%# One song, four tracks moving at their own speeds. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke art-slide" d="M18 32 q10.5 -11 21 0 t21 0 t21 0 t21 0"/>
+    <path class="art-stroke art-slide" d="M18 51 q10.5 -11 21 0 t21 0 t21 0 t21 0"/>
+    <path class="art-stroke art-slide" d="M18 70 q10.5 -11 21 0 t21 0 t21 0 t21 0"/>
+    <path class="art-stroke art-slide" d="M18 89 q10.5 -11 21 0 t21 0 t21 0 t21 0"/>
+  </svg>
+<% when "background-removal" %>
+  <%# A person, and a checkerboard where the background used to be. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <g class="art-fill art-soft">
+      <rect class="art-star" x="20" y="20" width="20" height="20"/><rect class="art-star" x="60" y="20" width="20" height="20"/>
+      <rect class="art-star" x="40" y="40" width="20" height="20"/><rect class="art-star" x="80" y="40" width="20" height="20"/>
+      <rect class="art-star" x="20" y="60" width="20" height="20"/><rect class="art-star" x="60" y="60" width="20" height="20"/>
+      <rect class="art-star" x="40" y="80" width="20" height="20"/><rect class="art-star" x="80" y="80" width="20" height="20"/>
+    </g>
+    <circle class="art-fill" cx="60" cy="50" r="13"/>
+    <path class="art-fill" d="M34 100 q0 -30 26 -30 q26 0 26 30 Z"/>
+  </svg>
+<% when "image-to-svg" %>
+  <%# A curve being traced between two anchor points. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke art-thin art-soft" d="M24 90 L46 44 M96 34 L74 82"/>
+    <circle class="art-fill art-soft" cx="46" cy="44" r="5"/><circle class="art-fill art-soft" cx="74" cy="82" r="5"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M24 90 C46 44 74 82 96 34"/>
+    <rect class="art-fill" x="17" y="83" width="14" height="14" rx="2"/><rect class="art-fill" x="89" y="27" width="14" height="14" rx="2"/>
+  </svg>
+<% when "image-to-3d" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <g class="art-tumble">
+      <path class="art-stroke" d="M60 24 L94 43 L60 62 L26 43 Z"/>
+      <path class="art-stroke" d="M26 43 V79 L60 98 L94 79 V43 M60 62 V98"/>
+    </g>
+  </svg>
+<% when "chat" %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke" d="M22 22 H70 a8 8 0 0 1 8 8 V46 a8 8 0 0 1 -8 8 H38 L26 66 V54 H22 a8 8 0 0 1 -8 -8 V30 a8 8 0 0 1 8 -8 Z"/>
+    <path class="art-fill" d="M50 64 H98 a8 8 0 0 1 8 8 V88 a8 8 0 0 1 -8 8 H94 V108 L82 96 H50 a8 8 0 0 1 -8 -8 V72 a8 8 0 0 1 8 -8 Z"/>
+    <circle class="art-hue art-bob" cx="60" cy="80" r="4.5"/><circle class="art-hue art-bob" cx="74" cy="80" r="4.5"/><circle class="art-hue art-bob" cx="88" cy="80" r="4.5"/>
+  </svg>
+<% end %>

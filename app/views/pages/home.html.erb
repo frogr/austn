@@ -1,32 +1,100 @@
-<section class="hero">
-  <h1><%= Profile.full_name %></h1>
-  <p class="eyebrow"><%= Profile.headline %> · <%= Profile.location %></p>
+<% content_for :wide, true %>
 
-  <p class="lede">I build software and then stand next to the people using it. Eight years of production work, mostly in Ruby on Rails, lately a lot of TypeScript and applied AI.</p>
+<div class="home">
+  <div class="home-main">
+    <section class="home-intro">
+      <div class="home-id">
+        <h1><%= Profile.full_name %></h1>
+        <p class="eyebrow"><%= Profile.headline %> · <%= Profile.location %></p>
+      </div>
+      <p class="home-pitch">I build software and then <mark>stand next to the people</mark> using it.</p>
+      <p class="home-sub">Eight years of production work, mostly Rails, lately TypeScript and applied AI, from a Super Bowl check-in line to a client's conference room.</p>
+      <ul class="home-links">
+        <li><%= mail_to Profile.email, "Email" %></li>
+        <li><%= link_to "GitHub", Profile.links["github"] %></li>
+        <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+        <li><%= link_to "Resume", resume_path %></li>
+      </ul>
+    </section>
 
-  <p>Most recently I was at Tenex, an AI consultancy, as the only engineer on three client projects at once. For one of them I built an OCR and LLM pipeline with evals and autonomy gates, so over half of the documents ran without a person checking them. Before that I spent two years at CompanyCam, where I led the Pages AI assistant to about 5,000 requests a day and built shared RubyLLM abstractions that were adopted across the product.</p>
+    <section class="home-work" aria-labelledby="home-work">
+      <div class="home-head">
+        <h2 class="label" id="home-work" data-hue="sun">Selected work</h2>
+        <%= link_to "All work", work_index_path %>
+      </div>
+      <ul class="worklist">
+        <% @featured_work.each do |item| %>
+          <li>
+            <a href="<%= work_item_path(item) %>">
+              <span class="worklist-top">
+                <span class="worklist-title"><%= item.title %></span>
+                <span class="worklist-dots" aria-hidden="true"></span>
+                <span class="worklist-when"><%= item.timeframe %></span>
+              </span>
+              <span class="worklist-line"><%= item.tagline %></span>
+            </a>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  </div>
 
-  <p>I'm looking for forward deployed, AI engineering and senior product engineering roles.</p>
+  <div class="home-side">
+    <section class="home-now" aria-labelledby="home-now">
+      <a class="toy" href="<%= book_path %>" data-hue="brand" aria-label="Book a time">
+        <span class="toy-art"><%= render "shared/toy_art", slug: "book-a-call" %></span>
+      </a>
+      <div>
+        <div class="home-head">
+          <h2 class="label" id="home-now" data-hue="brand">Now</h2>
+          <%= link_to "What I'm up to", now_path %>
+        </div>
+        <p>I'm looking for my next role: forward deployed, AI engineering, or senior product engineering.</p>
+      </div>
+      <p class="now-actions">
+        <%= link_to "Book a 30-minute call", book_path, class: "button button--small" %>
+        <%= mail_to Profile.email, "or email me" %>
+      </p>
+    </section>
 
-  <ul class="links">
-    <li><%= mail_to Profile.email %></li>
-    <li><%= link_to "GitHub", Profile.links["github"] %></li>
-    <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
-    <li><%= link_to "Resume", resume_path %></li>
-    <li><%= link_to "Book a time", meet_path %></li>
-  </ul>
-</section>
+    <section class="home-play" aria-labelledby="home-play">
+      <div class="home-head">
+        <h2 class="label" id="home-play" data-hue="clay">Things to play with</h2>
+        <%= link_to "Playground", playground_path %>
+      </div>
+      <ul class="toys">
+        <% @toys.zip(%w[sun clay plum]).each do |toy, hue| %>
+          <li>
+            <a class="toy" href="<%= toy.live_path %>" data-hue="<%= hue %>">
+              <span class="toy-art"><%= render "shared/toy_art", slug: toy.slug %></span>
+              <span class="toy-name"><%= toy.title %></span>
+            </a>
+          </li>
+        <% end %>
+      </ul>
+      <p class="home-more"><%= link_to "Plus the AI tools I ran on one GPU at home", playground_path %></p>
+    </section>
 
-<h2 class="section-title">selected work</h2>
-<ul class="rows">
-  <%= render partial: "shared/work_row", collection: @featured_work, as: :item %>
-</ul>
-<p><%= link_to "All work, including side projects", work_index_path %></p>
-
-<% if @recent_posts.any? %>
-  <h2 class="section-title">writing</h2>
-  <ul class="rows">
-    <%= render partial: "shared/post_row", collection: @recent_posts, as: :post %>
-  </ul>
-  <p><%= link_to "All posts", blog_path %></p>
-<% end %>
+    <% if @recent_posts.any? %>
+      <section class="home-writing" aria-labelledby="home-writing">
+        <div class="home-head">
+          <h2 class="label" id="home-writing" data-hue="sky">Writing</h2>
+          <%= link_to "All posts", blog_path %>
+        </div>
+        <ul class="posts">
+          <% @recent_posts.each_with_index do |post, index| %>
+            <li>
+              <a href="<%= blog_post_path(post.slug) %>">
+                <span class="posts-top">
+                  <span class="posts-title"><%= post.title %></span>
+                  <span class="posts-when"><%= post_date(post) %></span>
+                </span>
+                <% if index.zero? && post.summary.present? %><span class="posts-line"><%= post.summary %></span><% end %>
+              </a>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+  </div>
+</div>
