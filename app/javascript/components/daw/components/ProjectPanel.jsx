@@ -14,7 +14,7 @@ const styles = {
   },
   title: {
     fontSize: '0.75rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
@@ -26,38 +26,38 @@ const styles = {
     flex: 1,
     padding: '0.375rem 0.5rem',
     fontSize: '0.7rem',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'var(--ink-2)',
     cursor: 'pointer',
     transition: 'all 0.2s',
   },
   select: {
     flex: 1,
     padding: '0.375rem 0.5rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.7rem',
   },
   input: {
     flex: 1,
     padding: '0.375rem 0.5rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.7rem',
   },
   saveButton: {
-    background: 'rgba(16, 185, 129, 0.1)',
-    borderColor: 'rgba(16, 185, 129, 0.2)',
+    background: 'color-mix(in srgb, var(--brand) 10%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 20%, transparent)',
   },
   deleteButton: {
-    background: 'rgba(239, 68, 68, 0.1)',
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+    background: 'color-mix(in srgb, var(--clay) 10%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--clay) 20%, transparent)',
     flex: 'none',
     width: '32px',
   },
@@ -154,8 +154,8 @@ export default function ProjectPanel() {
           style={{ ...styles.button, ...styles.saveButton, flex: 'none', width: '50px' }}
           onClick={handleSave}
           disabled={!projectName.trim()}
-          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'}
+          onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 20%, transparent)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 10%, transparent)'}
         >
           Save
         </button>
@@ -177,8 +177,8 @@ export default function ProjectPanel() {
           style={{ ...styles.button, flex: 'none', width: '50px' }}
           onClick={handleLoad}
           disabled={!selectedProject}
-          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          onMouseOver={(e) => e.currentTarget.style.background = 'var(--line)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
         >
           Load
         </button>
@@ -187,8 +187,8 @@ export default function ProjectPanel() {
           onClick={handleDelete}
           disabled={!selectedProject}
           title="Delete selected project"
-          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+          onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--clay) 20%, transparent)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--clay) 10%, transparent)'}
         >
           ×
         </button>
@@ -198,29 +198,29 @@ export default function ProjectPanel() {
       <button
         style={styles.button}
         onClick={handleNew}
-        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+        onMouseOver={(e) => e.currentTarget.style.background = 'var(--line)'}
+        onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
       >
         New Project
       </button>
 
       {/* Pattern Library section */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '0.5rem', paddingTop: '0.5rem' }}>
+      <div style={{ borderTop: '1px solid var(--line)', marginTop: '0.5rem', paddingTop: '0.5rem' }}>
         <span style={{ ...styles.title, marginBottom: '0.5rem', display: 'block' }}>Pattern Library</span>
         <div style={styles.row}>
           <button
-            style={{ ...styles.button, background: 'rgba(139, 92, 246, 0.1)', borderColor: 'rgba(139, 92, 246, 0.2)' }}
+            style={{ ...styles.button, background: 'color-mix(in srgb, var(--plum) 10%, transparent)', borderColor: 'color-mix(in srgb, var(--plum) 20%, transparent)' }}
             onClick={() => setShowLibrary(true)}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.2)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.1)'}
+            onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--plum) 20%, transparent)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--plum) 10%, transparent)'}
           >
             Browse
           </button>
           <button
             style={{ ...styles.button, ...styles.saveButton }}
             onClick={() => setShowSaveModal(true)}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'}
+            onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 20%, transparent)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 10%, transparent)'}
           >
             Save to Library
           </button>

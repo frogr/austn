@@ -1,492 +1,96 @@
-/* Theme CSS Variables and Components */
+/* Theme for the tool and admin pages (layouts/application).
 
-/* CSS Variables - Dark-only */
+   Every colour here is an alias for a token in palettes.css, so the tools
+   follow the visitor's palette the same way the public pages do. The old
+   names stay because the React components and the pitch page use them.
+   Panels are flat (ground-2 on ground, a line border) and buttons press
+   down like .button in site.css. */
 :root {
-  --bg-primary: #121212; /* Darker carbon grey */
-  --bg-secondary: #171717;
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-card-hover: rgba(255, 255, 255, 0.08);
-  --bg-glass: rgba(255, 255, 255, 0.06);
-  --bg-glass-thick: rgba(255, 255, 255, 0.1);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.9);
-  --text-muted: rgba(255, 255, 255, 0.65);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-glass: rgba(255, 255, 255, 0.1);
-  --accent-color: #1DB954; /* Spotify green */
-  --accent-hover: #19a64b;
-  --accent-secondary: #1ED760;
-  --success-color: #34C759;
-  --warning-color: #FF9500;
-  --danger-color: #FF3B30;
-  --purple-accent: #BF5AF2;
-  --pink-accent: #FF375F;
-  --indigo-accent: #5E5CE6;
-  --teal-accent: #64D2FF;
-  --green-accent: #00D68F;
-  --orange-accent: #FF6B35;
-  --gradient-primary: linear-gradient(135deg, #1DB954 0%, #1ED760 100%);
-  --gradient-accent: linear-gradient(135deg, #1DB954 0%, #1ED760 100%);
-  --gradient-vibrant: linear-gradient(135deg, #FF375F 0%, #FF9500 50%, #FFCC00 100%);
-  --gradient-cool: linear-gradient(135deg, #5E5CE6 0%, #64D2FF 100%);
-  --gradient-green-purple: linear-gradient(135deg, #00D68F 0%, #00B383 25%, #9B59B6 75%, #BF5AF2 100%);
-  --gradient-blue-orange: linear-gradient(135deg, #007AFF 0%, #0066CC 25%, #FF8C42 75%, #FF6B35 100%);
-  --gradient-mesh: radial-gradient(at 40% 20%, hsla(160,100%,45%,0.25) 0px, transparent 50%),
-                   radial-gradient(at 80% 0%, hsla(200,100%,56%,0.25) 0px, transparent 50%),
-                   radial-gradient(at 0% 50%, hsla(270,100%,60%,0.25) 0px, transparent 50%),
-                   radial-gradient(at 80% 50%, hsla(20,100%,55%,0.25) 0px, transparent 50%),
-                   radial-gradient(at 0% 100%, hsla(140,100%,50%,0.25) 0px, transparent 50%),
-                   radial-gradient(at 80% 100%, hsla(260,100%,65%,0.25) 0px, transparent 50%);
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-glow: 0 0 40px rgba(29, 185, 84, 0.35);
-  --backdrop-blur: 20px;
-  
-  /* Subtle noise texture (SVG data URI) */
-  --noise-size: 120px;
-  --noise-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bg-primary: var(--ground);
+  --bg-secondary: var(--ground-2);
+  --bg-card: var(--ground-2);
+  --bg-card-hover: var(--ground-3);
+  --bg-glass: var(--ground-2);
+  --bg-glass-thick: var(--ground-3);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink);
+  --text-muted: var(--ink-2);
+  --border-color: var(--line);
+  --border-glass: var(--line);
+  --accent-color: var(--brand);
+  --accent-hover: var(--brand);
+  --accent-secondary: var(--brand);
+  --success-color: var(--moss);
+  --warning-color: var(--sun);
+  --danger-color: var(--clay);
+  --purple-accent: var(--plum);
+  --pink-accent: var(--clay);
+  --indigo-accent: var(--plum);
+  --teal-accent: var(--sky);
+  --green-accent: var(--moss);
+  --orange-accent: var(--clay);
+  --gradient-primary: var(--brand);
+  --gradient-accent: var(--brand);
+  --shadow-color: var(--shade);
+  --font: "Recursive", ui-sans-serif, system-ui, sans-serif;
+  --font-code: "Recursive", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius: 0.6rem;
+  --press: 0 0.25rem 0 var(--shade);
 }
 
-/* Glass Morphism Base */
-.glass {
-  background: var(--bg-glass), var(--noise-pattern);
-  background-repeat: no-repeat, repeat;
-  background-size: auto, var(--noise-size) var(--noise-size);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid var(--border-glass);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-}
-
-.glass-thick {
-  background: var(--bg-glass-thick), var(--noise-pattern);
-  background-repeat: no-repeat, repeat;
-  background-size: auto, var(--noise-size) var(--noise-size);
-  backdrop-filter: saturate(200%) blur(30px);
-  -webkit-backdrop-filter: saturate(200%) blur(30px);
-  border: 1px solid var(--border-glass);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-}
-
-/* When inside a bento box, glass elements should be compact */
-.bento-box .glass-thick {
-  padding: 0.5rem 0.75rem;
-}
-
-/* Apple-style Card */
-.apple-card {
-  background: var(--bg-card), var(--noise-pattern);
-  background-repeat: no-repeat, repeat;
-  background-size: auto, var(--noise-size) var(--noise-size);
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-/* When inside a bento box, use minimal padding */
-.bento-box .apple-card {
-  padding: 0.5rem;
-}
-
-@media (min-width: 640px) {
-  .apple-card {
-    border-radius: 0.75rem;
-    padding: 1rem;
-  }
-  
-  .bento-box .apple-card {
-    padding: 0.75rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .apple-card {
-    border-radius: 1rem;
-    padding: 1.25rem;
-  }
-  
-  .bento-box .apple-card {
-    padding: 1rem;
-  }
-}
-
-.apple-card:hover {
-  background: var(--bg-card-hover);
-  transform: scale(1.02);
-  box-shadow: 0 10px 40px var(--shadow-color);
-}
-
-/* Unified Button System */
-.btn {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  font-size: 0.625rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  border: none;
-  text-decoration: none;
-}
-
-@media (min-width: 640px) {
-  .btn {
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.75rem;
-    gap: 0.25rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-}
-
-/* Primary Button - Gradient */
-.btn-primary,
-.apple-button {
-  background: var(--gradient-accent);
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
-}
-
-.btn-primary:hover,
-.apple-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
-}
-
-.btn-primary:active,
-.apple-button:active {
-  transform: translateY(0);
-}
-
-/* Secondary Button - Glass */
-.btn-secondary,
-.apple-button-secondary {
-  background: var(--bg-glass);
-  color: var(--text-primary);
-  backdrop-filter: blur(var(--backdrop-blur));
-  -webkit-backdrop-filter: blur(var(--backdrop-blur));
-  border: 1px solid var(--border-glass);
-}
-
-.btn-secondary:hover,
-.apple-button-secondary:hover {
-  background: var(--bg-glass-thick);
-  transform: translateY(-2px);
-  border-color: var(--accent-color);
-  box-shadow: 0 8px 25px var(--shadow-color);
-}
-
-/* Gradient Button Variants */
-.btn-gradient-vibrant {
-  background: var(--gradient-vibrant);
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
-}
-
-.btn-gradient-vibrant:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 30px rgba(255, 149, 0, 0.4);
-}
-
-.btn-gradient-cool {
-  background: var(--gradient-cool);
-  color: white;
-  box-shadow: 0 4px 15px rgba(94, 92, 230, 0.3);
-}
-
-.btn-gradient-cool:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 30px rgba(94, 92, 230, 0.4);
-}
-
-.btn-gradient-green-purple {
-  background: var(--gradient-green-purple);
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 214, 143, 0.3);
-}
-
-.btn-gradient-green-purple:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 30px rgba(191, 90, 242, 0.4);
-}
-
-.btn-gradient-blue-orange {
-  background: var(--gradient-blue-orange);
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
-}
-
-.btn-gradient-blue-orange:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 30px rgba(255, 107, 53, 0.4);
-}
-
-/* Gradient Accent Button */
-.btn-gradient-accent {
-  background: linear-gradient(135deg, var(--blue-accent) 0%, var(--teal-accent) 100%);
-  color: white;
-  box-shadow: 0 2px 10px rgba(0, 122, 255, 0.2);
-}
-
-.btn-gradient-accent:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 4px 20px rgba(90, 200, 250, 0.3);
-}
-
-/* Button Ripple Effect */
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.btn:active::before {
-  width: 300px;
-  height: 300px;
-}
-
-/* Link Styles */
-.apple-link {
-  color: var(--accent-color);
-  text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.apple-link:hover {
-  color: var(--accent-hover);
-}
-
-.apple-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--accent-color);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.apple-link:hover::after {
-  width: 100%;
-}
-
-/* Typography System */
-h1, .h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.1;
-}
-
-h2, .h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-h3, .h3 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.3;
-}
-
-h4, .h4 {
-  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.4;
-}
-
-h5, .h5 {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-p, .body-text {
-  font-size: clamp(0.875rem, 1.5vw, 1rem);
-  font-weight: 400;
-  line-height: 1.6;
-}
-
-.text-small {
-  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
-  font-weight: 400;
-  line-height: 1.5;
-}
-
-.text-tiny {
-  font-size: clamp(0.6875rem, 1vw, 0.75rem);
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-/* Background Gradient Overlay */
-/* Disable global gradient mesh overlay for a cleaner look */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: var(--noise-pattern);
-  background-size: var(--noise-size) var(--noise-size);
-  background-repeat: repeat;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Home hero animated gradient name */
-@keyframes gradient-pan-slow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.hero-name {
-  /* White → Yellow → Green → Blue → Purple → White */
-  background-image: linear-gradient(
-    120deg,
-    #ffffff 0%,
-    #fff5cc 8%,
-    #ffe680 14%,
-    #c9ffb3 22%,
-    #1ED760 38%,
-    #64D2FF 62%,
-    #8B80FF 74%,
-    #ffffff 100%
-  );
-  background-size: 300% 300%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: gradient-pan-slow 10s ease-in-out infinite;
-  line-height: 1.05;
-  text-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.35),
-    0 8px 22px rgba(0, 0, 0, 0.3),
-    0 0 24px rgba(100, 210, 255, 0.18),
-    0 0 36px rgba(191, 90, 242, 0.12);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-name { animation: none; background-size: 100% 100%; }
-}
-
-/* Engage buttons layout: keep two columns on tablets */
-.engage-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem 1rem;
-}
-
-@media (min-width: 640px) {
-  .engage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (min-width: 1280px) {
-  .engage-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-
-.engage-item { display: flex; width: 100%; align-items: center; justify-content: flex-start; }
-
-/* AI Tools grid: responsive 1 → 2 → 3 columns */
-.ai-tools-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.625rem;
-}
-
-@media (min-width: 640px) {
-  .ai-tools-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 1024px) {
-  .ai-tools-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-.ai-tool-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1rem;
-  border-radius: 0.625rem;
-  text-decoration: none;
-  color: var(--text-primary);
-  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
-}
-
-.ai-tool-card:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  border-color: var(--accent-color) !important;
-}
-
-/* Apply subtle noise to page background */
 body {
   background-color: var(--bg-primary);
-  background-image: var(--noise-pattern);
-  background-size: var(--noise-size) var(--noise-size);
-  background-repeat: repeat;
-  background-attachment: fixed;
-}
-
-/* Legacy classes for backward compatibility */
-.dark-card { 
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 0.375rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.dark-button {
-  background-color: var(--bg-secondary);
   color: var(--text-primary);
+  font-family: var(--font);
+}
+
+/* A panel. The name is left over from the old look. */
+.glass,
+.glass-thick {
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease;
+  border-radius: var(--radius);
 }
 
-.dark-button:hover {
-  background-color: var(--accent-color);
-  color: #000000;
-}
-
-.dark-link {
-  color: var(--accent-color);
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variation-settings: "CASL" 0.6;
   text-decoration: none;
-  transition: color 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
-.dark-link:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
+.btn-primary {
+  background: var(--accent-color);
+  color: var(--bg-primary);
+  box-shadow: var(--press);
+}
+
+.btn-secondary {
+  background: var(--bg-glass-thick);
+  color: var(--text-primary);
+  box-shadow: var(--press);
+}
+
+.btn:hover {
+  transform: translateY(-0.1rem) rotate(-1deg);
+}
+
+.btn:active {
+  transform: translateY(0.2rem);
+  box-shadow: 0 0.05rem 0 var(--shade);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }

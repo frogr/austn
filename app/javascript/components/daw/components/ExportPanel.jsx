@@ -11,7 +11,7 @@ const styles = {
   },
   title: {
     fontSize: '0.75rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
@@ -23,42 +23,43 @@ const styles = {
     flex: 1,
     padding: '0.5rem 0.75rem',
     fontSize: '0.75rem',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'var(--ink-2)',
     cursor: 'pointer',
     transition: 'all 0.2s',
   },
   exportButton: {
-    background: 'linear-gradient(45deg, #10b981, #059669)',
+    background: 'var(--brand)',
     borderColor: 'transparent',
-    color: 'white',
+    color: 'var(--ground)',
     fontWeight: 500,
+    boxShadow: '0 0.2rem 0 var(--shade)',
   },
   progress: {
     height: '4px',
-    background: 'rgba(255,255,255,0.1)',
+    background: 'var(--line)',
     borderRadius: '2px',
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    background: 'var(--accent-color, #10b981)',
+    background: 'var(--brand)',
     transition: 'width 0.1s',
   },
   status: {
     fontSize: '0.65rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textAlign: 'center',
   },
   select: {
     flex: 1,
     padding: '0.375rem 0.5rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.7rem',
   },
 }
@@ -359,7 +360,7 @@ export default function ExportPanel() {
       </button>
 
       {!hasContent && !isExporting && (
-        <span style={{ ...styles.status, color: 'rgba(255,255,255,0.4)' }}>
+        <span style={{ ...styles.status, color: 'var(--ink-3)' }}>
           Add notes to export
         </span>
       )}

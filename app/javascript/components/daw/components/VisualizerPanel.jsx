@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useCallback } from 'react'
+import { token, tokenAlpha, tokenMix } from '../../../lib/palette'
 
 /**
  * Oscilloscope component - displays real-time waveform with dynamic scaling
@@ -56,11 +57,11 @@ function Oscilloscope({ audioEngine, height = 80 }) {
     const scaleFactor = 0.85 / displayPeak
 
     // Clear canvas with fade for trail effect
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
+    ctx.fillStyle = tokenAlpha('sunken', 0.25)
     ctx.fillRect(0, 0, width, canvasHeight)
 
     // Draw grid lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
+    ctx.strokeStyle = tokenAlpha('ink', 0.02)
     ctx.lineWidth = 1
     for (let i = 1; i < 4; i++) {
       ctx.beginPath()
@@ -70,18 +71,16 @@ function Oscilloscope({ audioEngine, height = 80 }) {
     }
 
     // Draw center line
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'
+    ctx.strokeStyle = tokenAlpha('ink', 0.04)
     ctx.beginPath()
     ctx.moveTo(0, canvasHeight / 2)
     ctx.lineTo(width, canvasHeight / 2)
     ctx.stroke()
 
-    // Draw waveform with dynamic color based on amplitude
+    // Draw waveform, sliding from the brand hue to clay as the signal gets hot
     const intensity = Math.min(1, currentPeak * 3)
-    const r = Math.round(16 + intensity * 200)
-    const g = Math.round(185 - intensity * 50)
-    const b = Math.round(129 - intensity * 50)
-    ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`
+    const trace = tokenMix('brand', 'clay', intensity)
+    ctx.strokeStyle = trace
     ctx.lineWidth = 2
     ctx.beginPath()
 
@@ -104,7 +103,7 @@ function Oscilloscope({ audioEngine, height = 80 }) {
     ctx.stroke()
 
     // Add glow effect - intensity based on signal level
-    ctx.shadowColor = `rgb(${r}, ${g}, ${b})`
+    ctx.shadowColor = trace
     ctx.shadowBlur = 10 + intensity * 15
     ctx.stroke()
     ctx.shadowBlur = 0
@@ -144,19 +143,19 @@ function Oscilloscope({ audioEngine, height = 80 }) {
     <div style={{
       flex: 1,
       minWidth: '300px',
-      background: 'rgba(0,0,0,0.4)',
+      background: 'var(--sunken)',
       borderRadius: '0.5rem',
-      border: '1px solid rgba(255,255,255,0.08)',
+      border: '1px solid var(--line)',
       overflow: 'hidden',
     }}>
       <div style={{
         padding: '0.5rem 0.75rem',
         fontSize: '0.7rem',
-        color: 'rgba(255,255,255,0.5)',
+        color: 'var(--ink-2)',
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        background: 'rgba(255,255,255,0.02)',
+        borderBottom: '1px solid var(--line)',
+        background: 'var(--ground-2)',
       }}>
         Oscilloscope
       </div>
@@ -254,12 +253,16 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
     }
 
     // Clear canvas with slight fade for smoother visuals
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)'
+    ctx.fillStyle = tokenAlpha('sunken', 0.35)
     ctx.fillRect(0, 0, width, canvasHeight)
 
     // Draw horizontal grid lines with dB markers
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
+    ctx.strokeStyle = tokenAlpha('ink', 0.02)
     ctx.lineWidth = 1
+
+    // Palette for this frame: bass bars sit on the brand hue, highs on sky,
+    // and a bar warms through sun to clay as it nears the top
+    const hot = token('clay')
     for (let i = 1; i < 4; i++) {
       ctx.beginPath()
       ctx.moveTo(0, (canvasHeight / 4) * i)
@@ -333,24 +336,26 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
       const x = i * (barWidth + barGap) + barGap
       const peakY = canvasHeight - (peaksRef.current[i] * canvasHeight * 0.95)
 
-      // Create gradient for bar based on level
+      // Create gradient for bar based on level (a meter, so a gradient is fine)
       const gradient = ctx.createLinearGradient(x, canvasHeight, x, canvasHeight - barHeight)
 
-      // Color based on frequency band (warm colors for bass, cool for highs)
+      // Color based on frequency band (brand for bass, sky for highs)
       const freqRatio = i / bands
+      const base = tokenMix('brand', 'sky', freqRatio)
+      const baseDim = tokenMix('brand', 'sky', freqRatio, 0.55)
       if (displayValue > 0.8) {
         // Hot/clipping colors
-        gradient.addColorStop(0, `hsl(${120 - freqRatio * 30}, 70%, 45%)`)
-        gradient.addColorStop(0.5, `hsl(${45 - freqRatio * 15}, 90%, 55%)`)
-        gradient.addColorStop(1, `hsl(0, 90%, 55%)`)
+        gradient.addColorStop(0, base)
+        gradient.addColorStop(0.5, token('sun'))
+        gradient.addColorStop(1, hot)
       } else if (displayValue > 0.5) {
         // Warm colors
-        gradient.addColorStop(0, `hsl(${130 - freqRatio * 20}, 65%, 40%)`)
-        gradient.addColorStop(1, `hsl(${50 - freqRatio * 10}, 85%, 55%)`)
+        gradient.addColorStop(0, base)
+        gradient.addColorStop(1, token('sun'))
       } else {
-        // Normal colors - green to cyan based on frequency
-        gradient.addColorStop(0, `hsl(${150 - freqRatio * 30}, 60%, 35%)`)
-        gradient.addColorStop(1, `hsl(${160 - freqRatio * 40}, 70%, 50%)`)
+        // Normal colors
+        gradient.addColorStop(0, baseDim)
+        gradient.addColorStop(1, base)
       }
 
       // Draw the bar
@@ -359,15 +364,13 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
 
       // Draw peak indicator line
       if (peaksRef.current[i] > 0.02) {
-        ctx.fillStyle = displayValue > 0.8
-          ? 'rgba(239, 68, 68, 0.9)'
-          : `hsla(${160 - freqRatio * 40}, 80%, 60%, 0.8)`
+        ctx.fillStyle = displayValue > 0.8 ? hot : base
         ctx.fillRect(x, peakY - 2, barWidth, 2)
       }
 
       // Add subtle glow for active bands
       if (displayValue > 0.3) {
-        ctx.shadowColor = `hsl(${150 - freqRatio * 30}, 70%, 50%)`
+        ctx.shadowColor = base
         ctx.shadowBlur = 6 + displayValue * 8
         ctx.fillRect(x, canvasHeight - 2, barWidth, 2)
         ctx.shadowBlur = 0
@@ -412,19 +415,19 @@ function SpectrumAnalyzer({ audioEngine, bands = 32, height = 80 }) {
     <div style={{
       flex: 1,
       minWidth: '300px',
-      background: 'rgba(0,0,0,0.4)',
+      background: 'var(--sunken)',
       borderRadius: '0.5rem',
-      border: '1px solid rgba(255,255,255,0.08)',
+      border: '1px solid var(--line)',
       overflow: 'hidden',
     }}>
       <div style={{
         padding: '0.5rem 0.75rem',
         fontSize: '0.7rem',
-        color: 'rgba(255,255,255,0.5)',
+        color: 'var(--ink-2)',
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        background: 'rgba(255,255,255,0.02)',
+        borderBottom: '1px solid var(--line)',
+        background: 'var(--ground-2)',
       }}>
         Spectrum Analyzer
       </div>

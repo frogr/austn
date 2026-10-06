@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import { useDAW } from '../context/DAWContext'
+import { token } from '../../../lib/palette'
 
 const PIANO_KEYS = [
   { note: 'C', midi: 60, isBlack: false },
@@ -50,14 +51,14 @@ const styles = {
     height: `${ALL_KEYS.length * ROW_HEIGHT}px`,
     maxHeight: '500px',
     overflow: 'auto',
-    background: 'rgba(0,0,0,0.3)',
+    background: 'var(--ground)',
     position: 'relative',
   },
   keysContainer: {
     flexShrink: 0,
     width: `${KEY_WIDTH}px`,
-    background: 'rgba(0,0,0,0.4)',
-    borderRight: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--sunken)',
+    borderRight: '1px solid var(--line)',
     position: 'sticky',
     left: 0,
     zIndex: 10,
@@ -69,18 +70,18 @@ const styles = {
     justifyContent: 'flex-end',
     paddingRight: '10px',
     fontSize: '0.75rem',
-    fontFamily: 'monospace',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    fontVariationSettings: '"MONO" 1',
+    borderBottom: '1px solid var(--line)',
     cursor: 'pointer',
     transition: 'background 0.1s',
   },
   whiteKey: {
-    background: 'rgba(255,255,255,0.15)',
-    color: 'rgba(255,255,255,0.7)',
+    background: 'var(--ground-3)',
+    color: 'var(--ink-2)',
   },
   blackKey: {
-    background: 'rgba(0,0,0,0.4)',
-    color: 'rgba(255,255,255,0.5)',
+    background: 'var(--sunken)',
+    color: 'var(--ink-2)',
   },
   gridContainer: {
     flex: 1,
@@ -89,25 +90,24 @@ const styles = {
   gridRow: {
     height: `${ROW_HEIGHT}px`,
     display: 'flex',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    borderBottom: '1px solid var(--line)',
   },
   gridCell: {
     width: `${DEFAULT_STEP_WIDTH}px`,
     height: '100%',
-    borderRight: '1px solid rgba(255,255,255,0.05)',
+    borderRight: '1px solid var(--line)',
     cursor: 'pointer',
     transition: 'background 0.1s',
   },
   barLine: {
-    borderRightColor: 'rgba(255,255,255,0.15)',
+    borderRightColor: 'var(--ink-3)',
   },
   note: {
     position: 'absolute',
     height: `${ROW_HEIGHT - 4}px`,
-    background: 'linear-gradient(135deg, var(--accent-color, #10b981), #059669)',
+    background: 'var(--brand)',
     borderRadius: '3px',
     cursor: 'pointer',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -118,7 +118,6 @@ const styles = {
   },
   noteResizing: {
     filter: 'brightness(1.2)',
-    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.5)',
   },
   resizeHandle: {
     position: 'absolute',
@@ -127,7 +126,7 @@ const styles = {
     width: '8px',
     height: '100%',
     cursor: 'ew-resize',
-    background: 'rgba(255,255,255,0.2)',
+    background: 'var(--ground)',
     borderRadius: '0 3px 3px 0',
     opacity: 0,
     transition: 'opacity 0.15s',
@@ -139,15 +138,14 @@ const styles = {
     position: 'absolute',
     top: 0,
     width: '2px',
-    background: '#ef4444',
+    background: 'var(--clay)',
     zIndex: 30,
     pointerEvents: 'none',
-    boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)',
   },
   drumRow: {
     height: `${ROW_HEIGHT}px`,
     display: 'flex',
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    borderBottom: '1px solid var(--line)',
   },
   drumLabel: {
     width: `${KEY_WIDTH}px`,
@@ -158,10 +156,10 @@ const styles = {
     paddingRight: '8px',
     fontSize: '0.75rem',
     fontWeight: 500,
-    color: 'rgba(255,255,255,0.8)',
-    background: 'rgba(0,0,0,0.4)',
-    borderRight: '1px solid rgba(255,255,255,0.1)',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    color: 'var(--ink-2)',
+    background: 'var(--sunken)',
+    borderRight: '1px solid var(--line)',
+    borderBottom: '1px solid var(--line)',
     boxSizing: 'border-box',
   },
 }
@@ -250,8 +248,8 @@ function DrumGrid({ track, audioEngine }) {
                 ...styles.drumLabel,
                 height: `${ROW_HEIGHT}px`,
                 cursor: 'pointer',
-                background: isSelected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0,0,0,0.4)',
-                borderLeft: isSelected ? '3px solid var(--accent-color, #10b981)' : '3px solid transparent',
+                background: isSelected ? 'color-mix(in srgb, var(--brand) 20%, transparent)' : 'var(--sunken)',
+                borderLeft: isSelected ? '3px solid var(--brand)' : '3px solid transparent',
               }}
               onClick={() => {
                 actions.setSelectedPitch(idx)
@@ -274,7 +272,7 @@ function DrumGrid({ track, audioEngine }) {
               key={drumIndex}
               style={{
                 ...styles.drumRow,
-                background: isSelected ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
+                background: isSelected ? 'color-mix(in srgb, var(--brand) 5%, transparent)' : 'transparent',
               }}
             >
               {Array.from({ length: state.totalSteps }).map((_, step) => {
@@ -287,14 +285,14 @@ function DrumGrid({ track, audioEngine }) {
                       width: `${stepWidth}px`,
                       height: '100%',
                       borderRight: isBarLine
-                        ? '1px solid rgba(255,255,255,0.15)'
-                        : '1px solid rgba(255,255,255,0.05)',
+                        ? '1px solid var(--ink-3)'
+                        : '1px solid var(--line)',
                       cursor: 'pointer',
                       transition: 'background 0.1s',
                       background: hasNote
-                        ? 'linear-gradient(135deg, var(--accent-color, #10b981), #059669)'
+                        ? 'var(--brand)'
                         : state.currentStep === step
-                        ? 'rgba(255,255,255,0.08)'
+                        ? 'var(--ground-3)'
                         : 'transparent',
                     }}
                     onClick={() => handleCellClick(step, drumIndex)}
@@ -506,11 +504,11 @@ function SynthGrid({ track, audioEngine }) {
                 ...styles.key,
                 ...(key.isBlack ? styles.blackKey : styles.whiteKey),
                 background: isSelected
-                  ? 'rgba(16, 185, 129, 0.3)'
+                  ? 'color-mix(in srgb, var(--brand) 30%, transparent)'
                   : key.isBlack
-                  ? 'rgba(0,0,0,0.4)'
-                  : 'rgba(255,255,255,0.08)',
-                borderLeft: isSelected ? '3px solid var(--accent-color, #10b981)' : '3px solid transparent',
+                  ? 'var(--sunken)'
+                  : 'var(--ground-3)',
+                borderLeft: isSelected ? '3px solid var(--brand)' : '3px solid transparent',
               }}
               onClick={() => {
                 actions.setSelectedPitch(key.midi)
@@ -537,9 +535,9 @@ function SynthGrid({ track, audioEngine }) {
               style={{
                 ...styles.gridRow,
                 background: isSelected
-                  ? 'rgba(16, 185, 129, 0.08)'
+                  ? 'color-mix(in srgb, var(--brand) 8%, transparent)'
                   : key.isBlack
-                  ? 'rgba(0,0,0,0.2)'
+                  ? 'var(--sunken)'
                   : 'transparent',
               }}
             >
@@ -552,12 +550,12 @@ function SynthGrid({ track, audioEngine }) {
                       width: `${stepWidth}px`,
                       height: '100%',
                       borderRight: isBarLine
-                        ? '1px solid rgba(255,255,255,0.15)'
-                        : '1px solid rgba(255,255,255,0.05)',
+                        ? '1px solid var(--ink-3)'
+                        : '1px solid var(--line)',
                       cursor: 'pointer',
                       transition: 'background 0.1s',
                       background: state.currentStep === step
-                        ? 'rgba(255,255,255,0.05)'
+                        ? 'var(--ground-3)'
                         : 'transparent',
                     }}
                     onMouseDown={(e) => handleGridMouseDown(e, step, key.midi)}
@@ -668,12 +666,12 @@ function AudioWaveform({ track }) {
     canvas.width = state.totalSteps * stepWidth
     canvas.height = 200
 
-    // Clear
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'
+    // Clear (canvas can't read CSS variables, so read the palette here)
+    ctx.fillStyle = token('sunken')
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     // Draw waveform
-    ctx.strokeStyle = 'var(--accent-color, #10b981)'
+    ctx.strokeStyle = token('brand')
     ctx.lineWidth = 1
     ctx.beginPath()
 
@@ -709,7 +707,7 @@ function AudioWaveform({ track }) {
         />
       )}
       <div style={{ ...styles.keysContainer, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', textAlign: 'center' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--ink-2)', textAlign: 'center' }}>
           Audio Track
         </span>
       </div>

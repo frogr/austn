@@ -10,7 +10,7 @@ const styles = {
   },
   title: {
     fontSize: '0.75rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
@@ -26,13 +26,13 @@ const styles = {
     alignItems: 'center',
     gap: '0.25rem',
     padding: '0.5rem',
-    background: 'rgba(255,255,255,0.03)',
+    background: 'var(--ground-2)',
     borderRadius: '0.25rem',
     minWidth: '50px',
   },
   channelName: {
     fontSize: '0.6rem',
-    color: 'rgba(255,255,255,0.6)',
+    color: 'var(--ink-2)',
     textAlign: 'center',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -49,22 +49,22 @@ const styles = {
     width: '8px',
     height: '60px',
     appearance: 'none',
-    background: 'rgba(255,255,255,0.1)',
+    background: 'var(--line)',
     borderRadius: '4px',
     writingMode: 'vertical-lr',
     direction: 'rtl',
   },
   volumeValue: {
     fontSize: '0.55rem',
-    color: 'rgba(255,255,255,0.4)',
-    fontFamily: 'monospace',
+    color: 'var(--ink-3)',
+    fontVariationSettings: '"MONO" 1',
   },
   panKnob: {
     width: '24px',
     height: '24px',
     borderRadius: '50%',
-    background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(0,0,0,0.2))',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     position: 'relative',
     cursor: 'pointer',
   },
@@ -72,7 +72,7 @@ const styles = {
     position: 'absolute',
     width: '2px',
     height: '8px',
-    background: 'var(--accent-color, #10b981)',
+    background: 'var(--brand)',
     left: '50%',
     top: '2px',
     transformOrigin: 'bottom center',
@@ -80,13 +80,13 @@ const styles = {
   },
   panLabel: {
     fontSize: '0.5rem',
-    color: 'rgba(255,255,255,0.4)',
-    fontFamily: 'monospace',
+    color: 'var(--ink-3)',
+    fontVariationSettings: '"MONO" 1',
   },
   meterContainer: {
     width: '6px',
     height: '60px',
-    background: 'rgba(0,0,0,0.4)',
+    background: 'var(--sunken)',
     borderRadius: '3px',
     overflow: 'hidden',
     position: 'relative',
@@ -144,14 +144,14 @@ function LevelMeter({ trackId, audioEngine }) {
     }
   }, [updateLevel])
 
-  // Calculate color based on level
+  // Calculate color based on level (a VU meter, so a gradient is fine here)
   const getGradient = () => {
     if (level > 0.9) {
-      return 'linear-gradient(to top, #10b981 0%, #fbbf24 70%, #ef4444 90%)'
+      return 'linear-gradient(to top, var(--brand) 0%, var(--sun) 70%, var(--clay) 90%)'
     } else if (level > 0.6) {
-      return 'linear-gradient(to top, #10b981 0%, #fbbf24 100%)'
+      return 'linear-gradient(to top, var(--brand) 0%, var(--sun) 100%)'
     }
-    return 'linear-gradient(to top, #059669, #10b981)'
+    return 'var(--brand)'
   }
 
   return (
@@ -161,7 +161,6 @@ function LevelMeter({ trackId, audioEngine }) {
           ...styles.meterFill,
           height: `${level * 100}%`,
           background: getGradient(),
-          boxShadow: level > 0.1 ? '0 0 4px rgba(16, 185, 129, 0.5)' : 'none',
         }}
       />
     </div>
@@ -197,15 +196,15 @@ function MasterMeter({ audioEngine }) {
 
   const getGradient = () => {
     if (level > 0.9) {
-      return 'linear-gradient(to top, #10b981 0%, #fbbf24 70%, #ef4444 90%)'
+      return 'linear-gradient(to top, var(--brand) 0%, var(--sun) 70%, var(--clay) 90%)'
     } else if (level > 0.6) {
-      return 'linear-gradient(to top, #10b981 0%, #fbbf24 100%)'
+      return 'linear-gradient(to top, var(--brand) 0%, var(--sun) 100%)'
     }
-    return 'linear-gradient(to top, #059669, #10b981)'
+    return 'var(--brand)'
   }
 
   return (
-    <div style={{ ...styles.channel, minWidth: '40px', background: 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.channel, minWidth: '40px', background: 'var(--ground-3)' }}>
       <span style={styles.channelName}>MST</span>
       <div style={{ ...styles.meterContainer, width: '10px', height: '60px' }}>
         <div
@@ -213,7 +212,6 @@ function MasterMeter({ audioEngine }) {
             ...styles.meterFill,
             height: `${level * 100}%`,
             background: getGradient(),
-            boxShadow: level > 0.1 ? '0 0 6px rgba(16, 185, 129, 0.6)' : 'none',
           }}
         />
       </div>

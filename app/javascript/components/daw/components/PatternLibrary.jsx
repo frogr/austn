@@ -8,44 +8,44 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(0,0,0,0.85)',
+    background: 'color-mix(in srgb, var(--sunken) 80%, transparent)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
   },
   modal: {
-    background: 'linear-gradient(180deg, rgba(20,20,25,1) 0%, rgba(12,12,16,1) 100%)',
+    background: 'var(--ground-2)',
     borderRadius: '0.5rem',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--line)',
     width: '90%',
     maxWidth: '720px',
     maxHeight: '80vh',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+    boxShadow: '0 0.4rem 0 var(--shade)',
   },
   header: {
     padding: '0.75rem 1rem',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    borderBottom: '1px solid var(--line)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.02)',
+    background: 'var(--ground-2)',
   },
   title: {
     fontSize: '0.75rem',
     fontWeight: 600,
-    color: 'rgba(255,255,255,0.7)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   closeButton: {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     fontSize: '1rem',
     cursor: 'pointer',
     padding: '0.25rem 0.5rem',
@@ -54,8 +54,8 @@ const styles = {
   },
   tabs: {
     display: 'flex',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
-    background: 'rgba(0,0,0,0.2)',
+    borderBottom: '1px solid var(--line)',
+    background: 'var(--sunken)',
   },
   tab: {
     flex: 1,
@@ -63,7 +63,7 @@ const styles = {
     background: 'none',
     border: 'none',
     borderBottom: '2px solid transparent',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
     cursor: 'pointer',
     fontSize: '0.7rem',
     fontWeight: 500,
@@ -72,9 +72,9 @@ const styles = {
     transition: 'all 0.15s',
   },
   activeTab: {
-    color: '#10b981',
-    borderBottomColor: '#10b981',
-    background: 'rgba(16, 185, 129, 0.05)',
+    color: 'var(--brand)',
+    borderBottomColor: 'var(--brand)',
+    background: 'color-mix(in srgb, var(--brand) 5%, transparent)',
   },
   content: {
     flex: 1,
@@ -87,26 +87,26 @@ const styles = {
     gap: '0.5rem',
   },
   card: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--ground-2)',
+    border: '1px solid var(--line)',
     borderRadius: '0.375rem',
     padding: '0.75rem',
     cursor: 'pointer',
     transition: 'all 0.15s',
   },
   cardHover: {
-    background: 'rgba(16, 185, 129, 0.08)',
-    borderColor: 'rgba(16, 185, 129, 0.25)',
+    background: 'color-mix(in srgb, var(--brand) 8%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 25%, transparent)',
   },
   cardName: {
     fontWeight: 600,
-    color: 'white',
+    color: 'var(--ink)',
     marginBottom: '0.375rem',
     fontSize: '0.8rem',
   },
   cardDescription: {
     fontSize: '0.65rem',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
     marginBottom: '0.5rem',
     lineHeight: 1.4,
     display: '-webkit-box',
@@ -118,7 +118,7 @@ const styles = {
     display: 'flex',
     gap: '0.5rem',
     fontSize: '0.6rem',
-    color: 'rgba(255,255,255,0.35)',
+    color: 'var(--ink-3)',
     marginBottom: '0.5rem',
   },
   tags: {
@@ -127,8 +127,8 @@ const styles = {
     gap: '0.25rem',
   },
   tag: {
-    background: 'rgba(255,255,255,0.08)',
-    color: 'rgba(255,255,255,0.5)',
+    background: 'var(--ground-3)',
+    color: 'var(--ink-2)',
     padding: '0.125rem 0.375rem',
     borderRadius: '0.2rem',
     fontSize: '0.55rem',
@@ -136,8 +136,8 @@ const styles = {
     letterSpacing: '0.02em',
   },
   templateBadge: {
-    background: 'rgba(16, 185, 129, 0.2)',
-    color: '#34d399',
+    background: 'color-mix(in srgb, var(--brand) 20%, transparent)',
+    color: 'var(--brand)',
   },
   cardActions: {
     display: 'flex',
@@ -157,19 +157,19 @@ const styles = {
     letterSpacing: '0.02em',
   },
   loadButton: {
-    background: 'rgba(16, 185, 129, 0.15)',
-    borderColor: 'rgba(16, 185, 129, 0.25)',
-    color: '#10b981',
+    background: 'color-mix(in srgb, var(--brand) 15%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 25%, transparent)',
+    color: 'var(--brand)',
   },
   mergeButton: {
-    background: 'rgba(255,255,255,0.06)',
-    borderColor: 'rgba(255,255,255,0.1)',
-    color: 'rgba(255,255,255,0.6)',
+    background: 'var(--ground-3)',
+    borderColor: 'var(--line)',
+    color: 'var(--ink-2)',
   },
   deleteButton: {
-    background: 'rgba(239, 68, 68, 0.15)',
-    borderColor: 'rgba(239, 68, 68, 0.2)',
-    color: '#f87171',
+    background: 'color-mix(in srgb, var(--clay) 15%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--clay) 20%, transparent)',
+    color: 'var(--clay)',
     flex: 'none',
     width: '28px',
   },
@@ -182,25 +182,25 @@ const styles = {
   },
   importLabel: {
     fontSize: '0.7rem',
-    color: 'rgba(255,255,255,0.6)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.03em',
     fontWeight: 500,
   },
   importHint: {
     fontSize: '0.65rem',
-    color: 'rgba(255,255,255,0.35)',
+    color: 'var(--ink-3)',
   },
   textarea: {
     flex: 1,
     minHeight: '220px',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--sunken)',
+    border: '1px solid var(--line)',
     borderRadius: '0.375rem',
     padding: '0.75rem',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'var(--ink-2)',
     fontSize: '0.7rem',
-    fontFamily: 'ui-monospace, SFMono-Regular, monospace',
+    fontVariationSettings: '"MONO" 1',
     resize: 'none',
     lineHeight: 1.5,
   },
@@ -221,30 +221,30 @@ const styles = {
     transition: 'all 0.15s',
   },
   primaryButton: {
-    background: 'rgba(16, 185, 129, 0.2)',
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-    color: '#10b981',
+    background: 'color-mix(in srgb, var(--brand) 20%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 30%, transparent)',
+    color: 'var(--brand)',
   },
   secondaryButton: {
-    background: 'rgba(255,255,255,0.06)',
-    borderColor: 'rgba(255,255,255,0.1)',
-    color: 'rgba(255,255,255,0.7)',
+    background: 'var(--ground-3)',
+    borderColor: 'var(--line)',
+    color: 'var(--ink-2)',
   },
   error: {
-    color: '#f87171',
+    color: 'var(--clay)',
     fontSize: '0.65rem',
     padding: '0.5rem',
-    background: 'rgba(239, 68, 68, 0.1)',
+    background: 'color-mix(in srgb, var(--clay) 10%, transparent)',
     borderRadius: '0.25rem',
-    border: '1px solid rgba(239, 68, 68, 0.2)',
+    border: '1px solid color-mix(in srgb, var(--clay) 20%, transparent)',
   },
   success: {
-    color: '#34d399',
+    color: 'var(--brand)',
     fontSize: '0.65rem',
     padding: '0.5rem',
-    background: 'rgba(16, 185, 129, 0.1)',
+    background: 'color-mix(in srgb, var(--brand) 10%, transparent)',
     borderRadius: '0.25rem',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
+    border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)',
   },
   searchRow: {
     display: 'flex',
@@ -254,24 +254,24 @@ const styles = {
   searchInput: {
     flex: 1,
     padding: '0.5rem 0.75rem',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--sunken)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.75rem',
   },
   filterSelect: {
     padding: '0.5rem 0.75rem',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--sunken)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.7rem',
   },
   emptyState: {
     textAlign: 'center',
     padding: '2rem',
-    color: 'rgba(255,255,255,0.3)',
+    color: 'var(--ink-3)',
     fontSize: '0.75rem',
   },
 }
@@ -447,12 +447,12 @@ export default function PatternLibrary({ isOpen, onClose }) {
             style={styles.closeButton}
             onClick={onClose}
             onMouseOver={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+              e.currentTarget.style.background = 'var(--line)'
               e.currentTarget.style.color = 'white'
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
-              e.currentTarget.style.color = 'rgba(255,255,255,0.5)'
+              e.currentTarget.style.background = 'var(--ground-3)'
+              e.currentTarget.style.color = 'var(--ink-2)'
             }}
           >
             ×
@@ -535,8 +535,8 @@ export default function PatternLibrary({ isOpen, onClose }) {
                         <button
                           style={{ ...styles.actionButton, ...styles.loadButton }}
                           onClick={() => handleLoad(pattern, 'replace')}
-                          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.3)'}
-                          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)'}
+                          onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 30%, transparent)'}
+                          onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 15%, transparent)'}
                         >
                           Load
                         </button>
@@ -544,8 +544,8 @@ export default function PatternLibrary({ isOpen, onClose }) {
                           style={{ ...styles.actionButton, ...styles.mergeButton }}
                           onClick={() => handleLoad(pattern, 'merge')}
                           title="Add tracks to current project"
-                          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                          onMouseOver={(e) => e.currentTarget.style.background = 'var(--line)'}
+                          onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
                         >
                           +
                         </button>
@@ -554,8 +554,8 @@ export default function PatternLibrary({ isOpen, onClose }) {
                             style={{ ...styles.actionButton, ...styles.deleteButton }}
                             onClick={() => handleDelete(pattern)}
                             title="Delete"
-                            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)'}
-                            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--clay) 25%, transparent)'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--clay) 15%, transparent)'}
                           >
                             ×
                           </button>
@@ -606,8 +606,8 @@ export default function PatternLibrary({ isOpen, onClose }) {
                   style={{ ...styles.importButton, ...styles.primaryButton }}
                   onClick={handleQuickLoad}
                   disabled={!jsonInput.trim()}
-                  onMouseOver={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.35)'}
-                  onMouseOut={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
+                  onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 35%, transparent)'}
+                  onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 20%, transparent)'}
                 >
                   Load Now
                 </button>
@@ -615,8 +615,8 @@ export default function PatternLibrary({ isOpen, onClose }) {
                   style={{ ...styles.importButton, ...styles.secondaryButton }}
                   onClick={handleSaveToLibrary}
                   disabled={!jsonInput.trim()}
-                  onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                  onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                  onMouseOver={(e) => e.currentTarget.style.background = 'var(--line)'}
+                  onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
                 >
                   Save to Library
                 </button>

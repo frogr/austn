@@ -139,18 +139,13 @@ const Chat = () => {
   return (
     <div className="min-h-screen p-2 sm:p-4 md:p-8">
       <div className="w-full max-w-4xl mx-auto">
-        <div className="glass-card rounded-lg overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="glass overflow-hidden">
           {/* Header */}
-          <div className="px-3 sm:px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="px-3 sm:px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--line)' }}>
             <div className="flex gap-2">
               <button
                 onClick={clearChat}
-                className="px-3 py-1.5 text-sm font-medium rounded transition-all hover:opacity-80"
-                style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'rgba(255,255,255,0.9)'
-                }}
+                className="btn btn-secondary"
               >
                 Clear
               </button>
@@ -160,7 +155,7 @@ const Chat = () => {
           {/* Messages */}
           <div className="h-[50vh] sm:h-[60vh] md:h-[500px] overflow-y-auto px-3 sm:px-6 py-4 space-y-3">
             {messages.length === 0 ? (
-              <div className="text-center mt-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <div className="text-center mt-8" style={{ color: 'var(--ink-2)' }}>
                 <p className="text-lg mb-2">No messages yet</p>
                 <p className="text-sm">Start a conversation</p>
               </div>
@@ -171,25 +166,20 @@ const Chat = () => {
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className="max-w-[85%] sm:max-w-[80%] rounded px-3 py-2"
+                    className="max-w-[85%] sm:max-w-[80%] px-3 py-2"
                     style={{
-                      background: message.role === 'user'
-                        ? 'var(--accent-color)'
-                        : message.error
-                        ? 'rgba(255,59,48,0.15)'
-                        : 'rgba(255,255,255,0.06)',
-                      border: message.role === 'user'
-                        ? 'none'
-                        : '1px solid rgba(255,255,255,0.08)',
-                      color: message.role === 'user' ? '#000' : '#fff'
+                      borderRadius: 'var(--radius)',
+                      background: message.role === 'user' ? 'var(--ground-3)' : 'var(--ground-2)',
+                      border: `1px solid ${message.error ? 'var(--clay)' : 'var(--line)'}`,
+                      color: message.error ? 'var(--clay)' : 'var(--ink)'
                     }}
                   >
-                    <div className="text-xs font-medium mb-1" style={{ opacity: message.role === 'user' ? 0.8 : 0.6 }}>
+                    <div className="text-xs font-bold mb-1" style={{ color: 'var(--ink-3)' }}>
                       {message.role === 'user' ? 'You' : 'AI'}
                     </div>
                     <div className="whitespace-pre-wrap break-words text-sm">
                       {message.content || (
-                        <span style={{ opacity: 0.5 }}>Processing...</span>
+                        <span style={{ color: 'var(--ink-3)' }}>Processing...</span>
                       )}
                     </div>
                   </div>
@@ -198,8 +188,8 @@ const Chat = () => {
             )}
             {isStreaming && (
               <div className="flex justify-start">
-                <div className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                  <span className="inline-block animate-pulse">•••</span>
+                <div className="text-sm" style={{ color: 'var(--ink-3)' }}>
+                  <span className="inline-block motion-safe:animate-pulse">•••</span>
                 </div>
               </div>
             )}
@@ -207,17 +197,19 @@ const Chat = () => {
           </div>
 
           {/* Input */}
-          <div className="px-3 sm:px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="px-3 sm:px-6 py-4" style={{ borderTop: '1px solid var(--line)' }}>
             <div className="flex flex-col sm:flex-row gap-2">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="Type a message..."
-                className="w-full sm:flex-1 px-3 py-2 rounded text-white resize-none focus:outline-none"
+                className="w-full sm:flex-1 px-3 py-2 resize-none focus:outline-none"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)'
+                  background: 'var(--sunken)',
+                  border: '1px solid var(--line)',
+                  borderRadius: 'var(--radius)',
+                  color: 'var(--ink)'
                 }}
                 rows={2}
                 maxLength={MAX_MESSAGE_LENGTH}
@@ -226,14 +218,14 @@ const Chat = () => {
               <button
                 onClick={sendMessage}
                 disabled={isStreaming || !input.trim()}
-                className="w-full sm:w-auto px-4 py-2 rounded font-medium transition-all hover:opacity-90"
-                style={{
-                  background: (isStreaming || !input.trim())
-                    ? 'rgba(255,255,255,0.05)'
-                    : 'var(--accent-color)',
-                  color: (isStreaming || !input.trim()) ? 'rgba(255,255,255,0.3)' : '#000',
-                  cursor: (isStreaming || !input.trim()) ? 'not-allowed' : 'pointer'
-                }}
+                className="btn btn-primary w-full sm:w-auto justify-center"
+                style={(isStreaming || !input.trim()) ? {
+                  background: 'var(--ground-3)',
+                  color: 'var(--ink-3)',
+                  boxShadow: 'none',
+                  transform: 'none',
+                  cursor: 'not-allowed'
+                } : undefined}
               >
                 {isStreaming ? '...' : 'Send'}
               </button>
@@ -242,7 +234,7 @@ const Chat = () => {
         </div>
 
         {/* Connection Info */}
-        <div className="mt-4 text-center text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <div className="mt-4 text-center text-xs" style={{ color: 'var(--ink-3)', fontVariationSettings: '"MONO" 1' }}>
           LMStudio • qwen2.5-coder-14b • GPU Queue
         </div>
       </div>

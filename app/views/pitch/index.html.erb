@@ -5,7 +5,7 @@
 
   <%# Header %>
   <div class="pitch-header">
-    <h1 class="pitch-title">Pitch Checker</h1>
+    <h1 class="pitch-title">Pitch checker</h1>
     <p class="pitch-subtitle">Real-time pitch detection for voice &amp; guitar</p>
   </div>
 
@@ -151,33 +151,39 @@
     padding: 0.5rem 1rem 3rem;
   }
 
-  .pitch-header { text-align: center; margin-bottom: 1.25rem; }
+  .pitch-header { margin-bottom: 1.25rem; }
   .pitch-title {
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
-    font-weight: 700;
-    color: var(--text-primary);
+    font-size: clamp(2.1rem, 1.5rem + 2.4vw, 3rem);
+    font-weight: 900;
+    font-variation-settings: "CASL" 1;
+    color: var(--ink);
     margin: 0 0 0.25rem;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
   }
-  .pitch-subtitle { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+  .pitch-subtitle { color: var(--ink-2); font-size: 0.95rem; margin: 0; }
 
-  /* Start button */
-  .pitch-start-container { text-align: center; margin-bottom: 1.25rem; }
+  /* Start button: presses down like .button on the public pages */
+  .pitch-start-container { margin-bottom: 1.25rem; }
   .pitch-start-btn {
-    font-size: 1.1rem; padding: 0.9rem 2rem; border-radius: 0.75rem;
+    padding: 0.7rem 1.5rem; border-radius: var(--radius);
     display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
-    border: none; font-weight: 600; background: var(--gradient-accent); color: #fff;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: none; font: inherit; font-size: 1.05rem; font-weight: 800;
+    font-variation-settings: "CASL" 0.8;
+    background: var(--brand); color: var(--ground);
+    box-shadow: 0 0.25rem 0 var(--shade);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
-  .pitch-start-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+  .pitch-start-btn:hover { transform: translateY(-0.1rem) rotate(-1deg); box-shadow: 0 0.35rem 0 var(--shade); }
+  .pitch-start-btn:active { transform: translateY(0.2rem); box-shadow: 0 0.05rem 0 var(--shade); }
+  .pitch-start-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
   .pitch-start-btn .material-icons { font-size: 1.4rem; }
-  .pitch-start-hint { margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); }
+  .pitch-start-hint { margin-top: 0.6rem; font-size: 0.8rem; color: var(--ink-2); }
 
-  .pitch-status { text-align: center; font-size: 0.85rem; margin-bottom: 0.75rem; min-height: 1.2em; }
+  .pitch-status { font-size: 0.85rem; margin-bottom: 0.75rem; min-height: 1.2em; }
 
   /* Info bar */
   .pitch-info-bar {
-    border-radius: 1rem;
     padding: 1rem 1.25rem;
     margin-bottom: 0.75rem;
     display: flex;
@@ -189,90 +195,99 @@
   .pitch-info-note { display: flex; align-items: baseline; gap: 0.5rem; }
   .pitch-note-display {
     font-size: 2.5rem; font-weight: 900; letter-spacing: -0.03em;
-    line-height: 1; color: var(--text-muted); transition: color 0.1s ease;
+    line-height: 1; color: var(--ink-2); transition: color 0.1s ease;
+    font-variation-settings: "MONO" 1;
     font-variant-numeric: tabular-nums;
   }
-  .pitch-freq-display { font-size: 0.85rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .pitch-freq-display {
+    font-size: 0.85rem; color: var(--ink-2);
+    font-variation-settings: "MONO" 1; font-variant-numeric: tabular-nums;
+  }
 
   .pitch-info-cents { flex: 1; min-width: 180px; }
   .pitch-cents-track { position: relative; }
   .pitch-cents-labels {
     display: flex; justify-content: space-between;
-    font-size: 0.55rem; color: var(--text-muted); margin-bottom: 2px;
+    font-size: 0.6rem; color: var(--ink-3); margin-bottom: 2px;
+    font-variation-settings: "MONO" 1;
     user-select: none;
   }
-  .pitch-cents-center-label { color: var(--accent-color); font-weight: 700; }
+  .pitch-cents-center-label { color: var(--brand); font-weight: 700; }
   .pitch-cents-bar {
     position: relative; height: 20px;
-    background: rgba(255,255,255,0.04); border-radius: 4px;
-    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--sunken); border-radius: 4px;
+    border: 1px solid var(--line);
   }
   .pitch-cents-zone-green {
     position: absolute; left: 45%; right: 45%; top: 0; bottom: 0;
-    background: rgba(29, 185, 84, 0.1); border-radius: 4px;
+    background: color-mix(in srgb, var(--brand) 18%, transparent); border-radius: 4px;
   }
   .pitch-cents-needle {
     position: absolute; top: 2px; bottom: 2px; width: 4px; left: 50%;
     transform: translateX(-50%); border-radius: 2px;
-    background: var(--accent-color); box-shadow: 0 0 8px var(--accent-color);
+    background: var(--brand);
     transition: left 0.06s ease-out;
   }
   .pitch-cents-value {
     font-size: 0.8rem; font-weight: 600; text-align: right;
-    font-variant-numeric: tabular-nums; color: var(--text-muted); margin-top: 2px;
+    font-variation-settings: "MONO" 1; font-variant-numeric: tabular-nums;
+    color: var(--ink-2); margin-top: 2px;
   }
 
   .pitch-info-level { display: flex; align-items: center; gap: 0.4rem; min-width: 100px; }
-  .pitch-level-icon { font-size: 1rem; color: var(--text-muted); }
+  .pitch-level-icon { font-size: 1rem; color: var(--ink-2); }
   .pitch-level-meter {
-    flex: 1; height: 6px; background: rgba(255,255,255,0.06);
+    flex: 1; height: 6px; background: var(--sunken);
+    border: 1px solid var(--line);
     border-radius: 3px; overflow: hidden;
   }
   .pitch-level-fill {
-    height: 100%; width: 0%; background: var(--text-muted);
+    height: 100%; width: 0%; background: var(--ink-2);
     border-radius: 3px; transition: width 0.05s linear;
   }
 
   .pitch-guitar-info {
     display: flex; align-items: center; gap: 0.5rem;
     padding: 0.35rem 0.6rem; border-radius: 0.4rem;
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    background: var(--ground-3); border: 1px solid var(--line);
   }
   .guitar-string-badge {
-    font-size: 0.9rem; font-weight: 700; color: var(--text-primary);
-    padding: 0.1rem 0.4rem; border: 2px solid var(--text-muted);
+    font-size: 0.9rem; font-weight: 700; color: var(--ink);
+    font-variation-settings: "MONO" 1;
+    padding: 0.1rem 0.4rem; border: 2px solid var(--ink-2);
     border-radius: 0.3rem; transition: border-color 0.1s ease;
   }
-  .guitar-cents { font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  .guitar-cents { font-size: 0.8rem; font-variation-settings: "MONO" 1; font-variant-numeric: tabular-nums; }
 
   /* Grid section (the main visualization) */
   .pitch-grid-section {
-    border-radius: 1rem;
     padding: 0.75rem;
     margin-bottom: 0.75rem;
     overflow: hidden;
   }
   .pitch-grid-header {
     display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 0.25rem 0.75rem;
     margin-bottom: 0.5rem; padding: 0 0.25rem;
   }
   .pitch-grid-legend {
     display: flex; align-items: center; gap: 0.5rem;
-    font-size: 0.7rem; color: var(--text-muted);
+    font-size: 0.75rem; color: var(--ink-2); white-space: nowrap;
   }
   .pitch-legend-dot {
     width: 8px; height: 8px; border-radius: 50%; display: inline-block;
   }
-  .pitch-legend-live { background: #1DB954; }
-  .pitch-legend-ref { background: #BF5AF2; }
-  .pitch-grid-hint { font-size: 0.65rem; color: rgba(255,255,255,0.3); }
+  .pitch-legend-live { background: var(--brand); }
+  .pitch-legend-ref { background: var(--plum); }
+  .pitch-grid-hint { font-size: 0.7rem; color: var(--ink-3); }
 
   .pitch-grid-container {
     display: flex;
     height: 420px;
     border-radius: 0.5rem;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid var(--line);
+    background: var(--sunken);
   }
 
   /* Vertical piano keys */
@@ -281,8 +296,8 @@
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    background: rgba(0,0,0,0.3);
-    border-right: 1px solid rgba(255,255,255,0.1);
+    background: var(--sunken);
+    border-right: 1px solid var(--line);
     overflow: hidden;
   }
 
@@ -301,20 +316,21 @@
   .vkey:focus { outline: none; }
 
   .vkey-white {
-    background: rgba(255,255,255,0.06);
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    background: var(--ground-3);
+    border-bottom: 1px solid var(--ground-2);
   }
-  .vkey-white:hover { background: rgba(255,255,255,0.12); }
+  .vkey-white:hover { background: var(--line); }
 
   .vkey-black {
-    background: rgba(0,0,0,0.5);
-    border-bottom: 1px solid rgba(255,255,255,0.02);
+    background: var(--sunken);
+    border-bottom: 1px solid var(--ground);
   }
-  .vkey-black:hover { background: rgba(40,40,40,0.7); }
+  .vkey-black:hover { background: var(--ground-2); }
 
   .vkey-label {
     font-size: 0.5rem;
-    color: rgba(255,255,255,0.4);
+    font-variation-settings: "MONO" 1;
+    color: var(--ink-3);
     pointer-events: none;
     user-select: none;
     white-space: nowrap;
@@ -335,96 +351,110 @@
 
   /* Controls */
   .pitch-controls {
-    border-radius: 1rem;
     padding: 1rem 1.25rem;
     display: flex;
     flex-wrap: wrap;
     gap: 1rem 1.5rem;
     align-items: flex-start;
   }
-  .pitch-control-group { display: flex; flex-direction: column; gap: 0.35rem; }
+  .pitch-control-group { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+
+  /* Tape labels, like .label on the public pages */
   .pitch-control-label {
-    font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.05em;
-    display: flex; align-items: center; gap: 0.4rem;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--sun); color: var(--ground);
+    font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em;
+    text-transform: uppercase; line-height: 1.2;
+    padding: 0.15rem 0.45rem; border-radius: 0.25rem;
+    transform: rotate(-1.5deg);
+    font-variation-settings: "CASL" 1;
   }
-  .pitch-gate-val { font-variant-numeric: tabular-nums; color: var(--text-primary); }
+  .pitch-gate-val { font-variation-settings: "MONO" 1; font-variant-numeric: tabular-nums; }
 
   .pitch-mode-toggle {
     position: relative; display: inline-flex;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--sunken);
+    border: 1px solid var(--line);
     border-radius: 0.5rem; padding: 0; cursor: pointer; overflow: hidden;
   }
   .pitch-mode-option {
-    padding: 0.4rem 0.75rem; font-size: 0.75rem; font-weight: 600;
-    color: var(--text-muted); position: relative; z-index: 1;
+    flex: 1 1 0; text-align: center;
+    padding: 0.4rem 0.75rem; font-size: 0.8rem; font-weight: 700;
+    color: var(--ink-2); position: relative; z-index: 1;
     transition: color 0.2s ease; user-select: none;
   }
   .pitch-mode-toggle[aria-checked="false"] .pitch-mode-option:first-child,
   .pitch-mode-toggle[aria-checked="true"] .pitch-mode-option:last-child {
-    color: var(--text-primary);
+    color: var(--ground);
   }
   .pitch-mode-slider {
     position: absolute; top: 2px; bottom: 2px; left: 2px;
-    width: calc(50% - 2px); background: rgba(29, 185, 84, 0.2);
+    width: calc(50% - 2px); background: var(--brand);
     border-radius: 0.375rem; transition: transform 0.2s ease; pointer-events: none;
   }
   .pitch-mode-toggle[aria-checked="true"] .pitch-mode-slider {
     transform: translateX(100%);
   }
+  .pitch-mode-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
   .pitch-mode-label { display: none; }
 
   .pitch-slider {
     -webkit-appearance: none; appearance: none;
-    width: 120px; height: 4px; background: rgba(255,255,255,0.1);
+    width: 120px; height: 4px; background: var(--line);
     border-radius: 2px; outline: none;
   }
   .pitch-slider::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
     width: 14px; height: 14px; border-radius: 50%;
-    background: var(--accent-color); cursor: pointer; border: 2px solid rgba(0,0,0,0.3);
+    background: var(--brand); cursor: pointer; border: 2px solid var(--ground);
   }
   .pitch-slider::-moz-range-thumb {
     width: 14px; height: 14px; border-radius: 50%;
-    background: var(--accent-color); cursor: pointer; border: 2px solid rgba(0,0,0,0.3);
+    background: var(--brand); cursor: pointer; border: 2px solid var(--ground);
   }
+  .pitch-slider:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; }
 
-  /* Reference audio controls */
+  /* Small press-down buttons: load, play, stop and the reference tones */
   .pitch-ref-group { min-width: 200px; }
-  .pitch-ref-controls { display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap; }
-  .pitch-ref-btn {
-    font-size: 0.75rem; padding: 0.35rem 0.65rem; border-radius: 0.4rem;
-    font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;
+  .pitch-ref-controls { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+  .pitch-ref-btn,
+  .pitch-ref-stop-btn,
+  .pitch-ref-tone-btn {
+    font: inherit; font-size: 0.8rem; font-weight: 700;
+    font-variation-settings: "CASL" 0.6;
+    padding: 0.35rem 0.7rem; border-radius: var(--radius);
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
     cursor: pointer; border: none;
+    background: var(--ground-3); color: var(--ink);
+    box-shadow: 0 0.25rem 0 var(--shade);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
+  .pitch-ref-btn.btn-primary { background: var(--brand); color: var(--ground); }
+  .pitch-ref-stop-btn { background: var(--clay); color: var(--ground); }
+  .pitch-ref-tone-btn { min-width: 2.4rem; font-variation-settings: "MONO" 1; }
+  .pitch-ref-btn:hover,
+  .pitch-ref-stop-btn:hover,
+  .pitch-ref-tone-btn:hover { transform: translateY(-0.1rem) rotate(-1deg); }
+  .pitch-ref-btn:active,
+  .pitch-ref-stop-btn:active,
+  .pitch-ref-tone-btn:active { transform: translateY(0.2rem); box-shadow: 0 0.05rem 0 var(--shade); }
+  .pitch-ref-btn:focus-visible,
+  .pitch-ref-stop-btn:focus-visible,
+  .pitch-ref-tone-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
   .pitch-ref-btn .material-icons { font-size: 1rem; }
-  .pitch-ref-stop-btn {
-    font-size: 0.75rem; padding: 0.35rem 0.65rem; border-radius: 0.4rem;
-    font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;
-    cursor: pointer; border: none;
-    background: rgba(255, 59, 48, 0.2); color: var(--danger-color);
-  }
-  .pitch-ref-stop-btn:hover { background: rgba(255, 59, 48, 0.3); }
   .pitch-ref-clear-btn {
-    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    background: none; border: none; color: var(--ink-2); cursor: pointer;
     padding: 0.2rem; border-radius: 50%; display: inline-flex; align-items: center;
   }
-  .pitch-ref-clear-btn:hover { color: var(--danger-color); background: rgba(255,255,255,0.06); }
+  .pitch-ref-clear-btn:hover { color: var(--clay); background: var(--ground-3); }
   .pitch-ref-clear-btn .material-icons { font-size: 1rem; }
   .pitch-ref-name {
-    font-size: 0.7rem; color: var(--text-muted); font-style: italic;
+    font-size: 0.75rem; color: var(--ink-2); font-style: italic;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;
   }
-  .pitch-ref-status { font-size: 0.7rem; }
+  .pitch-ref-status { font-size: 0.75rem; }
 
-  /* Guitar reference tone buttons */
-  .pitch-guitar-btns { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-  .pitch-ref-tone-btn {
-    font-size: 0.75rem; padding: 0.3rem 0.55rem; border-radius: 0.4rem;
-    font-weight: 700; min-width: 2.2rem; text-align: center;
-    cursor: pointer; border: none;
-  }
+  .pitch-guitar-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
   /* Responsive */
   @media (max-width: 640px) {
@@ -436,5 +466,11 @@
     .vkey-label { font-size: 0.4rem; }
     .pitch-controls { padding: 0.75rem; gap: 0.75rem; }
     .pitch-info-cents { min-width: 140px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pitch-page * { transition: none !important; }
+    .pitch-page button:hover { transform: none; }
+    .pitch-control-label { transform: none; }
   }
 </style>

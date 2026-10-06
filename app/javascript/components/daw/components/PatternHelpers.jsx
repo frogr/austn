@@ -10,7 +10,7 @@ const styles = {
   },
   title: {
     fontSize: '0.75rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     marginBottom: '0.25rem',
@@ -23,20 +23,20 @@ const styles = {
   button: {
     padding: '0.375rem 0.625rem',
     fontSize: '0.7rem',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'var(--ink-2)',
     cursor: 'pointer',
     transition: 'all 0.2s',
   },
   dangerButton: {
-    background: 'rgba(239, 68, 68, 0.1)',
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+    background: 'color-mix(in srgb, var(--clay) 10%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--clay) 20%, transparent)',
   },
   successButton: {
-    background: 'rgba(16, 185, 129, 0.1)',
-    borderColor: 'rgba(16, 185, 129, 0.2)',
+    background: 'color-mix(in srgb, var(--brand) 10%, transparent)',
+    borderColor: 'color-mix(in srgb, var(--brand) 20%, transparent)',
   },
 }
 
@@ -75,7 +75,7 @@ export default function PatternHelpers({ track }) {
 
       <div style={{
         fontSize: '0.7rem',
-        color: hasSelection ? 'var(--accent-color, #10b981)' : 'rgba(255,255,255,0.4)',
+        color: hasSelection ? 'var(--brand)' : 'var(--ink-3)',
         marginBottom: '0.25rem',
         fontStyle: hasSelection ? 'normal' : 'italic',
       }}>
@@ -91,8 +91,8 @@ export default function PatternHelpers({ track }) {
           }}
           onClick={() => handleFill('every')}
           disabled={!hasSelection}
-          onMouseOver={(e) => hasSelection && (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          onMouseOver={(e) => hasSelection && (e.currentTarget.style.background = 'var(--line)')}
+          onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
         >
           Fill 1/1
         </button>
@@ -104,8 +104,8 @@ export default function PatternHelpers({ track }) {
           }}
           onClick={() => handleFill('every2')}
           disabled={!hasSelection}
-          onMouseOver={(e) => hasSelection && (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          onMouseOver={(e) => hasSelection && (e.currentTarget.style.background = 'var(--line)')}
+          onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
         >
           Fill 1/2
         </button>
@@ -117,8 +117,8 @@ export default function PatternHelpers({ track }) {
           }}
           onClick={() => handleFill('every4')}
           disabled={!hasSelection}
-          onMouseOver={(e) => hasSelection && (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          onMouseOver={(e) => hasSelection && (e.currentTarget.style.background = 'var(--line)')}
+          onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
         >
           Fill 1/4
         </button>
@@ -128,16 +128,16 @@ export default function PatternHelpers({ track }) {
         <button
           style={{ ...styles.button, ...styles.successButton }}
           onClick={() => actions.duplicatePattern(track.id)}
-          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'}
+          onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 20%, transparent)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--brand) 10%, transparent)'}
         >
           Duplicate
         </button>
         <button
           style={{ ...styles.button, ...styles.dangerButton }}
           onClick={() => actions.clearPattern(track.id)}
-          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+          onMouseOver={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--clay) 20%, transparent)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--clay) 10%, transparent)'}
         >
           Clear
         </button>

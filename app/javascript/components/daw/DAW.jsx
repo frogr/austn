@@ -16,9 +16,9 @@ import MIDIPanel from './components/MIDIPanel'
 
 const styles = {
   container: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '0.5rem',
+    background: 'var(--ground-2)',
+    border: '1px solid var(--line)',
+    borderRadius: '0.6rem',
     overflow: 'hidden',
   },
   initOverlay: {
@@ -27,45 +27,46 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'rgba(0,0,0,0.8)',
+    background: 'color-mix(in srgb, var(--sunken) 85%, transparent)',
     zIndex: 50,
   },
   initButton: {
     padding: '1rem 2rem',
     fontSize: '1.25rem',
     fontWeight: 600,
-    background: 'linear-gradient(45deg, #10b981, #059669)',
+    background: 'var(--brand)',
     border: 'none',
     borderRadius: '0.5rem',
-    color: 'white',
+    color: 'var(--ground)',
     cursor: 'pointer',
-    transition: 'transform 0.2s, box-shadow 0.2s',
+    boxShadow: '0 0.2rem 0 var(--shade)',
+    transition: 'transform 0.2s',
   },
   section: {
-    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    borderBottom: '1px solid var(--line)',
   },
   visualizerSection: {
     padding: '1rem',
-    borderBottom: '1px solid rgba(255,255,255,0.08)',
-    background: 'rgba(0,0,0,0.2)',
+    borderBottom: '1px solid var(--line)',
+    background: 'var(--sunken)',
   },
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: '180px 1fr 360px',
     gap: '1px',
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--line)',
   },
   panel: {
-    background: 'rgba(0,0,0,0.3)',
+    background: 'var(--ground)',
     padding: '1rem',
   },
   bottomSection: {
     display: 'flex',
     gap: '1px',
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--line)',
   },
   bottomPanel: {
-    background: 'rgba(0,0,0,0.3)',
+    background: 'var(--ground)',
     padding: '1rem',
     flex: 1,
     display: 'flex',
@@ -276,12 +277,10 @@ function DAWContent() {
             style={styles.initButton}
             onClick={initAudio}
             onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'scale(1.05)'
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(16, 185, 129, 0.4)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'scale(1)'
-              e.currentTarget.style.boxShadow = 'none'
+              e.currentTarget.style.transform = 'none'
             }}
           >
             Click to Start Audio
@@ -340,7 +339,7 @@ function DAWContent() {
       </div>
 
       {/* Recording Section */}
-      <div style={{ ...styles.panel, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ ...styles.panel, borderTop: '1px solid var(--line)' }}>
         <RecordingPanel />
       </div>
     </div>

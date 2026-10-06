@@ -9,9 +9,9 @@ const styles = {
     marginTop: '0.75rem',
   },
   section: {
-    background: 'rgba(255,255,255,0.03)',
+    background: 'var(--ground-2)',
     borderRadius: '0.375rem',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--line)',
     overflow: 'hidden',
   },
   sectionHeader: {
@@ -20,13 +20,13 @@ const styles = {
     justifyContent: 'space-between',
     padding: '0.5rem',
     cursor: 'pointer',
-    background: 'rgba(255,255,255,0.02)',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    background: 'var(--ground-2)',
+    borderBottom: '1px solid var(--line)',
     transition: 'background 0.15s',
   },
   sectionTitle: {
     fontSize: '0.7rem',
-    color: 'rgba(255,255,255,0.7)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     fontWeight: 600,
@@ -36,7 +36,7 @@ const styles = {
   },
   chevron: {
     fontSize: '0.6rem',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
     transition: 'transform 0.2s',
   },
   sectionContent: {
@@ -48,10 +48,10 @@ const styles = {
     gap: '0.25rem',
   },
   effectCard: {
-    background: 'rgba(0,0,0,0.2)',
+    background: 'var(--sunken)',
     borderRadius: '0.25rem',
     padding: '0.3rem',
-    border: '1px solid rgba(255,255,255,0.05)',
+    border: '1px solid var(--line)',
     minWidth: 0,
     overflow: 'hidden',
   },
@@ -64,7 +64,7 @@ const styles = {
   effectTitle: {
     fontSize: '0.55rem',
     fontWeight: 600,
-    color: 'rgba(255,255,255,0.7)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
   },
   toggleButton: {
@@ -77,12 +77,12 @@ const styles = {
     transition: 'all 0.15s',
   },
   toggleButtonOff: {
-    background: 'rgba(255,255,255,0.1)',
-    color: 'rgba(255,255,255,0.4)',
+    background: 'var(--line)',
+    color: 'var(--ink-3)',
   },
   toggleButtonOn: {
-    background: 'rgba(16, 185, 129, 0.4)',
-    color: '#10b981',
+    background: 'var(--brand)',
+    color: 'var(--ground)',
   },
   row: {
     display: 'flex',
@@ -92,7 +92,7 @@ const styles = {
   },
   label: {
     fontSize: '0.5rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     width: '26px',
     flexShrink: 0,
   },
@@ -101,7 +101,7 @@ const styles = {
     minWidth: 0,
     height: '3px',
     appearance: 'none',
-    background: 'rgba(255,255,255,0.1)',
+    background: 'var(--line)',
     borderRadius: '2px',
     cursor: 'pointer',
   },
@@ -109,17 +109,17 @@ const styles = {
     flex: 1,
     minWidth: 0,
     padding: '0.1rem 0.15rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.2rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.5rem',
     cursor: 'pointer',
   },
   valueDisplay: {
     fontSize: '0.45rem',
-    color: 'rgba(255,255,255,0.4)',
-    fontFamily: 'monospace',
+    color: 'var(--ink-3)',
+    fontVariationSettings: '"MONO" 1',
     width: '22px',
     textAlign: 'right',
     flexShrink: 0,
@@ -159,15 +159,15 @@ function CollapsibleSection({ title, children, defaultOpen = true, color, enable
       <div
         style={styles.sectionHeader}
         onClick={() => setIsOpen(!isOpen)}
-        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+        onMouseOver={(e) => e.currentTarget.style.background = 'var(--ground-3)'}
+        onMouseOut={(e) => e.currentTarget.style.background = 'var(--ground-2)'}
       >
-        <span style={{ ...styles.sectionTitle, color: color || 'rgba(255,255,255,0.7)' }}>
+        <span style={{ ...styles.sectionTitle, color: color || 'var(--ink-2)' }}>
           {title}
           {enabledCount > 0 && (
             <span style={{
-              background: 'rgba(16, 185, 129, 0.3)',
-              color: '#10b981',
+              background: 'var(--brand)',
+              color: 'var(--ground)',
               padding: '0.1rem 0.3rem',
               borderRadius: '0.25rem',
               fontSize: '0.5rem',
@@ -216,7 +216,7 @@ function ReverbCard({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>Reverb</span>
         <button
@@ -246,7 +246,7 @@ function DelayCard({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>Delay</span>
         <button
@@ -282,7 +282,7 @@ function DistortionCard({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>Distort</span>
         <button
@@ -317,7 +317,7 @@ function ChorusCard({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>Chorus</span>
         <button
@@ -348,7 +348,7 @@ function PhaserCard({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>Phaser</span>
         <button
@@ -379,7 +379,7 @@ function TremoloCard({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>Tremolo</span>
         <button
@@ -409,7 +409,7 @@ function EQ3Card({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>EQ3</span>
         <button
@@ -440,7 +440,7 @@ function CompressorCard({ track, audioEngine, onUpdate }) {
   }, [track.id, audioEngine, onUpdate])
 
   return (
-    <div style={{ ...styles.effectCard, borderColor: enabled ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.05)' }}>
+    <div style={{ ...styles.effectCard, borderColor: enabled ? 'var(--brand)' : 'var(--line)' }}>
       <div style={styles.effectHeader}>
         <span style={styles.effectTitle}>Comp</span>
         <button
@@ -491,7 +491,7 @@ export default function EffectsPanel({ track, audioEngine }) {
 
   return (
     <div style={styles.container}>
-      <CollapsibleSection title="Effects" defaultOpen={false} color="#ec4899" enabledCount={enabledCount}>
+      <CollapsibleSection title="Effects" defaultOpen={false} color="var(--plum)" enabledCount={enabledCount}>
         <div style={styles.effectsGrid}>
           {/* Row 1: EQ & Compressor (processing effects) */}
           <EQ3Card track={track} audioEngine={audioEngine} onUpdate={handleUpdateEffect} />

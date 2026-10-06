@@ -9,25 +9,25 @@ const styles = {
   },
   title: {
     fontSize: '0.75rem',
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--ink-2)',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   select: {
     padding: '0.375rem 0.5rem',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--ground-3)',
+    border: '1px solid var(--line)',
     borderRadius: '0.25rem',
-    color: 'white',
+    color: 'var(--ink)',
     fontSize: '0.7rem',
   },
   status: {
     fontSize: '0.65rem',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
   },
   noSupport: {
     fontSize: '0.7rem',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--ink-3)',
     fontStyle: 'italic',
   },
   indicator: {
@@ -38,11 +38,10 @@ const styles = {
     marginRight: '0.5rem',
   },
   connected: {
-    background: '#10b981',
-    boxShadow: '0 0 6px #10b981',
+    background: 'var(--brand)',
   },
   disconnected: {
-    background: 'rgba(255,255,255,0.2)',
+    background: 'var(--line)',
   },
 }
 
@@ -68,7 +67,7 @@ export default function MIDIPanel({ onNoteOn, onNoteOff }) {
     return (
       <div style={styles.container}>
         <span style={styles.title}>MIDI Input</span>
-        <span style={{ ...styles.noSupport, color: '#ef4444' }}>
+        <span style={{ ...styles.noSupport, color: 'var(--clay)' }}>
           {error}
         </span>
       </div>
