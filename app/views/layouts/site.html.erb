@@ -42,12 +42,14 @@
 
   <% home = current_page?(root_path) %>
   <% section = current_section || (controller_name == "bookings" ? "book" : (home ? "home" : (action_name == "now" ? "now" : "page"))) %>
+  <%# The header and footer stay the same width on every page, so the nav
+      doesn't jump when a wide page (home, work, playground) follows a narrow one. %>
   <% wrap = content_for?(:wide) ? "wrap wrap--wide" : "wrap" %>
   <body class="s-<%= section %>">
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
-      <div class="<%= wrap %>">
+      <div class="wrap wrap--wide">
         <a class="mark" href="/" aria-label="Austin French, home">
           <span class="mark-glyph" aria-hidden="true">a</span>
           <% unless home %><span class="mark-name">Austin French</span><% end %>
@@ -71,7 +73,7 @@
     </main>
 
     <footer class="site-footer">
-      <div class="<%= wrap %>">
+      <div class="wrap wrap--wide">
         <% if home %>
           <p style="margin: 0;">No JavaScript on this page. <%= link_to "Read the source", "https://github.com/frogr/austn" %>.</p>
         <% else %>

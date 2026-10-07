@@ -1,15 +1,31 @@
 <% page_title "Now" %>
 <% page_description "What Austin French is working on, reading and playing with right now." %>
 
+<% content_for :wide, true %>
+
+<div class="page-grid">
 <h1>Now</h1>
 <p class="meta">Updated October 2026 · New York</p>
+
+<aside class="rail">
+  <p class="rail-title">Tools</p>
+  <p class="muted" style="margin: 0 0 1.5rem;">Claude Code most of the day, with a custom status line. Obsidian for notes and drafts. PostHog for error tracking.</p>
+  <p class="rail-title">Elsewhere</p>
+  <ul>
+    <li><%= link_to "GitHub", Profile.links["github"] %></li>
+    <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+    <li><%= mail_to Profile.email %></li>
+    <li><%= link_to "Grab a time", book_path %></li>
+  </ul>
+</aside>
 
 <h2>Work</h2>
 <p>I'm looking for my next role: forward deployed, AI engineering, or senior product engineering. If that's you, <%= mail_to Profile.email, "email me" %> or <%= link_to "grab a time", meet_path %>.</p>
 
 <h2>Building</h2>
 <ul>
-  <li><strong>aCoach</strong>, an AI coach that reviews League of Legends games from Riot's match data, in Python and Postgres.</li>
+  <li><%= link_to "aCoach", work_item_path("acoach") %>, an AI coach that reviews League of Legends games from Riot's match data, in Python and Postgres.</li>
+  <li>Getting <%= link_to "aTempo", work_item_path("atempo") %>, <%= link_to "aNote", work_item_path("anote") %> and <%= link_to "MealScan", work_item_path("mealscan") %> onto the App Store.</li>
   <li>A chess game review tool I can run myself: paste a game, step through it, and get the engine's lines explained.</li>
   <li>This site, which just got rebuilt.</li>
 </ul>
@@ -30,6 +46,4 @@
   <li><a href="https://cssgridgarden.com/">CSS Grid Garden</a>, the thing that finally made grid click.</li>
   <li><a href="https://huggingface.co/spaces">Hugging Face Spaces</a>, for seeing what people are building.</li>
 </ul>
-
-<h2>Tools</h2>
-<p>Claude Code most of the day, with a custom status line. Obsidian for notes and drafts. PostHog for error tracking.</p>
+</div>

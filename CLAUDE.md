@@ -35,7 +35,7 @@ The design system is two files. Read their headers first.
 - One typeface, Recursive, self-hosted in `app/assets/fonts`. Set the `--casl`
   and `--mono` properties to change its feel. Don't add another font.
 - Reuse the pieces that exist: `.label` and `.section-title` (tape labels),
-  `.rows`, `.worklist`, `.posts`, `.toys`, `.tiles`, `.stats`, `.compare`,
+  `.rows`, `.cards`, `.worklist`, `.posts`, `.toys`, `.tiles`, `.stats`, `.compare`,
   `.diagram`, `.button`, `.note`, `.facts`.
 - Drawings on tiles live in `shared/_toy_art`, one per slug, drawn in
   `currentColor` and animated with the `art-*` classes.

@@ -1,22 +1,27 @@
 <% page_title @item.title %>
 <% page_description @item.summary %>
 <% content_for :og_type, "article" %>
+<% content_for :wide, true %>
 
 <%= link_to "← All work", work_index_path, class: "back" %>
 
-<article>
+<%# The article is a grid: everything in the reading column except the facts,
+    which sit in the rail on the right. On phones the rail follows the lede. %>
+<article class="page-grid">
   <h1><%= @item.title %></h1>
   <p class="lede"><%= @item.summary %></p>
 
-  <dl class="facts">
-    <% if @item.role %><dt>role</dt><dd><%= @item.role %></dd><% end %>
-    <% if @item.timeframe %><dt>when</dt><dd><%= @item.timeframe %></dd><% end %>
-    <% if @item.stack.any? %><dt>stack</dt><dd><%= @item.stack.join(", ") %></dd><% end %>
-    <% if @item.links.any? %>
-      <dt>links</dt>
-      <dd><%= safe_join(@item.links.map { |l| link_to(l["label"], l["url"]) }, " · ") %></dd>
-    <% end %>
-  </dl>
+  <aside class="rail">
+    <dl class="facts">
+      <% if @item.role %><dt>role</dt><dd><%= @item.role %></dd><% end %>
+      <% if @item.timeframe %><dt>when</dt><dd><%= @item.timeframe %></dd><% end %>
+      <% if @item.stack.any? %><dt>stack</dt><dd><%= @item.stack.join(", ") %></dd><% end %>
+      <% if @item.links.any? %>
+        <dt>links</dt>
+        <dd><%= safe_join(@item.links.map { |l| link_to(l["label"], l["url"]) }, tag.br) %></dd>
+      <% end %>
+    </dl>
+  </aside>
 
   <% if @item.stats.any? %>
     <ul class="stats">

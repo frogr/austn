@@ -1,12 +1,29 @@
 <% page_title @blog_post.title %>
 <% page_description(@blog_post.summary.presence || @blog_post.excerpt) %>
 <% content_for :og_type, "article" %>
+<% content_for :wide, true %>
 
 <%= link_to "← Writing", blog_path, class: "back" %>
 
-<article>
+<article class="page-grid">
   <h1><%= @blog_post.title %></h1>
   <p class="meta"><time datetime="<%= @blog_post.published_at.to_date.iso8601 %>"><%= @blog_post.published_at.strftime("%B %-d, %Y") %></time></p>
+
+  <aside class="rail">
+    <% if @more_posts.any? %>
+      <p class="rail-title">More writing</p>
+      <ul>
+        <% @more_posts.each do |post| %>
+          <li><%= link_to post.title, blog_post_path(post.slug) %> <span class="meta"><%= post_date(post) %></span></li>
+        <% end %>
+      </ul>
+    <% end %>
+    <p class="rail-title">Talk to me</p>
+    <ul>
+      <li><%= mail_to Profile.email %></li>
+      <li><%= link_to "Grab a time", book_path %></li>
+    </ul>
+  </aside>
 
   <div class="prose">
     <%= markdown(@blog_post.content) %>

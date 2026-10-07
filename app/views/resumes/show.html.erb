@@ -1,20 +1,43 @@
 <% page_title "Resume" %>
 <% page_description "Austin French's resume: Tenex, Backlit, CompanyCam, CoverMyMeds. #{@resume.title}, New York." %>
 
-<header class="resume-header">
-  <div>
-    <h1><%= Profile.full_name %></h1>
-    <p class="eyebrow"><%= @resume.title %> · <%= @resume.location %></p>
-  </div>
-  <p class="no-print"><%= link_to "Download PDF", resume_path(format: :pdf), class: "button button--quiet" %></p>
-</header>
+<% content_for :wide, true %>
 
-<ul class="resume-contact">
-  <li><%= mail_to @resume.email %></li>
-  <% @resume.links.each do |link| %>
-    <li><%= link_to link["label"], link["url"] %></li>
-  <% end %>
-</ul>
+<%# On the web the PDF button and contact sit in the rail. In print the rail is
+    hidden and the contact list below the name is shown instead. %>
+<div class="page-grid">
+  <header class="resume-header">
+    <div>
+      <h1><%= Profile.full_name %></h1>
+      <p class="eyebrow"><%= @resume.title %> · <%= @resume.location %></p>
+    </div>
+  </header>
+
+  <ul class="resume-contact print-only">
+    <li><%= @resume.email %></li>
+    <% @resume.links.each do |link| %>
+      <li><%= link["url"].delete_prefix("https://") %></li>
+    <% end %>
+  </ul>
+
+  <aside class="rail no-print">
+    <%= link_to "Download PDF", resume_path(format: :pdf), class: "button" %>
+    <p class="rail-title">Contact</p>
+    <ul>
+      <li><%= mail_to @resume.email %></li>
+      <% @resume.links.each do |link| %>
+        <li><%= link_to link["label"], link["url"] %></li>
+      <% end %>
+    </ul>
+    <p class="rail-title">Looking for</p>
+    <p class="muted" style="margin: 0 0 1.5rem;">Forward deployed, AI engineering, or senior product engineering. <%= link_to "Grab a time", book_path %> if that's you.</p>
+    <p class="rail-title">Case studies</p>
+    <ul>
+      <% WorkItem.of_kind("job").each do |item| %>
+        <li><%= link_to item.title, work_item_path(item) %></li>
+      <% end %>
+    </ul>
+  </aside>
 
 <h2>Summary</h2>
 <p><%= @resume.summary %></p>
@@ -48,3 +71,4 @@
     <dd><%= skill["text"] %></dd>
   <% end %>
 </dl>
+</div>
