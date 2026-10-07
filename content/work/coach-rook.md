@@ -9,10 +9,6 @@ when: "2026"
 role: Solo project
 stack: [Tavus CVI, Node, Stockfish, Postgres]
 links:
-  - label: Try it
-    url: https://coach-rook.onrender.com
-  - label: Watch a real call (2 min)
-    url: https://coach-rook.onrender.com/about
   - label: Code on GitHub
     url: https://github.com/frogr/tavus-chess-coach
 screenshot: /work/thumbs/coach-rook.webp
@@ -42,4 +38,4 @@ I ran the same scripted requests against different models and counted the tool c
 
 It has about 4,800 puzzles from the Lichess database, six playing strengths from 500 to 3000, four coaches with their own faces and voices, and around 90 tests with Tavus faked out.
 
-The video coach needs an access code, and the site is on a free host, so the first load can take about 30 seconds.
+The deployed version runs on my own Tavus account, so it isn't open to the public. The code is, and it runs locally with your own key.
