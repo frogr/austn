@@ -13,6 +13,7 @@
 
   <aside class="rail">
     <% if @item.art? %><span class="toy-art" data-hue="<%= @item.hue %>" aria-hidden="true"><%= render "shared/toy_art", slug: @item.slug %></span><% end %>
+    <% if @item.demo_url %><%= link_to "Try it live", @item.demo_url, class: "button" %><% end %>
     <dl class="facts">
       <% if @item.role %><dt>role</dt><dd><%= @item.role %></dd><% end %>
       <% if @item.timeframe %><dt>when</dt><dd><%= @item.timeframe %></dd><% end %>

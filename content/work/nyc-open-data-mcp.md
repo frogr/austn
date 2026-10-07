@@ -18,11 +18,11 @@ screenshot: /work/thumbs/nyc-open-data-mcp.webp
 screenshot_alt: "The NYC Open Data MCP playground: a question about East Village 311 complaints, the tool call, and a bar chart of the top complaint types"
 ---
 
-New York publishes a lot of data: every restaurant inspection, every 311 call, every street tree. Getting an answer out of it means knowing which dataset, which columns, and how Socrata (the API the city publishes on) wants the query written. This server does that part, so you can ask Claude the question in English.
+I live in New York, and the city publishes an absurd amount of data: every restaurant inspection, every 311 call, every street tree. Getting an answer out of it means knowing which dataset, which columns, and how Socrata (the API the city publishes on) wants the query written. I wanted to skip all of that and just ask.
 
-It's an MCP server (Model Context Protocol, the open standard that lets AI apps like Claude and Cursor call outside tools). Connect it once. Then "what were the top 311 complaints in the East Village last month?" turns into a tool call, real rows come back, and the answer is made from them. No API key needed.
+So this is an MCP server for NYC Open Data. MCP (Model Context Protocol) is the open standard that lets AI apps like Claude and Cursor call outside tools. Connect it once. Then "what were the top 311 complaints in the East Village last month?" turns into a tool call, real rows come back, and the answer is made from them. No API key needed.
 
-## What a conversation looks like
+## Ask it
 
 These ran against live city data on 2026-10-07.
 
@@ -51,17 +51,12 @@ These ran against live city data on 2026-10-07.
   <li class="chat-them"><span class="chat-who">Claude</span><p>Four ramen places in 10003 have inspection records. Ramen by Ra on East 1st Street and Ramen Takumi on University Place both hold an A. Kyuramen on East 14th Street and Marufuku Ramen on 2nd Avenue hold a B. Kyuramen's most recent inspection, in July 2026, scored 33 points with three critical violations, so its posted B may change after the re-inspection.</p></li>
 </ol>
 
-<figure class="figure">
-  <img src="/work/nyc-open-data-mcp-1-ask.webp" alt="The playground's Ask it section: the East Village 311 question as a chip, the service_requests_311 call, a result with 4,823 requests and a bar chart of complaint types, and the line Claude can now say" width="1280" height="800" loading="lazy">
-  <figcaption>The same exchange in the server's web playground. Every example runs through the real MCP endpoint against live city data.</figcaption>
-</figure>
-
 ## What it's for
 
 - **Neighbors and renters.** "Any rodent complaints in Flushing in the last 30 days?" "How are the pizza places in Williamsburg doing on inspections?"
 - **Journalists and researchers**, who know the question but not the dataset. "Is there a dataset of NYC street trees?" finds the 2015 Street Tree Census with its 45 columns. "What are the most common street trees in Brooklyn?" runs a grouped query on it: London planetree (34,886), honeylocust (16,921), pin oak (12,343).
 - **Civic tech.** Anyone building on city data gets input validation, escaping, paging and plain-language errors for free, and a model-friendly shape for every response.
-- **A template for your own data.** The city's API is just an API. The same server shape works for yours: a couple of tools for the questions people actually ask, and a general one for everything else. That's the <a href="/hire#mcp-server">custom MCP server</a> on my hire page.
+- **Your own data.** The city's API is just an API. The same server shape works for yours: a couple of tools for the questions people actually ask, and a general one for everything else. That's the <a href="/hire#mcp-server">custom MCP server</a> on my hire page.
 
 ## Four tools, chosen on purpose
 
@@ -90,30 +85,29 @@ These ran against live city data on 2026-10-07.
   <figcaption>Two tools for the questions people ask most, two for everything else. Nothing reaches the city's API without going through the validator.</figcaption>
 </figure>
 
-- **`restaurant_inspections`.** The city stores one row per violation, so the tool groups by restaurant to page through restaurants, then fetches the history for just that page and works out the latest grade. That grade isn't always from the latest inspection, because a re-inspection can leave it pending.
+- **`restaurant_inspections`.** The city stores one row per violation, so the tool groups by restaurant to page through restaurants, then fetches the history for just that page and works out the latest grade. That grade isn't always from the latest inspection, because a re-inspection can leave it pending. I didn't know that until the data told me.
 - **`service_requests_311`.** The 311 dataset is about 22.7 million rows. The tool runs three small aggregate queries on Socrata's side instead of downloading anything.
 - **`search_datasets`** returns column names with each dataset, so the model can write a valid filter on its first try.
 - **`query_dataset`** runs read-only queries against any dataset, capped at 500 rows and about 60 KB per response, with the offset to continue from when it cuts something off.
-
-<figure class="figure">
-  <img src="/work/nyc-open-data-mcp-2-restaurants.webp" alt="The playground's Run a tool section: the restaurant_inspections form with name ramen and ZIP 10003, and four restaurants on the right with their letter grades, inspection dates, scores and critical violation counts" width="1280" height="800" loading="lazy">
-  <figcaption>The runner view of the same tool, for testing by hand. Grades are coloured by the kit's good, close and bad tokens.</figcaption>
-</figure>
 
 ## Safe to put on the internet
 
 - Every value that goes into a query is escaped, so `x' OR '1'='1` stays a string. Dataset ids, ZIPs, dates and boroughs are validated before any request.
 - Upstream errors come back as plain hints the model can act on ("use search_datasets to find a valid dataset id"), never as stack traces.
 - The remote server has a per-IP rate limit (30 a minute), a daily cap, a 64 KB body limit checked while streaming, and timeouts on every request.
+- 61 tests, none of which touch the network. The HTTP tests start the real server on a local port and connect with the official MCP SDK client, the same one Claude Desktop and Cursor build on.
 
-## Where it could go
+## The playground
 
-Plans, not features.
+Every MCP server I build ships with one of these. It runs the real tools against live city data, builds each form from the tool's own input schema, and shows the raw JSON next to the friendly view.
+
+<figure class="figure">
+  <img src="/work/nyc-open-data-mcp-2-restaurants.webp" alt="The playground's Run a tool section: the restaurant_inspections form with name ramen and ZIP 10003, and four restaurants on the right with their letter grades, inspection dates, scores and critical violation counts" width="1280" height="800" loading="lazy">
+  <figcaption>The ramen question as the assistant sees it: four restaurants, their grades, and the violations behind them.</figcaption>
+</figure>
+
+## What's next
 
 - **More ready-made tools** for the next questions people ask: housing violations, crashes, school data. Each one is a day's work on top of what's here.
 - **Other cities.** Socrata runs hundreds of open-data portals. The server is written against Socrata, not against New York, so a Chicago or Seattle version is mostly configuration.
 - **Your data.** A company's own database behind the same shape: a few tools for the real questions, a validated general query, and the model never touching SQL directly.
-
-## What's checked
-
-61 tests, none of which touch the network. The HTTP tests start the real server on a local port and connect with the official MCP SDK client. Live calls against city data were run by hand and recorded in the repo's PROOF file, along with what wasn't checked: it hasn't been deployed yet, the Docker image wasn't built, and it hasn't been connected to Claude Desktop or Cursor over HTTP, only to the SDK client those apps build on. The npm package isn't published yet, so for now it installs from GitHub.

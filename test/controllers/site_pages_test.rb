@@ -133,6 +133,15 @@ class SitePagesTest < ActionDispatch::IntegrationTest
     assert_select ".prose .diagram svg"
     assert_select ".proof-note a[href=?]", hire_path(anchor: "mcp-server")
     assert_select ".proof-note", /from \$150/
+    assert_select ".rail a.button[href=?]", "https://gutenberg-mcp.onrender.com", text: "Try it live"
+  end
+
+  test "the course is reachable from the home page and the writing index" do
+    BlogPost.create!(title: "A post", content: "Hello", slug: "a-post", published_at: 1.hour.ago)
+    get root_path
+    assert_select ".home-writing a[href=?]", course_path("evals-in-production")
+    get blog_path
+    assert_select ".rail a[href=?]", course_path("evals-in-production")
   end
 
   test "a project without an offer has no proof note" do

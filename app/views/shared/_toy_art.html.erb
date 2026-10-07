@@ -106,71 +106,72 @@
     </g>
   </svg>
 <% when "marginalia" %>
-  <%# An open book. One line gets found and checked. %>
+  <%# An open book, and a magnifying glass finding a line in it. %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-    <path class="art-stroke" d="M14 30 Q37 22 60 32 V96 Q37 86 14 94 Z M106 30 Q83 22 60 32 V96 Q83 86 106 94 Z"/>
-    <path class="art-stroke art-thin art-soft" d="M24 46 H50 M24 56 H50 M24 76 H50 M70 46 H96 M70 56 H96 M70 66 H96 M70 76 H96"/>
-    <path class="art-stroke art-thin" d="M24 66 H50"/>
-    <rect class="art-fill art-soft" x="22" y="61" width="30" height="9" rx="3"/>
-    <path class="art-stroke art-draw" pathLength="100" d="M74 94 L82 102 L98 84"/>
+    <path class="art-stroke" d="M12 30 Q36 20 60 32 V98 Q36 86 12 96 Z"/>
+    <path class="art-stroke" d="M108 30 Q84 20 60 32 V98 Q84 86 108 96 Z"/>
+    <path class="art-stroke art-soft" d="M24 48 H48 M24 60 H48 M24 72 H48 M72 48 H96 M72 72 H96"/>
+    <path class="art-stroke" d="M72 60 H96"/>
+    <circle class="art-fill art-soft art-star" cx="84" cy="60" r="13"/>
+    <circle class="art-stroke" cx="84" cy="60" r="17"/>
+    <path class="art-stroke" d="M96 72 L110 86" stroke-width="5"/>
   </svg>
 <% when "gutenberg-mcp" %>
-  <%# Numbered lines of a book, a quotation mark, and a bar scanning down to find the quote. %>
+  <%# A quotation, and the check that says it really is in the book. %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-    <g class="art-fill art-soft"><rect x="20" y="30" width="7" height="4" rx="2"/><rect x="20" y="46" width="7" height="4" rx="2"/><rect x="20" y="62" width="7" height="4" rx="2"/><rect x="20" y="78" width="7" height="4" rx="2"/><rect x="20" y="94" width="7" height="4" rx="2"/></g>
-    <path class="art-stroke art-thin art-soft" d="M34 32 H92 M34 48 H80 M34 64 H96 M34 80 H74 M34 96 H88"/>
-    <rect class="art-fill art-soft art-scan" x="16" y="24" width="88" height="16" rx="4"/>
-    <path class="art-fill" d="M70 10 q-6 0 -8 6 q-1 4 2 7 q3 3 7 1 q0 5 -5 8 q6 -1 9 -7 q2 -5 -1 -11 q-2 -4 -4 -4z M86 10 q-6 0 -8 6 q-1 4 2 7 q3 3 7 1 q0 5 -5 8 q6 -1 9 -7 q2 -5 -1 -11 q-2 -4 -4 -4z"/>
-    <path class="art-stroke art-draw" pathLength="100" d="M86 102 L94 110 L110 92"/>
+    <path class="art-fill" d="M38 34 a9 9 0 1 1 -9 9 c0 10 -6 16 -14 18 v-6 c4 -2 7 -5 8 -10 a9 9 0 0 1 15 -11z"/>
+    <path class="art-fill" d="M70 34 a9 9 0 1 1 -9 9 c0 10 -6 16 -14 18 v-6 c4 -2 7 -5 8 -10 a9 9 0 0 1 15 -11z"/>
+    <path class="art-stroke" d="M22 76 H74 M22 92 H60"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M74 94 L88 108 L112 78" stroke-width="5"/>
   </svg>
 <% when "lichess-mcp" %>
-  <%# A corner of a board. The dashed arrow is the move played; the solid one, drawn in, is the move the engine liked. %>
+  <%# A pawn on the board. The move the engine liked draws itself in; the move played fades behind it. %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
     <g class="art-fill art-soft">
-      <rect x="16" y="24" width="20" height="20"/><rect x="56" y="24" width="20" height="20"/>
-      <rect x="36" y="44" width="20" height="20"/><rect x="76" y="44" width="20" height="20"/>
-      <rect x="16" y="64" width="20" height="20"/><rect x="56" y="64" width="20" height="20"/>
-      <rect x="36" y="84" width="20" height="20"/><rect x="76" y="84" width="20" height="20"/>
+      <rect x="14" y="16" width="30" height="30"/><rect x="74" y="16" width="30" height="30"/>
+      <rect x="44" y="46" width="30" height="30"/>
+      <rect x="14" y="76" width="30" height="30"/><rect x="74" y="76" width="30" height="30"/>
     </g>
-    <rect class="art-stroke art-thin" x="16" y="24" width="80" height="80" rx="2"/>
-    <path class="art-fill" d="M38 76 c0 -8 6 -12 12 -12 l2 -6 l4 4 c4 1 6 4 6 9 c0 5 -3 8 -6 10 c6 6 6 12 2 14 h-24 c-4 -2 -3 -8 4 -14 c-4 -2 -5 -4 0 -5z"/>
-    <path class="art-stroke art-thin art-slide" d="M46 56 L82 32"/>
-    <path class="art-stroke art-draw" pathLength="100" d="M46 56 L76 70 M68 72 L76 70 L74 62"/>
-    <path class="art-stroke art-thin" d="M98 12 h12 a4 4 0 0 1 4 4 v8 a4 4 0 0 1 -4 4 h-6 l-4 4 v-4 h-2 a4 4 0 0 1 -4 -4 v-8 a4 4 0 0 1 4 -4z"/>
+    <rect class="art-stroke" x="14" y="16" width="90" height="90" rx="3"/>
+    <circle class="art-fill" cx="29" cy="76" r="9"/>
+    <path class="art-fill" d="M23 84 h12 l4 12 h-20z"/>
+    <rect class="art-fill" x="16" y="96" width="26" height="6" rx="2"/>
+    <path class="art-stroke art-slide art-soft" d="M46 88 H90" stroke-width="4"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M44 70 L82 32 M64 32 H84 V52" stroke-width="4"/>
   </svg>
 <% when "nyc-open-data-mcp" %>
-  <%# A skyline, and the city's numbers rising out of it. %>
+  <%# A map pin on the city grid. %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-    <path class="art-stroke art-thin art-soft" d="M12 104 V72 H28 V58 H40 V80 H52 V40 H66 V64 H78 V50 H92 V76 H108 V104"/>
-    <path class="art-stroke art-thin" d="M8 104 H112"/>
-    <rect class="art-fill art-bar" x="30" y="66" width="12" height="38" rx="3"/>
-    <rect class="art-fill art-bar" x="54" y="46" width="12" height="58" rx="3"/>
-    <rect class="art-fill art-bar" x="78" y="56" width="12" height="48" rx="3"/>
-    <path class="art-fill art-pop" d="M96 14 a9 9 0 0 1 9 9 c0 7 -9 17 -9 17 s-9 -10 -9 -17 a9 9 0 0 1 9 -9z"/>
-    <circle class="art-fill art-star" cx="22" cy="22" r="3"/>
+    <path class="art-stroke art-soft" d="M14 34 H106 M14 60 H106 M14 86 H106 M34 14 V106 M60 14 V106 M86 14 V106"/>
+    <g class="art-bob">
+      <path class="art-fill" d="M60 20 a22 22 0 0 1 22 22 c0 16 -22 42 -22 42 s-22 -26 -22 -42 a22 22 0 0 1 22 -22z"/>
+      <circle class="art-stroke" cx="60" cy="42" r="8" style="stroke: var(--hue, currentColor);"/>
+    </g>
+    <ellipse class="art-fill art-soft" cx="60" cy="92" rx="14" ry="4"/>
   </svg>
 <% when "second-draft" %>
-  <%# A paragraph. One sentence is struck out and its replacement is being written. %>
+  <%# A pencil striking one line and writing the next. %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-    <path class="art-stroke art-thin art-soft" d="M18 30 H96 M18 44 H88 M18 86 H92 M18 100 H70"/>
-    <path class="art-stroke art-thin" d="M18 58 H84"/>
-    <path class="art-stroke" d="M14 58 L88 58" stroke-dasharray="0" opacity="0"/>
-    <path class="art-stroke art-draw" pathLength="100" d="M12 60 Q50 52 90 59"/>
-    <path class="art-stroke art-draw" pathLength="100" d="M18 72 H64"/>
-    <path class="art-fill" d="M92 12 v22 h4 v-22 h3 v-4 h-13 a6 6 0 0 0 0 12 v14 h4 v-22z"/>
+    <path class="art-stroke art-soft" d="M16 32 H84 M16 86 H60"/>
+    <path class="art-stroke" d="M16 50 H74"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M12 52 Q30 44 48 51 T80 49"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M16 68 H62"/>
+    <g class="art-tumble">
+      <path class="art-fill" d="M62 68 L72 58 L104 90 L94 100z"/>
+      <path class="art-fill art-soft" d="M62 68 L72 58 L78 64 L68 74z"/>
+      <path class="art-stroke" d="M94 100 L104 90 L110 104z"/>
+    </g>
   </svg>
 <% when "llm-eval-starter" %>
-  <%# A golden set: three cases, two pass, one fails, and the gate at the bottom. %>
+  <%# A golden set: two cases pass, one fails, and the gate holds. %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-    <rect class="art-stroke art-thin" x="18" y="18" width="16" height="16" rx="4"/>
-    <rect class="art-stroke art-thin" x="18" y="46" width="16" height="16" rx="4"/>
-    <rect class="art-stroke art-thin" x="18" y="74" width="16" height="16" rx="4"/>
-    <path class="art-stroke art-thin art-soft" d="M44 26 H98 M44 54 H86 M44 82 H94"/>
-    <path class="art-stroke art-draw" pathLength="100" d="M21 26 L25 30 L32 21"/>
-    <path class="art-stroke art-draw" pathLength="100" d="M21 54 L25 58 L32 49"/>
-    <path class="art-stroke" d="M22 78 L30 86 M30 78 L22 86"/>
-    <rect class="art-fill art-soft" x="18" y="100" width="84" height="6" rx="3"/>
-    <rect class="art-fill art-bar art-bar--mid" x="18" y="100" width="58" height="6" rx="3" style="transform-origin: left center;"/>
+    <rect class="art-stroke" x="16" y="18" width="22" height="22" rx="5"/>
+    <rect class="art-stroke" x="16" y="50" width="22" height="22" rx="5"/>
+    <rect class="art-stroke" x="16" y="82" width="22" height="22" rx="5"/>
+    <path class="art-stroke art-soft" d="M50 29 H104 M50 61 H92 M50 93 H100"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M20 30 L26 36 L36 22"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M20 62 L26 68 L36 54"/>
+    <path class="art-stroke" d="M21 87 L33 99 M33 87 L21 99"/>
   </svg>
 <% when "chat" %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">

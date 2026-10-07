@@ -362,8 +362,8 @@ a.row:hover .row-title::after, a.row:focus-visible .row-title::after { opacity: 
 /* A drawing in place of a screenshot: the project's hue as the ground, the
    drawing in ink, same animations as the playground tiles. */
 .card-art { display: grid; place-items: center; aspect-ratio: 16 / 10; background: var(--hue, var(--accent)); color: var(--ground); border-bottom: 2px solid var(--line); border-radius: calc(0.6rem - 2px) calc(0.6rem - 2px) 0 0; overflow: hidden; }
-.card-art svg { display: block; width: 44%; height: auto; }
-.cards li:nth-child(-n+2) .card-art svg { width: 34%; }
+.card-art svg { display: block; width: 52%; height: auto; }
+.cards li:nth-child(-n+2) .card-art svg { width: 40%; }
 .card-body { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.7rem 0.85rem 0.85rem; }
 .card-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 0.6rem; }
 .card-title { --casl: 0.8; font-size: 1rem; font-weight: 750; line-height: 1.2; }
@@ -977,7 +977,7 @@ pre code { font-size: 0.82rem; }
 .offers li:nth-child(even) .offer-card { rotate: 0.7deg; }
 .offer-card::before { content: ""; position: absolute; top: -0.6rem; left: 1.4rem; width: 3.5rem; height: 1rem; background: var(--accent); opacity: 0.8; border-radius: 0.15rem; transform: rotate(-3deg); }
 .offer-card:hover, .offer-card:focus-visible { rotate: 0deg; translate: 0 -0.3rem; border-color: var(--accent); box-shadow: var(--press-up); }
-.offer-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
+.offer-card-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.1rem 0.75rem; }
 .offer-card-title { --casl: 0.8; font-size: 1.12rem; font-weight: 800; line-height: 1.2; }
 .offer-card-price { --casl: 1; color: var(--accent); font-weight: 900; white-space: nowrap; }
 .offer-card-text { color: var(--ink-2); font-size: 0.9rem; line-height: 1.4; text-wrap: pretty; }
@@ -986,8 +986,23 @@ pre code { font-size: 0.82rem; }
 .offer h2 { margin-top: 0; }
 .offer .stats { margin: 1.25rem 0 1.5rem; }
 .offer .facts { margin-top: 1.25rem; }
-.proofs { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; padding: 0; margin: 0; }
-.proofs li { display: flex; align-items: center; gap: 0.45rem; margin: 0; }
+.offer-pitch { --casl: 0.6; font-size: 1.15rem; font-weight: 650; color: var(--accent); margin-top: -0.35rem; text-wrap: pretty; }
+.offer h3 { --mono: 1; --casl: 0; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin: 1.75rem 0 0.6rem; }
+.offer-card--course { border-style: dashed; }
+.offer-card--course::before { background: var(--sky); }
+/* A list of what ships, each line with a check. */
+.checks { list-style: none; padding: 0; margin: 0 0 1rem; }
+.checks li { position: relative; padding-left: 1.6rem; margin-bottom: 0.4rem; }
+.checks li::before { content: "✓"; position: absolute; left: 0; top: 0; --casl: 1; color: var(--accent); font-weight: 900; }
+/* Examples: the projects that show an offer working, each with its drawing. */
+.examples { list-style: none; padding: 0; margin: 0 0 0.5rem; }
+.examples li { display: flex; align-items: center; gap: 0.8rem; margin: 0; padding: 0.6rem 0; border-bottom: 2px dashed var(--line); }
+.examples li:last-child { border-bottom: 0; }
+.examples .mini-art { width: 2.8rem; height: 2.8rem; border-radius: 0.65rem; text-decoration: none; }
+.examples .mini-art:hover { background: var(--hue); transform: rotate(-4deg); }
+.example-text { flex: 1 1 12rem; font-size: 0.95rem; line-height: 1.4; }
+.example-title { font-weight: 750; }
+.examples .button { flex: 0 0 auto; white-space: nowrap; }
 @media (max-width: 600px) { .offers { grid-template-columns: minmax(0, 1fr); } }
 
 /* Small screens */

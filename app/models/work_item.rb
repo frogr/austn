@@ -9,7 +9,8 @@
 #   screenshot_alt (what the screenshot shows),
 #   hue (sun | sky | clay | moss | plum), art (true to show the drawing from
 #   shared/_toy_art instead of the screenshot on cards and in the rail),
-#   offer (slug of the offer on /hire this project is the sample for)
+#   offer (slug of the offer on /hire this project is the sample for),
+#   demo_url (where the thing runs, for a Try it button)
 class WorkItem
   include MarkdownDocument
 
@@ -47,6 +48,14 @@ class WorkItem
   def hue = attributes.fetch("hue", "sun")
   # True when shared/_toy_art has a drawing for this slug and the pages should use it.
   def art? = attributes["art"] == true
+  # Where the project runs, for the Try it button. Only https links are shown.
+  def demo_url
+    url = attributes["demo_url"]
+    url if url.present? && URI.parse(url).is_a?(URI::HTTPS)
+  rescue URI::InvalidURIError
+    nil
+  end
+
   # The offer on /hire this project is the worked sample for, if any.
   def offer
     Offer.find(attributes["offer"]) if attributes["offer"]

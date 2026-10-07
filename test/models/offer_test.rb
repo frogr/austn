@@ -13,11 +13,11 @@ class OfferTest < ActiveSupport::TestCase
     assert_equal Offer.all.map(&:slug).uniq, Offer.all.map(&:slug)
   end
 
-  test "every offer's proof points at a case study that exists" do
+  test "every offer's examples point at side projects that exist" do
     Offer.all.each do |offer|
-      assert Array(offer.attributes["proof"]).any?, "#{offer.slug} has no proof"
-      Array(offer.attributes["proof"]).each do |slug|
-        assert WorkItem.find_by_slug(slug), "#{offer.slug} lists #{slug} as proof, which isn't in content/work"
+      assert Array(offer.attributes["examples"]).any?, "#{offer.slug} has no examples"
+      Array(offer.attributes["examples"]).each do |slug|
+        assert WorkItem.find_by_slug(slug), "#{offer.slug} lists #{slug} as an example, which isn't in content/work"
       end
       Course.find(offer.course_slug) if offer.course_slug
     end
@@ -34,7 +34,7 @@ class OfferTest < ActiveSupport::TestCase
 
   test "a starting price shows as from $X, and no price at all says it's scoped per project" do
     assert_equal "from $1,500", Offer.new("from_price" => 1500).price_label
-    assert_equal "Scoped per project", Offer.new("from_price" => nil).price_label
+    assert_equal "Priced after a call", Offer.new("from_price" => nil).price_label
     assert_equal "$750", Offer.new("price" => 750, "from_price" => 100).price_label
   end
 end

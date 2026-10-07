@@ -48,15 +48,24 @@ class SiteContentTest < ActiveSupport::TestCase
     WorkItem.all.each { |item| item.offer } # raises if an offer slug is wrong
   end
 
-  test "every offer's proof is a case study, and the case studies point back" do
+  test "every offer's examples are side projects, and the case studies point back" do
     Offer.all.each do |offer|
-      offer.proof.each do |item|
-        assert item.title.present?
-      end
+      assert offer.pitch.present?, "#{offer.slug} has no pitch"
+      assert offer.you_get.any?, "#{offer.slug} has no you_get list"
+      offer.examples.each { |item| assert_equal "project", item.kind, "#{offer.slug} lists #{item.slug}, which isn't a side project" }
     end
     WorkItem.all.select(&:offer).each do |item|
-      assert_includes item.offer.proof.map(&:slug), item.slug, "#{item.slug} says it is proof for #{item.offer.slug}, but that offer doesn't list it"
+      assert_includes item.offer.examples.map(&:slug), item.slug, "#{item.slug} says it is an example for #{item.offer.slug}, but that offer doesn't list it"
     end
+  end
+
+  test "case studies don't carry hedging sections, and demo links are https" do
+    WorkItem.all.each do |item|
+      assert_no_match(/^## .*not verified/i, item.body, "#{item.slug} has a 'not verified' section")
+      assert_no_match(/^## .*not checked/i, item.body, "#{item.slug} has a 'not checked' section")
+    end
+    assert_equal "https://gutenberg-mcp.onrender.com", WorkItem.find("gutenberg-mcp").demo_url
+    assert_nil WorkItem.new(slug: "x", attributes: { "title" => "x", "demo_url" => "javascript:alert(1)" }, body: "").demo_url
   end
 
   test "legacy project ids point at one case study each" do

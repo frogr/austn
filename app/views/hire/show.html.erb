@@ -1,46 +1,56 @@
 <% page_title "Hire me" %>
-<% page_description "Fixed-scope AI projects from Austin French: custom MCP servers, RAG and agent builds, and a one-week eval setup sprint. Each ships with tests and the numbers." %>
+<% page_description "Fixed-scope AI projects from Austin French: MCP servers for your data, answers that cite their sources, agents that show their work, and a one-week eval setup. Tested before you see it." %>
 <% content_for :wide, true %>
+<% course = Course.find("evals-in-production") %>
 
 <div class="page-grid">
   <h1>Hire me</h1>
-  <p class="lede">I take small, fixed-scope AI projects: MCP servers, search and answers over your documents, agents, and evals. Each one ships with tests, the numbers, and a plain list of what wasn't verified.</p>
+  <p class="lede">I build the AI features that have to be right. Tools your assistant can call. Answers that cite the page they came from. Agents that show their work. Fixed scope, a fixed price, and tested before you see it.</p>
 
   <aside class="rail">
     <p class="rail-title">Start here</p>
     <%= link_to "Book a 30-minute call", book_path, class: "button" %>
-    <p class="muted">Or email <%= mail_to Profile.email %> with what you have in mind. You get a written scope, price and date before any work starts.</p>
+    <p class="muted">Or email <%= mail_to Profile.email %> with what you're building. You get a written scope, a price and a date before any work starts.</p>
     <p class="rail-title">Offers</p>
     <ul>
       <% @offers.each do |offer| %>
         <li><a href="#<%= offer.slug %>"><%= offer.title %></a></li>
       <% end %>
-      <li><a href="#how-i-work">How I work</a></li>
+      <li><a href="#course">The course</a></li>
+      <li><a href="#how-i-work">Why it holds up</a></li>
     </ul>
     <p class="rail-title">Background</p>
-    <p class="muted">Eight years of production engineering, mostly Rails and TypeScript, lately a lot of applied AI. The <%= link_to "resume", resume_path %> has the details.</p>
+    <p class="muted">Eight years of production engineering, mostly Rails and TypeScript, the last two deep in applied AI: RAG, agents, evals and the tools around them. The <%= link_to "resume", resume_path %> has the details.</p>
   </aside>
 
-  <%# The four offers at a glance. Each card jumps to its section below. %>
+  <%# The offers at a glance, plus the course. Each card jumps to its section. %>
   <ul class="offers">
     <% @offers.each do |offer| %>
       <li>
         <a class="offer-card" href="#<%= offer.slug %>">
           <span class="offer-card-top"><span class="offer-card-title"><%= offer.title %></span><span class="offer-card-price"><%= offer.short_price %></span></span>
-          <span class="offer-card-text"><%= offer.lead %></span>
+          <span class="offer-card-text"><%= offer.pitch %></span>
           <span class="offer-card-proof" aria-hidden="true">
-            <% offer.proof.select(&:art?).first(3).each do |item| %>
+            <% offer.examples.select(&:art?).first(3).each do |item| %>
               <span class="mini-art" data-hue="<%= item.hue %>"><%= render "shared/toy_art", slug: item.slug %></span>
             <% end %>
           </span>
         </a>
       </li>
     <% end %>
+    <li>
+      <a class="offer-card offer-card--course" href="#course">
+        <span class="offer-card-top"><span class="offer-card-title"><%= course.title %></span><span class="offer-card-price"><%= number_to_currency(course.price, precision: 0) %></span></span>
+        <span class="offer-card-text">The course. Six lessons on testing LLM features after they ship, for doing the sprint yourself.</span>
+        <span class="offer-card-proof" aria-hidden="true"><span class="mini-art" data-hue="sky"><%= render "shared/toy_art", slug: "llm-eval-starter" %></span></span>
+      </a>
+    </li>
   </ul>
 
   <% @offers.each do |offer| %>
     <section class="offer" id="<%= offer.slug %>" aria-labelledby="<%= offer.slug %>-title">
       <h2 id="<%= offer.slug %>-title"><%= offer.title %></h2>
+      <p class="offer-pitch"><%= offer.pitch %></p>
       <p><%= offer.summary %></p>
 
       <% if offer.tiers.any? %>
@@ -52,38 +62,50 @@
             </li>
           <% end %>
         </ul>
-      <% end %>
-
-      <dl class="facts">
-        <% if offer.tiers.empty? %>
+      <% else %>
+        <dl class="facts">
           <dt>price</dt><dd class="offer-price"><%= offer.price_label %></dd>
           <% if offer.duration %><dt>time</dt><dd><%= offer.duration %></dd><% end %>
+        </dl>
+      <% end %>
+
+      <h3>You get</h3>
+      <ul class="checks">
+        <% offer.you_get.each do |line| %><li><%= line %></li><% end %>
+      </ul>
+
+      <h3>See it working</h3>
+      <ul class="examples offer-examples">
+        <% offer.examples.each do |item| %>
+          <li>
+            <% if item.art? %><a class="mini-art" data-hue="<%= item.hue %>" href="<%= work_item_path(item) %>" aria-hidden="true" tabindex="-1"><%= render "shared/toy_art", slug: item.slug %></a><% end %>
+            <span class="example-text"><%= link_to item.title, work_item_path(item), class: "example-title" %> <span class="muted"><%= item.tagline %></span></span>
+            <% if item.demo_url %><%= link_to "Try it live", item.demo_url, class: "button button--quiet button--small" %><% end %>
+          </li>
         <% end %>
-        <% if offer.includes %><dt>you get</dt><dd><%= offer.includes %></dd><% end %>
-        <dt>proof</dt>
-        <dd class="offer-proof">
-          <ul class="proofs">
-            <% offer.proof.each do |item| %>
-              <li>
-                <% if item.art? %><span class="mini-art" data-hue="<%= item.hue %>" aria-hidden="true"><%= render "shared/toy_art", slug: item.slug %></span><% end %>
-                <%= link_to item.title, work_item_path(item) %>
-              </li>
-            <% end %>
-            <% if offer.course_slug %>
-              <li>and my course, <%= link_to Course.find(offer.course_slug).title, course_path(offer.course_slug) %></li>
-            <% end %>
-          </ul>
-        </dd>
-      </dl>
+        <% if offer.course %>
+          <li>
+            <span class="mini-art" data-hue="sky" aria-hidden="true"><%= render "shared/toy_art", slug: "llm-eval-starter" %></span>
+            <span class="example-text"><%= link_to offer.course.title, course_path(offer.course), class: "example-title" %> <span class="muted">The course version of this sprint, for doing it yourself.</span></span>
+          </li>
+        <% end %>
+      </ul>
     </section>
   <% end %>
 
+  <section class="offer" id="course" aria-labelledby="course-title">
+    <h2 id="course-title">Or learn it: <%= course.title %></h2>
+    <p class="offer-pitch">The eval sprint as a course, <%= number_to_currency(course.price, precision: 0) %>.</p>
+    <p><%= course.summary %> <%= course.lessons.size %> written lessons, each with code you run, in TypeScript and Rails. It starts from the free <%= link_to "LLM eval starter", work_item_path("llm-eval-starter") %> and takes the same feature into production.</p>
+    <p><%= link_to "See the course", course_path(course), class: "button button--small" %></p>
+  </section>
+
   <section class="offer" id="how-i-work" aria-labelledby="how-i-work-title">
-    <h2 id="how-i-work-title">How I work</h2>
-    <p>One rule runs through every project here: code decides what's true, and a model ranks, explains and writes on top of that.</p>
+    <h2 id="how-i-work-title">Why it holds up</h2>
+    <p class="offer-pitch">One rule runs through every project: code decides what's true, and the model works on top of it.</p>
 
     <figure class="figure">
-      <div class="diagram" role="img" aria-label="Two rows. The bottom row is deterministic code: what the data says, what the engine says, whether a quote is in the text, and tests. Arrows go up to the top row, where a model ranks, explains and writes. A validator between them checks every claim against a source before a person sees it.">
+      <div class="diagram" role="img" aria-label="Two rows. The bottom row is deterministic code: your data, retrieval, computing with an engine or rules, checking a quote against the text, and evals. Arrows go up to the top row, where a model ranks, explains and writes. A validator between them checks every claim against a source before a person sees it.">
         <svg viewBox="0 0 680 210" width="680" xmlns="http://www.w3.org/2000/svg">
           <defs><marker id="hw-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z"/></marker></defs>
           <text class="label" x="10" y="20">above: the only places a model runs</text>
@@ -109,7 +131,7 @@
           <path class="edge" d="M605 76 V140" marker-end="url(#hw-arrow)"/>
         </svg>
       </div>
-      <figcaption>The bottom row is code with tests. The top row is where a model earns its keep. The validator is what lets a model's sentence reach a person.</figcaption>
+      <figcaption>The bottom row is code with tests. The top row is where the model earns its keep. The validator is what lets a model's sentence reach a person.</figcaption>
     </figure>
 
     <% @how_i_work.each do |point| %>
@@ -119,5 +141,5 @@
   </section>
 
   <h2>Next step</h2>
-  <p>Tell me what you're building and what's in the way. <%= link_to "Book a 30-minute call", book_path %> or <%= mail_to Profile.email, "email me" %>.</p>
+  <p>Tell me what you're building and what's in the way. <%= link_to "Book a 30-minute call", book_path, class: "button" %> or <%= mail_to Profile.email, "email me" %>.</p>
 </div>

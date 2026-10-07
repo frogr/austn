@@ -18,36 +18,21 @@ screenshot: /work/thumbs/second-draft.webp
 screenshot_alt: "Second Draft coaching a short fiction draft: highlights in the text and a first fix card with a before and after"
 ---
 
-Most writing feedback is vague. "Tighten this." "Show, don't tell." Second Draft is a coach that has to point. Paste a draft of up to 3,000 words, pick a goal (tighter, more vivid, clearer, more like you), and you get the three fixes that would change the piece most. Each one quotes a sentence you wrote, shows a before and after, says why it matters, and gives you a short exercise. Revise, run it again, and watch the numbers move.
+Most writing feedback is vague. "Tighten this." "Show, don't tell." I wanted a coach that has to point. Paste a draft of up to 3,000 words, pick a goal (tighter, more vivid, clearer, more like you), and you get the three fixes that would change the piece most. Each one quotes a sentence you wrote, shows a before and after, says why it matters, and gives you a short exercise. Revise, run it again, and watch the numbers move.
 
-It's also my worked example of an agent that can't lie about its evidence. The model picks and explains. Code measures the text, and code checks every quote the model makes before you see it.
-
-## What you see
-
-<ol class="chat">
-  <li class="chat-you"><span class="chat-who">You</span><p>Paste a fiction opening. Goal: more vivid.</p></li>
-  <li class="chat-tool"><span class="chat-who">The coach calls</span><code><b>analyze_draft</b>() → 11 detectors, findings with character offsets. Then <b>get_findings</b>, <b>get_sentences</b>, <b>submit_coaching</b>.</code></li>
-  <li class="chat-result"><span class="chat-who">The validator checks</span>
-    <dl>
-      <dt>fix 1</dt><dd>Quotes sentence 1. The quote is in that sentence, verbatim. Kept.</dd>
-      <dt>fix 2</dt><dd>Quotes sentence 6. Verbatim. Kept.</dd>
-      <dt>fix 3</dt><dd>Quotes a sentence that doesn't contain those words. Rejected. One repair turn, then dropped if it fails again.</dd>
-    </dl>
-  </li>
-  <li class="chat-them"><span class="chat-who">The page shows</span><p>Your draft with the quoted sentences highlighted and numbered. Beside it, three cards: the sentence, a before and after, why it matters, and an exercise. Below, metrics with bars across your drafts, and the trace of every tool call.</p></li>
-</ol>
+Three fixes at a time is the whole idea. A wall of red makes people close the tab. Three things you can do today gets a second draft written.
 
 <figure class="figure">
   <img src="/work/second-draft-1-coached.webp" alt="A fiction draft with highlighted sentences on the left, and on the right the first fix card: swap the stock phrase dark and stormy night, with before, after and an exercise" width="1280" height="800" loading="lazy">
-  <figcaption>The deterministic coach, no API key. The "after" keeps a bracketed prompt where only the writer knows the answer.</figcaption>
+  <figcaption>A fiction opening, coached. The first fix quotes sentence one, strikes the stock phrase, and leaves a bracketed prompt where only the writer knows the answer.</figcaption>
 </figure>
 
 ## What it's for
 
-- **Writers revising a draft.** A story opening, an essay, a cover letter. Three fixes at a time is on purpose: enough to act on, not a wall of red.
-- **Teachers**, who want feedback that students can check against their own text instead of taking on faith.
+- **Writers revising a draft.** A story opening, an essay, a cover letter. Pick the goal and get three concrete moves.
+- **Teachers**, who want feedback students can check against their own text instead of taking on faith.
 - **Anyone who writes for work.** The "clearer" goal leans on passive voice, hedges, filler and dense sentences, which is most of what makes a memo hard to read.
-- **A pattern for agents that cite.** Any agent that quotes a document, a log or a record can use the same validator: the quote has to be in the place it says it is, or it doesn't ship. That's the <a href="/hire#agent">agent build</a> on my hire page.
+- **Any agent that edits text someone else wrote.** The validator here is the reusable part: a quote has to be in the place it says it is, or it doesn't ship. That's the <a href="/hire#agent">agent build</a> on my hire page.
 
 ## Deterministic below, probabilistic above
 
@@ -71,7 +56,7 @@ It's also my worked example of an agent that can't lie about its evidence. The m
       <path class="edge" d="M280 154 H308" marker-end="url(#sd-arrow)"/>
       <path class="edge" d="M240 132 L450 76" marker-end="url(#sd-arrow)"/>
       <path class="edge" d="M420 132 L470 76" marker-end="url(#sd-arrow)"/>
-      <path class="edge" d="M540 52 H568" marker-end="url(#sd-arrow)"/>
+      <path class="edge" d="M550 52 H568" marker-end="url(#sd-arrow)"/>
       <text class="label" x="130" y="196">if the agent fails, the deterministic coach answers and the page says so</text>
     </svg>
   </div>
@@ -90,23 +75,17 @@ It's also my worked example of an agent that can't lie about its evidence. The m
 
 ## The eval, with the error list
 
-The eval set is 25 synthetic passages (fiction, cover letters, essays, business notes, four clean controls) with 106 labeled problems, labeled from an editor's point of view before the detectors were run. Overall the detectors find 86% of the labels, and 88% of what they flag is right.
+The eval set is 25 synthetic passages (fiction, cover letters, essays, business notes, four clean controls) with 106 labeled problems, labeled from an editor's point of view before the detectors were run. The detectors find 86% of the labels, and 88% of what they flag is right.
 
-That precision used to be 82%. Reading all 20 false positives, 12 came from the repeated-word detector: names at the start of a sentence, repetition a writer did on purpose ("every summer ... every summer"), and nouns that name the subject. Fixing the first two, dropping an opening-line rule whose 3 findings were all wrong, and one fix to passive voice got it to 12 false positives. Repeated words is still the weakest detector at 43% precision. Telling a clumsy echo from a needed noun takes meaning, which is the model's job, so it carries the lowest weight.
+That precision used to be 82%, and the way it got better is my favourite part of the project. Reading all 20 false positives, 12 came from the repeated-word detector: names at the start of a sentence, repetition a writer did on purpose ("every summer ... every summer"), and nouns that name the subject. Fixing the first two, dropping an opening-line rule whose 3 findings were all wrong, and one fix to passive voice got it to 12 false positives. Repeated words is still the weakest detector at 43% precision. Telling a clumsy echo from a needed noun takes meaning, which is the model's job, so it carries the lowest weight.
 
-The citation validator was tested by planting 887 bad citations of the kinds a model plausibly makes. It catches all of them by construction, so the useful number was the other direction: on its first run it rejected 2 of 269 good citations, because a punctuation-only rewrite looked unchanged. That's fixed, with a test.
+The citation validator was tested by planting 887 bad citations of the kinds a model plausibly makes. It catches all of them by construction, so the useful number was the other direction: on its first run it rejected 2 of 269 good citations, because a punctuation-only rewrite looked unchanged. That's fixed, with a test. 99 tests in all, including the agent loop against mocked Anthropic and OpenAI responses, turn by turn, with the 401, 429 and 5xx paths.
 
-The set is small, and the passages and the detectors were written in the same project. Treat it as a regression harness and an honest error list, not a benchmark.
+The set is small, and I wrote both the passages and the detectors. It's a regression harness and an honest error list, which is what I'd want from a tool before I trusted it with my own drafts.
 
-## Where it could go
+## What's next
 
-Plans, not features.
-
-- **Run the agent with a real key** and measure how often its citations pass the validator on the first try. The whole design rests on that number, and it's still unknown.
-- **A house style as a goal.** Feed it a few pieces you like and let the "more like you" goal learn from them, with the same checks.
+- **Run the agent with a real key** and measure how often its citations pass the validator first time. The whole design rests on that number.
+- **A house style as a goal.** Feed it a few pieces you like and let "more like you" learn from them, with the same checks.
 - **Longer work**, chapter by chapter, with progress across the whole thing instead of one draft.
 - **The same loop for other documents.** A support reply, a report, a policy. Any agent that edits text someone else wrote should quote the line it's changing.
-
-## What's not verified
-
-The live model path is tested only against mocked Anthropic and OpenAI responses, turn by turn, including 401, 429 and 5xx handling. No real model has coached a draft yet. It hasn't been deployed, and CI hasn't run on GitHub yet, though the same commands pass locally. 99 tests.

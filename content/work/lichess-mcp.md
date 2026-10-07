@@ -18,11 +18,11 @@ screenshot: /work/thumbs/lichess-mcp.webp
 screenshot_alt: "The Lichess MCP playground: a request to review a player's last game, the two tool calls it becomes, the mistakes Lichess flagged, and the line Claude can now say"
 ---
 
-Language models are fluent about chess and often wrong about it. They suggest illegal moves, miss one-move tactics, and give confident evaluations no engine would agree with, in the same tone as when they're right. For a coach, that's the worst kind of error, because the student can't tell.
+Language models are fluent about chess and often wrong about it. They suggest illegal moves, miss one-move tactics, and give confident evaluations no engine would agree with, in the same tone as when they're right. For a coach, that's the worst kind of error, because the student can't tell. I've built two chess coaches now (<a href="/work/coach-rook">Coach Rook</a> was the first), and both run on the same rule: the model never does the chess.
 
-So this server draws a hard line. It's an MCP server (Model Context Protocol, the open standard that lets AI apps like Claude and Cursor call outside tools) for Lichess, the free, open-source chess site. It gives the assistant a player's games, the mistakes Lichess's engine flagged in them, cloud evaluations, exact endgame results and puzzles. The model never does the chess. It reads what Lichess said and talks to you about it.
+This one is an MCP server for Lichess, the free, open-source chess site. MCP (Model Context Protocol) is the open standard that lets AI apps like Claude and Cursor call outside tools. It gives the assistant a player's games, the mistakes Lichess's engine flagged in them, cloud evaluations, exact endgame results and puzzles. The model reads what Lichess said and talks to you about it.
 
-## What a conversation looks like
+## Ask it
 
 This one is two tool calls. It ran against live Lichess data on 2026-10-07, on a public account that belongs to Lichess's founder.
 
@@ -48,18 +48,13 @@ This one is two tool calls. It ran against live Lichess data on 2026-10-07, on a
 
 Notice what the model didn't do. It didn't say why Ne4 was bad, because Lichess didn't say. It can ask for the engine's line and explain that, or send you to the analysis board. What it won't do is invent a reason.
 
-<figure class="figure">
-  <img src="/work/lichess-mcp-1-ask.webp" alt="The playground's Ask it section: the review question as a chip, two tool calls, the list of flagged moves with the blunder on move 20, and the line Claude can now say" width="1280" height="800" loading="lazy">
-  <figcaption>The same exchange in the server's web playground, on live data. The last line there is written by code from the result's fields.</figcaption>
-</figure>
-
 ## What it's for
 
 - **Players who want a coach between games.** "Review my last blitz game." "What's my worst opening as Black?" The data is already on Lichess; this puts it in front of an assistant that can talk about it.
 - **Positions, not just games.** Paste a FEN (the standard text format for a chess position) and ask "what does the engine say?" The answer comes from Lichess's cloud evaluation cache, with the depth: after 1. e4 e5 2. Nf3 Nc6 it's depth 65, best move Bb5 at +0.22, then Bc4 at +0.19.
 - **Endgames, exactly.** Positions with seven pieces or fewer go to the tablebase, which is perfect play. King and pawn versus king on e5 and e6: White to move wins, mate in 11; Kd6 and Kf6 win, Kd5 only draws.
 - **Puzzles the way a coach gives them.** "Give me today's puzzle, but don't tell me the answer." The solution stays hidden until you ask, and the tool tells the model not to work it out itself.
-- **A pattern for any judged domain.** Medical codes, legal citations, financial figures: anywhere a model's fluency outruns its accuracy, the same split applies. Something authoritative judges, code keeps the books, the model explains.
+- **Any domain where something authoritative judges.** Medical codes, legal citations, financial figures: wherever a model's fluency outruns its accuracy, the same split applies. Something authoritative judges, code keeps the books, the model explains.
 
 ## Who does what
 
@@ -88,30 +83,30 @@ Notice what the model didn't do. It didn't say why Ne4 was bad, because Lichess 
   <figcaption>Every number in an answer comes from the top row. The code never judges a position, and the model never fills a gap.</figcaption>
 </figure>
 
-It follows the same rule as <a href="/work/coach-rook">Coach Rook</a> and <a href="/work/acoach">aCoach</a>: the model never decides what happened. The difference is where the chess lives. Coach Rook runs its own engine and its own app. This is a thin, tested layer over Lichess for any assistant you already use.
-
+- **Lichess does the chess.** Per-move evaluations and mistake labels come from its server analysis, position evaluations from its cloud cache, and positions with 7 pieces or fewer from the endgame tablebase.
+- **The code does bookkeeping.** chess.js validates positions, replays games and converts engine notation (`e7e5`) to normal notation (`e5`). It never judges a position.
 - **Missing data stays missing.** An unanalysed game or a position the cloud cache doesn't have comes back as "not available" with the next step, and the tool tells the model not to estimate.
 - **Rate limits are respected.** The cloud endpoint rate-limits anonymous callers quickly, so after a 429 the client stops calling Lichess for 60 seconds, the way Lichess asks.
+
+Coach Rook runs its own engine inside its own app. This is a thin, tested layer over Lichess for whatever assistant you already use. Same rule, different place to stand.
+
+## Measured against Lichess's own data
+
+A live check script takes a player's recent games, runs `find_mistakes` on every analysed one, and checks the server's bookkeeping against what Lichess recorded. Across two players, 40 recent games (32 with analysis) and 175 flagged moves: every played move replayed to Lichess's own notation, every best move converted to the move Lichess named, and every engine line was legal from the position before.
+
+The same run taught me that "not available" is the common case, not the edge case. For one player, 8 of 20 recent games had no analysis, and 13 of 15 real mistake positions weren't in the cloud cache. A coach that guessed in those gaps would be guessing most of the time. 96 tests run against recorded Lichess responses, with no network.
+
+## The playground
+
+Every MCP server I build ships with one of these. This one has a board. Enter a username, pick a game, and see the moves Lichess flagged with the move it preferred, drawn as arrows. Below it, today's puzzle with the solution hidden until you ask.
 
 <figure class="figure">
   <img src="/work/lichess-mcp-2-puzzle.webp" alt="Puzzle of the day in the playground: a board with the position, side to move, rating and themes, with Hint and Show solution buttons and the solution hidden" width="1280" height="800" loading="lazy">
   <figcaption>The daily puzzle. The solution stays hidden until you ask, which is how a coach would use it.</figcaption>
 </figure>
 
-## Checked against Lichess's own data
-
-A live check script takes a player's recent games, runs `find_mistakes` on every analysed one, and checks the server's bookkeeping against what Lichess recorded. Across two players, 40 recent games (32 with analysis) and 175 flagged moves: every played move replayed to Lichess's own notation, every best move converted to the move Lichess named, and every engine line was legal from the position before.
-
-The same run showed that "not available" is the common case, not the edge case. For one player, 8 of 20 recent games had no analysis, and 13 of 15 real mistake positions weren't in the cloud cache. On the day of the conversation above, 13 of thibault's last 20 games had analysis.
-
-## Where it could go
-
-Plans, not features.
+## What's next
 
 - **A study plan from a month of games**: the openings where the mistakes cluster, with the positions to drill. All the data is there; it's a tool that calls the other tools.
-- **Opening statistics** with a token. The explorer tool is written and tested against recordings, but Lichess's explorer now requires a token, and I don't have one here.
+- **Opening statistics** with a token. The explorer tool is built and tested against recordings; Lichess's explorer now wants a token to answer.
 - **The same shape for other engines of record**: a sports data API, a credit model, a compliance ruleset. Whatever judges, the model explains it.
-
-## What's checked
-
-95 tests against recorded Lichess responses, with no network. The remote server has the same limits as my other MCP servers: per-IP rate limit, daily cap, body size limit, timeouts. Not checked: `opening_stats` with a real token, a real deploy, the Docker image, and connecting it to Claude Desktop or Cursor. The npm package will be `lichess-coach-mcp`, since `lichess-mcp` is taken by an unrelated project, and it isn't published yet, so for now it installs from GitHub.

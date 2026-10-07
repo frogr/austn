@@ -18,38 +18,21 @@ screenshot: /work/thumbs/marginalia.webp
 screenshot_alt: "A Marginalia answer about the Queen's croquet game in Alice in Wonderland, with a Verified quotes 3/3 badge and the cited passage highlighted"
 ---
 
-Marginalia is a reading companion. You type a question about Pride and Prejudice, Moby-Dick, Dracula, Crime and Punishment or eight other novels, and you get an answer with the passages it came from. Click a citation and the passage opens with the quote highlighted. Every quote has been checked against that passage before you see it.
+Marginalia is a reading companion for twelve novels everyone has heard of and fewer have finished: Pride and Prejudice, Moby-Dick, Dracula, Crime and Punishment, Jane Eyre, Gatsby and six more. Type a question. Get an answer with the passages it came from. Click a citation and the passage opens with the quote highlighted, and a link to read the whole chapter. Every quote has been checked against that passage before you see it, and the page tells you so.
 
-It's also my worked example of RAG (retrieval-augmented generation: find the right passages first, then answer from them) done the way I'd do it for a client. The search is measured on a question set. The quotes are checked by code. The page shows its working. And the write-up says where it's weak.
-
-## What you see
-
-<ol class="chat">
-  <li class="chat-you"><span class="chat-who">You</span><p>What did the Queen use for croquet mallets and balls?</p></li>
-  <li class="chat-tool"><span class="chat-who">Marginalia retrieves</span><code><b>search</b>(query, books: all) → 8 passages, ranked by BM25 with a boost for words that sit together</code></li>
-  <li class="chat-result"><span class="chat-who">Then checks</span>
-    <dl>
-      <dt>answer</dt><dd>"Alice thought she had never seen such a curious croquet-ground in her life; it was all ridges and furrows; the balls were live hedgehogs, the mallets live flamingoes, and the soldiers had to double themselves up and to stand on their hands and feet, to make the arches."</dd>
-      <dt>cites</dt><dd>Alice's Adventures in Wonderland, Chapter VIII: The Queen's Croquet-Ground, passage 1</dd>
-      <dt>verified quotes</dt><dd>3 of 3</dd>
-    </dl>
-  </li>
-  <li class="chat-them"><span class="chat-who">The page shows</span><p>The answer, a "Verified quotes 3/3" badge, and the citation. Open it and the whole passage appears with the quoted sentence highlighted, plus a link to read the chapter.</p></li>
-</ol>
-
-That answer was made with no API key. Without one, the answer is extractive: the sentences from the best passages that best cover the question. With an Anthropic or OpenAI key, a model writes the answer in its own words, and the same checks apply to every quote it uses.
+It's also the clearest example I have of how I think RAG should be built. RAG (retrieval-augmented generation) means find the right passages first, then answer from them. Most demos stop at "it answered." This one measures the search, checks the quotes by code, shows its working on every answer, and tells you where it's weak.
 
 <figure class="figure">
   <img src="/work/marginalia-1-answer.webp" alt="A Marginalia answer: the sentence about live hedgehogs and flamingoes, a Verified quotes 3/3 badge, and the cited passage from chapter VIII open underneath with the quote highlighted" width="1280" height="800" loading="lazy">
-  <figcaption>An answer with no model. The citation opens the passage it came from, with the quote highlighted.</figcaption>
+  <figcaption>"What did the Queen use for croquet mallets and balls?" The answer, the badge, and the passage it came from with the quote highlighted. Made with no model at all.</figcaption>
 </figure>
 
 ## What it's for
 
 - **Reading groups and students.** "Which Bible story does Sonia read to Raskolnikov?" "What did Amy burn after quarreling with Jo?" Answers point at the page, so you can go read it.
-- **Checking a half-remembered line.** Ask it in your own words. If the words don't match, it still finds the scene most of the time, and tells you which passages it looked at.
+- **Checking a half-remembered line.** Ask in your own words. If the words don't match, it still finds the scene most of the time, and shows you which passages it looked at.
 - **Seeing how RAG behaves.** Every answer has a "how this answer was made" panel: the retrieved passages with their scores, how the answer was picked, and how each quote was checked. It's the panel I wish every RAG demo had.
-- **A template for your documents.** Swap the twelve novels for a product manual, a policy library or a contract set, and the same shape applies: measured retrieval, checked citations, a visible trace. That's the <a href="/hire#rag">RAG build</a> on my hire page.
+- **Your documents.** Swap the twelve novels for a product manual, a policy library or a contract set, and the same shape applies: measured retrieval, checked citations, a visible trace. That's the <a href="/hire#rag">answers from your documents</a> offer on my hire page.
 
 ## Three steps
 
@@ -79,12 +62,12 @@ That answer was made with no API key. Without one, the answer is extractive: the
 </figure>
 
 1. **Retrieve.** Paragraph-based chunks of about 240 words that never cross a chapter. Search is BM25, a standard keyword ranking formula, plus a boost when query words sit next to each other, a boost for a book named in the question, and a share of the best neighboring chunk's score.
-2. **Answer.** A model returns JSON where every claim carries exact quotes from numbered passages. Without a key, the answer is extractive.
+2. **Answer.** With an Anthropic or OpenAI key, a model returns JSON where every claim carries exact quotes from numbered passages. Without a key, the answer is extractive: the sentences from the best passages that best cover the question.
 3. **Check.** The validator looks for each quote in the passage it cites, ignoring whitespace, quote-mark style, dashes and case. A quote that fails is shown as unverified, never dropped quietly. A model gets one retry with the failures listed.
 
 <figure class="figure">
   <img src="/work/marginalia-2-working.webp" alt="The How this answer was made panel: eight retrieved passages with scores and BM25 ranks, then how the answer was picked and how quotes are checked" width="1280" height="800" loading="lazy">
-  <figcaption>The "how this answer was made" panel. Every answer has one.</figcaption>
+  <figcaption>The "how this answer was made" panel. Every answer has one, and I open it more than the answer.</figcaption>
 </figure>
 
 ## Measured, including where it's weak
@@ -97,25 +80,19 @@ The eval is 46 questions in four types (direct, paraphrased, no names, and names
 | Shipped config | 34.8% | 58.7% | 65.2% |
 | Shipped config, 12 held-out questions | 41.7% | 58.3% | 58.3% |
 
-The change came from reading every miss. Most fell into two groups. In one, a scene names its people a paragraph before the event, so the chunk with the answer shares no words with the question. Bigger chunks and the neighbor score were aimed at that. In the other, the question is a pure paraphrase ("what advice did Nick's dad give him" vs "criticizing anyone" and "my father"). Keyword search can't fix that without overfitting, and paraphrased questions still only find their passage in the top 10 a quarter of the time. That's what the optional vector search is for, and it's the first thing to measure once there's a key.
+The improvement came from reading every miss, which is the part of this work I like most. The misses fell into two groups. In one, a scene names its people a paragraph before the event, so the chunk with the answer shares no words with the question. Bigger chunks and the neighbor score were aimed at that. In the other, the question is a pure paraphrase ("what advice did Nick's dad give him" against "criticizing anyone" and "my father"). Keyword search can't fix that without overfitting, and paraphrased questions still only find their passage in the top 10 a quarter of the time. That's what the optional vector search is for, and it's the first thing I'll measure with a key.
 
-The held-out set exists because I tuned on the first 46, and it's small: one question there is 8 points. These are numbers for comparing configs on this corpus, not an accuracy claim.
+The held-out set is small: one question there is 8 points. These are numbers for comparing configs on this corpus, not an accuracy claim, and I'd rather say that than round up.
 
-The quote validator is tested the other way around. For each question, the eval plants fake quotes in the passages actually retrieved: invented sentences, one word changed, a real quote cited to the wrong passage, real pieces in the wrong order. It caught 320 of 320, and passed 136 of 136 real quotes. CI fails if either drops. What it can't catch is a real quote attached to a claim it doesn't support. It proves the words are in the book, not that the claim follows from them.
+The quote validator is tested the other way around. For each question, the eval plants fake quotes in the passages actually retrieved: invented sentences, one word changed, a real quote cited to the wrong passage, real pieces in the wrong order. It caught 320 of 320, and passed 136 of 136 real quotes. CI fails if either drops. What it can't catch is a real quote attached to a claim it doesn't support. It proves the words are in the book, not that the claim follows from them. 61 tests, no network.
 
 ## Marginalia and Gutenberg MCP
 
 Both check quotes against the text, and I built both. Marginalia is the app: it retrieves, answers and checks, for twelve books it has already prepared. <a href="/work/gutenberg-mcp">Gutenberg MCP</a> is a tool for someone else's assistant: it checks any quote against any of 75,000 books, and never answers anything itself. If you have a question, use this. If you want Claude to stop misquoting, use that.
 
-## Where it could go
+## What's next
 
-Plans, not features.
-
-- **Run it with a real key** and measure how often a model's quotes pass on the first try. That number is the point of the whole design, and it's still unknown.
-- **Turn on hybrid search** and rerun the eval. The vector path is built and has no numbers yet.
+- **Run it with a real key** and measure how often a model's quotes pass the check on the first try. That number is the point of the whole design.
+- **Turn on hybrid search** and rerun the eval. The vector path is built; the numbers aren't.
 - **More books**, chosen by what people ask. The corpus build is one command.
-- **Your documents instead of novels.** The eval set would come from your real questions, and the validator would check quotes against your sources.
-
-## What's not verified
-
-No real model has answered a question yet: the Anthropic and OpenAI paths are tested against mocked responses only. Hybrid vector search has no eval numbers for the same reason. It hasn't been deployed. 61 tests, no network.
+- **Your documents instead of novels.** The eval set comes from your real questions, and the validator checks quotes against your sources.

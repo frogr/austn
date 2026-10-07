@@ -1,6 +1,6 @@
 ---
 title: Gutenberg MCP
-summary: A tool that lets Claude check a quotation against the real book before repeating it. It covers the 75,000 public-domain books on Project Gutenberg, and it has no model inside.
+summary: Claude checks a quotation against the real book before it repeats it. Any of the 75,000 public-domain books on Project Gutenberg, with line numbers, and no model inside.
 tier: more
 tagline: "Checks whether a quote is really in the book, and where."
 kind: project
@@ -11,6 +11,7 @@ stack: [TypeScript, Node, MCP SDK, Zod, Vitest]
 hue: sun
 art: true
 offer: mcp-server
+demo_url: https://gutenberg-mcp.onrender.com
 links:
   - label: Code on GitHub
     url: https://github.com/frogr/gutenberg-mcp
@@ -18,11 +19,11 @@ screenshot: /work/thumbs/gutenberg-mcp.webp
 screenshot_alt: "The Gutenberg MCP playground: a question about Sherlock Holmes, the quote_check call it becomes, and the result saying the line is not in the book"
 ---
 
-Language models misquote. They smooth out punctuation, swap a word ("Lead on, Macduff" for "Lay on, Macduff"), or credit a line from a film to the book it was based on. It reads right and it's wrong, and it ends up in essays and slides.
+Language models misquote. They smooth out punctuation, swap a word ("Lead on, Macduff" for "Lay on, Macduff"), or credit a line from a film to the book it was based on. It reads right and it's wrong, and it ends up in essays and slides. I wanted a tool that makes that impossible for the books we can all read for free.
 
-This is a tool for that. It's an MCP server (Model Context Protocol, the open standard that lets AI apps like Claude and Cursor call outside tools) for Project Gutenberg, the free library of public-domain books. Once it's connected, you talk to Claude as usual. When a question touches a book, Claude calls a tool, gets the book's own lines back, and answers from those instead of from memory.
+So this is an MCP server for Project Gutenberg. MCP (Model Context Protocol) is the open standard that lets AI apps like Claude and Cursor call outside tools. Once it's connected, you talk to Claude as usual. When a question touches a book, Claude calls a tool, gets the book's own lines back, and answers from those instead of from memory. There's no model inside the server. It reads, counts and compares.
 
-## What a conversation looks like
+## Ask it
 
 The question is yours. The tool call and the result are what happens underneath. This exchange ran against the live server on 2026-10-07.
 
@@ -39,7 +40,7 @@ The question is yours. The tool call and the result are what happens underneath.
   <li class="chat-them"><span class="chat-who">Claude</span><p>No. That line isn't in The Adventures of Sherlock Holmes. The closest the book comes is line 1,113 in "The Red-Headed League": "You could not possibly have come at a better time, my dear Watson." The word "elementary" doesn't appear in that passage. If you want a real Holmes line, I can quote from the text.</p></li>
 </ol>
 
-Here's one that nearly passes. The words are right and the punctuation isn't, which is exactly the kind of error that gets copied into a slide.
+My favourite result is the near miss. The words are right and the punctuation isn't, which is exactly the kind of error that gets copied into a slide and never caught.
 
 <ol class="chat">
   <li class="chat-you"><span class="chat-who">You</span><p>Quote the opening line of Pride and Prejudice exactly.</p></li>
@@ -53,18 +54,15 @@ Here's one that nearly passes. The words are right and the punctuation isn't, wh
   <li class="chat-them"><span class="chat-who">Claude</span><p>Nearly. Austen wrote it with a comma after "acknowledged". The exact line, from lines 673 to 674 of the Gutenberg text: "It is a truth universally acknowledged, that a single man in possession of a good fortune must be in want of a wife."</p></li>
 </ol>
 
-<figure class="figure">
-  <img src="/work/gutenberg-mcp-1-ask.webp" alt="The playground's Ask it section: the Sherlock Holmes question as a chip, the quote_check call, a Not in this book verdict with the closest real passage at line 1113, and the line Claude can now say" width="1280" height="800" loading="lazy">
-  <figcaption>The same exchange in the server's web playground, which runs every tool against the live library. The last line there is written by code from the result's fields, so you can see what the model has to work with.</figcaption>
-</figure>
+You can run both of these, and every other tool, in the <a href="https://gutenberg-mcp.onrender.com">live playground</a>. Or connect it to your own Claude: the playground has the two lines to paste.
 
 ## What it's for
 
 - **Writers and students** who want a quote right before it goes in. Ask for the line, get the line with its line number and chapter.
-- **Editors and fact-checkers**: paste a quote, learn whether it's verbatim, close, or not in the book at all, and what the book says instead.
-- **Reading with an assistant.** "Read me the first stave of A Christmas Carol." "How is A Tale of Two Cities divided?" "Where does the white whale come up in Moby Dick?" The last one returns 108 matches across 32 chapters, thickest in "The Quarter-Deck" and "Moby Dick", 14 each.
-- **Teaching.** Book stats on demand: Pride and Prejudice is 127,999 words, about 9 hours of reading, and the names that come up most are Elizabeth (605), Darcy (385), Miss (315) and Bennet (309).
-- **A building block.** Any app that quotes public-domain text can call `quote_check` before it shows a quote to a person. That's what Marginalia does, in its own way.
+- **Editors and fact-checkers.** Paste a quote, learn whether it's verbatim, close, or not in the book at all, and what the book says instead.
+- **Reading with an assistant.** "Read me the first stave of A Christmas Carol." "How is A Tale of Two Cities divided?" "Where does the white whale come up in Moby Dick?" That last one comes back as 108 matches across 32 chapters, thickest in "The Quarter-Deck" and "Moby Dick", 14 each.
+- **Teaching.** Book stats on demand. Pride and Prejudice is 127,999 words, about 9 hours of reading, and the names that come up most are Elizabeth (605), Darcy (385), Miss (315) and Bennet (309).
+- **Anything that quotes text.** The quote check doesn't care that the source is a novel. Point it at contracts, policies or documentation and it's the same tool. That's the version I'd build for you.
 
 ## How it works
 
@@ -88,16 +86,29 @@ Here's one that nearly passes. The words are right and the punctuation isn't, wh
       <path class="edge edge--fast" d="M500 130 L290 130 L215 114" marker-end="url(#gb-arrow)"/>
     </svg>
   </div>
-  <figcaption>Every tool is deterministic. The server never guesses; it reads, counts and compares.</figcaption>
+  <figcaption>Every tool is deterministic. The server never guesses.</figcaption>
 </figure>
 
 `quote_check` tests a quote against the real text at four levels, strictest first, and reports the first that matches: exact, typography only (curly vs straight quotes, dash styles), case only, or the same words with different punctuation. Every hit comes back with its line numbers, its chapter and the book's own lines. When the quote isn't there, it returns the closest real passage and the words that are missing. A match can't start or end inside a word, and parts joined by `...` are checked in order.
 
 The other five tools are for reading: search the catalog, get a book's chapters, read a passage by chapter or line, find a phrase, and get stats. They give the model stable line numbers, so it can cite.
 
+The part that took longest wasn't the quote check. It was chapters. Gutenberg books print their structure a dozen ways: chapters, letters, staves, acts, scenes, prefaces, roman numerals with and without titles. I built a labeled set of 21 books and kept adding ones that broke the detector until it matched all 21. Two rounds of new books each turned up real misses. The four I never tuned on pass too.
+
+## Measured
+
+- **22 quotations**, 15 real (some with punctuation, case or apostrophes changed on purpose) and 7 well-known misquotes. Against live Gutenberg text, `quote_check` classifies all 22 as labeled. The first run scored 21, and the miss turned out to be a wrong label, not a wrong answer.
+- **21 books** with hand-labeled structure, all detected correctly. Books with unusual headings may still surprise it.
+- **Gutendex is slow when it's cold.** 3 of 10 test searches took 42 to 50 seconds and 2 timed out at 60. So search falls back to gutenberg.org's own search after 8 seconds, and the reading tools never wait on the catalog. Book downloads go to a mirror Project Gutenberg runs, because their robot policy asks programs to stay off the main site.
+- **77 tests** with recorded responses and no network, including the full MCP protocol in memory and the HTTP server with the official SDK client. The remote server has per-IP and daily limits, a body size limit and timeouts.
+
+## The playground
+
+Every MCP server I build ships with one of these. It runs the real tools against the real endpoint, builds each form from the tool's own input schema, and shows the raw JSON next to the friendly view. It's how I test, and it's how you'd show a colleague what the assistant actually gets.
+
 <figure class="figure">
   <img src="/work/gutenberg-mcp-2-runner.webp" alt="The playground's Run a tool section: the find_in_book form on the left with id 2701 and query white whale, and on the right 108 matches across 32 chapters, a bar chart of the chapters with the most mentions, and the first match with its line numbers" width="1280" height="800" loading="lazy">
-  <figcaption>Every tool has a form built from its own input schema, and runs through the real MCP endpoint. This is how I test it by hand.</figcaption>
+  <figcaption>"White whale" in Moby Dick: 108 matches, where they cluster, and the first five with line numbers.</figcaption>
 </figure>
 
 ## Gutenberg MCP and Marginalia
@@ -118,25 +129,9 @@ I built both, and they're easy to mix up. Both check quotes against the text. Th
 
 If you want to ask a question about a novel and get an answer, Marginalia. If you want your own assistant to stop misquoting, this.
 
-## Measured
+## What's next
 
-The eval is a labeled set of 22 quotations, each checked against the source text: 15 real ones (some with punctuation, case or apostrophes changed on purpose) and 7 well-known misquotes. Against live Gutenberg text, `quote_check` classifies all 22 as labeled. That's after one label was corrected: the first run got 21, and the miss turned out to be a wrong label, not a wrong answer.
-
-Chapter detection was harder. The second set is 21 books, each labeled with the structure it prints (chapters, letters, staves, acts, scenes, prefaces), and detection now matches all 21. Most of those books were used to tune the heuristics, and two rounds of new books each turned up real misses that I fixed. Only four books were never used for tuning, and they pass 4 of 4. That's a small sample. Expect misses on books with unusual headings.
-
-Gutendex turned out to be fast for cached searches and very slow otherwise: 3 of 10 test searches took 42 to 50 seconds, and 2 timed out at 60. So search falls back to gutenberg.org's own search after 8 seconds, and the reading tools never wait on the catalog. Book downloads go to a mirror Project Gutenberg runs, because their robot policy asks programs to stay off the main site.
-
-## Where it could go
-
-These are plans, not features.
-
-- **Publish to npm**, so the install is `npx -y gutenberg-mcp` instead of a GitHub clone.
-- **Quote checking across a library**, not one book: "which book is this line from?" The pieces exist, the index doesn't.
-- **A citation format** the model can paste: title, author, chapter, Gutenberg line, link. Right now it returns the parts and the model assembles them.
-- **The same tool for your own texts.** Contracts, policies, documentation. The quote check doesn't care that the source is a novel. That's the version I'd build for a client.
-
-## What's checked, and what isn't
-
-76 tests with recorded responses and no network, including the full MCP protocol in memory and the HTTP server with the official SDK client. The remote server has per-IP and daily limits, a body size limit and timeouts. The playground's stylesheet and font are served by the same server and covered by a test.
-
-Not checked yet: a real deploy, the Docker image, memory use under load on a small instance, and connecting it to Claude Desktop or Cursor (it's tested against the SDK client those apps build on). The npm package isn't published yet, so for now it installs from GitHub.
+- **Publish to npm**, so the install is one short line instead of a GitHub clone.
+- **Which book is this from?** Quote checking across the whole library, not one book at a time.
+- **A citation the model can paste**: title, author, chapter, line, link.
+- **Your texts.** The same server over a company's documents, with the same four-level check. That's the <a href="/hire#mcp-server">custom MCP server</a> on my hire page.

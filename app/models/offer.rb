@@ -21,21 +21,26 @@ class Offer
   def slug = attributes.fetch("slug")
   def title = attributes.fetch("title")
   def summary = attributes.fetch("summary")
-  def includes = attributes["includes"]
+  def pitch = attributes["pitch"]
+  def you_get = Array(attributes["you_get"])
   def duration = attributes["duration"]
   def tiers = Array(attributes["tiers"])
   def course_slug = attributes["course"]
-  def proof = Array(attributes["proof"]).map { |slug| WorkItem.find(slug) }
+  def course
+    Course.find(course_slug) if course_slug
+  end
+  # The side projects that show this offer working.
+  def examples = Array(attributes["examples"]).map { |slug| WorkItem.find(slug) }
 
   # "$750" for a fixed price, "from $1,500" for a starting price, and
-  # "Scoped per project" when neither is set. Tiered offers price each tier.
+  # "Priced after a call" when neither is set. Tiered offers price each tier.
   def price_label
     if attributes["price"]
       dollars(attributes["price"])
     elsif attributes["from_price"]
       "from #{dollars(attributes["from_price"])}"
     else
-      "Scoped per project"
+      "Priced after a call"
     end
   end
 
@@ -43,9 +48,6 @@ class Offer
   def short_price
     tiers.any? ? "from #{dollars(tiers.map { |tier| tier["price"] }.min)}" : price_label
   end
-
-  # The first sentence of the summary, for a card.
-  def lead = summary.split(/(?<=\.)\s/).first
 
   def dollars(amount) = ActiveSupport::NumberHelper.number_to_currency(amount, precision: 0)
 end
