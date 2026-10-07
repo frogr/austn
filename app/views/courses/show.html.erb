@@ -47,6 +47,9 @@
     <li>Synthetic data, labeled as synthetic, and a mock model, so every module runs offline on your machine without an API key. Modules 2, 4 and 5 can also call Anthropic or OpenAI with your own key. Those live paths haven't been run against the real APIs yet.</li>
   </ul>
 
+  <h2>Want it done for you?</h2>
+  <p>The <%= link_to "eval setup sprint", hire_path(anchor: "eval-sprint") %> on my hire page is this course applied to your feature: one week, a golden set from your real traffic, the harness in your repo, and a CI gate. The course is for doing it yourself.</p>
+
   <h2>Try it first</h2>
   <p>
     <% if @course.starter_url %>The <%= link_to "starter harness", @course.starter_url %> is free and open source.<% end %>

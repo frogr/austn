@@ -4,7 +4,8 @@ class WorkController < ApplicationController
 
   def index
     @jobs = WorkItem.of_kind("job")
-    @projects = WorkItem.of_kind("project").partition(&:screenshot).flatten # screenshots first
+    # Drawn projects first, then ones with a screenshot, then the rest.
+    @projects = WorkItem.of_kind("project").sort_by.with_index { |item, i| [ item.art? ? 0 : (item.screenshot ? 1 : 2), i ] }
     @fun = WorkItem.of_kind("fun")
   end
 

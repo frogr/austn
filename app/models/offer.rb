@@ -9,6 +9,7 @@ class Offer
   end
 
   def self.all = data.fetch("offers").map { |attributes| new(attributes) }
+  def self.find(slug) = all.find { |offer| offer.slug == slug.to_s } || raise(ActiveRecord::RecordNotFound, "No offer named #{slug}")
   def self.how_i_work = data.fetch("how_i_work")
 
   attr_reader :attributes
@@ -37,6 +38,14 @@ class Offer
       "Scoped per project"
     end
   end
+
+  # The one-line price for a card: "from $150" for tiers, otherwise price_label.
+  def short_price
+    tiers.any? ? "from #{dollars(tiers.map { |tier| tier["price"] }.min)}" : price_label
+  end
+
+  # The first sentence of the summary, for a card.
+  def lead = summary.split(/(?<=\.)\s/).first
 
   def dollars(amount) = ActiveSupport::NumberHelper.number_to_currency(amount, precision: 0)
 end

@@ -1,6 +1,6 @@
 ---
 title: Marginalia
-summary: Ask questions about twelve classic novels and get answers that cite the text. Every quote is checked word for word against the passage it cites, and retrieval is measured, not guessed.
+summary: Ask a question about one of twelve classic novels and get an answer that cites the text. Every quote is checked word for word against the passage it cites, and retrieval is measured, not guessed.
 tier: more
 tagline: "Answers about twelve novels, every quote checked against the text."
 kind: project
@@ -8,6 +8,9 @@ order: 12
 when: "2026"
 role: Solo project
 stack: [TypeScript, Node, Hono, BM25, Vitest]
+hue: sky
+art: true
+offer: rag
 links:
   - label: Code on GitHub
     url: https://github.com/frogr/marginalia
@@ -15,16 +18,65 @@ screenshot: /work/thumbs/marginalia.webp
 screenshot_alt: "A Marginalia answer about the Queen's croquet game in Alice in Wonderland, with a Verified quotes 3/3 badge and the cited passage highlighted"
 ---
 
-A RAG app (retrieval-augmented generation: find the right passages first, then answer from them) over twelve novels from Project Gutenberg that are public domain in the US, about 1.6 million words. Pride and Prejudice, Moby-Dick, Dracula, Crime and Punishment and eight more.
+Marginalia is a reading companion. You type a question about Pride and Prejudice, Moby-Dick, Dracula, Crime and Punishment or eight other novels, and you get an answer with the passages it came from. Click a citation and the passage opens with the quote highlighted. Every quote has been checked against that passage before you see it.
 
-Every answer cites the text, and the page shows its working: which passages were retrieved, how they scored, and which quotes passed the check. It works with no API key, using extractive answers (the best-matching sentences from the best passages). With an Anthropic or OpenAI key, a model writes the answer, and the same checks apply.
+It's also my worked example of RAG (retrieval-augmented generation: find the right passages first, then answer from them) done the way I'd do it for a client. The search is measured on a question set. The quotes are checked by code. The page shows its working. And the write-up says where it's weak.
+
+## What you see
+
+<ol class="chat">
+  <li class="chat-you"><span class="chat-who">You</span><p>What did the Queen use for croquet mallets and balls?</p></li>
+  <li class="chat-tool"><span class="chat-who">Marginalia retrieves</span><code><b>search</b>(query, books: all) → 8 passages, ranked by BM25 with a boost for words that sit together</code></li>
+  <li class="chat-result"><span class="chat-who">Then checks</span>
+    <dl>
+      <dt>answer</dt><dd>"Alice thought she had never seen such a curious croquet-ground in her life; it was all ridges and furrows; the balls were live hedgehogs, the mallets live flamingoes, and the soldiers had to double themselves up and to stand on their hands and feet, to make the arches."</dd>
+      <dt>cites</dt><dd>Alice's Adventures in Wonderland, Chapter VIII: The Queen's Croquet-Ground, passage 1</dd>
+      <dt>verified quotes</dt><dd>3 of 3</dd>
+    </dl>
+  </li>
+  <li class="chat-them"><span class="chat-who">The page shows</span><p>The answer, a "Verified quotes 3/3" badge, and the citation. Open it and the whole passage appears with the quoted sentence highlighted, plus a link to read the chapter.</p></li>
+</ol>
+
+That answer was made with no API key. Without one, the answer is extractive: the sentences from the best passages that best cover the question. With an Anthropic or OpenAI key, a model writes the answer in its own words, and the same checks apply to every quote it uses.
 
 <figure class="figure">
-  <img src="/work/marginalia-1-answer.webp" alt="An extractive answer to what the Queen used for croquet mallets and balls: the sentence about live hedgehogs and flamingoes, a Verified quotes 3/3 badge, and the cited passage from chapter VIII with the quote highlighted" width="1280" height="800" loading="lazy">
-  <figcaption>An answer with no API key. The citation opens the passage it came from, with the quote highlighted.</figcaption>
+  <img src="/work/marginalia-1-answer.webp" alt="A Marginalia answer: the sentence about live hedgehogs and flamingoes, a Verified quotes 3/3 badge, and the cited passage from chapter VIII open underneath with the quote highlighted" width="1280" height="800" loading="lazy">
+  <figcaption>An answer with no model. The citation opens the passage it came from, with the quote highlighted.</figcaption>
 </figure>
 
+## What it's for
+
+- **Reading groups and students.** "Which Bible story does Sonia read to Raskolnikov?" "What did Amy burn after quarreling with Jo?" Answers point at the page, so you can go read it.
+- **Checking a half-remembered line.** Ask it in your own words. If the words don't match, it still finds the scene most of the time, and tells you which passages it looked at.
+- **Seeing how RAG behaves.** Every answer has a "how this answer was made" panel: the retrieved passages with their scores, how the answer was picked, and how each quote was checked. It's the panel I wish every RAG demo had.
+- **A template for your documents.** Swap the twelve novels for a product manual, a policy library or a contract set, and the same shape applies: measured retrieval, checked citations, a visible trace. That's the <a href="/hire#rag">RAG build</a> on my hire page.
+
 ## Three steps
+
+<figure class="figure">
+  <div class="diagram" role="img" aria-label="A question goes to retrieval: BM25 over paragraph chunks of about 240 words that never cross a chapter, with boosts for adjacent words and a named book. The top passages go to an answerer, which is a model when there is a key and an extractive picker when there is not. The answer's quotes go to a validator that looks for each one in the passage it cites. Failures are shown as unverified; a model gets one retry.">
+    <svg viewBox="0 0 680 190" width="680" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="mg-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <rect class="box" x="10" y="70" width="100" height="44" rx="6"/><text x="60" y="90" text-anchor="middle">Question</text><text class="label" x="60" y="105" text-anchor="middle">in your words</text>
+      <rect class="box" x="150" y="70" width="130" height="44" rx="6"/><text x="215" y="90" text-anchor="middle">Retrieve</text><text class="label" x="215" y="105" text-anchor="middle">BM25 over chunks</text>
+      <rect class="box" x="150" y="130" width="130" height="44" rx="6"/><text x="215" y="150" text-anchor="middle">Twelve novels</text><text class="label" x="215" y="165" text-anchor="middle">1.6 million words</text>
+      <rect class="box box--accent" x="320" y="40" width="130" height="44" rx="6"/><text x="385" y="60" text-anchor="middle">Model writes</text><text class="label" x="385" y="75" text-anchor="middle">with a key</text>
+      <rect class="box" x="320" y="100" width="130" height="44" rx="6"/><text x="385" y="120" text-anchor="middle">Extractive</text><text class="label" x="385" y="135" text-anchor="middle">best sentences</text>
+      <rect class="box" x="490" y="70" width="110" height="44" rx="6"/><text x="545" y="90" text-anchor="middle">Check quotes</text><text class="label" x="545" y="105" text-anchor="middle">in its passage</text>
+      <rect class="box" x="620" y="70" width="50" height="44" rx="6"/><text x="645" y="97" text-anchor="middle">Page</text>
+      <path class="edge" d="M110 92 H148" marker-end="url(#mg-arrow)"/>
+      <path class="edge" d="M215 130 V116" marker-end="url(#mg-arrow)"/>
+      <path class="edge" d="M280 86 L318 66" marker-end="url(#mg-arrow)"/>
+      <path class="edge" d="M280 98 L318 118" marker-end="url(#mg-arrow)"/>
+      <path class="edge" d="M450 66 L488 86" marker-end="url(#mg-arrow)"/>
+      <path class="edge" d="M450 118 L488 98" marker-end="url(#mg-arrow)"/>
+      <path class="edge" d="M600 92 H618" marker-end="url(#mg-arrow)"/>
+      <path class="edge edge--fast" d="M545 70 V20 H385 V38" marker-end="url(#mg-arrow)"/>
+      <text class="label" x="465" y="16" text-anchor="middle">one retry, with the failures listed</text>
+    </svg>
+  </div>
+  <figcaption>The model, when there is one, only writes. Retrieval and checking are code.</figcaption>
+</figure>
 
 1. **Retrieve.** Paragraph-based chunks of about 240 words that never cross a chapter. Search is BM25, a standard keyword ranking formula, plus a boost when query words sit next to each other, a boost for a book named in the question, and a share of the best neighboring chunk's score.
 2. **Answer.** A model returns JSON where every claim carries exact quotes from numbered passages. Without a key, the answer is extractive.
@@ -51,6 +103,19 @@ The held-out set exists because I tuned on the first 46, and it's small: one que
 
 The quote validator is tested the other way around. For each question, the eval plants fake quotes in the passages actually retrieved: invented sentences, one word changed, a real quote cited to the wrong passage, real pieces in the wrong order. It caught 320 of 320, and passed 136 of 136 real quotes. CI fails if either drops. What it can't catch is a real quote attached to a claim it doesn't support. It proves the words are in the book, not that the claim follows from them.
 
+## Marginalia and Gutenberg MCP
+
+Both check quotes against the text, and I built both. Marginalia is the app: it retrieves, answers and checks, for twelve books it has already prepared. <a href="/work/gutenberg-mcp">Gutenberg MCP</a> is a tool for someone else's assistant: it checks any quote against any of 75,000 books, and never answers anything itself. If you have a question, use this. If you want Claude to stop misquoting, use that.
+
+## Where it could go
+
+Plans, not features.
+
+- **Run it with a real key** and measure how often a model's quotes pass on the first try. That number is the point of the whole design, and it's still unknown.
+- **Turn on hybrid search** and rerun the eval. The vector path is built and has no numbers yet.
+- **More books**, chosen by what people ask. The corpus build is one command.
+- **Your documents instead of novels.** The eval set would come from your real questions, and the validator would check quotes against your sources.
+
 ## What's not verified
 
-No real model has answered a question yet: the Anthropic and OpenAI paths are tested against mocked responses only, so how often a model's quotes pass on the first try is unknown. Hybrid vector search has no eval numbers for the same reason. It hasn't been deployed. 60 tests, no network.
+No real model has answered a question yet: the Anthropic and OpenAI paths are tested against mocked responses only. Hybrid vector search has no eval numbers for the same reason. It hasn't been deployed. 61 tests, no network.

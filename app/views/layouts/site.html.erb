@@ -56,7 +56,7 @@
         </a>
         <nav class="site-nav" aria-label="Main">
           <ul>
-            <% [ [ "Work", work_index_path, "sun" ], [ "Writing", blog_path, "sky" ], [ "Playground", playground_path, "clay" ], [ "Resume", resume_path, "moss" ] ].each do |label, path, hue| %>
+            <% [ [ "Work", work_index_path, "sun" ], [ "Writing", blog_path, "sky" ], [ "Playground", playground_path, "clay" ], [ "Resume", resume_path, "moss" ], [ "Hire", hire_path, "plum" ] ].each do |label, path, hue| %>
               <li><%= link_to label, path, "data-hue": hue, "aria-current": (current_section == label.downcase ? "page" : nil) %></li>
             <% end %>
           </ul>

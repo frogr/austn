@@ -52,6 +52,16 @@ The design system is two files. Read their headers first.
 - `public/og.png` and the PNG icons are screenshots of the mark and home page
   styles in the default palette. Regenerate them if that palette or the mark
   changes.
+- The side-project apps (Marginalia, Second Draft, and the Gutenberg, Lichess
+  and NYC Open Data MCP servers) load a copy of this design system,
+  `public/austn-kit.css` in each of their repos: the Pond tokens plus the pieces
+  above, and the same Recursive font. If a token or a shared piece changes
+  here, change it there too. Their `Ask it` sections and the `.chat` piece on
+  the case studies are the same markup.
+- A side project with `art: true` and a `hue` in its front matter shows a
+  drawing from `shared/_toy_art` instead of a screenshot, on the work index and
+  in its rail. One with `offer: <slug>` ends with a note pointing at that offer
+  on `/hire`, and `content/offers.yml` must list it as proof.
 
 ## Rules
 

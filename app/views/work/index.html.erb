@@ -35,11 +35,14 @@
 </div>
 
 <h2 class="section-title">side projects</h2>
+<p class="muted" style="max-width: 44rem; margin-top: -0.25rem;">The ones drawn rather than photographed are the samples behind what I build for clients: MCP servers, search over documents, agents and evals. <%= link_to "How to hire me for one", hire_path %>.</p>
 <ul class="cards">
   <% @projects.each do |item| %>
     <li>
       <a class="card" href="<%= work_item_path(item) %>">
-        <% if item.screenshot %>
+        <% if item.art? %>
+          <span class="card-art" data-hue="<%= item.hue %>" aria-hidden="true"><%= render "shared/toy_art", slug: item.slug %></span>
+        <% elsif item.screenshot %>
           <img class="card-shot" src="<%= item.screenshot %>" alt="<%= item.screenshot_alt %>" width="960" height="600" loading="lazy">
         <% else %>
           <span class="card-shot card-shot--none" aria-hidden="true"><%= item.title.first %></span>

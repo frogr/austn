@@ -12,6 +12,7 @@
   <p class="lede"><%= @item.summary %></p>
 
   <aside class="rail">
+    <% if @item.art? %><span class="toy-art" data-hue="<%= @item.hue %>" aria-hidden="true"><%= render "shared/toy_art", slug: @item.slug %></span><% end %>
     <dl class="facts">
       <% if @item.role %><dt>role</dt><dd><%= @item.role %></dd><% end %>
       <% if @item.timeframe %><dt>when</dt><dd><%= @item.timeframe %></dd><% end %>
@@ -34,6 +35,14 @@
   <div class="prose">
     <%= markdown(@item.body) %>
   </div>
+
+  <% if (offer = @item.offer) %>
+    <%# The project is the worked sample for one of the offers on /hire. %>
+    <aside class="note proof-note" aria-label="Hire me to build one">
+      <p><strong>Want one of these for your own data?</strong> This project is the sample behind my <%= link_to offer.title, hire_path(anchor: offer.slug) %> offer, <%= offer.short_price %>. You get a written scope, tests and the numbers before anything ships.</p>
+      <%= link_to "See the offer", hire_path(anchor: offer.slug), class: "button button--small" %>
+    </aside>
+  <% end %>
 </article>
 
 <nav class="pager" aria-label="More work">

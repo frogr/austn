@@ -4,7 +4,7 @@
 
 <div class="page-grid">
   <h1>Hire me</h1>
-  <p class="lede">I take small, fixed-scope AI projects: MCP servers, RAG, agents and evals. Each one ships with tests, the numbers, and a plain list of what wasn't verified.</p>
+  <p class="lede">I take small, fixed-scope AI projects: MCP servers, search and answers over your documents, agents, and evals. Each one ships with tests, the numbers, and a plain list of what wasn't verified.</p>
 
   <aside class="rail">
     <p class="rail-title">Start here</p>
@@ -20,6 +20,23 @@
     <p class="rail-title">Background</p>
     <p class="muted">Eight years of production engineering, mostly Rails and TypeScript, lately a lot of applied AI. The <%= link_to "resume", resume_path %> has the details.</p>
   </aside>
+
+  <%# The four offers at a glance. Each card jumps to its section below. %>
+  <ul class="offers">
+    <% @offers.each do |offer| %>
+      <li>
+        <a class="offer-card" href="#<%= offer.slug %>">
+          <span class="offer-card-top"><span class="offer-card-title"><%= offer.title %></span><span class="offer-card-price"><%= offer.short_price %></span></span>
+          <span class="offer-card-text"><%= offer.lead %></span>
+          <span class="offer-card-proof" aria-hidden="true">
+            <% offer.proof.select(&:art?).first(3).each do |item| %>
+              <span class="mini-art" data-hue="<%= item.hue %>"><%= render "shared/toy_art", slug: item.slug %></span>
+            <% end %>
+          </span>
+        </a>
+      </li>
+    <% end %>
+  </ul>
 
   <% @offers.each do |offer| %>
     <section class="offer" id="<%= offer.slug %>" aria-labelledby="<%= offer.slug %>-title">
@@ -45,14 +62,56 @@
         <% if offer.includes %><dt>you get</dt><dd><%= offer.includes %></dd><% end %>
         <dt>proof</dt>
         <dd class="offer-proof">
-          <%= safe_join(offer.proof.map { |item| link_to(item.title, work_item_path(item)) }, ", ") %><% if offer.course_slug %>, and my course, <%= link_to Course.find(offer.course_slug).title, course_path(offer.course_slug) %><% end %>
+          <ul class="proofs">
+            <% offer.proof.each do |item| %>
+              <li>
+                <% if item.art? %><span class="mini-art" data-hue="<%= item.hue %>" aria-hidden="true"><%= render "shared/toy_art", slug: item.slug %></span><% end %>
+                <%= link_to item.title, work_item_path(item) %>
+              </li>
+            <% end %>
+            <% if offer.course_slug %>
+              <li>and my course, <%= link_to Course.find(offer.course_slug).title, course_path(offer.course_slug) %></li>
+            <% end %>
+          </ul>
         </dd>
       </dl>
     </section>
   <% end %>
 
-  <section id="how-i-work" aria-labelledby="how-i-work-title">
+  <section class="offer" id="how-i-work" aria-labelledby="how-i-work-title">
     <h2 id="how-i-work-title">How I work</h2>
+    <p>One rule runs through every project here: code decides what's true, and a model ranks, explains and writes on top of that.</p>
+
+    <figure class="figure">
+      <div class="diagram" role="img" aria-label="Two rows. The bottom row is deterministic code: what the data says, what the engine says, whether a quote is in the text, and tests. Arrows go up to the top row, where a model ranks, explains and writes. A validator between them checks every claim against a source before a person sees it.">
+        <svg viewBox="0 0 680 210" width="680" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="hw-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z"/></marker></defs>
+          <text class="label" x="10" y="20">above: the only places a model runs</text>
+          <rect class="box box--accent" x="135" y="30" width="120" height="44" rx="6"/><text x="195" y="50" text-anchor="middle">Rank</text><text class="label" x="195" y="65" text-anchor="middle">what matters</text>
+          <rect class="box box--accent" x="270" y="30" width="120" height="44" rx="6"/><text x="330" y="50" text-anchor="middle">Explain</text><text class="label" x="330" y="65" text-anchor="middle">in plain words</text>
+          <rect class="box box--accent" x="405" y="30" width="120" height="44" rx="6"/><text x="465" y="50" text-anchor="middle">Write</text><text class="label" x="465" y="65" text-anchor="middle">the answer</text>
+          <rect class="box" x="540" y="30" width="130" height="44" rx="6"/><text x="605" y="50" text-anchor="middle">Validator</text><text class="label" x="605" y="65" text-anchor="middle">cites a source</text>
+          <text class="label" x="10" y="132">below: deterministic, no model, tested</text>
+          <rect class="box" x="10" y="142" width="110" height="44" rx="6"/><text x="65" y="162" text-anchor="middle">Your data</text><text class="label" x="65" y="177" text-anchor="middle">API, DB, files</text>
+          <rect class="box" x="135" y="142" width="120" height="44" rx="6"/><text x="195" y="162" text-anchor="middle">Retrieve</text><text class="label" x="195" y="177" text-anchor="middle">search, measured</text>
+          <rect class="box" x="270" y="142" width="120" height="44" rx="6"/><text x="330" y="162" text-anchor="middle">Compute</text><text class="label" x="330" y="177" text-anchor="middle">engine, rules</text>
+          <rect class="box" x="405" y="142" width="120" height="44" rx="6"/><text x="465" y="162" text-anchor="middle">Check</text><text class="label" x="465" y="177" text-anchor="middle">quote in text?</text>
+          <rect class="box" x="540" y="142" width="130" height="44" rx="6"/><text x="605" y="162" text-anchor="middle">Evals</text><text class="label" x="605" y="177" text-anchor="middle">set + CI gate</text>
+          <path class="edge" d="M120 164 H133" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M255 164 H268" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M390 164 H403" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M525 164 H538" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M195 142 V76" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M330 142 V76" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M255 52 H268" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M390 52 H403" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M525 52 H538" marker-end="url(#hw-arrow)"/>
+          <path class="edge" d="M605 76 V140" marker-end="url(#hw-arrow)"/>
+        </svg>
+      </div>
+      <figcaption>The bottom row is code with tests. The top row is where a model earns its keep. The validator is what lets a model's sentence reach a person.</figcaption>
+    </figure>
+
     <% @how_i_work.each do |point| %>
       <h3><%= point["title"] %></h3>
       <p><%= point["text"] %></p>

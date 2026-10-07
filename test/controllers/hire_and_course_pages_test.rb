@@ -17,6 +17,10 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select "#eval-sprint .offer-price", "$750"
     assert_select "#eval-sprint .offer-proof a[href=?]", course_path("evals-in-production")
     assert_select "#how-i-work h3", count: Offer.how_i_work.size
+    assert_select "#how-i-work .diagram svg"
+    Offer.all.each { |offer| assert_select ".offers .offer-card[href=?]", "##{offer.slug}", text: /#{Regexp.escape(offer.title)}/ }
+    assert_select ".offers .offer-card .offer-card-price", text: "from $150"
+    assert_select ".offers .offer-card .mini-art svg", minimum: 4
     assert_select "a.button[href=?]", book_path
     assert_select "a[href=?]", "mailto:#{Profile.email}"
   end
@@ -34,6 +38,11 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
       get hire_path
       assert_select "#rag .offer-price", "from $1,500"
     end
+  end
+
+  test "the course page points at the sprint for people who want it done for them" do
+    get course_path("evals-in-production")
+    assert_select "a[href=?]", hire_path(anchor: "eval-sprint")
   end
 
   test "the footer links to the hire page" do

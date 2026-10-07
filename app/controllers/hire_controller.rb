@@ -1,5 +1,6 @@
 class HireController < ApplicationController
   include SitePage
+  site_section "hire"
 
   def show
     @offers = Offer.all
