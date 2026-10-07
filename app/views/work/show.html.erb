@@ -40,7 +40,7 @@
   <% if (offer = @item.offer) %>
     <%# The project is the worked sample for one of the offers on /hire. %>
     <aside class="note proof-note" aria-label="Hire me to build one">
-      <p><strong>Want one of these for your own data?</strong> This project is the sample behind my <%= link_to offer.title, hire_path(anchor: offer.slug) %> offer, <%= offer.short_price %>. You get a written scope, tests and the numbers before anything ships.</p>
+      <p><strong>Want one of these for your own data?</strong> This project is the sample behind my <%= link_to offer.title, hire_path(anchor: offer.slug) %> offer. You get a written scope, tests and the numbers before anything ships.</p>
       <%= link_to "See the offer", hire_path(anchor: offer.slug), class: "button button--small" %>
     </aside>
   <% end %>

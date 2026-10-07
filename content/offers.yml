@@ -1,15 +1,14 @@
-# The offers on /hire. Edit prices and wording here; the page reads only this file.
+# The offers on /hire. The page reads only this file.
 #
-# Each offer has:
+# No prices here on purpose: the site describes the work, and packaged prices
+# live on the marketplace profiles listed under `profiles` (shown once filled
+# in). Each offer has:
 #   pitch       one line under the title, the outcome in plain words
 #   summary     a paragraph on what it is and why it works
 #   you_get     a list of what ships
+#   timeline    how long it takes ("One week", "Scoped on a call")
+#   tiers       optional sizes, each with a name, days and what's included
 #   examples    slugs from content/work: the side projects that show the offer working
-# and either:
-#   tiers       fixed packages, each with a name, price (dollars), days and what's included
-#   price       one fixed price in dollars, with a duration ("One week")
-#   from_price  a starting price in dollars, shown as "from $X". Leave it blank
-#               and the page says "Priced after a call".
 
 offers:
   - slug: mcp-server
@@ -28,17 +27,15 @@ offers:
       - Errors the model can act on, so it recovers instead of guessing
       - A web playground where anyone can run every tool and see the raw result
       - Install docs for Claude Desktop, Claude Code and Cursor
+    timeline: 3 to 7 days
     tiers:
       - name: Basic
-        price: 150
         days: 3
         includes: Up to 3 read-only tools over your API, running locally, with install docs for Claude Desktop, Claude Code and Cursor.
       - name: Standard
-        price: 350
         days: 5
         includes: Up to 8 tools, including writes that ask for confirmation first. Validation, tests and the playground.
       - name: Premium
-        price: 750
         days: 7
         includes: A remote server on your cloud with auth (API key or OAuth), rate limits and a daily cap, plus docs and a handoff call.
     examples: [nyc-open-data-mcp, gutenberg-mcp, lichess-mcp]
@@ -59,7 +56,7 @@ offers:
       - A quote check that catches invented, altered and misattributed quotes
       - A "how this answer was made" view on every answer
       - Works with Anthropic or OpenAI, or with no model at all for the cheap path
-    from_price:
+    timeline: Scoped on a call
     examples: [marginalia, gutenberg-mcp]
 
   - slug: agent
@@ -76,7 +73,7 @@ offers:
       - Turn, token and time budgets, with a safe fallback that says it fell back
       - A validator between the model and the person
       - Tests that script the model's side of the conversation, including the failures
-    from_price:
+    timeline: Scoped on a call
     examples: [second-draft, coach-rook]
 
   - slug: eval-sprint
@@ -93,10 +90,16 @@ offers:
       - Code graders for everything that has a right answer, a model judge only for what doesn't
       - Per-tag floors, so a strong average can't hide a category that collapsed
       - The CI gate, and a short write-up of what the first run found
-    price: 750
-    duration: One week
+    timeline: One week
     course: evals-in-production
     examples: [llm-eval-starter, marginalia, second-draft]
+
+# One line on how pricing works, shown with every offer.
+pricing: Fixed scope and a fixed price, agreed in writing before any work starts.
+
+# Marketplace profiles with packaged prices. Each has a label and an https url.
+# Leave the list empty and the page says nothing about them.
+profiles: []
 
 how_i_work:
   - title: Code decides what's true

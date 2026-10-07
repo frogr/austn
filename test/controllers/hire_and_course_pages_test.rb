@@ -13,14 +13,15 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
       offer.examples.each { |item| assert_select "section##{offer.slug} .offer-examples a.example-title[href=?]", work_item_path(item) }
       assert_select ".offers .offer-card[href=?]", "##{offer.slug}", text: /#{Regexp.escape(offer.title)}/
     end
-    assert_select "#mcp-server .stats strong", text: "$150"
-    assert_select "#mcp-server .stats strong", text: "$350"
-    assert_select "#mcp-server .stats strong", text: "$750"
-    assert_select "#eval-sprint .offer-price", "$750"
+    assert_select "#mcp-server .stats strong", text: "3 days"
+    assert_select "#mcp-server .stats strong", text: "7 days"
+    assert_select "#eval-sprint .offer-time", "One week"
+    assert_select ".offer-pricing", text: /agreed in writing/, minimum: 1
+    assert_select "section.offer:not(#course)", text: /\$\d/, count: 0 # only the course carries a price
     assert_select "#eval-sprint .offer-examples a[href=?]", course_path("evals-in-production")
     assert_select "#how-i-work h3", count: Offer.how_i_work.size
     assert_select "#how-i-work .diagram svg"
-    assert_select ".offers .offer-card .offer-card-price", text: "from $150"
+    assert_select ".offers .offer-card .offer-card-price", text: "3 to 7 days"
     assert_select ".offers .offer-card--course[href='#course']", /Evals in Production/
     assert_select "#course a[href=?]", course_path("evals-in-production")
     assert_select ".offer-examples a.button[href=?]", WorkItem.find("gutenberg-mcp").demo_url, text: "Try it live"
@@ -29,18 +30,14 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", "mailto:#{Profile.email}"
   end
 
-  test "an offer without a price says it's priced after a call" do
-    rag = Offer.all.find { |offer| offer.slug == "rag" }
-    priced = Offer.new(rag.attributes.merge("from_price" => 1500))
+  test "marketplace profiles appear in the rail only when the file lists them" do
+    get hire_path
+    assert_select ".rail", text: /Packaged versions/, count: 0
 
-    Offer.stub(:all, [ Offer.new(rag.attributes.merge("from_price" => nil)) ]) do
+    Offer.stub(:profiles, [ { "label" => "Fiverr", "url" => "https://www.fiverr.com/example" } ]) do
       get hire_path
-      assert_select "#rag .offer-price", "Priced after a call"
-    end
-
-    Offer.stub(:all, [ priced ]) do
-      get hire_path
-      assert_select "#rag .offer-price", "from $1,500"
+      assert_select ".rail a[href=?]", "https://www.fiverr.com/example", text: "Fiverr"
+      assert_select ".offer-pricing a[href=?]", "https://www.fiverr.com/example"
     end
   end
 

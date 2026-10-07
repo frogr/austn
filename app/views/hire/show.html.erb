@@ -5,12 +5,18 @@
 
 <div class="page-grid">
   <h1>Hire me</h1>
-  <p class="lede">I build the AI features that have to be right. Tools your assistant can call. Answers that cite the page they came from. Agents that show their work. Fixed scope, a fixed price, and tested before you see it.</p>
+  <p class="lede">I build the AI features that have to be right. Tools your assistant can call. Answers that cite the page they came from. Agents that show their work. Fixed scope, agreed in writing, and tested before you see it.</p>
 
   <aside class="rail">
     <p class="rail-title">Start here</p>
     <%= link_to "Book a 30-minute call", book_path, class: "button" %>
-    <p class="muted">Or email <%= mail_to Profile.email %> with what you're building. You get a written scope, a price and a date before any work starts.</p>
+    <p class="muted">Or email <%= mail_to Profile.email %> with what you're building. You get a written scope and a date before any work starts.</p>
+    <% if Offer.profiles.any? %>
+      <p class="rail-title">Packaged versions</p>
+      <ul>
+        <% Offer.profiles.each do |profile| %><li><%= link_to profile["label"], profile["url"] %></li><% end %>
+      </ul>
+    <% end %>
     <p class="rail-title">Offers</p>
     <ul>
       <% @offers.each do |offer| %>
@@ -28,7 +34,7 @@
     <% @offers.each do |offer| %>
       <li>
         <a class="offer-card" href="#<%= offer.slug %>">
-          <span class="offer-card-top"><span class="offer-card-title"><%= offer.title %></span><span class="offer-card-price"><%= offer.short_price %></span></span>
+          <span class="offer-card-top"><span class="offer-card-title"><%= offer.title %></span><span class="offer-card-price"><%= offer.timeline %></span></span>
           <span class="offer-card-text"><%= offer.pitch %></span>
           <span class="offer-card-proof" aria-hidden="true">
             <% offer.examples.select(&:art?).first(3).each do |item| %>
@@ -57,17 +63,16 @@
         <ul class="stats">
           <% offer.tiers.each_with_index do |tier, index| %>
             <li style="--i: <%= index %>">
-              <strong><%= offer.dollars(tier["price"]) %></strong>
-              <span><b><%= tier["name"] %></b>, <%= pluralize(tier["days"], "day") %>. <%= tier["includes"] %></span>
+              <strong><%= pluralize(tier["days"], "day") %></strong>
+              <span><b><%= tier["name"] %></b>. <%= tier["includes"] %></span>
             </li>
           <% end %>
         </ul>
-      <% else %>
-        <dl class="facts">
-          <dt>price</dt><dd class="offer-price"><%= offer.price_label %></dd>
-          <% if offer.duration %><dt>time</dt><dd><%= offer.duration %></dd><% end %>
-        </dl>
       <% end %>
+      <dl class="facts">
+        <dt>time</dt><dd class="offer-time"><%= offer.timeline %></dd>
+        <dt>price</dt><dd class="offer-pricing"><%= Offer.pricing %><% if Offer.profiles.any? %> Packaged versions with set prices are on <%= safe_join(Offer.profiles.map { |profile| link_to(profile["label"], profile["url"]) }, " and ") %>.<% end %></dd>
+      </dl>
 
       <h3>You get</h3>
       <ul class="checks">

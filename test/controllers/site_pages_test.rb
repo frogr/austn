@@ -132,7 +132,6 @@ class SitePagesTest < ActionDispatch::IntegrationTest
     assert_select ".prose .chat .chat-tool code b", "quote_check"
     assert_select ".prose .diagram svg"
     assert_select ".proof-note a[href=?]", hire_path(anchor: "mcp-server")
-    assert_select ".proof-note", /from \$150/
     assert_select ".rail a.button[href=?]", "https://gutenberg-mcp.onrender.com", text: "Try it live"
   end
 

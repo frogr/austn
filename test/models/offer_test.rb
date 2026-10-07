@@ -1,13 +1,15 @@
 require "test_helper"
 
 class OfferTest < ActiveSupport::TestCase
-  test "every offer in content/offers.yml has a title, a summary and a price or tiers" do
+  test "every offer in content/offers.yml has a title, a summary, a timeline and no price" do
     assert Offer.all.any?
     Offer.all.each do |offer|
-      assert offer.title.present?, "#{offer.slug} has no title"
-      assert offer.summary.present?, "#{offer.slug} has no summary"
+      assert offer.title.present? && offer.summary.present?, "#{offer.slug} is missing a title or summary"
+      assert offer.timeline.present?, "#{offer.slug} has no timeline"
+      assert_nil offer.attributes["price"], "#{offer.slug} has a price; prices live on the marketplace profiles"
       offer.tiers.each do |tier|
-        assert tier["name"].present? && tier["price"].is_a?(Integer) && tier["days"].is_a?(Integer), "#{offer.slug} has a broken tier"
+        assert tier["name"].present? && tier["days"].is_a?(Integer), "#{offer.slug} has a broken tier"
+        assert_nil tier["price"], "#{offer.slug}'s #{tier["name"]} tier has a price"
       end
     end
     assert_equal Offer.all.map(&:slug).uniq, Offer.all.map(&:slug)
@@ -23,18 +25,16 @@ class OfferTest < ActiveSupport::TestCase
     end
   end
 
-  test "the MCP server tiers and the eval sprint have their fixed prices" do
+  test "the MCP server tiers and the sprint have their timelines" do
     mcp = Offer.all.find { |offer| offer.slug == "mcp-server" }
-    assert_equal [ [ "Basic", 150, 3 ], [ "Standard", 350, 5 ], [ "Premium", 750, 7 ] ],
-                 mcp.tiers.map { |tier| tier.values_at("name", "price", "days") }
-
-    sprint = Offer.all.find { |offer| offer.slug == "eval-sprint" }
-    assert_equal "$750", sprint.price_label
+    assert_equal [ [ "Basic", 3 ], [ "Standard", 5 ], [ "Premium", 7 ] ], mcp.tiers.map { |tier| tier.values_at("name", "days") }
+    assert_equal "3 to 7 days", mcp.timeline
+    assert_equal "One week", Offer.all.find { |offer| offer.slug == "eval-sprint" }.timeline
   end
 
-  test "a starting price shows as from $X, and no price at all says it's scoped per project" do
-    assert_equal "from $1,500", Offer.new("from_price" => 1500).price_label
-    assert_equal "Priced after a call", Offer.new("from_price" => nil).price_label
-    assert_equal "$750", Offer.new("price" => 750, "from_price" => 100).price_label
+  test "only https marketplace profiles are shown" do
+    Offer.stub(:data, Offer.data.merge("profiles" => [ { "label" => "Fiverr", "url" => "https://fiverr.com/x" }, { "label" => "Bad", "url" => "javascript:alert(1)" } ])) do
+      assert_equal [ "Fiverr" ], Offer.profiles.map { |profile| profile["label"] }
+    end
   end
 end
