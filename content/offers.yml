@@ -1,0 +1,88 @@
+# The offers on /hire. Edit prices and wording here; the page reads only this file.
+#
+# Each offer has either:
+#   tiers       fixed packages, each with a name, price (dollars), days and what's included
+#   price       one fixed price in dollars, with a duration ("One week")
+#   from_price  a starting price in dollars, shown as "from $X". Leave it blank
+#               and the page says "Scoped per project".
+# proof is a list of case study slugs from content/work.
+
+offers:
+  - slug: mcp-server
+    title: Custom MCP server
+    summary: >-
+      Your API or database, usable from Claude, Cursor and other AI apps. MCP
+      (Model Context Protocol) is the open standard those apps use to call
+      outside tools. You get a server that validates every input, returns
+      errors the model can act on, and is tested before you see it.
+    tiers:
+      - name: Basic
+        price: 150
+        days: 3
+        includes: Up to 3 read-only tools, API-key auth, and install docs for Claude Desktop, Claude Code and Cursor.
+      - name: Standard
+        price: 350
+        days: 5
+        includes: Up to 8 tools, including writes that ask for confirmation first. Input validation and tests.
+      - name: Premium
+        price: 750
+        days: 7
+        includes: A remote server over HTTP with OAuth, deployed for you, with docs and a handoff call.
+    proof: [nyc-open-data-mcp, gutenberg-mcp, lichess-mcp]
+
+  - slug: rag
+    title: RAG build
+    summary: >-
+      Search and answers over your own documents (RAG, retrieval-augmented
+      generation). Answers cite their sources, code checks that every quote is
+      really in the source it cites, and retrieval is measured on questions
+      from your domain, so you know where it's weak before your users do.
+    # PLACEHOLDER for Austin to confirm. A suggested starting point is 1500.
+    # Blank means the page says "Scoped per project".
+    from_price:
+    includes: A written scope after a call, the retrieval eval and its numbers, tests, and a list of what wasn't verified.
+    proof: [marginalia, gutenberg-mcp]
+
+  - slug: agent
+    title: Agent build
+    summary: >-
+      An agent that uses tools on your systems to get a job done. It runs with
+      limits on turns, tokens and time, falls back to something safe when the
+      model fails, and anything it cites is checked by code before a person
+      sees it.
+    # PLACEHOLDER for Austin to confirm. A suggested starting point is 2000.
+    # Blank means the page says "Scoped per project".
+    from_price:
+    includes: A written scope after a call, the agent with its tools and limits, tests that script the model's side of the conversation, and evals.
+    proof: [second-draft, coach-rook, companycam]
+
+  - slug: eval-sprint
+    title: Eval setup sprint
+    summary: >-
+      One week to get your LLM feature under test. A golden set built from your
+      real traffic, a harness wired into your repo (TypeScript or Rails), and a
+      CI gate that blocks merges when quality drops.
+    price: 750
+    duration: One week
+    includes: The golden set with where each case came from, the harness in your repo, the CI gate, and a short write-up of what the first run found.
+    course: evals-in-production
+    proof: [llm-eval-starter, marginalia, second-draft, tenex]
+
+how_i_work:
+  - title: Deterministic checks below, models above
+    text: >-
+      Code decides what's true: what the data says, what the engine says,
+      whether a quote is in the text. A model ranks, explains and writes on
+      top of that.
+  - title: Every claim is checked against a source
+    text: >-
+      If an answer quotes something, code confirms the quote is there. If a
+      number is in a write-up, it came from a command you can run again.
+  - title: Tests and evals ship with the code
+    text: >-
+      You get the numbers, how they were measured, and a plain list of what
+      wasn't verified.
+  - title: AI-assisted, and read by me
+    text: >-
+      AI tools, mostly Claude Code, are part of how I build. Everything they
+      write is read, tested and measured before it ships.

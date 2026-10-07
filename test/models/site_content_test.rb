@@ -6,7 +6,7 @@ require "test_helper"
 class SiteContentTest < ActiveSupport::TestCase
   CONTENT_FILES = Dir.glob(Rails.root.join("content/{work,playground,blog_posts}/*.md")) +
                   Dir.glob(Rails.root.join("content/*.yml")) +
-                  Dir.glob(Rails.root.join("app/views/{pages,work,playground,resumes,blog,bookings}/*.erb"))
+                  Dir.glob(Rails.root.join("app/views/{pages,work,playground,resumes,blog,bookings,hire,courses}/*.erb"))
 
   test "every case study has the front matter the pages rely on" do
     WorkItem.all.each do |item|
