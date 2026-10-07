@@ -636,7 +636,7 @@ a.row:hover .row-title::after, a.row:focus-visible .row-title::after { opacity: 
   border-radius: 0.14em;
   transform: rotate(-9deg);
 }
-.prose img { border: 2px solid var(--line); border-radius: var(--radius); }
+.prose img, .prose video { display: block; width: 100%; border: 2px solid var(--line); border-radius: var(--radius); background: var(--ground-3); }
 .prose blockquote {
   border-left: 4px solid var(--accent);
   padding: 0.25rem 0 0.25rem 1rem;
@@ -685,8 +685,8 @@ pre code { font-size: 0.82rem; }
 .figure figcaption { font-size: 0.86rem; color: var(--ink-2); margin-top: 0.5rem; }
 /* Screenshots get more room than the text column: up to 64rem, growing to the
    right since the column sits on the left edge of the page. */
-.figure:has(> img, > .phones) { width: min(64rem, 100vw - 2 * var(--gutter)); }
-.figure:has(> img, > .phones) figcaption { max-width: var(--measure); }
+.figure:has(> img, > video, > .phones) { width: min(64rem, 100vw - 2 * var(--gutter)); }
+.figure:has(> img, > video, > .phones) figcaption { max-width: var(--measure); }
 /* A row of phone screenshots, portrait, all the same height. */
 .phones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
 .phones img { display: block; width: 100%; }

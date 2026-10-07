@@ -18,9 +18,9 @@ class SiteContentTest < ActiveSupport::TestCase
     end
   end
 
-  test "every image a case study embeds exists in public" do
+  test "every image and video a case study embeds exists in public" do
     WorkItem.all.each do |item|
-      srcs = item.body.scan(/<img[^>]+src="([^"]+)"/).flatten
+      srcs = item.body.scan(/<(?:img|source|video)[^>]+(?:src|poster)="([^"]+)"/).flatten
       srcs << item.screenshot if item.screenshot
       srcs.each do |src|
         assert File.exist?(Rails.root.join("public", src.delete_prefix("/"))), "#{item.slug} embeds #{src}, which isn't in public/"
