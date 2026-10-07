@@ -38,13 +38,13 @@ Code measures the text. A model, when there is one, decides what matters and exp
 
 ## The eval, with the error list
 
-I wrote 25 synthetic passages (fiction, cover letters, essays, business notes, four clean controls) and labeled 106 problems in them from an editor's point of view, before running the detectors. Overall the detectors find 86% of the labels, and 88% of what they flag is right.
+The eval set is 25 synthetic passages (fiction, cover letters, essays, business notes, four clean controls) with 106 labeled problems, labeled from an editor's point of view before the detectors were run. Overall the detectors find 86% of the labels, and 88% of what they flag is right.
 
 That precision used to be 82%. Reading all 20 false positives, 12 came from the repeated-word detector: names at the start of a sentence, repetition a writer did on purpose ("every summer ... every summer"), and nouns that name the subject. Fixing the first two, dropping an opening-line rule whose 3 findings were all wrong, and one fix to passive voice got it to 12 false positives. Repeated words is still the weakest detector at 43% precision. Telling a clumsy echo from a needed noun takes meaning, which is the model's job, so it carries the lowest weight.
 
 The citation validator was tested by planting 887 bad citations of the kinds a model plausibly makes. It catches all of them by construction, so the useful number was the other direction: on its first run it rejected 2 of 269 good citations, because a punctuation-only rewrite looked unchanged. That's fixed, with a test.
 
-The set is small, and I wrote both the passages and the detectors. Treat it as a regression harness and an honest error list, not a benchmark.
+The set is small, and the passages and the detectors were written in the same project. Treat it as a regression harness and an honest error list, not a benchmark.
 
 ## What's not verified
 

@@ -13,6 +13,7 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select "#mcp-server .stats strong", text: "$150"
     assert_select "#mcp-server .stats strong", text: "$350"
     assert_select "#mcp-server .stats strong", text: "$750"
+    assert_select "#mcp-server > p", /None of them is deployed or has sign-in yet/
     assert_select "#eval-sprint .offer-price", "$750"
     assert_select "#eval-sprint .offer-proof a[href=?]", course_path("evals-in-production")
     assert_select "#how-i-work h3", count: Offer.how_i_work.size
@@ -51,6 +52,8 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     course.lessons.each { |lesson| assert_select ".lessons strong", "#{lesson["title"]}." }
     assert_select ".course-price", /\$39 early access, then \$59/
     assert_select "a[href=?]", course.starter_url
+    assert_select "li", /Modules 2, 4 and 5 can also call Anthropic or OpenAI/
+    assert_select "p", /TypeScript \(five modules\) and Ruby for the Rails module/
   end
 
   test "with no buy_url the course says it's launching soon and offers an email, not a buy link" do

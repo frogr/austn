@@ -10,11 +10,11 @@ summary: "Lesson 1 of Evals in Production, free: how to grow an LLM feature's go
 
 ## The problem
 
-The golden set in [llm-eval-starter](https://github.com/frogr/llm-eval-starter) is 29 hand-written cases. That is the right way to start. Before launch you have no traffic, so you write down the tickets you can imagine: the double charge, the outage, the sarcastic one, the prompt injection.
+The golden set in [llm-eval-starter](https://github.com/frogr/llm-eval-starter) is 29 cases written up front, not taken from traffic. That is the right way to start. Before launch you have no traffic, so you write down the tickets you can imagine: the double charge, the outage, the sarcastic one, the prompt injection.
 
 After launch, that set starts to lie to you. Not because the cases are wrong, but because of what is missing:
 
-- **The head.** The most common ticket in production gets one case out of 29, so a regression on it moves the score by 3%. If it's 15% of your traffic, it deserves more than that.
+- **The head.** The most common ticket in production gets one case out of 29, so a regression on it moves the score by about 3 points. If it's 15% of your traffic, it deserves more than that.
 - **The long tail.** The ticket types you didn't think of. A VAT number on an invoice. A timezone bug that looks like an account problem. A GDPR deletion request. None of them are in a set written before launch.
 - **The failures.** The cases your model actually gets wrong in production are the most valuable test cases you will ever get, and they are sitting in your logs with an agent's correction attached.
 

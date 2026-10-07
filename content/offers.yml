@@ -14,12 +14,15 @@ offers:
       Your API or database, usable from Claude, Cursor and other AI apps. MCP
       (Model Context Protocol) is the open standard those apps use to call
       outside tools. You get a server that validates every input, returns
-      errors the model can act on, and is tested before you see it.
+      errors the model can act on, and is tested before you see it. The
+      sample servers below are open source and run locally or over HTTP.
+      None of them is deployed or has sign-in yet, so auth and deploys are
+      work I'd do for you, scoped in writing.
     tiers:
       - name: Basic
         price: 150
         days: 3
-        includes: Up to 3 read-only tools, API-key auth, and install docs for Claude Desktop, Claude Code and Cursor.
+        includes: Up to 3 read-only tools, your API's key passed in through an environment variable, and install docs for Claude Desktop, Claude Code and Cursor.
       - name: Standard
         price: 350
         days: 5
@@ -27,7 +30,7 @@ offers:
       - name: Premium
         price: 750
         days: 7
-        includes: A remote server over HTTP with OAuth, deployed for you, with docs and a handoff call.
+        includes: A remote HTTP server, deployed to your cloud (Render, Fly or your own), with auth (API key or OAuth) scoped in writing, plus docs and a handoff call.
     proof: [nyc-open-data-mcp, gutenberg-mcp, lichess-mcp]
 
   - slug: rag

@@ -29,7 +29,7 @@ Ask "which ramen spots in 10003 have an A grade?" or "what were the top 311 comp
 Two tools answer the questions people actually ask, and do the awkward parts on the server. Two are general, for everything else.
 
 - **`restaurant_inspections`.** The city stores one row per violation, so the tool groups by restaurant to page through restaurants, then fetches the history for just that page and works out the latest grade. That grade isn't always from the latest inspection, because a re-inspection can leave it pending.
-- **`service_requests_311`.** The 311 dataset is about 40 million rows. The tool runs three small aggregate queries on Socrata's side instead of downloading anything.
+- **`service_requests_311`.** The 311 dataset is about 22.7 million rows. The tool runs three small aggregate queries on Socrata's side instead of downloading anything.
 - **`search_datasets`** returns column names with each dataset, so the model can write a valid filter on its first try.
 - **`query_dataset`** runs read-only queries against any dataset, capped at 500 rows and about 60 KB per response, with the offset to continue from when it cuts something off.
 
@@ -46,4 +46,4 @@ Two tools answer the questions people actually ask, and do the awkward parts on 
 
 ## What's checked
 
-60 tests, none of which touch the network. The HTTP tests start the real server on a local port and connect with the official MCP SDK client. Live calls against city data were run by hand and recorded in the repo's PROOF file, along with what wasn't checked: it hasn't been deployed yet, the Docker image wasn't built, and it hasn't been connected to Claude Desktop or Cursor over HTTP, only to the SDK client those apps build on. The npm package isn't published yet, so for now it installs from source.
+60 tests, none of which touch the network. The HTTP tests start the real server on a local port and connect with the official MCP SDK client. Live calls against city data were run by hand and recorded in the repo's PROOF file, along with what wasn't checked: it hasn't been deployed yet, the Docker image wasn't built, and it hasn't been connected to Claude Desktop or Cursor over HTTP, only to the SDK client those apps build on. The npm package isn't published yet, so for now it installs from GitHub.

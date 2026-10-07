@@ -37,12 +37,12 @@ When the quote isn't there, it returns the closest real passage and the words th
 
 ## The eval, and how the numbers got there
 
-I labeled 22 quotations by hand: 15 real ones (some with punctuation, case or apostrophes changed on purpose) and 7 well-known misquotes. Against live Gutenberg text, `quote_check` classifies all 22 as labeled.
+The eval is a labeled set of 22 quotations, each checked against the source text: 15 real ones (some with punctuation, case or apostrophes changed on purpose) and 7 well-known misquotes. Against live Gutenberg text, `quote_check` classifies all 22 as labeled. That's after one label was corrected: the first run got 21, and the miss turned out to be a wrong label, not a wrong answer.
 
-Chapter detection was harder. I counted the printed structure of 21 books by hand (chapters, letters, staves, acts, scenes, prefaces) and it now matches all 21. That number deserves a caveat, so here it is: most of those books were used to tune the heuristics, and two rounds of new books each turned up real misses that I fixed. Only four books were never used for tuning, and they pass 4 of 4. That's a small sample. Expect misses on books with unusual headings.
+Chapter detection was harder. The second set is 21 books, each labeled with the structure it prints (chapters, letters, staves, acts, scenes, prefaces), and detection now matches all 21. That number deserves a caveat, so here it is: most of those books were used to tune the heuristics, and two rounds of new books each turned up real misses that I fixed. Only four books were never used for tuning, and they pass 4 of 4. That's a small sample. Expect misses on books with unusual headings.
 
-Gutendex turned out to be fast for cached searches and very slow otherwise: 3 of 10 test searches took 42 to 50 seconds, and 2 timed out at 60. So search falls back to gutenberg.org's own search after 8 seconds, and the reading tools never wait on the catalog.
+Gutendex turned out to be fast for cached searches and very slow otherwise: 3 of 10 test searches took 42 to 50 seconds, and 2 timed out at 60. So search falls back to gutenberg.org's own search after 8 seconds, and the reading tools never wait on the catalog. Book downloads go to gutenberg.pglaf.org, a mirror Project Gutenberg runs, because their robot policy asks programs to stay off the main site.
 
 ## What's checked
 
-74 tests with recorded responses and no network, including the full MCP protocol in memory and the HTTP server with the official SDK client. The remote server has per-IP and daily limits, a body size limit and timeouts. Not checked yet: a real deploy, the Docker image, memory use under load on a small instance, and connecting it to Claude Desktop or Cursor. The npm package isn't published yet.
+76 tests with recorded responses and no network, including the full MCP protocol in memory and the HTTP server with the official SDK client. The remote server has per-IP and daily limits, a body size limit and timeouts. Not checked yet: a real deploy, the Docker image, memory use under load on a small instance, and connecting it to Claude Desktop or Cursor. The npm package isn't published yet, so for now it installs from GitHub.

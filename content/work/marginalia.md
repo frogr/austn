@@ -15,7 +15,7 @@ screenshot: /work/thumbs/marginalia.webp
 screenshot_alt: "A Marginalia answer about the Queen's croquet game in Alice in Wonderland, with a Verified quotes 3/3 badge and the cited passage highlighted"
 ---
 
-A RAG app (retrieval-augmented generation: find the right passages first, then answer from them) over twelve public-domain novels from Project Gutenberg, about 1.6 million words. Pride and Prejudice, Moby-Dick, Dracula, Crime and Punishment and eight more.
+A RAG app (retrieval-augmented generation: find the right passages first, then answer from them) over twelve novels from Project Gutenberg that are public domain in the US, about 1.6 million words. Pride and Prejudice, Moby-Dick, Dracula, Crime and Punishment and eight more.
 
 Every answer cites the text, and the page shows its working: which passages were retrieved, how they scored, and which quotes passed the check. It works with no API key, using extractive answers (the best-matching sentences from the best passages). With an Anthropic or OpenAI key, a model writes the answer, and the same checks apply.
 
@@ -37,7 +37,7 @@ Every answer cites the text, and the page shows its working: which passages were
 
 ## Measured, including where it's weak
 
-I wrote 46 questions in four types (direct, paraphrased, no names, and names that appear in more than one book) and found each answer's passage by searching the text. Then I added one change at a time and kept what moved the numbers.
+The eval is 46 questions in four types (direct, paraphrased, no names, and names that appear in more than one book), each with its answer's passage found by searching the text. Then I added one change at a time and kept the changes that helped overall.
 
 | | Found in top 1 | Top 5 | Top 10 |
 | --- | --- | --- | --- |

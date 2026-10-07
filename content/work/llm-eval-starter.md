@@ -26,9 +26,9 @@ This repo is the fix I'd reach for first: the same kind of test suite we write f
 
 ## What the demo shows
 
-The golden set is 29 hand-written tickets, and most of them are the hard ones: shouting, sarcasm, three issues in one message, a fake `SYSTEM:` tag, a message that just says "hi". Each case has tags, so a report can say prompt injection broke, not just that the score dropped.
+The golden set is 29 synthetic tickets, and most of them are the hard ones: shouting, sarcasm, three issues in one message, a fake `SYSTEM:` tag, a message that just says "hi". Each case has tags, so a report can say prompt injection broke, not just that the score dropped.
 
-The first-draft prompt passes 15 of 29 (51.7%) with 4 unparseable outputs and fails the gate. The revised prompt passes 26 of 29 (89.7%) and passes. That's 38 points better, and you still shouldn't merge it without reading the diff:
+The first-draft prompt passes 15 of 29 (51.7%) with 4 unparseable outputs and fails the gate. The revised prompt passes 26 of 29 (89.7%) and passes. That's about 38 points better, and you still shouldn't merge it without reading the diff:
 
 <figure class="figure">
   <img src="/work/llm-eval-starter-2-compare.webp" alt="Terminal output of npm run compare v1 v2: overall 51.7% to 89.7%, per-tag deltas with multi-issue down 25 points, two regressions and thirteen fixes" width="1280" height="1000" loading="lazy">
@@ -37,7 +37,7 @@ The first-draft prompt passes 15 of 29 (51.7%) with 4 unparseable outputs and fa
 
 A stricter length cap on summaries drops the third issue from a three-issue ticket, and a new escalation rule over-escalates a polite cancellation. The average hides both. The per-case diff doesn't.
 
-These numbers come from a mock model, a keyword classifier with failure modes built in on purpose, so the harness can run in CI and in the README without a key. They show the harness working. They say nothing about how a real model does on your prompts.
+These numbers come from a mock model, a keyword classifier with failure modes built in on purpose, so the harness can run in CI and in the README without a key. They show the harness working. They say nothing about how a real model does on your prompts. The CI workflow is in the repo but hasn't run on GitHub yet; the same commands pass locally.
 
 ## Why it's built this way
 

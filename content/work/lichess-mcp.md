@@ -42,4 +42,4 @@ The same run showed that "not available" is the common case, not the edge case. 
 
 ## What's checked
 
-95 tests against recorded Lichess responses, with no network. The remote server has the same limits as my other MCP servers: per-IP rate limit, daily cap, body size limit, timeouts. Not checked: `opening_stats` with a real token (Lichess's opening explorer now requires one, and I don't have one here), a real deploy, the Docker image, and connecting it to Claude Desktop or Cursor. The npm package will be `lichess-coach-mcp`, since `lichess-mcp` is taken by an unrelated project, and it isn't published yet.
+95 tests against recorded Lichess responses, with no network. The remote server has the same limits as my other MCP servers: per-IP rate limit, daily cap, body size limit, timeouts. Not checked: `opening_stats` with a real token (Lichess's opening explorer now requires one, and I don't have one here), a real deploy, the Docker image, and connecting it to Claude Desktop or Cursor. The npm package will be `lichess-coach-mcp`, since `lichess-mcp` is taken by an unrelated project, and it isn't published yet, so for now it installs from GitHub.
