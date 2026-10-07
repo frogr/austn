@@ -10,6 +10,7 @@ role: Solo project
 stack: [TypeScript, Node, MCP SDK, Zod, Vitest]
 hue: clay
 art: true
+demo_url: https://nyc-open-data-mcp.onrender.com
 offer: mcp-server
 links:
   - label: Code on GitHub
@@ -50,6 +51,8 @@ These ran against live city data on 2026-10-07.
   </li>
   <li class="chat-them"><span class="chat-who">Claude</span><p>Four ramen places in 10003 have inspection records. Ramen by Ra on East 1st Street and Ramen Takumi on University Place both hold an A. Kyuramen on East 14th Street and Marufuku Ramen on 2nd Avenue hold a B. Kyuramen's most recent inspection, in July 2026, scored 33 points with three critical violations, so its posted B may change after the re-inspection.</p></li>
 </ol>
+
+Both of these run in the <a href="https://nyc-open-data-mcp.onrender.com">live playground</a>, along with the other four examples.
 
 ## What it's for
 

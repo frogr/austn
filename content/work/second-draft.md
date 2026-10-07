@@ -10,6 +10,7 @@ role: Solo project
 stack: [TypeScript, Node, Anthropic API, OpenAI API, Vitest]
 hue: plum
 art: true
+demo_url: https://second-draft-kcpi.onrender.com
 offer: agent
 links:
   - label: Code on GitHub
@@ -24,7 +25,7 @@ Three fixes at a time is the whole idea. A wall of red makes people close the ta
 
 <figure class="figure">
   <img src="/work/second-draft-1-coached.webp" alt="A fiction draft with highlighted sentences on the left, and on the right the first fix card: swap the stock phrase dark and stormy night, with before, after and an exercise" width="1280" height="800" loading="lazy">
-  <figcaption>A fiction opening, coached. The first fix quotes sentence one, strikes the stock phrase, and leaves a bracketed prompt where only the writer knows the answer.</figcaption>
+  <figcaption>A fiction opening, coached. The first fix quotes sentence one, strikes the stock phrase, and leaves a bracketed prompt where only the writer knows the answer. <a href="https://second-draft-kcpi.onrender.com">Paste your own draft.</a></figcaption>
 </figure>
 
 ## What it's for

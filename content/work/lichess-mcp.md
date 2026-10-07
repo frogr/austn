@@ -10,6 +10,7 @@ role: Solo project
 stack: [TypeScript, Node, MCP SDK, chess.js, Vitest]
 hue: moss
 art: true
+demo_url: https://lichess-mcp.onrender.com
 offer: mcp-server
 links:
   - label: Code on GitHub
@@ -45,6 +46,8 @@ This one is two tool calls. It ran against live Lichess data on 2026-10-07, on a
   </li>
   <li class="chat-them"><span class="chat-who">Claude</span><p>Your last analysed game was a blitz win as White against sonderbonbon, in the Advance Caro-Kann, at 87% accuracy. Lichess flagged three moves. The one that mattered was 20. Ne4: the position went from slightly better for you to lost, about 45 points of winning chances, and the engine wanted Ne2 instead. Earlier, 8. Be2 (Qh5 was better) and 13. Be5 (Bg4) each cost around 10 points. You won anyway, so your opponent gave it back later. Want to look at the position before move 20?</p></li>
 </ol>
+
+You can run this one, and four others, in the <a href="https://lichess-mcp.onrender.com">live playground</a>.
 
 Notice what the model didn't do. It didn't say why Ne4 was bad, because Lichess didn't say. It can ask for the engine's line and explain that, or send you to the analysis board. What it won't do is invent a reason.
 

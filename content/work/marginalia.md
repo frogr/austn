@@ -10,6 +10,7 @@ role: Solo project
 stack: [TypeScript, Node, Hono, BM25, Vitest]
 hue: sky
 art: true
+demo_url: https://marginalia-mlu0.onrender.com
 offer: rag
 links:
   - label: Code on GitHub
@@ -24,7 +25,7 @@ It's also the clearest example I have of how I think RAG should be built. RAG (r
 
 <figure class="figure">
   <img src="/work/marginalia-1-answer.webp" alt="A Marginalia answer: the sentence about live hedgehogs and flamingoes, a Verified quotes 3/3 badge, and the cited passage from chapter VIII open underneath with the quote highlighted" width="1280" height="800" loading="lazy">
-  <figcaption>"What did the Queen use for croquet mallets and balls?" The answer, the badge, and the passage it came from with the quote highlighted. Made with no model at all.</figcaption>
+  <figcaption>"What did the Queen use for croquet mallets and balls?" The answer, the badge, and the passage it came from with the quote highlighted. Made with no model at all. <a href="https://marginalia-mlu0.onrender.com">Ask it something yourself.</a></figcaption>
 </figure>
 
 ## What it's for
