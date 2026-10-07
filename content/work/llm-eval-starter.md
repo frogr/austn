@@ -42,7 +42,7 @@ The first-draft prompt passes 15 of 29 (51.7%) with 4 unparseable outputs and fa
 
 A stricter length cap on summaries drops the third issue from a three-issue ticket, and a new escalation rule over-escalates a polite cancellation. The average hides both. The per-case diff doesn't. That's the lesson of the whole repo in one screenshot.
 
-The numbers come from a mock model, a keyword classifier with failure modes built in on purpose, so the harness runs in CI and in the README without a key. They show the harness working, not how a real model does on your prompts. Your prompts are what the sprint is for.
+The numbers above come from a mock model, a keyword classifier with failure modes built in on purpose, so the harness runs in CI and in the README without a key. On a real model (Claude Haiku 4.5, one run each) the first prompt passes 13 of 29 and the revised one 17 of 29, and both fail the gate, mostly because the model hands tickets to a human that the golden set says it should handle alone. Neither prompt was written for that model, so those are a baseline, and the gate did what it's for: a prompt that looks fine on the mock does not get to merge. The reports are in the repo. Your prompts are what the sprint is for.
 
 ## What it's for
 

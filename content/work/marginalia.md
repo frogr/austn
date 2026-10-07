@@ -85,6 +85,8 @@ The improvement came from reading every miss, which is the part of this work I l
 
 The held-out set is small: one question there is 8 points. These are numbers for comparing configs on this corpus, not an accuracy claim, and I'd rather say that than round up.
 
+With a real model writing the answers (Claude Haiku 4.5, one run over all 58 questions), 62 of 67 quotes passed the check on the first reply. Three answers needed the retry, and two were shown with a quote flagged as unverified. The model said "not found" 19 times, and in 17 of those the right passage wasn't among the eight it was given, so it declined instead of inventing. When the right passage was there, a verified quote came from it 34 times out of 35. The whole run cost 25 cents. The code and the full table are in the repo.
+
 The quote validator is tested the other way around. For each question, the eval plants fake quotes in the passages actually retrieved: invented sentences, one word changed, a real quote cited to the wrong passage, real pieces in the wrong order. It caught 320 of 320, and passed 136 of 136 real quotes. CI fails if either drops. What it can't catch is a real quote attached to a claim it doesn't support. It proves the words are in the book, not that the claim follows from them. 61 tests, no network.
 
 ## Marginalia and Gutenberg MCP
@@ -93,7 +95,7 @@ Both check quotes against the text, and I built both. Marginalia is the app: it 
 
 ## What's next
 
-- **Run it with a real key** and measure how often a model's quotes pass the check on the first try. That number is the point of the whole design.
+- **Run it more than once**, and on a second model. One run gives one number; the variance between runs is the next thing to know.
 - **Turn on hybrid search** and rerun the eval. The vector path is built; the numbers aren't.
 - **More books**, chosen by what people ask. The corpus build is one command.
 - **Your documents instead of novels.** The eval set comes from your real questions, and the validator checks quotes against your sources.
