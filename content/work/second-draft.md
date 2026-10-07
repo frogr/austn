@@ -82,11 +82,13 @@ That precision used to be 82%, and the way it got better is my favourite part of
 
 The citation validator was tested by planting 887 bad citations of the kinds a model plausibly makes. It catches all of them by construction, so the useful number was the other direction: on its first run it rejected 2 of 269 good citations, because a punctuation-only rewrite looked unchanged. That's fixed, with a test. 99 tests in all, including the agent loop against mocked Anthropic and OpenAI responses, turn by turn, with the 401, 429 and 5xx paths.
 
+Then the agent ran for real: all 25 passages, once each, on three models. Claude Haiku 4.5 finished every passage without falling back, and 21 of its 25 first submissions passed the validator in full; the repair turn fixed the other four. Haiku 5.5 went 23 of 25 and never submitted a bad quote (its two misses were empty submissions), for three cents. Sonnet 5.5 went 22 of 25, and on two fiction passages every quote in its first attempt failed the verbatim check. The validator is the reason none of that reached the page. The per-passage rows are in the repo.
+
 The set is small, and I wrote both the passages and the detectors. It's a regression harness and an honest error list, which is what I'd want from a tool before I trusted it with my own drafts.
 
 ## What's next
 
-- **Run the agent with a real key** and measure how often its citations pass the validator first time. The whole design rests on that number.
+- **Run it more than once.** One run per model gives one number each; the variance between runs is the next thing to know.
 - **A house style as a goal.** Feed it a few pieces you like and let "more like you" learn from them, with the same checks.
 - **Longer work**, chapter by chapter, with progress across the whole thing instead of one draft.
 - **The same loop for other documents.** A support reply, a report, a policy. Any agent that edits text someone else wrote should quote the line it's changing.
