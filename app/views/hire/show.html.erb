@@ -46,7 +46,7 @@
     <% end %>
     <li>
       <a class="offer-card offer-card--course" href="#course">
-        <span class="offer-card-top"><span class="offer-card-title"><%= course.title %></span><span class="offer-card-price"><%= number_to_currency(course.price, precision: 0) %></span></span>
+        <span class="offer-card-top"><span class="offer-card-title"><%= course.title %></span><span class="offer-card-price"><%= course.on_sale? ? number_to_currency(course.price, precision: 0) : "Launching soon" %></span></span>
         <span class="offer-card-text">The course. Six lessons on testing LLM features after they ship, for doing the sprint yourself.</span>
         <span class="offer-card-proof" aria-hidden="true"><span class="mini-art" data-hue="sky"><%= render "shared/toy_art", slug: "llm-eval-starter" %></span></span>
       </a>
@@ -100,7 +100,7 @@
 
   <section class="offer" id="course" aria-labelledby="course-title">
     <h2 id="course-title">Or learn it: <%= course.title %></h2>
-    <p class="offer-pitch">The eval sprint as a course, <%= number_to_currency(course.price, precision: 0) %>.</p>
+    <p class="offer-pitch">The eval sprint as a course<%= course.on_sale? ? ", #{number_to_currency(course.price, precision: 0)}" : ". Launching soon" %>.</p>
     <p><%= course.summary %> <%= course.lessons.size %> written lessons, each with code you run, in TypeScript and Rails. It starts from the free <%= link_to "LLM eval starter", work_item_path("llm-eval-starter") %> and takes the same feature into production.</p>
     <p><%= link_to "See the course", course_path(course), class: "button button--small" %></p>
   </section>

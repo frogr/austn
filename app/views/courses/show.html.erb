@@ -10,8 +10,11 @@
 
   <aside class="rail">
     <dl class="facts">
-      <dt>price</dt>
-      <dd class="course-price"><strong><%= number_to_currency(@course.price, precision: 0) %></strong> early access<% if @course.regular_price %>, then <%= number_to_currency(@course.regular_price, precision: 0) %><% end %></dd>
+      <%# The price shows once there is somewhere to buy it. %>
+      <% if @course.on_sale? %>
+        <dt>price</dt>
+        <dd class="course-price"><strong><%= number_to_currency(@course.price, precision: 0) %></strong> early access<% if @course.regular_price %>, then <%= number_to_currency(@course.regular_price, precision: 0) %><% end %></dd>
+      <% end %>
       <dt>format</dt>
       <dd><%= @course.lessons.size %> written lessons, each with code you run</dd>
       <dt>code</dt>

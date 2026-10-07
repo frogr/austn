@@ -51,7 +51,7 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select ".site-footer a[href=?]", hire_path
   end
 
-  test "the course page shows the lessons, the price and the free starter" do
+  test "the course page shows the lessons and the free starter" do
     course = Course.find("evals-in-production")
 
     get course_path(course)
@@ -60,7 +60,6 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select "h1", course.title
     assert_select ".lessons li", count: 6
     course.lessons.each { |lesson| assert_select ".lessons strong", "#{lesson["title"]}." }
-    assert_select ".course-price", /\$39 early access, then \$59/
     assert_select "a[href=?]", course.starter_url
     assert_select "li", /Modules 2, 4 and 5 can also call Anthropic or OpenAI/
     assert_select "p", /TypeScript \(five modules\) and Ruby for the Rails module/
@@ -76,6 +75,33 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select ".course-soon", /Launching soon/
     assert_select ".course-soon a[href^=?]", "mailto:#{Profile.email}"
     assert_select ".course-buy", count: 0
+    assert_select ".course-price", count: 0
+    assert_not_includes response.body, "$#{course.price}"
+  end
+
+  test "the hire page shows the course price only once it is on sale" do
+    course = Course.find("evals-in-production")
+    assert_not course.on_sale?, "set buy_url in content/courses.yml and update this test"
+
+    get hire_path
+    assert_select ".offer-card--course .offer-card-price", "Launching soon"
+    assert_select "#course .offer-pitch", /Launching soon/
+    assert_not_includes response.body, "$#{course.price}"
+
+    on_sale = Course.new(course.attributes.merge("buy_url" => "https://example.gumroad.com/l/evals-in-production"))
+    Course.stub(:find, on_sale) do
+      get hire_path
+    end
+    assert_select ".offer-card--course .offer-card-price", "$39"
+    assert_select "#course .offer-pitch", /\$39/
+  end
+
+  test "every example on the hire page has a drawing" do
+    get hire_path
+    Offer.all.each do |offer|
+      offer.examples.each { |item| assert item.art?, "#{item.slug} has no drawing; add one to shared/_toy_art" }
+    end
+    assert_select ".offer-examples .mini-art", minimum: Offer.all.sum { |offer| offer.examples.size }
   end
 
   test "with a buy_url the course has a buy button that goes there" do
@@ -87,6 +113,7 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     end
 
     assert_select "a.course-buy[href=?]", url, text: "Buy for $39"
+    assert_select ".course-price", /\$39 early access, then \$59/
     assert_select ".course-soon", count: 0
   end
 

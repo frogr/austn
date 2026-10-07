@@ -139,6 +139,22 @@
     <path class="art-stroke art-slide art-soft" d="M46 88 H90" stroke-width="4"/>
     <path class="art-stroke art-draw" pathLength="100" d="M44 70 L82 32 M64 32 H84 V52" stroke-width="4"/>
   </svg>
+<% when "coach-rook" %>
+  <%# A rook on the board and the coach's speech bubble, which pops in as it talks. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <g class="art-fill art-soft">
+      <rect x="14" y="46" width="30" height="30"/><rect x="74" y="46" width="30" height="30"/>
+      <rect x="44" y="76" width="30" height="30"/>
+    </g>
+    <rect class="art-stroke" x="14" y="46" width="90" height="60" rx="3"/>
+    <path class="art-fill" d="M46 56 h6 v6 h4 v-6 h8 v6 h4 v-6 h6 v12 h-28z"/>
+    <path class="art-fill" d="M50 68 h20 v20 h-20z"/>
+    <rect class="art-fill" x="44" y="88" width="32" height="6" rx="2"/>
+    <g class="art-pop">
+      <path class="art-stroke" d="M64 12 h40 a6 6 0 0 1 6 6 v14 a6 6 0 0 1 -6 6 h-26 l-10 8 v-8 h-4 a6 6 0 0 1 -6 -6 v-14 a6 6 0 0 1 6 -6z"/>
+      <path class="art-stroke art-thin" d="M72 22 H98 M72 29 H90"/>
+    </g>
+  </svg>
 <% when "nyc-open-data-mcp" %>
   <%# A map pin on the city grid. %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
