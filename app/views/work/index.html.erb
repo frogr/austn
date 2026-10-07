@@ -1,16 +1,74 @@
 <% page_title "Work" %>
 <% page_description "Case studies from Tenex, CompanyCam, Backlit and CoverMyMeds, plus side projects: what each one was, how it worked, and what the numbers were." %>
+<% content_for :wide, true %>
 
 <h1>Work</h1>
-<p class="lede">What I built at each job, how it worked, and the numbers. Side projects are further down.</p>
+<p class="lede" style="max-width: 44rem;">What I did at each job, then side projects, then things I made for fun.</p>
 
-<h2 class="section-title">case studies</h2>
-<ul class="rows">
-  <%= render partial: "shared/work_row", collection: @featured, as: :item %>
+<h2 class="section-title">jobs</h2>
+<%# The list on the left; each job's photo on the desk to the right. Hover a row and its photo comes forward. %>
+<div class="jobs">
+  <ul class="worklist worklist--index">
+    <% @jobs.each do |item| %>
+      <li>
+        <a href="<%= work_item_path(item) %>">
+          <span class="worklist-top"><span class="worklist-title"><%= item.title %></span><span class="worklist-dots"></span><span class="worklist-when"><%= item.timeframe %></span></span>
+          <span class="worklist-line"><%= item.blurb %></span>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+  <ul class="desk" aria-hidden="true">
+    <% @jobs.each do |item| %>
+      <li class="polaroid">
+        <a href="<%= work_item_path(item) %>" tabindex="-1">
+          <% if item.screenshot %>
+            <img src="<%= item.screenshot %>" alt="" width="960" height="600" loading="lazy">
+          <% else %>
+            <span class="polaroid-note">Client work, so nothing I can show here. The write-up has what I can say.</span>
+          <% end %>
+          <span class="polaroid-label"><%= item.title %></span>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+<h2 class="section-title">side projects</h2>
+<ul class="cards">
+  <% @projects.each do |item| %>
+    <li>
+      <a class="card" href="<%= work_item_path(item) %>">
+        <% if item.screenshot %>
+          <img class="card-shot" src="<%= item.screenshot %>" alt="<%= item.screenshot_alt %>" width="960" height="600" loading="lazy">
+        <% else %>
+          <span class="card-shot card-shot--none" aria-hidden="true"><%= item.title.first %></span>
+        <% end %>
+        <span class="card-body">
+          <span class="card-top"><span class="card-title"><%= item.title %></span><span class="card-when"><%= item.timeframe %></span></span>
+          <span class="card-text"><%= item.tagline %></span>
+        </span>
+      </a>
+    </li>
+  <% end %>
+</ul>
+
+<h2 class="section-title">for fun</h2>
+<ul class="funlist">
+  <% @fun.each do |item| %>
+    <li>
+      <a class="<%= "has-peek" if item.screenshot %>" href="<%= work_item_path(item) %>">
+        <span class="funlist-title"><%= item.title %></span>
+        <span class="funlist-when"><%= item.timeframe %></span>
+        <span class="funlist-line"><%= item.summary %></span>
+        <% if item.screenshot %><img class="peek" src="<%= item.screenshot %>" alt="" width="960" height="600" loading="lazy"><% end %>
+      </a>
+    </li>
+  <% end %>
 </ul>
 
 <h2 class="section-title">applied ai, by job</h2>
-<div class="prose">
+<div class="prose" style="max-width: 44rem;">
   <table>
     <thead><tr><th scope="col">What</th><th scope="col">Where</th></tr></thead>
     <tbody>
@@ -22,13 +80,11 @@
       <tr><td>Data warehouse and ingestion pipelines (Databricks, Python)</td><td><%= link_to "Tenex", work_item_path("tenex") %></td></tr>
       <tr><td>Agent workflows with human approval (PRD to PR, parallel sessions)</td><td><%= link_to "Tenex", work_item_path("tenex") %></td></tr>
       <tr><td>Self-hosted inference (ComfyUI, LM Studio, Whisper)</td><td><%= link_to "austn.net", work_item_path("austn-net") %>, <%= link_to "Murmur", work_item_path("murmur") %></td></tr>
+      <tr><td>On-device models on iPhone (Foundation Models, MobileCLIP, Speech)</td><td><%= link_to "aNote", work_item_path("anote") %>, <%= link_to "MealScan", work_item_path("mealscan") %></td></tr>
+      <tr><td>LLM output that has to cite evidence the code produced</td><td><%= link_to "aCoach", work_item_path("acoach") %>, <%= link_to "Coach Rook", work_item_path("coach-rook") %></td></tr>
+      <tr><td>An agent that runs itself on a cron heartbeat, with memory</td><td><%= link_to "Austnomaton", work_item_path("austnomaton") %></td></tr>
     </tbody>
   </table>
 </div>
-
-<h2 class="section-title">more projects</h2>
-<ul class="rows">
-  <%= render partial: "shared/work_row", collection: @more, as: :item %>
-</ul>
 
 <p class="muted">The AI tools that used to run on this site have their own write-ups in the <%= link_to "Playground", playground_path %>.</p>

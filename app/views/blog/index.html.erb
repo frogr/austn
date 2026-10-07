@@ -1,9 +1,24 @@
 <% page_title "Writing" %>
 <% page_description "Notes on what Austin French is building, mostly Rails and AI." %>
+<% content_for :wide, true %>
 
-<h1>Writing</h1>
-<p class="lede">Notes on what I'm building, mostly Rails and AI.</p>
+<div class="page-grid">
+  <h1>Writing</h1>
+  <p class="lede">Notes on what I'm building, mostly Rails and AI.</p>
 
-<ul class="rows">
-  <%= render partial: "shared/post_row", collection: @blog_posts, as: :post %>
-</ul>
+  <aside class="rail">
+    <p class="rail-title">Elsewhere</p>
+    <ul>
+      <li><%= link_to "What I'm doing now", now_path %></li>
+      <li><%= link_to "GitHub", Profile.links["github"] %></li>
+      <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+      <li><%= mail_to Profile.email %></li>
+    </ul>
+    <p class="rail-title">Claude Corner</p>
+    <p class="muted" style="margin: 0;">Once a month Claude writes something for <%= link_to "this page", playground_item_path("claude-corner") %>. I read it before it goes up.</p>
+  </aside>
+
+  <ul class="rows">
+    <%= render partial: "shared/post_row", collection: @blog_posts, as: :post %>
+  </ul>
+</div>

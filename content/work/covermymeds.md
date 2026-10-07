@@ -3,6 +3,7 @@ title: CoverMyMeds
 summary: Tech lead on drug brand launches worth $10M+ ARR, then built the tool that let non-engineers run launches.
 tagline: "Launched nine drug brands, then built the tool that lets non-engineers do it."
 tier: featured
+kind: job
 order: 4
 when: 2021-23
 role: Software Engineer, Launch team
@@ -19,6 +20,9 @@ stack: [Ruby on Rails, React, PostgreSQL, Hotwire, Elixir]
 links:
   - label: covermymeds.com
     url: https://www.covermymeds.com
+screenshot: /work/thumbs/covermymeds.webp
+screenshot_alt: "The CoverMyMeds homepage"
+blurb: "Healthcare software. On the team that launched new drug brands, then built the tool so others could."
 ---
 
 CoverMyMeds handles electronic prior authorization: the paperwork between a doctor, a pharmacy and an insurer before a drug gets covered. It's connected to 950,000+ providers, 50,000+ pharmacies and nearly every US health plan. I was there from July 2021 to October 2023.

@@ -1,20 +1,25 @@
 <% page_title @item.title %>
 <% page_description @item.summary %>
+<% content_for :wide, true %>
 
 <%= link_to "← Playground", playground_path, class: "back" %>
 
-<article>
+<article class="page-grid">
   <h1><%= @item.title %></h1>
   <p class="lede"><%= @item.summary %></p>
+
+  <aside class="rail">
+    <dl class="facts">
+      <dt>status</dt><dd><%= @item.gpu? ? "offline since the move to New York" : "live, runs in your browser" %></dd>
+      <% if @item.model %><dt>model</dt><dd><%= @item.model %></dd><% end %>
+      <% if @item.live_path %><dt>open</dt><dd><%= link_to @item.title, @item.live_path %></dd><% end %>
+    </dl>
+  </aside>
 
   <% if @item.gpu? %>
     <p class="note">This tool ran on a GPU at my place, and it's been offline since I moved to New York. Below is how it worked. The engineering behind all of them is in <%= link_to "austn.net's GPU tools", work_item_path("austn-net") %>.</p>
   <% elsif @item.live_path %>
     <p><%= link_to "Open #{@item.title.downcase} →", @item.live_path, class: "button" %></p>
-  <% end %>
-
-  <% if @item.model %>
-    <dl class="facts"><dt>model</dt><dd><%= @item.model %></dd></dl>
   <% end %>
 
   <% if @item.screenshot %>

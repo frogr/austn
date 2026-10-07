@@ -94,6 +94,28 @@ a:hover { background: color-mix(in srgb, var(--accent) 24%, transparent); }
   padding: 0 var(--gutter);
 }
 .wrap--wide { max-width: 70rem; }
+/* Narrow pages line up with the left edge of the wide column, so headings
+   stay put when you go from Work (wide) to Writing (narrow) and back. */
+main > .wrap:not(.wrap--wide) { margin-left: max(0px, calc((100% - 70rem) / 2)); margin-right: 0; }
+/* A reading page on the wide canvas: the text keeps its measure in the left
+   column and the page's facts and links sit in a rail on the right. Children
+   of the grid stay in the left column unless they are the rail. */
+.page-grid { display: grid; grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr); column-gap: 3.5rem; align-items: start; }
+.page-grid > * { grid-column: 1; min-width: 0; }
+.page-grid > .rail { grid-column: 2; grid-row: 1 / span 40; margin-top: 0.4rem; }
+.rail { font-size: 0.94rem; }
+.rail .facts { display: block; margin: 0 0 1.5rem; padding: 1rem 1.1rem; border: 2px dashed var(--line); border-radius: var(--radius); }
+.rail .facts dt { padding-top: 0.6rem; }
+.rail .facts dt:first-child { padding-top: 0; }
+.rail .facts dd { margin-bottom: 0.1rem; }
+.rail-title { --mono: 1; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.5rem; }
+.rail ul { list-style: none; padding: 0; margin: 0 0 1.5rem; }
+.rail li { margin: 0 0 0.45rem; }
+.rail .button { width: 100%; justify-content: center; margin-bottom: 1rem; }
+@media (max-width: 900px) {
+  .page-grid { display: block; }
+  .page-grid > .rail { margin-top: 2rem; }
+}
 
 .site-header .wrap {
   display: flex;
@@ -252,8 +274,144 @@ a.row:hover { background: var(--ground-2); }
 .row-title::after { content: "→"; display: inline-block; margin-left: 0.45rem; color: var(--accent); opacity: 0; transform: translateX(-0.4rem); transition: opacity 0.15s, transform 0.15s; }
 a.row:hover .row-title::after, a.row:focus-visible .row-title::after { opacity: 1; transform: none; }
 .row-when { --mono: 1; grid-column: 2; grid-row: 1; align-self: baseline; font-size: 0.8rem; color: var(--ink-2); white-space: nowrap; }
-.row-summary { grid-column: 1 / -1; color: var(--ink-2); font-size: 0.97rem; text-wrap: pretty; }
-.row-stack { --mono: 1; grid-column: 1 / -1; font-size: 0.74rem; color: var(--ink-3); }
+.row-summary { grid-column: 1 / 3; color: var(--ink-2); font-size: 0.97rem; text-wrap: pretty; }
+.row-stack { --mono: 1; grid-column: 1 / 3; font-size: 0.74rem; color: var(--ink-3); }
+/* The work index: jobs as a list with a desk of photos beside it, side
+   projects as tilted cards, fun as one-liners with a peek. */
+.jobs { display: grid; grid-template-columns: minmax(0, 40rem) minmax(0, 1fr); gap: 1rem 2.5rem; align-items: start; margin-bottom: 2.5rem; }
+.worklist.worklist--index a { padding: 0.45rem 0.6rem; }
+.worklist--index .worklist-title { font-size: 1.08rem; }
+.worklist--index .worklist-line { font-size: 0.93rem; }
+
+/* The desk: each job's photo, dropped on the pile in list order, so the
+   newest is at the top and the latest drop is on top of the one before.
+   Hover a row and its photo comes forward; hover a photo and the same happens. */
+.desk { position: relative; list-style: none; margin: 0; padding: 0; min-height: 30rem; }
+.desk li { margin: 0; }
+.polaroid { position: absolute; width: 18rem; transition: rotate 0.22s ease, scale 0.22s ease, translate 0.22s ease, box-shadow 0.22s ease; }
+.polaroid a { display: block; padding: 0.5rem 0.5rem 0.4rem; background: var(--ground-2); border: 2px solid var(--line); border-radius: 0.5rem; box-shadow: var(--press); color: var(--ink); text-decoration: none; }
+.polaroid img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-radius: 0.25rem; background: var(--ground-3); }
+.polaroid-note { display: grid; place-items: center; aspect-ratio: 16 / 10; overflow: hidden; padding: 0.8rem 1.2rem; background: var(--ground-3); border-radius: 0.25rem; font-size: 0.9rem; line-height: 1.45; text-align: center; color: var(--ink-2); }
+.polaroid-label { --casl: 1; display: block; margin-top: 0.45rem; font-size: 0.9rem; font-weight: 750; text-align: center; }
+.polaroid::before {
+  content: "";
+  position: absolute;
+  top: -0.55rem;
+  left: 50%;
+  width: 4.5rem;
+  height: 1.15rem;
+  background: var(--accent);
+  opacity: 0.8;
+  border-radius: 0.15rem;
+  transform: translateX(-50%) rotate(-3deg);
+  z-index: 1;
+}
+.jobs:has(.worklist li:nth-child(1) a:hover) .polaroid:nth-child(1), .polaroid:nth-child(1):hover,
+.jobs:has(.worklist li:nth-child(2) a:hover) .polaroid:nth-child(2), .polaroid:nth-child(2):hover,
+.jobs:has(.worklist li:nth-child(3) a:hover) .polaroid:nth-child(3), .polaroid:nth-child(3):hover,
+.jobs:has(.worklist li:nth-child(4) a:hover) .polaroid:nth-child(4), .polaroid:nth-child(4):hover,
+.jobs:has(.worklist li:nth-child(5) a:hover) .polaroid:nth-child(5), .polaroid:nth-child(5):hover,
+.jobs:has(.worklist li:nth-child(6) a:hover) .polaroid:nth-child(6), .polaroid:nth-child(6):hover { z-index: 10; rotate: 0deg; scale: 1.22; translate: 1.25rem 0; }
+.polaroid:nth-child(1) { top: 0rem; left: 4rem; rotate: -2deg; z-index: 1; }
+.polaroid:nth-child(2) { top: 4rem; left: 0rem; rotate: 3deg; z-index: 2; }
+.polaroid:nth-child(3) { top: 8rem; left: 7.5rem; rotate: -3.5deg; z-index: 3; }
+.polaroid:nth-child(4) { top: 12rem; left: 1rem; rotate: 2.5deg; z-index: 4; }
+.polaroid:nth-child(5) { top: 16rem; left: 6rem; rotate: -4deg; z-index: 5; }
+.polaroid:nth-child(6) { top: 20rem; left: 3rem; rotate: 4deg; z-index: 6; }
+.polaroid:hover a { box-shadow: var(--press-up); }
+
+/* Side projects: cards dropped at slight angles with a strip of tape. The
+   first two are bigger. */
+.cards { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.6rem 1.1rem; padding: 0.7rem 0 0; margin: 0 0 2.5rem; }
+.cards li { margin: 0; }
+.cards li:nth-child(-n+2) { grid-column: span 2; }
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--ground-2);
+  border: 2px solid var(--line);
+  border-radius: 0.6rem;
+  box-shadow: var(--press);
+  transition: rotate 0.18s ease, translate 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.cards li:nth-child(4n+1) .card { rotate: -1.3deg; }
+.cards li:nth-child(4n+2) .card { rotate: 0.9deg; }
+.cards li:nth-child(4n+3) .card { rotate: -0.7deg; }
+.cards li:nth-child(4n+4) .card { rotate: 1.2deg; }
+.card::before {
+  content: "";
+  position: absolute;
+  top: -0.6rem;
+  left: 50%;
+  width: 4rem;
+  height: 1.1rem;
+  background: var(--accent);
+  opacity: 0.8;
+  border-radius: 0.15rem;
+  transform: translateX(-50%) rotate(-3deg);
+  z-index: 1;
+}
+.cards li:nth-child(2n) .card::before { transform: translateX(-50%) rotate(3deg); }
+.card:hover, .card:focus-visible { rotate: 0deg; translate: 0 -0.3rem; box-shadow: var(--press-up); border-color: var(--accent); z-index: 2; }
+.card-shot { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-bottom: 2px solid var(--line); border-radius: calc(0.6rem - 2px) calc(0.6rem - 2px) 0 0; background: var(--ground-3); }
+.card-shot--none { --casl: 1; display: grid; place-items: center; font-size: 3rem; font-weight: 900; color: var(--accent); }
+.card-body { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.7rem 0.85rem 0.85rem; }
+.card-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 0.6rem; }
+.card-title { --casl: 0.8; font-size: 1rem; font-weight: 750; line-height: 1.2; }
+.cards li:nth-child(-n+2) .card-title { font-size: 1.2rem; }
+.card:hover .card-title { color: var(--accent); }
+.card-when { --mono: 1; font-size: 0.72rem; color: var(--ink-2); white-space: nowrap; }
+.card-text { color: var(--ink-2); font-size: 0.86rem; line-height: 1.35; text-wrap: pretty; }
+
+.funlist { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.2rem 2rem; padding: 0; margin: 0 0 2.5rem; }
+.funlist li { margin: 0; }
+.funlist a { display: grid; grid-template-columns: 1fr auto; gap: 0 0.75rem; padding: 0.45rem 0.6rem; margin: 0 -0.6rem; color: var(--ink); text-decoration: none; border-radius: 0.5rem; }
+.funlist a:hover { background: var(--ground-2); }
+.funlist a:hover .funlist-title { color: var(--accent); }
+.funlist-title { --casl: 0.6; font-weight: 750; }
+.funlist-when { --mono: 1; font-size: 0.74rem; color: var(--ink-2); align-self: baseline; }
+.funlist-line { grid-column: 1 / -1; font-size: 0.88rem; line-height: 1.35; color: var(--ink-2); }
+/* A peek: a small tilted screenshot at the end of a fun row. Hover and it
+   grows, sitting above the row so the words stay readable. */
+.funlist a.has-peek { position: relative; padding-right: 6.5rem; }
+.peek {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 50%;
+  z-index: 1;
+  width: 5.25rem;
+  height: auto;
+  border: 2px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--ground-2);
+  box-shadow: var(--press);
+  transform: translateY(50%) rotate(5deg);
+  pointer-events: none;
+  transition: width 0.18s ease, transform 0.18s ease, bottom 0.18s ease, border-radius 0.18s ease, box-shadow 0.18s ease;
+}
+.has-peek:hover .peek, .has-peek:focus-visible .peek {
+  z-index: 3;
+  width: 30rem;
+  bottom: calc(100% - 0.6rem);
+  border-radius: 0.8rem;
+  box-shadow: var(--press-up);
+  transform: translateY(0) rotate(-2deg);
+}
+
+@media (max-width: 900px) {
+  .jobs { grid-template-columns: 1fr; }
+  .desk { display: none; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards li:nth-child(-n+2) { grid-column: span 2; }
+  .funlist a.has-peek { padding-right: 4.5rem; }
+  .peek { width: 3.5rem; }
+  .has-peek:hover .peek, .has-peek:focus-visible .peek { width: 3.5rem; bottom: 50%; transform: translateY(50%) rotate(5deg); box-shadow: var(--press); border-radius: 0.4rem; }
+}
+@media (max-width: 600px) { .funlist { grid-template-columns: 1fr; } .cards { gap: 1.4rem 0.9rem; } }
 
 /* Home: everything on one screen. Two columns: who and proof on the left,
    the call to action, the toys and the writing on the right. */
@@ -525,6 +683,14 @@ pre code { font-size: 0.82rem; }
 
 .figure { margin: 2rem 0; }
 .figure figcaption { font-size: 0.86rem; color: var(--ink-2); margin-top: 0.5rem; }
+/* Screenshots get more room than the text column: up to 64rem, growing to the
+   right since the column sits on the left edge of the page. */
+.figure:has(> img, > .phones) { width: min(64rem, 100vw - 2 * var(--gutter)); }
+.figure:has(> img, > .phones) figcaption { max-width: var(--measure); }
+/* A row of phone screenshots, portrait, all the same height. */
+.phones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+.phones img { display: block; width: 100%; }
+@media (max-width: 640px) { .phones { grid-template-columns: repeat(2, 1fr); } }
 
 .diagram {
   background: var(--ground-2);
@@ -572,7 +738,7 @@ pre code { font-size: 0.82rem; }
 
 .back { --mono: 1; font-size: 0.8rem; display: inline-block; margin-bottom: 1.75rem; color: var(--ink-2); text-decoration-color: var(--line); }
 
-.pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; font-size: 0.95rem; font-weight: 600; }
+.pager { display: flex; justify-content: space-between; gap: 1rem; max-width: var(--measure); margin-top: 3rem; font-size: 0.95rem; font-weight: 600; }
 
 /* Buttons */
 
@@ -600,14 +766,26 @@ pre code { font-size: 0.82rem; }
 /* Resume */
 
 .resume-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+/* The name, the eyebrow and the first heading sit close together. */
+.resume-header .eyebrow { margin-bottom: 0; }
+.s-resume .page-grid > h2:first-of-type { margin-top: 1.5rem; }
 .resume-contact { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; font-size: 0.93rem; }
+.print-only { display: none; }
 .resume-contact li { margin: 0; }
 .resume-contact a { display: inline-block; padding: 0.35rem 0; }
-.job { margin-top: 2.25rem; }
-.job-head { display: flex; justify-content: space-between; gap: 0.5rem 1rem; flex-wrap: wrap; align-items: baseline; }
+/* One rhythm for the whole page: 2.5rem before a section heading, 1.75rem
+   between jobs, 0.5rem between the lines inside a job. */
+.s-resume h2 { margin: 2.5rem 0 0.9rem; }
+.job { margin-top: 1.75rem; }
+.s-resume h2 + .job { margin-top: 0; }
 .job-head h3 { margin: 0; }
-.job-note { font-size: 0.9rem; color: var(--ink-2); font-style: italic; margin: 0.25rem 0 0.5rem; }
-.job ul { margin-top: 0.5rem; }
+.job-head .meta { display: block; margin-top: 0.15rem; }
+.job-note { font-size: 0.9rem; color: var(--ink-2); font-style: italic; margin: 0.35rem 0 0; }
+.job .muted { margin: 0.5rem 0 0; }
+.job ul { margin: 0.5rem 0 0; }
+.job li:last-child { margin-bottom: 0; }
+.s-resume .page-grid > p { margin-bottom: 0.9rem; }
+.skills { margin: 0; }
 .skills dt { font-weight: 750; margin-top: 0.75rem; }
 .skills dd { margin: 0; color: var(--ink-2); }
 
@@ -785,6 +963,8 @@ pre code { font-size: 0.82rem; }
   html, body { --ground: #fff; --ground-2: #fff; --ground-3: #fff; --sunken: #fff; --ink: #111; --ink-2: #444; --ink-3: #666; --line: #ccc; --accent: #111; --brand: #111; --dot: transparent; }
   body { font-size: 11pt; background: #fff; }
   .site-header, .site-footer, .no-print { display: none !important; }
+  .print-only { display: flex; }
+  .page-grid { display: block; }
   main { padding: 0; }
   main h1::after { display: none; }
   a { text-decoration: none; }

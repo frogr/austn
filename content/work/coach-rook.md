@@ -2,6 +2,8 @@
 title: Coach Rook
 summary: A live video chess coach. The model never does the chess; the board and Stockfish do.
 tier: more
+tagline: "A video chess coach. Stockfish judges the moves, the model talks."
+kind: project
 order: 10
 when: "2026"
 role: Solo project
@@ -13,9 +15,16 @@ links:
     url: https://coach-rook.onrender.com/about
   - label: Code on GitHub
     url: https://github.com/frogr/tavus-chess-coach
+screenshot: /work/thumbs/coach-rook.webp
+screenshot_alt: "Coach Rook: four coaches to pick from, a session form, and a chess puzzle on a board"
 ---
 
 A chess coach you talk to over live video, built on Tavus, which does real-time AI video. You play on a real board in the browser while the coach watches every move, talks it through with you, and points at the squares it means. Ask it to play, review a game, or go back to puzzles, and it takes you there.
+
+<figure class="figure">
+  <img src="/work/coach-rook-1-puzzle.webp" alt="Coach Rook: four coaches to choose from, a name and access code form, and a rated puzzle on a chess board with white to move" width="1280" height="800" loading="lazy">
+  <figcaption>Pick a coach, start a session, and the board is live. Puzzle one, rated 857.</figcaption>
+</figure>
 
 ## Why chess
 

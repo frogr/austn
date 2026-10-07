@@ -8,5 +8,6 @@ class BlogController < ApplicationController
 
   def show
     @blog_post = BlogPost.published.find_by!(slug: params[:slug])
+    @more_posts = BlogPost.published.recent.where.not(id: @blog_post.id).limit(4)
   end
 end

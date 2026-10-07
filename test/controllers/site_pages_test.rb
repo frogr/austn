@@ -108,6 +108,20 @@ class SitePagesTest < ActionDispatch::IntegrationTest
     assert_select ".home-now a.button[href=?]", book_path
   end
 
+  test "the work index lists jobs with a desk of photos, side projects as cards, fun with peeks" do
+    get work_index_path
+
+    WorkItem.of_kind("job").each { |item| assert_select ".worklist--index .worklist-title", item.title }
+    job = WorkItem.of_kind("job").find(&:screenshot)
+    assert_select ".jobs .desk .polaroid img[src=?]", job.screenshot
+    assert_select ".jobs .desk .polaroid", count: WorkItem.of_kind("job").size
+    project = WorkItem.of_kind("project").find(&:screenshot)
+    assert_select ".cards .card-shot[src=?]", project.screenshot
+    WorkItem.of_kind("fun").each { |item| assert_select ".funlist-title", item.title }
+    fun = WorkItem.of_kind("fun").find(&:screenshot)
+    assert_select ".funlist .has-peek .peek[src=?]", fun.screenshot
+  end
+
   test "a case study leads with its numbers" do
     get work_item_path("backlit")
 

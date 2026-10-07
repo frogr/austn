@@ -3,6 +3,7 @@ title: CompanyCam
 summary: Led Pages AI from an idea to about 5,000 requests a day, and built shared RubyLLM abstractions that were adopted across the product.
 tagline: "Monolithic Rails app: RAG pipeline, generative AI features, AI agents."
 tier: featured
+kind: job
 order: 2
 when: "2023-25"
 role: Backend Engineer, Workflows & Outputs
@@ -20,6 +21,9 @@ legacy_ids: [pages-ai]
 links:
   - label: companycam.com
     url: https://companycam.com
+screenshot: /work/thumbs/companycam.webp
+screenshot_alt: "The CompanyCam homepage: how field work moves forward"
+blurb: "A photo app for contractors. Backend engineer on the team that turns photos into reports, including its AI assistant."
 ---
 
 CompanyCam is the photo app contractors use on job sites: 140,000+ contractors take photos, write reports and send them to customers. I was on the Workflows & Outputs team from November 2023 to August 2025, working in a large Rails monolith.
@@ -31,6 +35,11 @@ Pages is CompanyCam's document builder. Contractors use it to turn job photos in
 I led the Pages AI assistant from the first idea to production. A contractor types or talks into their phone on the job site and gets finished documentation back. It grew to about 5,000 requests a day. With the assistant, the share of active companies using Pages went from 4% to 11%, and customers told us it saved them 2 to 5 hours a week.
 
 We measured adoption by company, not by user. One company can have a lot of users who never make a document, so the per-company number was the more honest one.
+
+<figure class="figure">
+  <img src="/work/companycam-1-pages.webp" alt="CompanyCam's Pages feature page: put your photos to work, build job documents, photo reports, SOPs and daily logs from the photos you're already taking" width="1280" height="740" loading="lazy">
+  <figcaption>Pages, as CompanyCam sells it today. The assistant lives inside this.</figcaption>
+</figure>
 
 ## The shared AI layer
 

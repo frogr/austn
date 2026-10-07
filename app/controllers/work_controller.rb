@@ -3,8 +3,9 @@ class WorkController < ApplicationController
   site_section "work"
 
   def index
-    @featured = WorkItem.featured
-    @more = WorkItem.more
+    @jobs = WorkItem.of_kind("job")
+    @projects = WorkItem.of_kind("project").partition(&:screenshot).flatten # screenshots first
+    @fun = WorkItem.of_kind("fun")
   end
 
   def show

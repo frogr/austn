@@ -3,6 +3,7 @@ title: TinyRails
 summary: A small Rails-like framework on Rack, built to see what Rails is actually doing on every request.
 tagline: "Rails, rebuilt small, to see what it's really doing."
 tier: featured
+kind: project
 order: 6
 when: "2025"
 role: Solo project

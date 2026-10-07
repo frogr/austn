@@ -3,7 +3,7 @@
 Austin French's personal site: case studies, writing, a resume, and a playground
 of AI tools that used to run on a GPU at home.
 
-Rails 8 on a small DigitalOcean server (deployed with Kamal), Postgres, Redis
+Rails 8 on a small DigitalOcean server, Postgres, Redis
 and Sidekiq. The public pages are server-rendered ERB with one stylesheet and no
 JavaScript. React is only used for the interactive pages (MIDI studio, Claude
 Corner, chat) and the admin code review tool.
@@ -82,7 +82,6 @@ studies, no em dashes.
 
 ## Deploying
 
-One DigitalOcean droplet, deployed with Kamal from the Dockerfile. The steps,
-the environment variables and the first-deploy checklist are in
-[docs/deploy.md](docs/deploy.md). After each deploy, run `PostDeployJob` to
-import the blog posts from `content/blog_posts`.
+One DigitalOcean droplet. `ssh austn-vps 'bash -s' < script/deploy_droplet.sh`
+deploys `main`, migrates and imports the blog posts. Details, rollback and the
+environment variables are in [docs/deploy.md](docs/deploy.md).
