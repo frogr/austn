@@ -64,7 +64,7 @@ If your logs don't have `signals.agent_override` or something like it, that is t
 `src/pii.ts` replaces structured PII with typed, numbered placeholders:
 
 ```
-before: "App crashes every time I upload a photo from my iPhone 15. Started after the latest update. You can reach me at sofia.brennan@gmail.com. Call me at +44 20 9317 7584 if that's easier.\n\nBest,\nSofia Brennan"
+before: "App crashes every time I upload a photo from my iPhone 15. Started after the latest update. You can reach me at sofia.brennan@example.com. Call me at +44 20 9317 7584 if that's easier.\n\nBest,\nSofia Brennan"
 after:  "App crashes every time I upload a photo from my iPhone 15. Started after the latest update. You can reach me at [EMAIL_1]. Call me at [PHONE_1] if that's easier.\n\nBest,\n[NAME_1]"
 ```
 
