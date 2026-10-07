@@ -3,6 +3,7 @@ title: Tenex
 summary: Lead engineer on three client engagements at once. Document AI with evals and autonomy gates, retail analytics, a Databricks warehouse.
 tagline: "Three client projects at once, as the lead engineer on each."
 tier: featured
+kind: job
 order: 1
 when: "2026"
 role: Senior Forward Deployed Engineer
@@ -16,6 +17,7 @@ stats:
   - value: "Over half"
     label: "of documents run without human review"
 stack: [TypeScript, Next.js, Python, Google Document AI, Databricks, Postgres]
+blurb: "An AI consultancy. I was the engineer embedded with three clients: document extraction, retail analytics, a data warehouse."
 ---
 
 Tenex is an AI consultancy that puts engineers directly with clients. I was a forward deployed engineer there from March to June 2026, and the lead engineer on three client engagements at the same time. On each one I went from discovery to architecture to delivery, and I ran the demos for the client's executives.

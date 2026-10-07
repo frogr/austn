@@ -3,6 +3,7 @@ title: Backlit at the Super Bowl
 summary: Only engineer on site for the Super Bowl LX halftime show. Took the slowest pages from 10+ seconds to under 400ms.
 tagline: "Seven seasons on contract, ending as the only engineer on site for Super Bowl LX."
 tier: featured
+kind: job
 order: 3
 when: "seasonal, 2018-26"
 role: Full Stack / Forward Deployed Engineer (seasonal contract)
@@ -18,11 +19,19 @@ stats:
 stack: [Ruby on Rails, PostgreSQL, Twilio, Zeal, Yardstik]
 legacy_ids: [backlit, bgca]
 links:
-  - label: backlit.com
-    url: https://backlit.com
+  - label: getbacklit.com
+    url: https://getbacklit.com
+screenshot: /work/thumbs/backlit.webp
+screenshot_alt: "The Backlit homepage: People, Production, Pixels"
+blurb: "Talent logistics for live events. A seasonal contract I kept for seven years alongside full-time jobs."
 ---
 
 Backlit runs talent logistics for big live productions: onboarding, scheduling, payments and compliance for 10,000+ performers across the Super Bowl, the Oscars and the Grammys. I worked with them every event season for seven years, on contract, alongside my full-time jobs.
+
+<figure class="figure">
+  <img src="/work/backlit-1-roles.webp" alt="Backlit's project overview for an award ceremony: roles such as acrobat, dance groups, drummer and musician, each with status, applied and cast counts" width="1280" height="830" loading="lazy">
+  <figcaption>A project overview in Backlit: roles, who applied, who was cast. This is the platform I was on site with.</figcaption>
+</figure>
 
 ## On site at Super Bowl LX
 

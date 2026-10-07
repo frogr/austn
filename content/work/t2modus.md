@@ -2,6 +2,7 @@
 title: T2 Modus
 summary: Took a daily pipeline over 25,000+ customer records from six hours to 45 minutes.
 tier: more
+kind: job
 order: 40
 when: 2019-20
 role: Software Engineer
@@ -9,6 +10,9 @@ stack: [Ruby on Rails, PostgreSQL]
 links:
   - label: t2modus.com
     url: https://t2modus.com
+screenshot: /work/thumbs/t2modus.webp
+screenshot_alt: "The T2 Modus homepage"
+blurb: "Dealer data for the auto industry. Rails engineer, mostly making a slow nightly pipeline fast."
 ---
 
 T2 Modus makes identity verification and compliance tools for auto dealerships. It was one of my first engineering jobs, from July 2019 to September 2020.

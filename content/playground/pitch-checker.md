@@ -4,6 +4,8 @@ summary: Real-time pitch detection for voice and guitar. Runs entirely in your b
 order: 20
 kind: browser
 live_path: /pitch
+screenshot: /playground/pitch-checker.webp
+screenshot_caption: "The pitch checker before the microphone is enabled. Audio never leaves the browser."
 ---
 
 Sing or play into your mic and see the note and how many cents sharp or flat you are, live. It has a guitar mode with reference tones for each string, a noise gate, and a piano you can click for reference notes.

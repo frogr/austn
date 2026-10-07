@@ -3,6 +3,7 @@ title: austn.net's GPU tools
 summary: Nine AI tools I ran on one GPU in my apartment for six months, open to anyone on the web. They handled tens of thousands of jobs. This page covers how it worked and what broke.
 tagline: "Nine AI tools I ran on one GPU at home, open to anyone."
 tier: featured
+kind: project
 order: 5
 when: 2025-26
 role: Solo project
@@ -22,6 +23,8 @@ links:
     url: https://github.com/frogr/austn
   - label: The tools, one by one
     url: /playground
+screenshot: /work/thumbs/austn-net.webp
+screenshot_alt: "Four of the GPU tools that ran on austn.net: image to 3D, music generation, stem separation, background removal"
 ---
 
 From August 2025 to February 2026, anyone on the internet could use nine AI tools on this site, including image generation, music, text to speech, stem splitting, background removal, image to SVG, image to 3D, and chat. They all ran on one consumer GPU at my place in California. Together they handled tens of thousands of inference jobs.

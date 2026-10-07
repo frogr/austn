@@ -2,7 +2,8 @@
 title: Minecraft build planner
 summary: One of the first things I built with Claude Code, back in the beta. A Three.js tool for planning Minecraft builds, in about an hour.
 tier: more
-order: 20
+kind: fun
+order: 30
 when: "2025"
 role: Solo project
 stack: [Three.js, JavaScript]
