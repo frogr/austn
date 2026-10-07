@@ -8,8 +8,23 @@
       "warning_type": "Unmaintained Dependency",
       "fingerprint": "21ab0fe00fdd5899ffc405cff75aadb91b805ee996a614f7e27b08a287e9062d",
       "note": "Rails 8.0 support ends 2026-11-07; Rails is already on the latest 8.0.x and the 8.1 upgrade is a separate change. This low-confidence notice is ignored on purpose: Brakeman raises it to medium confidence (a new fingerprint) 30 days before end of life, which fails CI again as the reminder to upgrade."
+    },
+    {
+      "warning_type": "Cross-Site Scripting",
+      "fingerprint": "1c8fa0de9da7659e215bf8ccceb623e49b43f13f5baf59d07488bfcb6d4cc696",
+      "note": "Course links come from content/courses.yml, which is checked into the repo, and Course#https_url drops anything that isn't an https URL (tested in CourseTest)."
+    },
+    {
+      "warning_type": "Cross-Site Scripting",
+      "fingerprint": "46595cb617528ec966a3755c3c9f94af4c0bbfa187c6bd364986daf7761a5fa5",
+      "note": "Course links come from content/courses.yml, which is checked into the repo, and Course#https_url drops anything that isn't an https URL (tested in CourseTest)."
+    },
+    {
+      "warning_type": "Cross-Site Scripting",
+      "fingerprint": "47d0b4e2eef9a64d19cfe795d4b91ad83bd741cbf72f947fceabaedcbc1b63f2",
+      "note": "Course links come from content/courses.yml, which is checked into the repo, and Course#https_url drops anything that isn't an https URL (tested in CourseTest)."
     }
   ],
-  "updated": "2026-10-05",
+  "updated": "2026-10-07",
   "brakeman_version": "8.1.0"
 }

@@ -1,0 +1,58 @@
+<% page_title @course.title %>
+<% page_description @course.summary %>
+<% content_for :wide, true %>
+<% sample = @course.sample_post %>
+
+<div class="page-grid">
+  <p class="eyebrow">A course by <%= Profile.full_name %></p>
+  <h1><%= @course.title %></h1>
+  <p class="lede"><%= @course.summary %></p>
+
+  <aside class="rail">
+    <dl class="facts">
+      <dt>price</dt>
+      <dd class="course-price"><strong><%= number_to_currency(@course.price, precision: 0) %></strong> early access<% if @course.regular_price %>, then <%= number_to_currency(@course.regular_price, precision: 0) %><% end %></dd>
+      <dt>format</dt>
+      <dd><%= @course.lessons.size %> written lessons, each with code you run</dd>
+      <dt>code</dt>
+      <dd><%= @course.lessons.map { |lesson| lesson["code"] }.uniq.join(" and ") %></dd>
+    </dl>
+    <% if @course.on_sale? %>
+      <%= link_to "Buy for #{number_to_currency(@course.price, precision: 0)}", @course.buy_url, class: "button course-buy" %>
+    <% else %>
+      <p class="note course-soon"><strong>Launching soon.</strong> <%= mail_to Profile.email, "Email me", subject: "#{@course.title}: tell me when it launches" %> and I'll send you the link when it's out.</p>
+    <% end %>
+    <p class="rail-title">Start free</p>
+    <ul>
+      <% if @course.starter_url %><li><%= link_to "The free starter harness", @course.starter_url %></li><% end %>
+      <% if sample %><li><%= link_to "Read lesson 1 free", blog_post_path(sample.slug) %></li><% end %>
+    </ul>
+  </aside>
+
+  <h2>What it teaches</h2>
+  <ol class="lessons">
+    <% @course.lessons.each do |lesson| %>
+      <li><strong><%= lesson["title"] %>.</strong> <%= lesson["line"] %> <span class="meta"><%= lesson["code"] %></span></li>
+    <% end %>
+  </ol>
+
+  <h2>Who it's for</h2>
+  <p>Engineers who have shipped an LLM feature, or are about to, and want to know whether a change made it better or worse. You should be comfortable reading TypeScript or Ruby. It doesn't cover training models.</p>
+  <p>It picks up where the free <%= link_to "LLM eval starter", work_item_path("llm-eval-starter") %> stops. The starter is a golden set, graders and a CI gate for a support-ticket triage feature. The course takes that same feature into production.</p>
+
+  <h2>What's included</h2>
+  <ul>
+    <li>Six written lessons. Each one has the problem, the mental model, a worked example with real output, common mistakes, an exercise and a checklist.</li>
+    <li>Runnable code for every lesson, with tests. Five modules are TypeScript and one is a small Rails 8 app.</li>
+    <li>Synthetic data, labeled as synthetic, and offline stand-ins for the model, so every demo runs on your machine without an API key. Point it at Anthropic or OpenAI with your own key when you're ready.</li>
+  </ul>
+
+  <h2>Try it first</h2>
+  <p>
+    <% if @course.starter_url %>The <%= link_to "starter harness", @course.starter_url %> is free and open source.<% end %>
+    <% if sample %>
+      Lesson 1, <%= link_to sample.title, blog_post_path(sample.slug) %>, is free to read.
+    <% end %>
+    Questions? <%= mail_to Profile.email, "Email me" %>.
+  </p>
+</div>
