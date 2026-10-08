@@ -42,6 +42,10 @@ Rails.application.routes.draw do
 
   get "/resume", to: "resumes#show", as: :resume, defaults: { format: :html }
 
+  # Services and the course
+  get "/hire", to: "hire#show", as: :hire
+  get "/courses/:slug", to: "courses#show", as: :course
+
   # Short link to send people for a call
   get "/meet", to: redirect("/book"), as: :meet
 

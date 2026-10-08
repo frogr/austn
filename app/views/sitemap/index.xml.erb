@@ -12,6 +12,12 @@
     <priority><%= item.featured? ? "0.8" : "0.6" %></priority>
   </url>
   <% end %>
+  <% @courses.each do |course| %>
+  <url>
+    <loc>https://austn.net<%= course_path(course) %></loc>
+    <priority>0.7</priority>
+  </url>
+  <% end %>
   <% @playground_items.each do |item| %>
   <url>
     <loc>https://austn.net<%= playground_item_path(item) %></loc>

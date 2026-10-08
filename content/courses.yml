@@ -1,0 +1,56 @@
+# Courses, each with a page at /courses/<slug>.
+#
+# buy_url      the checkout link (Gumroad or similar). Leave it blank and the
+#              page shows "Launching soon" with an email link instead.
+# sample_post  slug of a blog post that is a free sample. The page links it only
+#              once the post is published.
+# price and regular_price are in dollars.
+
+courses:
+  - slug: evals-in-production
+    title: Evals in Production
+    summary: >-
+      A six-lesson course on testing LLM features after they ship: golden sets
+      from real traffic, a judge you can trust, deciding what ships without a
+      person, cost and latency, and evals in CI.
+    price: 39
+    regular_price: 59
+    buy_url:
+    starter_url: https://github.com/frogr/llm-eval-starter
+    sample_post: golden-sets-from-production-logs
+    lessons:
+      - title: Golden sets from production logs
+        code: TypeScript
+        line: >-
+          Grow the golden set from real traffic. Scrub PII first, dedupe, save
+          room for failures, label blind, and record where every case came from.
+      - title: Calibrating the judge
+        code: TypeScript
+        line: >-
+          Measure an LLM judge against human labels with kappa, read the
+          disagreements, fix the rubric, and check for self-preference and
+          position bias.
+      - title: Autonomy gating
+        code: TypeScript
+        line: >-
+          Decide which outputs ship without a person. Hard rules first, then a
+          threshold picked from a measured error rate, a review queue, and a
+          weekly audit.
+      - title: The harness in Ruby on Rails
+        code: Rails
+        line: >-
+          Move the eval loop into a Rails app so it tests the prompt you ship.
+          A plain Ruby library, a rake task, a Minitest test and a table for
+          history.
+      - title: Cost and latency per feature
+        code: TypeScript
+        line: >-
+          One record per model call, cost worked out from a price table when
+          you read it, per-feature reports, budget alarms, and a model
+          comparison on the golden set.
+      - title: Shipping evals in CI
+        code: TypeScript
+        line: >-
+          A cheap run on every PR that blocks only on cases the PR broke, a
+          nightly full run that measures flakiness, and a PR comment people
+          read.
