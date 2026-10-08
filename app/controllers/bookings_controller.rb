@@ -26,6 +26,7 @@ class BookingsController < ApplicationController
 
     if @booking.persisted?
       notify_booking(@booking)
+      record_visit_event("booking", label: "booked a call")
       redirect_to confirmation_booking_path(@booking.confirmation_token)
     else
       @date = @booking.booked_date || Date.current

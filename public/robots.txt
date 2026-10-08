@@ -3,5 +3,6 @@ Allow: /
 Disallow: /admin
 Disallow: /sidekiq
 Disallow: /gpu_health
+Disallow: /go
 
 Sitemap: https://austn.net/sitemap.xml

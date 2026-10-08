@@ -1,0 +1,110 @@
+<% meta_title "Analytics" %>
+<% stat_card = "p-4 rounded-lg" %>
+<% stat_style = "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" %>
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-5xl">
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h1 class="font-black mb-1" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">Analytics</h1>
+      <p class="text-gray-400 text-sm">Who came, from where, and what they did. People only: crawlers and your own signed-in visits are not counted.</p>
+    </div>
+    <nav class="flex gap-1 text-sm" aria-label="Range">
+      <% VisitReport::RANGES.each do |days| %>
+        <%= link_to "#{days} days", admin_analytics_path(days: days, touching: @touching), class: "px-3 py-1.5 rounded-md #{@report.days == days ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}" %>
+      <% end %>
+    </nav>
+  </div>
+
+  <%# Headline numbers %>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6 stats-grid">
+    <% [ [ "Visitors", @report.visitors ], [ "Visits", @report.visit_count ], [ "Page views", @report.page_views ], [ "Saw /hire", @report.hire_visitors ], [ "Demo clicks", @report.demo_clicks ], [ "Bookings", @report.bookings ] ].each do |label, value| %>
+      <div class="<%= stat_card %>" style="<%= stat_style %>">
+        <p class="text-2xl font-bold text-white tabular-nums"><%= value %></p>
+        <p class="text-gray-400 text-sm"><%= label %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Visitors per day %>
+  <% days = @report.by_day %>
+  <% max_visitors = days.map { |_date, visitors, _views| visitors }.max.to_i %>
+  <div class="<%= stat_card %> mb-6" style="<%= stat_style %>">
+    <h2 class="text-white font-semibold mb-3">Visitors per day</h2>
+    <div class="flex items-end gap-px" style="height: 7rem;" role="img" aria-label="Visitors per day, <%= days.map { |date, visitors, _| "#{date.strftime('%b %-d')}: #{visitors}" }.join(', ') %>">
+      <% days.each do |date, visitors, views| %>
+        <div class="flex-1 rounded-t" style="height: <%= bar_width(visitors, max_visitors) %>; background: rgba(29, 185, 84, <%= visitors.zero? ? 0.12 : 0.65 %>); min-height: 2px;" title="<%= date.strftime('%a %b %-d') %>: <%= pluralize(visitors, 'visitor') %>, <%= pluralize(views, 'page view') %>"></div>
+      <% end %>
+    </div>
+    <div class="flex justify-between text-xs text-gray-500 mt-1">
+      <span><%= days.first.first.strftime("%b %-d") %></span>
+      <span><%= days.last.first.strftime("%b %-d") %></span>
+    </div>
+  </div>
+
+  <%# The hire page's reach %>
+  <% funnel = @report.hire_funnel %>
+  <% funnel_max = funnel.map(&:last).max.to_i %>
+  <div class="<%= stat_card %> mb-6" style="<%= stat_style %>">
+    <h2 class="text-white font-semibold mb-1">Hire page</h2>
+    <p class="text-gray-500 text-sm mb-3">Visitors who reached each step. <%= link_to "Show only visits that touched /hire", admin_analytics_path(days: @report.days, touching: "/hire"), class: "text-green-400 hover:text-green-300" %>.</p>
+    <ol class="grid gap-2 sm:grid-cols-5 funnel">
+      <% funnel.each do |label, count| %>
+        <li class="relative px-3 py-2 rounded overflow-hidden">
+          <span class="absolute inset-0 rounded" style="background: rgba(29, 185, 84, <%= funnel_max.zero? ? 0.08 : (0.08 + 0.4 * count / funnel_max).round(2) %>);"></span>
+          <span class="relative block text-xl font-bold text-white tabular-nums"><%= count %></span>
+          <span class="relative block text-xs text-gray-300"><%= label %></span>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+    <%= ranked_list @report.top_pages.map { |path, views, visits| [ "#{path}  (#{visits} visits)", views ] }, title: "Pages, by views" %>
+    <%= ranked_list @report.sources, title: "Sources" %>
+    <%= ranked_list @report.referrers, title: "Referrers", empty: "No referrers yet" %>
+    <%= ranked_list @report.refs + @report.campaigns, title: "Links you handed out (ref and utm_campaign)", empty: "No tagged links clicked yet" %>
+    <%= ranked_list @report.landing_pages, title: "Landing pages" %>
+    <%= ranked_list @report.clicks, title: "Clicks out", empty: "No outbound clicks yet" %>
+    <%= ranked_list @report.countries, title: "Countries" %>
+    <%= ranked_list @report.cities, title: "Cities", empty: "No lookups yet" %>
+    <%= ranked_list @report.orgs, title: "Networks", empty: "No lookups yet" %>
+    <%= ranked_list @report.devices, title: "Devices" %>
+    <%= ranked_list @report.browsers, title: "Browsers" %>
+    <%= ranked_list @report.systems, title: "Systems" %>
+  </div>
+
+  <%# Recent visits %>
+  <div class="<%= stat_card %> mb-6" style="<%= stat_style %>">
+    <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+      <h2 class="text-white font-semibold">Recent visits<% if @touching %> that touched <code><%= @touching %></code><% end %></h2>
+      <% if @touching %><%= link_to "All visits", admin_analytics_path(days: @report.days), class: "text-sm text-gray-400 hover:text-white" %><% end %>
+    </div>
+    <% if @recent.empty? %>
+      <p class="text-gray-500 text-sm">No visits in this range.</p>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm recent-visits">
+          <thead class="text-left text-gray-500 text-xs uppercase tracking-wide">
+            <tr><th class="py-1 pr-3">When</th><th class="py-1 pr-3">From</th><th class="py-1 pr-3">Where</th><th class="py-1 pr-3">Device</th><th class="py-1 pr-3">Pages</th><th class="py-1">Trail</th></tr>
+          </thead>
+          <tbody class="text-gray-300 align-top">
+            <% @recent.each do |visit| %>
+              <tr class="border-t border-white/5 hover:bg-white/5">
+                <td class="py-2 pr-3 whitespace-nowrap"><%= link_to visit.started_at.strftime("%b %-d, %-l:%M %p"), admin_analytics_visit_path(visit), class: "text-green-400 hover:text-green-300" %><br><span class="text-gray-500 text-xs"><%= short_duration(visit.duration) %></span></td>
+                <td class="py-2 pr-3"><%= visit.source_label %></td>
+                <td class="py-2 pr-3"><%= visit.place || "unknown" %><% if visit.org %><br><span class="text-gray-500 text-xs"><%= visit.org %></span><% end %></td>
+                <td class="py-2 pr-3 whitespace-nowrap"><%= visit.device %> · <%= visit.browser %></td>
+                <td class="py-2 pr-3 tabular-nums"><%= visit.page_views_count %></td>
+                <td class="py-2 text-gray-400 break-words" style="max-width: 24rem;"><%= visit_trail(visit) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="pt-6 border-t border-gray-800 flex flex-wrap items-center justify-between gap-3">
+    <%= link_to "Admin", admin_root_path, class: "text-gray-500 hover:text-gray-300 text-sm" %>
+    <p class="text-gray-600 text-xs">Tag links you share with ?ref=name or utm_source. The resume PDF already links here with ?ref=resume.</p>
+  </div>
+</div>

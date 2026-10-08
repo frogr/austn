@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include AdminAuthenticatable
+  include VisitTracking
 
   helper_method :current_palette
 

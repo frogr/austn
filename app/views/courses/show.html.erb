@@ -21,13 +21,13 @@
       <dd><%= @course.lessons.map { |lesson| lesson["code"] }.uniq.join(" and ") %></dd>
     </dl>
     <% if @course.on_sale? %>
-      <%= link_to "Buy for #{number_to_currency(@course.price, precision: 0)}", @course.buy_url, class: "button course-buy" %>
+      <%= link_to "Buy for #{number_to_currency(@course.price, precision: 0)}", go_path("course", "#{@course.slug}/buy"), class: "button course-buy" %>
     <% else %>
       <p class="note course-soon"><strong>Launching soon.</strong> <%= mail_to Profile.email, "Email me", subject: "#{@course.title}: tell me when it launches" %> and I'll send you the link when it's out.</p>
     <% end %>
     <p class="rail-title">Start free</p>
     <ul>
-      <% if @course.starter_url %><li><%= link_to "The free starter harness", @course.starter_url %></li><% end %>
+      <% if @course.starter_url %><li><%= link_to "The free starter harness", go_path("course", "#{@course.slug}/starter") %></li><% end %>
       <% if sample %><li><%= link_to "Read lesson 1 free", blog_post_path(sample.slug) %></li><% end %>
     </ul>
   </aside>
@@ -55,7 +55,7 @@
 
   <h2>Try it first</h2>
   <p>
-    <% if @course.starter_url %>The <%= link_to "starter harness", @course.starter_url %> is free and open source.<% end %>
+    <% if @course.starter_url %>The <%= link_to "starter harness", go_path("course", "#{@course.slug}/starter") %> is free and open source.<% end %>
     <% if sample %>
       Lesson 1, <%= link_to sample.title, blog_post_path(sample.slug) %>, is free to read.
     <% end %>

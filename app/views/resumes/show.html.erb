@@ -26,7 +26,7 @@
     <ul>
       <li><%= mail_to @resume.email %></li>
       <% @resume.links.each do |link| %>
-        <li><%= link_to link["label"], link["url"] %></li>
+        <li><%= link_to link["label"], go_path("resume", link["label"].parameterize) %></li>
       <% end %>
     </ul>
     <p class="rail-title">Looking for</p>

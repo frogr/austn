@@ -24,7 +24,7 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select ".offers .offer-card .offer-card-price", text: "3 to 7 days"
     assert_select ".offers .offer-card--course[href='#course']", /Evals in Production/
     assert_select "#course a[href=?]", course_path("evals-in-production")
-    assert_select ".offer-examples a.button[href=?]", WorkItem.find("gutenberg-mcp").demo_url, text: "Try it live"
+    assert_select ".offer-examples a.button[href=?]", go_path("demo", "gutenberg-mcp"), text: "Try it live"
     assert_select "section.offer", text: /not verified/i, count: 0
     assert_select "a.button[href=?]", book_path
     assert_select "a[href=?]", "mailto:#{Profile.email}"
@@ -60,7 +60,7 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
     assert_select "h1", course.title
     assert_select ".lessons li", count: 6
     course.lessons.each { |lesson| assert_select ".lessons strong", "#{lesson["title"]}." }
-    assert_select "a[href=?]", course.starter_url
+    assert_select "a[href=?]", go_path("course", "#{course.slug}/starter")
     assert_select "li", /Modules 2, 4 and 5 can also call Anthropic or OpenAI/
     assert_select "p", /TypeScript \(five modules\) and Ruby for the Rails module/
   end
@@ -110,9 +110,10 @@ class HireAndCoursePagesTest < ActionDispatch::IntegrationTest
 
     Course.stub(:find, course) do
       get course_path("evals-in-production")
+      assert_equal url, Outbound.url_for("course", "evals-in-production/buy")
     end
 
-    assert_select "a.course-buy[href=?]", url, text: "Buy for $39"
+    assert_select "a.course-buy[href=?]", go_path("course", "evals-in-production/buy"), text: "Buy for $39"
     assert_select ".course-price", /\$39 early access, then \$59/
     assert_select ".course-soon", count: 0
   end
