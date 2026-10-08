@@ -8,6 +8,8 @@ order: 10
 when: "2026"
 role: Solo project
 stack: [Tavus CVI, Node, Stockfish, Postgres]
+hue: moss
+art: true
 links:
   - label: Code on GitHub
     url: https://github.com/frogr/tavus-chess-coach

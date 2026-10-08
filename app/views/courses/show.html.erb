@@ -10,8 +10,11 @@
 
   <aside class="rail">
     <dl class="facts">
-      <dt>price</dt>
-      <dd class="course-price"><strong><%= number_to_currency(@course.price, precision: 0) %></strong> early access<% if @course.regular_price %>, then <%= number_to_currency(@course.regular_price, precision: 0) %><% end %></dd>
+      <%# The price shows once there is somewhere to buy it. %>
+      <% if @course.on_sale? %>
+        <dt>price</dt>
+        <dd class="course-price"><strong><%= number_to_currency(@course.price, precision: 0) %></strong> early access<% if @course.regular_price %>, then <%= number_to_currency(@course.regular_price, precision: 0) %><% end %></dd>
+      <% end %>
       <dt>format</dt>
       <dd><%= @course.lessons.size %> written lessons, each with code you run</dd>
       <dt>code</dt>
@@ -44,8 +47,11 @@
   <ul>
     <li>Six written lessons. Each one has the problem, the mental model, a worked example with real output, common mistakes, an exercise and a checklist.</li>
     <li>Runnable code for every lesson, with tests. Five modules are TypeScript and one is a small Rails 8 app.</li>
-    <li>Synthetic data, labeled as synthetic, and a mock model, so every module runs offline on your machine without an API key. Modules 2, 4 and 5 can also call Anthropic or OpenAI with your own key. Those live paths haven't been run against the real APIs yet.</li>
+    <li>Synthetic data, labeled as synthetic, and a mock model, so every module runs offline on your machine without an API key. Modules 2, 4 and 5 can also call Anthropic or OpenAI with your own key. The Anthropic paths have each been run once, and the numbers are in the course's proof file; the OpenAI paths haven't.</li>
   </ul>
+
+  <h2>Want it done for you?</h2>
+  <p>The <%= link_to "eval setup sprint", hire_path(anchor: "eval-sprint") %> on my hire page is this course applied to your feature: one week, a golden set from your real traffic, the harness in your repo, and a CI gate. The course is for doing it yourself.</p>
 
   <h2>Try it first</h2>
   <p>

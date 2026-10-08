@@ -6,7 +6,11 @@
 #   tagline (one short line for the home page), blurb (a plain line for the work
 #   index), stats (list of {value, label}),
 #   kind (one of KINDS), screenshot (path under public/, shown on the work index),
-#   screenshot_alt (what the screenshot shows)
+#   screenshot_alt (what the screenshot shows),
+#   hue (sun | sky | clay | moss | plum), art (true to show the drawing from
+#   shared/_toy_art instead of the screenshot on cards and in the rail),
+#   offer (slug of the offer on /hire this project is the sample for),
+#   demo_url (where the thing runs, for a Try it button)
 class WorkItem
   include MarkdownDocument
 
@@ -40,4 +44,20 @@ class WorkItem
   def legacy_ids = Array(attributes["legacy_ids"]).map(&:to_s)
   def screenshot = attributes["screenshot"]
   def screenshot_alt = attributes["screenshot_alt"] || title
+  # One of the palette's five hues, for the drawing's ground. Work's hue otherwise.
+  def hue = attributes.fetch("hue", "sun")
+  # True when shared/_toy_art has a drawing for this slug and the pages should use it.
+  def art? = attributes["art"] == true
+  # Where the project runs, for the Try it button. Only https links are shown.
+  def demo_url
+    url = attributes["demo_url"]
+    url if url.present? && URI.parse(url).is_a?(URI::HTTPS)
+  rescue URI::InvalidURIError
+    nil
+  end
+
+  # The offer on /hire this project is the worked sample for, if any.
+  def offer
+    Offer.find(attributes["offer"]) if attributes["offer"]
+  end
 end

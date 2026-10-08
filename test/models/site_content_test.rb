@@ -39,6 +39,35 @@ class SiteContentTest < ActiveSupport::TestCase
     WorkItem.of_kind("project").each { |item| assert item.tagline.length <= 70, "#{item.slug}'s tagline is too long for a card" }
   end
 
+  test "a project that uses a drawing has one, a known hue, and an offer that exists" do
+    art = File.read(Rails.root.join("app/views/shared/_toy_art.html.erb"))
+    WorkItem.all.select(&:art?).each do |item|
+      assert_includes art, %(when "#{item.slug}"), "#{item.slug} says art: true but shared/_toy_art has no drawing for it"
+      assert_includes %w[sun sky clay moss plum], item.hue, "#{item.slug} has an unknown hue"
+    end
+    WorkItem.all.each { |item| item.offer } # raises if an offer slug is wrong
+  end
+
+  test "every offer's examples are side projects, and the case studies point back" do
+    Offer.all.each do |offer|
+      assert offer.pitch.present?, "#{offer.slug} has no pitch"
+      assert offer.you_get.any?, "#{offer.slug} has no you_get list"
+      offer.examples.each { |item| assert_equal "project", item.kind, "#{offer.slug} lists #{item.slug}, which isn't a side project" }
+    end
+    WorkItem.all.select(&:offer).each do |item|
+      assert_includes item.offer.examples.map(&:slug), item.slug, "#{item.slug} says it is an example for #{item.offer.slug}, but that offer doesn't list it"
+    end
+  end
+
+  test "case studies don't carry hedging sections, and demo links are https" do
+    WorkItem.all.each do |item|
+      assert_no_match(/^## .*not verified/i, item.body, "#{item.slug} has a 'not verified' section")
+      assert_no_match(/^## .*not checked/i, item.body, "#{item.slug} has a 'not checked' section")
+    end
+    assert_equal "https://gutenberg-mcp.onrender.com", WorkItem.find("gutenberg-mcp").demo_url
+    assert_nil WorkItem.new(slug: "x", attributes: { "title" => "x", "demo_url" => "javascript:alert(1)" }, body: "").demo_url
+  end
+
   test "legacy project ids point at one case study each" do
     ids = WorkItem.all.flat_map(&:legacy_ids)
     assert_equal ids.uniq, ids

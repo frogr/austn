@@ -14,6 +14,7 @@
         <li><%= link_to "GitHub", Profile.links["github"] %></li>
         <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
         <li><%= link_to "Resume", resume_path %></li>
+        <li><%= link_to "Hire me", hire_path %></li>
       </ul>
     </section>
 
@@ -94,6 +95,7 @@
             </li>
           <% end %>
         </ul>
+        <p class="home-more"><%= link_to "Plus a course: Evals in Production", course_path("evals-in-production") %></p>
       </section>
     <% end %>
   </div>

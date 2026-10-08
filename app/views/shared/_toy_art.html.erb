@@ -105,6 +105,90 @@
       <path class="art-stroke" d="M26 43 V79 L60 98 L94 79 V43 M60 62 V98"/>
     </g>
   </svg>
+<% when "marginalia" %>
+  <%# An open book, and a magnifying glass finding a line in it. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke" d="M12 30 Q36 20 60 32 V98 Q36 86 12 96 Z"/>
+    <path class="art-stroke" d="M108 30 Q84 20 60 32 V98 Q84 86 108 96 Z"/>
+    <path class="art-stroke art-soft" d="M24 48 H48 M24 60 H48 M24 72 H48 M72 48 H96 M72 72 H96"/>
+    <path class="art-stroke" d="M72 60 H96"/>
+    <circle class="art-fill art-soft art-star" cx="84" cy="60" r="13"/>
+    <circle class="art-stroke" cx="84" cy="60" r="17"/>
+    <path class="art-stroke" d="M96 72 L110 86" stroke-width="5"/>
+  </svg>
+<% when "gutenberg-mcp" %>
+  <%# A quotation, and the check that says it really is in the book. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-fill" d="M38 34 a9 9 0 1 1 -9 9 c0 10 -6 16 -14 18 v-6 c4 -2 7 -5 8 -10 a9 9 0 0 1 15 -11z"/>
+    <path class="art-fill" d="M70 34 a9 9 0 1 1 -9 9 c0 10 -6 16 -14 18 v-6 c4 -2 7 -5 8 -10 a9 9 0 0 1 15 -11z"/>
+    <path class="art-stroke" d="M22 76 H74 M22 92 H60"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M74 94 L88 108 L112 78" stroke-width="5"/>
+  </svg>
+<% when "lichess-mcp" %>
+  <%# A pawn on the board. The move the engine liked draws itself in; the move played fades behind it. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <g class="art-fill art-soft">
+      <rect x="14" y="16" width="30" height="30"/><rect x="74" y="16" width="30" height="30"/>
+      <rect x="44" y="46" width="30" height="30"/>
+      <rect x="14" y="76" width="30" height="30"/><rect x="74" y="76" width="30" height="30"/>
+    </g>
+    <rect class="art-stroke" x="14" y="16" width="90" height="90" rx="3"/>
+    <circle class="art-fill" cx="29" cy="76" r="9"/>
+    <path class="art-fill" d="M23 84 h12 l4 12 h-20z"/>
+    <rect class="art-fill" x="16" y="96" width="26" height="6" rx="2"/>
+    <path class="art-stroke art-slide art-soft" d="M46 88 H90" stroke-width="4"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M44 70 L82 32 M64 32 H84 V52" stroke-width="4"/>
+  </svg>
+<% when "coach-rook" %>
+  <%# A rook on the board and the coach's speech bubble, which pops in as it talks. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <g class="art-fill art-soft">
+      <rect x="14" y="46" width="30" height="30"/><rect x="74" y="46" width="30" height="30"/>
+      <rect x="44" y="76" width="30" height="30"/>
+    </g>
+    <rect class="art-stroke" x="14" y="46" width="90" height="60" rx="3"/>
+    <path class="art-fill" d="M46 56 h6 v6 h4 v-6 h8 v6 h4 v-6 h6 v12 h-28z"/>
+    <path class="art-fill" d="M50 68 h20 v20 h-20z"/>
+    <rect class="art-fill" x="44" y="88" width="32" height="6" rx="2"/>
+    <g class="art-pop">
+      <path class="art-stroke" d="M64 12 h40 a6 6 0 0 1 6 6 v14 a6 6 0 0 1 -6 6 h-26 l-10 8 v-8 h-4 a6 6 0 0 1 -6 -6 v-14 a6 6 0 0 1 6 -6z"/>
+      <path class="art-stroke art-thin" d="M72 22 H98 M72 29 H90"/>
+    </g>
+  </svg>
+<% when "nyc-open-data-mcp" %>
+  <%# A map pin on the city grid. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke art-soft" d="M14 34 H106 M14 60 H106 M14 86 H106 M34 14 V106 M60 14 V106 M86 14 V106"/>
+    <g class="art-bob">
+      <path class="art-fill" d="M60 20 a22 22 0 0 1 22 22 c0 16 -22 42 -22 42 s-22 -26 -22 -42 a22 22 0 0 1 22 -22z"/>
+      <circle class="art-stroke" cx="60" cy="42" r="8" style="stroke: var(--hue, currentColor);"/>
+    </g>
+    <ellipse class="art-fill art-soft" cx="60" cy="92" rx="14" ry="4"/>
+  </svg>
+<% when "second-draft" %>
+  <%# A pencil striking one line and writing the next. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <path class="art-stroke art-soft" d="M16 32 H84 M16 86 H60"/>
+    <path class="art-stroke" d="M16 50 H74"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M12 52 Q30 44 48 51 T80 49"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M16 68 H62"/>
+    <g class="art-tumble">
+      <path class="art-fill" d="M62 68 L72 58 L104 90 L94 100z"/>
+      <path class="art-fill art-soft" d="M62 68 L72 58 L78 64 L68 74z"/>
+      <path class="art-stroke" d="M94 100 L104 90 L110 104z"/>
+    </g>
+  </svg>
+<% when "llm-eval-starter" %>
+  <%# A golden set: two cases pass, one fails, and the gate holds. %>
+  <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+    <rect class="art-stroke" x="16" y="18" width="22" height="22" rx="5"/>
+    <rect class="art-stroke" x="16" y="50" width="22" height="22" rx="5"/>
+    <rect class="art-stroke" x="16" y="82" width="22" height="22" rx="5"/>
+    <path class="art-stroke art-soft" d="M50 29 H104 M50 61 H92 M50 93 H100"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M20 30 L26 36 L36 22"/>
+    <path class="art-stroke art-draw" pathLength="100" d="M20 62 L26 68 L36 54"/>
+    <path class="art-stroke" d="M21 87 L33 99 M33 87 L21 99"/>
+  </svg>
 <% when "chat" %>
   <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
     <path class="art-stroke" d="M22 22 H70 a8 8 0 0 1 8 8 V46 a8 8 0 0 1 -8 8 H38 L26 66 V54 H22 a8 8 0 0 1 -8 -8 V30 a8 8 0 0 1 8 -8 Z"/>

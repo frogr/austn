@@ -115,11 +115,50 @@ class SitePagesTest < ActionDispatch::IntegrationTest
     job = WorkItem.of_kind("job").find(&:screenshot)
     assert_select ".jobs .desk .polaroid img[src=?]", job.screenshot
     assert_select ".jobs .desk .polaroid", count: WorkItem.of_kind("job").size
-    project = WorkItem.of_kind("project").find(&:screenshot)
+    project = WorkItem.of_kind("project").find { |item| item.screenshot && !item.art? }
     assert_select ".cards .card-shot[src=?]", project.screenshot
+    drawn = WorkItem.of_kind("project").find(&:art?)
+    assert_select ".cards .card-art[data-hue=?] svg", drawn.hue
     WorkItem.of_kind("fun").each { |item| assert_select ".funlist-title", item.title }
     fun = WorkItem.of_kind("fun").find(&:screenshot)
     assert_select ".funlist .has-peek .peek[src=?]", fun.screenshot
+  end
+
+  test "a drawn project shows its drawing, its conversation and the offer it is proof for" do
+    get work_item_path("gutenberg-mcp")
+
+    assert_select ".rail .toy-art[data-hue=sun] svg"
+    assert_select ".prose .chat .chat-you", minimum: 1
+    assert_select ".prose .chat .chat-tool code b", "quote_check"
+    assert_select ".prose .diagram svg"
+    assert_select ".proof-note a[href=?]", hire_path(anchor: "mcp-server")
+    assert_select ".rail a.button[href=?]", "https://gutenberg-mcp.onrender.com", text: "Try it live"
+  end
+
+  test "the course is reachable from the home page and the writing index" do
+    BlogPost.create!(title: "A post", content: "Hello", slug: "a-post", published_at: 1.hour.ago)
+    get root_path
+    assert_select ".home-writing a[href=?]", course_path("evals-in-production")
+    get blog_path
+    assert_select ".rail a[href=?]", course_path("evals-in-production")
+  end
+
+  test "a project without an offer has no proof note" do
+    get work_item_path("coach-rook")
+    assert_select ".proof-note", count: 0
+  end
+
+  test "the nav links to the hire page and highlights it there" do
+    get work_index_path
+    assert_select ".site-nav a[href=?]", hire_path
+    assert_select ".site-nav a[aria-current=page]", "Work"
+
+    get hire_path
+    assert_select "body.s-hire"
+    assert_select ".site-nav a[aria-current=page]", "Hire"
+
+    get course_path("evals-in-production")
+    assert_select ".site-nav a[aria-current=page]", "Hire"
   end
 
   test "a case study leads with its numbers" do

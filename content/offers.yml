@@ -1,91 +1,123 @@
-# The offers on /hire. Edit prices and wording here; the page reads only this file.
+# The offers on /hire. The page reads only this file.
 #
-# Each offer has either:
-#   tiers       fixed packages, each with a name, price (dollars), days and what's included
-#   price       one fixed price in dollars, with a duration ("One week")
-#   from_price  a starting price in dollars, shown as "from $X". Leave it blank
-#               and the page says "Scoped per project".
-# proof is a list of case study slugs from content/work.
+# No prices here on purpose: the site describes the work, and packaged prices
+# live on the marketplace profiles listed under `profiles` (shown once filled
+# in). Each offer has:
+#   pitch       one line under the title, the outcome in plain words
+#   summary     a paragraph on what it is and why it works
+#   you_get     a list of what ships
+#   timeline    how long it takes ("One week", "Scoped on a call")
+#   tiers       optional sizes, each with a name, days and what's included
+#   examples    slugs from content/work: the side projects that show the offer working
 
 offers:
   - slug: mcp-server
     title: Custom MCP server
+    pitch: Your data, usable from Claude by the end of the week.
     summary: >-
-      Your API or database, usable from Claude, Cursor and other AI apps. MCP
-      (Model Context Protocol) is the open standard those apps use to call
-      outside tools. You get a server that validates every input, returns
-      errors the model can act on, and is tested before you see it. The
-      sample servers below are open source and run locally or over HTTP.
-      None of them is deployed or has sign-in yet, so auth and deploys are
-      work I'd do for you, scoped in writing.
+      MCP (Model Context Protocol) is how Claude, Cursor and ChatGPT call
+      outside tools. I build the server on the other end of it for your API,
+      database or document store: a few tools shaped around the questions your
+      people actually ask, a general one for everything else, and the
+      validation, rate limits and plain-language errors that make it safe to
+      leave running. You connect it once. After that, your team just asks.
+    you_get:
+      - Tools designed from the real questions, not from your schema
+      - Every input validated and escaped before it touches your system
+      - Errors the model can act on, so it recovers instead of guessing
+      - A web playground where anyone can run every tool and see the raw result
+      - Install docs for Claude Desktop, Claude Code and Cursor
+    timeline: 3 to 7 days
     tiers:
       - name: Basic
-        price: 150
         days: 3
-        includes: Up to 3 read-only tools, your API's key passed in through an environment variable, and install docs for Claude Desktop, Claude Code and Cursor.
+        includes: Up to 3 read-only tools over your API, running locally, with install docs for Claude Desktop, Claude Code and Cursor.
       - name: Standard
-        price: 350
         days: 5
-        includes: Up to 8 tools, including writes that ask for confirmation first. Input validation and tests.
+        includes: Up to 8 tools, including writes that ask for confirmation first. Validation, tests and the playground.
       - name: Premium
-        price: 750
         days: 7
-        includes: A remote HTTP server, deployed to your cloud (Render, Fly or your own), with auth (API key or OAuth) scoped in writing, plus docs and a handoff call.
-    proof: [nyc-open-data-mcp, gutenberg-mcp, lichess-mcp]
+        includes: A remote server on your cloud with auth (API key or OAuth), rate limits and a daily cap, plus docs and a handoff call.
+    examples: [nyc-open-data-mcp, gutenberg-mcp, lichess-mcp]
 
   - slug: rag
-    title: RAG build
+    title: Answers from your documents
+    pitch: Ask a question, get an answer that cites the page it came from.
     summary: >-
       Search and answers over your own documents (RAG, retrieval-augmented
-      generation). Answers cite their sources, code checks that every quote is
-      really in the source it cites, and retrieval is measured on questions
-      from your domain, so you know where it's weak before your users do.
-    # PLACEHOLDER for Austin to confirm. A suggested starting point is 1500.
-    # Blank means the page says "Scoped per project".
-    from_price:
-    includes: A written scope after a call, the retrieval eval and its numbers, tests, and a list of what wasn't verified.
-    proof: [marginalia, gutenberg-mcp]
+      generation), built so you can trust what comes back. Every quote in an
+      answer is checked by code against the source it cites before anyone sees
+      it. Retrieval is measured on real questions from your domain, so you know
+      what it finds and what it misses before your users do. And every answer
+      shows its working: which passages it read, how they scored, which quotes
+      passed.
+    you_get:
+      - Retrieval tuned on a question set from your domain, with the numbers
+      - A quote check that catches invented, altered and misattributed quotes
+      - A "how this answer was made" view on every answer
+      - Works with Anthropic or OpenAI, or with no model at all for the cheap path
+    timeline: Scoped on a call
+    examples: [marginalia, gutenberg-mcp]
 
   - slug: agent
-    title: Agent build
+    title: An agent that does the job
+    pitch: Tools on your systems, limits on everything, a record of what it did.
     summary: >-
-      An agent that uses tools on your systems to get a job done. It runs with
-      limits on turns, tokens and time, falls back to something safe when the
-      model fails, and anything it cites is checked by code before a person
-      sees it.
-    # PLACEHOLDER for Austin to confirm. A suggested starting point is 2000.
-    # Blank means the page says "Scoped per project".
-    from_price:
-    includes: A written scope after a call, the agent with its tools and limits, tests that script the model's side of the conversation, and evals.
-    proof: [second-draft, coach-rook, companycam]
+      An agent that uses tools on your systems to get a piece of work done,
+      end to end. It runs with limits on turns, tokens and time, falls back to
+      something safe when the model fails, and anything it cites is checked by
+      code before a person sees it. The model decides what matters and
+      explains it. Code does the measuring, and code holds the line.
+    you_get:
+      - The tools, scoped to what the job needs and nothing more
+      - Turn, token and time budgets, with a safe fallback that says it fell back
+      - A validator between the model and the person
+      - Tests that script the model's side of the conversation, including the failures
+    timeline: Scoped on a call
+    examples: [second-draft, coach-rook]
 
   - slug: eval-sprint
     title: Eval setup sprint
+    pitch: One week to get your LLM feature under test, in your repo.
     summary: >-
-      One week to get your LLM feature under test. A golden set built from your
-      real traffic, a harness wired into your repo (TypeScript or Rails), and a
-      CI gate that blocks merges when quality drops.
-    price: 750
-    duration: One week
-    includes: The golden set with where each case came from, the harness in your repo, the CI gate, and a short write-up of what the first run found.
+      You've shipped an LLM feature and you're changing the prompt by feel.
+      In one week I build the test suite for it: a golden set from your real
+      traffic, graders that score the same way every time, a diff that shows
+      which cases changed between two versions, and a gate in CI that blocks
+      the merge when quality drops. TypeScript or Rails.
+    you_get:
+      - A golden set with where each case came from, scrubbed of personal data
+      - Code graders for everything that has a right answer, a model judge only for what doesn't
+      - Per-tag floors, so a strong average can't hide a category that collapsed
+      - The CI gate, and a short write-up of what the first run found
+    timeline: One week
     course: evals-in-production
-    proof: [llm-eval-starter, marginalia, second-draft, tenex]
+    examples: [llm-eval-starter, marginalia, second-draft]
+
+# One line on how pricing works, shown with every offer.
+pricing: Fixed scope and a fixed price, agreed in writing before any work starts.
+
+# Marketplace profiles with packaged prices. Each has a label and an https url.
+# Leave the list empty and the page says nothing about them.
+profiles: []
 
 how_i_work:
-  - title: Deterministic checks below, models above
+  - title: Code decides what's true
     text: >-
-      Code decides what's true: what the data says, what the engine says,
-      whether a quote is in the text. A model ranks, explains and writes on
-      top of that.
-  - title: Every claim is checked against a source
+      What the data says, what the engine says, whether a quote is in the text:
+      code answers those, and it's tested. The model ranks, explains and writes
+      on top. That's why these tools don't make things up.
+  - title: Every claim points at its source
     text: >-
-      If an answer quotes something, code confirms the quote is there. If a
-      number is in a write-up, it came from a command you can run again.
-  - title: Tests and evals ship with the code
+      If an answer quotes something, code has confirmed the quote is there. If
+      a number is in a write-up, it came from a command you can run again.
+  - title: You can watch it work
     text: >-
-      You get the numbers, how they were measured, and a plain list of what
-      wasn't verified.
-  - title: AI-assisted, and read by me
+      Every project ships with a playground that runs the real tools and shows
+      the raw result next to the friendly one. Your team can see exactly what
+      the model had to work with.
+  - title: Fast to build, slow to read
     text: >-
-      AI tools, mostly Claude Code, are part of how I build. Everything they
-      write is read, tested and measured before it ships.
+      AI tools, mostly Claude Code, are part of how I build, which is why a
+      week is enough. Everything they write is read, tested and measured before
+      it ships.

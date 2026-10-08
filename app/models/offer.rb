@@ -9,6 +9,10 @@ class Offer
   end
 
   def self.all = data.fetch("offers").map { |attributes| new(attributes) }
+  def self.pricing = data.fetch("pricing")
+  # Marketplace profiles with packaged prices: [{ "label", "url" }], https only.
+  def self.profiles = Array(data["profiles"]).select { |profile| profile["url"].to_s.start_with?("https://") }
+  def self.find(slug) = all.find { |offer| offer.slug == slug.to_s } || raise(ActiveRecord::RecordNotFound, "No offer named #{slug}")
   def self.how_i_work = data.fetch("how_i_work")
 
   attr_reader :attributes
@@ -20,23 +24,14 @@ class Offer
   def slug = attributes.fetch("slug")
   def title = attributes.fetch("title")
   def summary = attributes.fetch("summary")
-  def includes = attributes["includes"]
-  def duration = attributes["duration"]
+  def pitch = attributes["pitch"]
+  def you_get = Array(attributes["you_get"])
+  def timeline = attributes.fetch("timeline")
   def tiers = Array(attributes["tiers"])
   def course_slug = attributes["course"]
-  def proof = Array(attributes["proof"]).map { |slug| WorkItem.find(slug) }
-
-  # "$750" for a fixed price, "from $1,500" for a starting price, and
-  # "Scoped per project" when neither is set. Tiered offers price each tier.
-  def price_label
-    if attributes["price"]
-      dollars(attributes["price"])
-    elsif attributes["from_price"]
-      "from #{dollars(attributes["from_price"])}"
-    else
-      "Scoped per project"
-    end
+  def course
+    Course.find(course_slug) if course_slug
   end
-
-  def dollars(amount) = ActiveSupport::NumberHelper.number_to_currency(amount, precision: 0)
+  # The side projects that show this offer working.
+  def examples = Array(attributes["examples"]).map { |slug| WorkItem.find(slug) }
 end
