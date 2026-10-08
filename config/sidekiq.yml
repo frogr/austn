@@ -36,6 +36,11 @@
       class: PurgeStaleUploadsJob
       queue: low
       description: "Delete GPU tool uploads whose job never finished"
+    purge_old_visits:
+      cron: '45 3 * * *'  # Daily at 3:45am
+      class: PurgeOldVisitsJob
+      queue: low
+      description: "Delete visit records older than a year"
 
 # GPU jobs can also run in a dedicated process (see Procfile.gpu). Either
 # way, Gpu::Lock keeps it to one GPU job at a time across processes.

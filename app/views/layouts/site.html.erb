@@ -79,8 +79,8 @@
         <% else %>
           <ul>
             <li><%= mail_to Profile.email %></li>
-            <li><%= link_to "GitHub", Profile.links["github"] %></li>
-            <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+            <li><%= link_to "GitHub", go_path("profile", "github") %></li>
+            <li><%= link_to "LinkedIn", go_path("profile", "linkedin") %></li>
             <li><%= link_to "Book a time", book_path %></li>
             <li><%= link_to "Hire me", hire_path %></li>
             <li><%= link_to "Now", now_path %></li>

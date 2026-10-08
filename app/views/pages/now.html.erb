@@ -12,8 +12,8 @@
   <p class="muted" style="margin: 0 0 1.5rem;">Claude Code most of the day, with a custom status line. Obsidian for notes and drafts. PostHog for error tracking.</p>
   <p class="rail-title">Elsewhere</p>
   <ul>
-    <li><%= link_to "GitHub", Profile.links["github"] %></li>
-    <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+    <li><%= link_to "GitHub", go_path("profile", "github") %></li>
+    <li><%= link_to "LinkedIn", go_path("profile", "linkedin") %></li>
     <li><%= mail_to Profile.email %></li>
     <li><%= link_to "Grab a time", book_path %></li>
   </ul>

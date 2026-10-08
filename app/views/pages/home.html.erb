@@ -11,8 +11,8 @@
       <p class="home-sub">Eight years of production work, mostly Rails, lately TypeScript and applied AI, from a Super Bowl check-in line to a client's conference room.</p>
       <ul class="home-links">
         <li><%= mail_to Profile.email, "Email" %></li>
-        <li><%= link_to "GitHub", Profile.links["github"] %></li>
-        <li><%= link_to "LinkedIn", Profile.links["linkedin"] %></li>
+        <li><%= link_to "GitHub", go_path("profile", "github") %></li>
+        <li><%= link_to "LinkedIn", go_path("profile", "linkedin") %></li>
         <li><%= link_to "Resume", resume_path %></li>
         <li><%= link_to "Hire me", hire_path %></li>
       </ul>

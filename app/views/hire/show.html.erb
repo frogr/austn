@@ -85,7 +85,7 @@
           <li>
             <% if item.art? %><a class="mini-art" data-hue="<%= item.hue %>" href="<%= work_item_path(item) %>" aria-hidden="true" tabindex="-1"><%= render "shared/toy_art", slug: item.slug %></a><% end %>
             <span class="example-text"><%= link_to item.title, work_item_path(item), class: "example-title" %> <span class="muted"><%= item.tagline %></span></span>
-            <% if item.demo_url %><%= link_to "Try it live", item.demo_url, class: "button button--quiet button--small" %><% end %>
+            <% if item.demo_url %><%= link_to "Try it live", go_path("demo", item.slug), class: "button button--quiet button--small" %><% end %>
           </li>
         <% end %>
         <% if offer.course %>

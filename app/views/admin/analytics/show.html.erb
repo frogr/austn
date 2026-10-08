@@ -1,0 +1,55 @@
+<% meta_title "Visit" %>
+<% card = "p-4 rounded-lg" %>
+<% card_style = "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" %>
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-3xl">
+  <%= link_to "← Analytics", admin_analytics_path, class: "text-sm text-gray-400 hover:text-white" %>
+  <h1 class="font-black mt-2 mb-1" style="font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--text-primary); letter-spacing: -0.03em;">
+    Visit on <%= @visit.started_at.strftime("%A, %b %-d at %-l:%M %p") %>
+  </h1>
+  <p class="text-gray-400 text-sm mb-6"><%= short_duration(@visit.duration) %>, <%= pluralize(@visit.page_views_count, "page") %>, landed on <code><%= @visit.landing_path %></code></p>
+
+  <div class="<%= card %> mb-6" style="<%= card_style %>">
+    <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm visit-facts">
+      <dt class="text-gray-500">From</dt><dd class="text-gray-200"><%= @visit.source_label %><% if @visit.campaign %>, campaign <%= @visit.campaign %><% end %><% if @visit.content %>, content <%= @visit.content %><% end %><% if @visit.term %>, term <%= @visit.term %><% end %></dd>
+      <% if @visit.referrer %><dt class="text-gray-500">Referrer</dt><dd class="text-gray-200 break-all"><%= @visit.referrer %></dd><% end %>
+      <dt class="text-gray-500">Where</dt><dd class="text-gray-200"><%= [ @visit.city, @visit.region, @visit.country ].compact_blank.join(", ").presence || "unknown" %></dd>
+      <% if @visit.org %><dt class="text-gray-500">Network</dt><dd class="text-gray-200"><%= @visit.org %></dd><% end %>
+      <dt class="text-gray-500">IP</dt><dd class="text-gray-200"><%= @visit.ip %></dd>
+      <dt class="text-gray-500">Device</dt><dd class="text-gray-200"><%= @visit.device %>, <%= @visit.browser %> on <%= @visit.os %></dd>
+      <dt class="text-gray-500">Agent</dt><dd class="text-gray-400 break-all text-xs"><%= @visit.user_agent %></dd>
+      <dt class="text-gray-500">Visitor</dt><dd class="text-gray-400 text-xs"><code><%= @visit.visitor_id %></code></dd>
+    </dl>
+  </div>
+
+  <div class="<%= card %> mb-6" style="<%= card_style %>">
+    <h2 class="text-white font-semibold mb-3">What they did</h2>
+    <ol class="space-y-2 text-sm visit-events">
+      <% @events.each do |event| %>
+        <li class="flex gap-3">
+          <span class="text-gray-500 tabular-nums whitespace-nowrap"><%= event.created_at.strftime("%-l:%M:%S %p") %></span>
+          <span class="text-gray-200">
+            <% case event.name %>
+            <% when "page_view" %>
+              Viewed <code><%= event.path %></code><% if event.referrer_path %> <span class="text-gray-500">from <%= event.referrer_path %></span><% end %>
+            <% when "click" %>
+              Left for <span class="text-green-400"><%= event.label %></span> <span class="text-gray-500">(<%= event.href %>)</span> from <code><%= event.path %></code>
+            <% else %>
+              <span class="text-yellow-300"><%= event.label || event.name.humanize %></span>
+            <% end %>
+          </span>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+
+  <% if @other_visits.any? %>
+    <div class="<%= card %> mb-6" style="<%= card_style %>">
+      <h2 class="text-white font-semibold mb-3">Same visitor, other visits</h2>
+      <ul class="space-y-1 text-sm">
+        <% @other_visits.each do |visit| %>
+          <li><%= link_to visit.started_at.strftime("%b %-d, %-l:%M %p"), admin_analytics_visit_path(visit), class: "text-green-400 hover:text-green-300" %> <span class="text-gray-400"><%= visit.source_label %>, <%= pluralize(visit.page_views_count, "page") %>, <%= visit_trail(visit) %></span></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

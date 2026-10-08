@@ -46,6 +46,9 @@ Rails.application.routes.draw do
   get "/hire", to: "hire#show", as: :hire
   get "/courses/:slug", to: "courses#show", as: :course
 
+  # Links that leave the site go through here so the click is counted (Outbound)
+  get "/go/:kind/*key", to: "go#show", as: :go, format: false
+
   # Short link to send people for a call
   get "/meet", to: redirect("/book"), as: :meet
 
@@ -172,6 +175,9 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy", as: :logout
 
     root to: "dashboard#index"
+
+    get "analytics", to: "analytics#index", as: :analytics
+    get "analytics/visits/:id", to: "analytics#show", as: :analytics_visit
 
     resources :availability_rules, except: [ :show ]
     resources :availabilities, except: [ :show ] do

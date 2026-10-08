@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_05_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_08_030000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -302,6 +302,49 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_150000) do
     t.index ["token"], name: "index_tts_shares_on_token", unique: true
   end
 
+  create_table "visit_events", force: :cascade do |t|
+    t.bigint "visit_id", null: false
+    t.string "name", null: false
+    t.string "path"
+    t.string "referrer_path"
+    t.string "label"
+    t.string "href"
+    t.datetime "created_at", null: false
+    t.index ["name", "created_at"], name: "index_visit_events_on_name_and_created_at"
+    t.index ["path", "created_at"], name: "index_visit_events_on_path_and_created_at"
+    t.index ["visit_id"], name: "index_visit_events_on_visit_id"
+  end
+
+  create_table "visits", force: :cascade do |t|
+    t.string "visitor_id", null: false
+    t.string "ip"
+    t.string "user_agent"
+    t.string "browser"
+    t.string "os"
+    t.string "device"
+    t.string "landing_path", null: false
+    t.string "referrer"
+    t.string "referrer_host"
+    t.string "source", null: false
+    t.string "medium", null: false
+    t.string "campaign"
+    t.string "content"
+    t.string "term"
+    t.string "ref"
+    t.string "country"
+    t.string "region"
+    t.string "city"
+    t.string "org"
+    t.datetime "started_at", null: false
+    t.datetime "last_seen_at", null: false
+    t.integer "page_views_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source"], name: "index_visits_on_source"
+    t.index ["started_at"], name: "index_visits_on_started_at"
+    t.index ["visitor_id", "last_seen_at"], name: "index_visits_on_visitor_id_and_last_seen_at"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bookings", "availabilities"
@@ -310,4 +353,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_05_150000) do
   add_foreign_key "review_sections", "reviews"
   add_foreign_key "story_paragraphs", "stories"
   add_foreign_key "tts_batch_items", "tts_batches"
+  add_foreign_key "visit_events", "visits"
 end

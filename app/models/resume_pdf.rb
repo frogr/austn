@@ -44,7 +44,7 @@ class ResumePdf
     contact = [
       esc(@resume.location),
       %(<link href="mailto:#{esc(@resume.email)}">#{esc(@resume.email)}</link>),
-      *@resume.links.map { |l| %(<link href="#{esc(l["url"])}">#{esc(l["url"].delete_prefix("https://"))}</link>) }
+      *@resume.links.map { |l| %(<link href="#{esc(tagged(l["url"]))}">#{esc(l["url"].delete_prefix("https://"))}</link>) }
     ]
     pdf.text contact.join("  ·  "), size: 9, color: MUTED, inline_format: true
     pdf.move_down 8
@@ -80,5 +80,15 @@ class ResumePdf
 
   def esc(text)
     ERB::Util.html_escape(text.to_s)
+  end
+
+  # Links to the site carry ?ref=resume, so visits from the PDF show up by name.
+  def tagged(url)
+    uri = URI.parse(url)
+    return url unless uri.host == "austn.net"
+
+    uri.path = "/" if uri.path.empty?
+    uri.query = [ uri.query, "ref=resume" ].compact.join("&")
+    uri.to_s
   end
 end

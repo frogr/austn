@@ -19,6 +19,12 @@ small, tested, and written plainly.
   `layouts/application`, which loads the JS bundle and the older Tailwind styles.
 - Content lives in `content/` (YAML and markdown with front matter). Models:
   `Profile`, `Resume`, `WorkItem`, `PlaygroundItem`, `BlogPost`.
+- Visitors are counted server-side (`VisitTracking`, `Visit`, `VisitEvent`):
+  every HTML page view, plus clicks on links that leave the site, which go
+  through `/go/:kind/*key` (`Outbound`) and bookings. No cookie, no script.
+  The admin reads it at `/admin/analytics` (`VisitReport`). Crawlers and a
+  signed-in admin are not counted. New outbound links in templates should use
+  `go_path`, and links Austin hands out should carry `?ref=name`.
 
 ## Design
 
