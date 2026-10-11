@@ -88,9 +88,11 @@ class Visit < ApplicationRecord
   # it is flagged, however many times it reloaded a page. Returns how many
   # visits were newly flagged.
   def self.flag_swarms!(since: 2.hours.ago)
-    direct = people.where(medium: "direct")
+    # The hour is judged on every direct visit, flagged or not, so a swarm
+    # found once keeps catching the visits that finish later.
+    direct = where(medium: "direct")
     hours = direct.since(since).where(page_views_count: ..SWARM_PAGES).group(Arel.sql("date_trunc('hour', started_at)")).having("count(*) >= ?", SWARM_SIZE).pluck(Arel.sql("date_trunc('hour', started_at)"))
-    hours.sum { |hour| direct.where(started_at: hour...(hour + SWARM_WINDOW)).update_all(bot: true) }
+    hours.sum { |hour| direct.people.where(started_at: hour...(hour + SWARM_WINDOW)).update_all(bot: true) }
   end
 
   # Flags finished direct visits from Google, Microsoft and Amazon addresses
