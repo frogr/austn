@@ -43,18 +43,45 @@ class VisitBotsTest < ActiveSupport::TestCase
     end
   end
 
-  test "an hour of short direct visits from many addresses is a swarm; referred and longer visits in it are not" do
+  test "an hour of short direct visits from many addresses is a swarm; referred visits in it and visits outside it are not" do
     now = Time.current.beginning_of_hour + 10.minutes
     Visit::SWARM_SIZE.times { |i| visit(ip: "198.51.100.#{i}", path: [ "/book", "/book/2026-11-0#{i % 9}", "/work/tenex", "/go/demo/marginalia" ][i % 4], pages: i % 4, started_at: now + i.seconds) }
-    reader = visit(ip: "203.0.113.5", pages: Visit::SWARM_PAGES + 1, started_at: now)
     from_linkedin = visit(ip: "203.0.113.6", medium: "social", started_at: now)
     earlier = visit(ip: "203.0.113.8", started_at: now - 1.hour)
 
     assert_equal Visit::SWARM_SIZE, Visit.flag_swarms!(since: 3.hours.ago)
     assert_equal Visit::SWARM_SIZE, Visit.automated.count
-    [ reader, from_linkedin, earlier ].each { |v| assert_not v.reload.bot?, "#{v.ip} should still count" }
+    [ from_linkedin, earlier ].each { |v| assert_not v.reload.bot?, "#{v.ip} should still count" }
 
     assert_equal 0, Visit.flag_swarms!(since: 3.hours.ago), "flagging again finds nothing new"
+  end
+
+  test "every direct visit in a swarm hour is flagged, even one that reloaded a page five times" do
+    now = Time.current.beginning_of_hour + 10.minutes
+    Visit::SWARM_SIZE.times { |i| visit(ip: "198.51.100.#{i}", started_at: now + i.seconds) }
+    reloader = visit(ip: "203.0.113.5", pages: 5, started_at: now + 20.minutes)
+    referred = visit(ip: "203.0.113.6", medium: "social", pages: 5, started_at: now + 20.minutes)
+
+    Visit.flag_swarms!(since: 3.hours.ago)
+    assert reloader.reload.bot?
+    assert_not referred.reload.bot?
+  end
+
+  test "a short direct visit from a big crawler's network is a crawler once it is over; a longer one is a person" do
+    short = visit(ip: "203.0.113.1", pages: 2, started_at: 2.hours.ago)
+    long = visit(ip: "203.0.113.2", pages: 3, started_at: 2.hours.ago)
+    fresh = visit(ip: "203.0.113.3", pages: 1, started_at: 5.minutes.ago)
+    short.update_columns(org: "Microsoft Corporation")
+    long.update_columns(org: "Microsoft Corporation")
+    fresh.update_columns(org: "Google LLC")
+    home_isp = visit(ip: "203.0.113.4", pages: 1, started_at: 2.hours.ago)
+    home_isp.update_columns(org: "Comcast Cable Communications, LLC")
+
+    assert_equal 1, Visit.flag_crawlers!(since: 3.hours.ago)
+    assert short.reload.bot?
+    assert_not long.reload.bot?
+    assert_not fresh.reload.bot?, "still going, judged later"
+    assert_not home_isp.reload.bot?
   end
 
   test "a few one-page direct visits are not a swarm" do
