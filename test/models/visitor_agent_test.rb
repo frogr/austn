@@ -23,6 +23,8 @@ class VisitorAgentTest < ActiveSupport::TestCase
     assert VisitorAgent.new("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)").bot?
     assert VisitorAgent.new("curl/8.4.0").bot?
     assert VisitorAgent.new("python-requests/2.31").bot?
+    assert VisitorAgent.new("Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.52 Mobile Safari/537.36 (compatible; GoogleOther)").bot?
+    assert VisitorAgent.new("Mozilla/5.0 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)").bot?
     assert VisitorAgent.new("").bot?
     assert VisitorAgent.new(nil).bot?
     assert_not VisitorAgent.new(IPHONE).bot?

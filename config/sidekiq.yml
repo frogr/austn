@@ -36,6 +36,11 @@
       class: PurgeStaleUploadsJob
       queue: low
       description: "Delete GPU tool uploads whose job never finished"
+    flag_visit_swarms:
+      cron: '*/10 * * * *'  # Every 10 minutes
+      class: FlagVisitSwarmsJob
+      queue: low
+      description: "Flag bursts of one-page direct hits as automated visits"
     purge_old_visits:
       cron: '45 3 * * *'  # Daily at 3:45am
       class: PurgeOldVisitsJob

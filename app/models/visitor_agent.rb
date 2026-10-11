@@ -2,7 +2,7 @@
 # and roughly which browser, system and kind of device. A handful of
 # patterns covers nearly everyone; the rest read as "other".
 class VisitorAgent
-  BOT = /bot|crawl|spider|slurp|fetch|scan|monitor|preview|headless|lighthouse|curl|wget|python|java\/|go-http|okhttp|httpclient|facebookexternalhit|embedly|quora link|pingdom|uptime|validator/i
+  BOT = /bot|crawl|spider|slurp|fetch|scan|monitor|preview|headless|lighthouse|curl|wget|python|java\/|go-http|okhttp|httpclient|facebookexternalhit|embedly|quora link|pingdom|uptime|validator|compatible;|googleother|google-|inspectiontool|dataprovider|petal|bytespider/i
 
   BROWSERS = [
     [ "Edge", /Edg(e|iOS|A)?\// ],

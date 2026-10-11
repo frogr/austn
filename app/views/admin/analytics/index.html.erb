@@ -5,7 +5,7 @@
   <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
     <div>
       <h1 class="font-black mb-1" style="font-size: clamp(2rem, 4vw, 2.5rem); color: var(--text-primary); letter-spacing: -0.03em;">Analytics</h1>
-      <p class="text-gray-400 text-sm">Who came, from where, and what they did. People only: crawlers and your own signed-in visits are not counted.</p>
+      <p class="text-gray-400 text-sm">Who came, from where, and what they did. People only: crawlers, hosting networks, swarms and your own signed-in visits are not counted<% if @report.automated.positive? %> (<span class="automated-count"><%= pluralize(@report.automated, "automated visit") %></span> left out)<% end %>.</p>
     </div>
     <nav class="flex gap-1 text-sm" aria-label="Range">
       <% VisitReport::RANGES.each do |days| %>

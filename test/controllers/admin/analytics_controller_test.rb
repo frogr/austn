@@ -71,6 +71,17 @@ class Admin::AnalyticsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".visit-events li", text: /booked a call/
   end
 
+  test "automated visits are left out of the report and counted in the note" do
+    visit_as_two_people
+    Visit.first.update_columns(bot: true)
+    sign_in_as_admin
+
+    get admin_analytics_path
+    assert_select ".automated-count", "1 automated visit"
+    assert_select ".recent-visits tbody tr", count: 1
+    assert_select ".funnel li", text: /0\s+Saw the hire page/
+  end
+
   test "the report is empty but fine with no visits" do
     sign_in_as_admin
     get admin_analytics_path

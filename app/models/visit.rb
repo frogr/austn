@@ -5,14 +5,29 @@
 # A visitor is a hash of their IP and browser. A visit ends after thirty
 # quiet minutes; the next request starts a new one. Attribution (source,
 # medium, campaign, ref) is read once, from the first request of the visit.
+#
+# Crawlers that say so are never recorded. Two other kinds are recorded but
+# flagged `bot` and left out of the report: visits from hosting networks
+# (OVH, DigitalOcean, AWS and the like, found by the place lookup),
+# and swarms, where one page gets dozens of one-page direct hits from
+# different addresses in one hour. That is what a scanner behind residential
+# proxies looks like, and no reader does it.
 class Visit < ApplicationRecord
   has_many :events, class_name: "VisitEvent", dependent: :delete_all
 
   IDLE_AFTER = 30.minutes
   KEEP_FOR = 1.year
   UTM_KEYS = %w[utm_source utm_medium utm_campaign utm_content utm_term ref].freeze
+  # Networks nobody browses from. Google, Microsoft and Amazon are not here
+  # on purpose: their office networks carry the same names as their crawlers,
+  # and a recruiter at one of them is exactly who the report is for.
+  HOSTING = /ovh|digitalocean|hetzner|linode|contabo|leaseweb|vultr|choopa|m247|scaleway|datacamp|data ?services|\bcloud\b|hosting|data ?cent|servers?\b|censys|shodan|stretchoid|onyphe|binaryedge|internet.measurement|collyer quay/i
+  SWARM_WINDOW = 1.hour
+  SWARM_SIZE = 25
 
   scope :since, ->(time) { where(started_at: time..) }
+  scope :people, -> { where(bot: false) }
+  scope :automated, -> { where(bot: true) }
   scope :recent_first, -> { order(last_seen_at: :desc) }
   # Visits that touched a page. The hire page is the one Austin asks about.
   scope :touching, ->(path) { where(id: VisitEvent.page_views.where(path: path).select(:visit_id)) }
@@ -56,10 +71,27 @@ class Visit < ApplicationRecord
       started_at: Time.current,
       last_seen_at: Time.current
     )
-    GeoLookupJob.perform_later(visit.id)
+    # A little later, so a visit flagged as a swarm by then is not looked up.
+    GeoLookupJob.set(wait: 15.minutes).perform_later(visit.id)
     visit
   end
   private_class_method :start
+
+  # Flags the swarms that started since the given time. Returns how many
+  # visits were newly flagged.
+  def self.flag_swarms!(since: 2.hours.ago)
+    swarms = people.since(since).where(page_views_count: 1, medium: "direct")
+      .group(:landing_path, Arel.sql("date_trunc('hour', started_at)"))
+      .having("count(*) >= ?", SWARM_SIZE)
+      .pluck(:landing_path, Arel.sql("date_trunc('hour', started_at)"))
+    swarms.sum do |path, hour|
+      people.where(page_views_count: 1, medium: "direct", landing_path: path, started_at: hour...(hour + SWARM_WINDOW)).update_all(bot: true)
+    end
+  end
+
+  def self.hosting?(org)
+    org.present? && org.match?(HOSTING)
+  end
 
   def self.purge_old!
     where(started_at: ...KEEP_FOR.ago).find_each(&:destroy)
