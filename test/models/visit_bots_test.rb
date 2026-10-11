@@ -43,17 +43,16 @@ class VisitBotsTest < ActiveSupport::TestCase
     end
   end
 
-  test "a swarm of one-page direct hits on one page in one hour is flagged, readers in the same hour are not" do
+  test "an hour of short direct visits from many addresses is a swarm; referred and longer visits in it are not" do
     now = Time.current.beginning_of_hour + 10.minutes
-    Visit::SWARM_SIZE.times { |i| visit(ip: "198.51.100.#{i}", started_at: now + i.seconds) }
-    reader = visit(ip: "203.0.113.5", pages: 3, started_at: now)
+    Visit::SWARM_SIZE.times { |i| visit(ip: "198.51.100.#{i}", path: [ "/book", "/book/2026-11-0#{i % 9}", "/work/tenex", "/go/demo/marginalia" ][i % 4], pages: i % 4, started_at: now + i.seconds) }
+    reader = visit(ip: "203.0.113.5", pages: Visit::SWARM_PAGES + 1, started_at: now)
     from_linkedin = visit(ip: "203.0.113.6", medium: "social", started_at: now)
-    other_page = visit(ip: "203.0.113.7", path: "/hire", started_at: now)
     earlier = visit(ip: "203.0.113.8", started_at: now - 1.hour)
 
     assert_equal Visit::SWARM_SIZE, Visit.flag_swarms!(since: 3.hours.ago)
     assert_equal Visit::SWARM_SIZE, Visit.automated.count
-    [ reader, from_linkedin, other_page, earlier ].each { |v| assert_not v.reload.bot?, "#{v.ip} should still count" }
+    [ reader, from_linkedin, earlier ].each { |v| assert_not v.reload.bot?, "#{v.ip} should still count" }
 
     assert_equal 0, Visit.flag_swarms!(since: 3.hours.ago), "flagging again finds nothing new"
   end

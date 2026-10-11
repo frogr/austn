@@ -9,9 +9,10 @@
 # Crawlers that say so are never recorded. Two other kinds are recorded but
 # flagged `bot` and left out of the report: visits from hosting networks
 # (OVH, DigitalOcean, AWS and the like, found by the place lookup),
-# and swarms, where one page gets dozens of one-page direct hits from
-# different addresses in one hour. That is what a scanner behind residential
-# proxies looks like, and no reader does it.
+# and swarms: an hour in which dozens of different addresses each arrive
+# direct and leave within a page or three. That is what a scanner behind
+# residential proxies looks like. Readers come a few an hour, and the ones
+# that arrive in a rush come from somewhere with a referrer.
 class Visit < ApplicationRecord
   has_many :events, class_name: "VisitEvent", dependent: :delete_all
 
@@ -24,6 +25,7 @@ class Visit < ApplicationRecord
   HOSTING = /ovh|digitalocean|hetzner|linode|contabo|leaseweb|vultr|choopa|m247|scaleway|datacamp|data ?services|\bcloud\b|hosting|data ?cent|servers?\b|censys|shodan|stretchoid|onyphe|binaryedge|internet.measurement|collyer quay/i
   SWARM_WINDOW = 1.hour
   SWARM_SIZE = 25
+  SWARM_PAGES = 3
 
   scope :since, ->(time) { where(started_at: time..) }
   scope :people, -> { where(bot: false) }
@@ -80,13 +82,9 @@ class Visit < ApplicationRecord
   # Flags the swarms that started since the given time. Returns how many
   # visits were newly flagged.
   def self.flag_swarms!(since: 2.hours.ago)
-    swarms = people.since(since).where(page_views_count: 1, medium: "direct")
-      .group(:landing_path, Arel.sql("date_trunc('hour', started_at)"))
-      .having("count(*) >= ?", SWARM_SIZE)
-      .pluck(:landing_path, Arel.sql("date_trunc('hour', started_at)"))
-    swarms.sum do |path, hour|
-      people.where(page_views_count: 1, medium: "direct", landing_path: path, started_at: hour...(hour + SWARM_WINDOW)).update_all(bot: true)
-    end
+    short_and_direct = people.where(medium: "direct").where(page_views_count: ..SWARM_PAGES)
+    hours = short_and_direct.since(since).group(Arel.sql("date_trunc('hour', started_at)")).having("count(*) >= ?", SWARM_SIZE).pluck(Arel.sql("date_trunc('hour', started_at)"))
+    hours.sum { |hour| short_and_direct.where(started_at: hour...(hour + SWARM_WINDOW)).update_all(bot: true) }
   end
 
   def self.hosting?(org)
