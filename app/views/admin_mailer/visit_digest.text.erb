@@ -1,0 +1,46 @@
+<% d = @digest %>
+<% tz = "America/New_York" %>
+Visits from <%= d.since.in_time_zone(tz).strftime("%a %b %-d, %-l %p") %> to <%= d.until_time.in_time_zone(tz).strftime("%a %b %-d, %-l %p") %>.
+
+<%= d.visitors %> visitors (<%= d.previous_visitors %> the three days before)
+<%= d.readers %> read more than one page (<%= d.previous_readers %> before)
+<%= d.hire_visitors %> saw the hire page, <%= d.resume_visitors %> the resume
+<%= d.demo_clicks %> demo <%= "click".pluralize(d.demo_clicks) %>, <%= d.bookings %> <%= "booking".pluralize(d.bookings) %>
+<%= d.automated %> automated <%= "visit".pluralize(d.automated) %> left out
+
+WHERE THEY STOPPED
+<% signals = d.signals %>
+<% if signals.empty? %>
+Nothing stood out.
+<% else %>
+<% signals.each do |s| %>
+- <%= s.count %> <%= s.what %>.
+  Move: <%= s.idea %> (playbook: <%= s.key %>)
+<% end %>
+<% end %>
+
+SOURCES
+<% d.sources.each do |name, count| %>
+- <%= name %>: <%= count %>
+<% end %>
+<% if d.tagged_links.any? %>
+
+TAGGED LINKS
+<% d.tagged_links.each do |name, count| %>
+- <%= name %>: <%= count %>
+<% end %>
+<% end %>
+
+READERS
+<% readers = d.reader_visits %>
+<% if readers.empty? %>
+Nobody read more than one page.
+<% else %>
+<% readers.each do |v| %>
+- <%= v.started_at.in_time_zone(tz).strftime("%a %-l:%M %p") %>, <%= v.place || "place unknown" %><%= ", #{v.org}" if v.org %>, <%= v.source_label %>, <%= v.device %>
+  <%= v.paths.join(" > ") %><%= v.events.any? { |e| e.name == "click" } ? " > out via #{v.events.select { |e| e.name == 'click' }.map(&:label).join(', ')}" : "" %><%= v.events.any? { |e| e.name == "booking" } ? " > BOOKED" : "" %>
+  <%= @visit_url.call(v) %>
+<% end %>
+<% end %>
+
+Full report: <%= @analytics_url %>

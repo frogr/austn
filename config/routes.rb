@@ -178,6 +178,7 @@ Rails.application.routes.draw do
 
     get "analytics", to: "analytics#index", as: :analytics
     get "analytics/visits/:id", to: "analytics#show", as: :analytics_visit
+    post "analytics/digest", to: "analytics#digest", as: :analytics_digest
 
     resources :availability_rules, except: [ :show ]
     resources :availabilities, except: [ :show ] do

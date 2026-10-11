@@ -14,6 +14,10 @@
     </nav>
   </div>
 
+  <% if flash[:notice] %>
+    <p class="mb-4 p-3 rounded-md text-sm" style="background: rgba(29, 185, 84, 0.15); border: 1px solid rgba(29, 185, 84, 0.3); color: #86efac;"><%= flash[:notice] %></p>
+  <% end %>
+
   <%# Headline numbers %>
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6 stats-grid">
     <% [ [ "Visitors", @report.visitors ], [ "Visits", @report.visit_count ], [ "Page views", @report.page_views ], [ "Saw /hire", @report.hire_visitors ], [ "Demo clicks", @report.demo_clicks ], [ "Bookings", @report.bookings ] ].each do |label, value| %>
@@ -104,7 +108,10 @@
   </div>
 
   <div class="pt-6 border-t border-gray-800 flex flex-wrap items-center justify-between gap-3">
-    <%= link_to "Admin", admin_root_path, class: "text-gray-500 hover:text-gray-300 text-sm" %>
+    <div class="flex items-center gap-4">
+      <%= link_to "Admin", admin_root_path, class: "text-gray-500 hover:text-gray-300 text-sm" %>
+      <%= button_to "Email me the digest now", admin_analytics_digest_path, class: "text-sm text-green-400 hover:text-green-300", form_class: "inline" %>
+    </div>
     <p class="text-gray-600 text-xs">Tag links you share with ?ref=name or utm_source. The resume PDF already links here with ?ref=resume.</p>
   </div>
 </div>
