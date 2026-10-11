@@ -21,7 +21,7 @@ class Visit < ApplicationRecord
   # Networks nobody browses from. Google, Microsoft and Amazon are not here
   # on purpose: their office networks carry the same names as their crawlers,
   # and a recruiter at one of them is exactly who the report is for.
-  HOSTING = /ovh|digitalocean|hetzner|linode|contabo|leaseweb|vultr|choopa|m247|scaleway|datacamp|data ?services|\bcloud\b|hosting|data ?cent|servers?\b/i
+  HOSTING = /ovh|digitalocean|hetzner|linode|contabo|leaseweb|vultr|choopa|m247|scaleway|datacamp|data ?services|\bcloud\b|hosting|data ?cent|servers?\b|censys|shodan|stretchoid|onyphe|binaryedge|internet.measurement|collyer quay/i
   SWARM_WINDOW = 1.hour
   SWARM_SIZE = 25
 

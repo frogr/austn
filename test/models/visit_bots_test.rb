@@ -15,6 +15,8 @@ class VisitBotsTest < ActiveSupport::TestCase
     assert Visit.hosting?("DigitalOcean, LLC")
     assert Visit.hosting?("Amazon Data Services Northern Virginia")
     assert Visit.hosting?("Tencent cloud computing")
+    assert Visit.hosting?("Censys, Inc.")
+    assert Visit.hosting?("16 COLLYER QUAY")
     assert_not Visit.hosting?("Google LLC")
     assert_not Visit.hosting?("Microsoft Corporation")
     assert_not Visit.hosting?("Amazon.com, Inc.")
