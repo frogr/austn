@@ -18,8 +18,10 @@ class VisitReport
     @since = (@days - 1).days.ago.beginning_of_day
   end
 
-  def visits = Visit.since(since)
-  def events = VisitEvent.since(since)
+  def visits = Visit.people.since(since)
+  def events = VisitEvent.since(since).where(visit_id: visits.select(:id))
+  # Visits flagged as crawlers or swarms, left out of everything above.
+  def automated = Visit.automated.since(since).count
 
   def visitors = visits.distinct.count(:visitor_id)
   def visit_count = visits.count

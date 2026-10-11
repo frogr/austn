@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_08_030000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_11_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -340,6 +340,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_08_030000) do
     t.integer "page_views_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "bot", default: false, null: false
+    t.index ["bot", "started_at"], name: "index_visits_on_bot_and_started_at"
     t.index ["source"], name: "index_visits_on_source"
     t.index ["started_at"], name: "index_visits_on_started_at"
     t.index ["visitor_id", "last_seen_at"], name: "index_visits_on_visitor_id_and_last_seen_at"
