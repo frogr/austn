@@ -89,6 +89,16 @@ class Admin::AnalyticsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: "No visits in this range."
   end
 
+  test "the digest can be sent now from the page" do
+    sign_in_as_admin
+    assert_enqueued_with(job: VisitDigestJob) do
+      post admin_analytics_digest_path
+    end
+    assert_redirected_to admin_analytics_path
+    follow_redirect!
+    assert_select "p", /digest is on its way/
+  end
+
   test "the dashboard links to it" do
     sign_in_as_admin
     get admin_root_path

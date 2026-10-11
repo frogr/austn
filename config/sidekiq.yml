@@ -36,6 +36,11 @@
       class: PurgeStaleUploadsJob
       queue: low
       description: "Delete GPU tool uploads whose job never finished"
+    visit_digest:
+      cron: '0 9 * * 1,4 America/New_York'  # Monday and Thursday, 9am Eastern
+      class: VisitDigestJob
+      queue: default
+      description: "Email Austin who visited, what they did and where they stopped"
     flag_visit_swarms:
       cron: '*/10 * * * *'  # Every 10 minutes
       class: FlagVisitSwarmsJob

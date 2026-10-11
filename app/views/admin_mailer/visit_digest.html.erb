@@ -1,0 +1,50 @@
+<% d = @digest %>
+<% tz = "America/New_York" %>
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 640px; margin: 0 auto; color: #1f2937; line-height: 1.5;">
+  <p style="color: #6b7280; font-size: 14px;">Visits from <%= d.since.in_time_zone(tz).strftime("%a %b %-d, %-l %p") %> to <%= d.until_time.in_time_zone(tz).strftime("%a %b %-d, %-l %p") %>.</p>
+
+  <table style="border-collapse: collapse; margin: 0 0 20px;">
+    <tr><td style="padding: 2px 12px 2px 0; font-size: 22px; font-weight: 700;"><%= d.visitors %></td><td style="padding: 2px 0;">visitors <span style="color: #6b7280;">(<%= d.previous_visitors %> the three days before)</span></td></tr>
+    <tr><td style="padding: 2px 12px 2px 0; font-size: 22px; font-weight: 700;"><%= d.readers %></td><td style="padding: 2px 0;">read more than one page <span style="color: #6b7280;">(<%= d.previous_readers %> before)</span></td></tr>
+    <tr><td style="padding: 2px 12px 2px 0; font-size: 22px; font-weight: 700;"><%= d.hire_visitors %></td><td style="padding: 2px 0;">saw the hire page, <%= d.resume_visitors %> the resume</td></tr>
+    <tr><td style="padding: 2px 12px 2px 0; font-size: 22px; font-weight: 700;"><%= d.bookings %></td><td style="padding: 2px 0;"><%= "booking".pluralize(d.bookings) %>, <%= d.demo_clicks %> demo <%= "click".pluralize(d.demo_clicks) %></td></tr>
+  </table>
+  <p style="color: #6b7280; font-size: 13px; margin: -12px 0 20px;"><%= d.automated %> automated <%= "visit".pluralize(d.automated) %> left out.</p>
+
+  <h2 style="font-size: 16px; margin: 24px 0 8px;">Where they stopped</h2>
+  <% signals = d.signals %>
+  <% if signals.empty? %>
+    <p>Nothing stood out.</p>
+  <% else %>
+    <ul style="padding-left: 20px; margin: 0;">
+      <% signals.each do |s| %>
+        <li style="margin: 0 0 10px;"><strong><%= s.count %></strong> <%= s.what %>.<br><span style="color: #4b5563;">Move: <%= s.idea %></span> <span style="color: #9ca3af; font-size: 12px;">(playbook: <%= s.key %>)</span></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <h2 style="font-size: 16px; margin: 24px 0 8px;">Sources</h2>
+  <p style="margin: 0;"><%= d.sources.map { |name, count| "#{name} #{count}" }.join(" · ") %></p>
+  <% if d.tagged_links.any? %>
+    <h2 style="font-size: 16px; margin: 24px 0 8px;">Tagged links</h2>
+    <p style="margin: 0;"><%= d.tagged_links.map { |name, count| "#{name} #{count}" }.join(" · ") %></p>
+  <% end %>
+
+  <h2 style="font-size: 16px; margin: 24px 0 8px;">Readers</h2>
+  <% readers = d.reader_visits %>
+  <% if readers.empty? %>
+    <p>Nobody read more than one page.</p>
+  <% else %>
+    <% readers.each do |v| %>
+      <% clicks = v.events.select { |e| e.name == "click" }.map(&:label) %>
+      <% booked = v.events.any? { |e| e.name == "booking" } %>
+      <p style="margin: 0 0 12px; font-size: 14px;">
+        <a href="<%= @visit_url.call(v) %>" style="color: #047857;"><%= v.started_at.in_time_zone(tz).strftime("%a %-l:%M %p") %></a>,
+        <%= v.place || "place unknown" %><%= ", #{v.org}" if v.org %>, <%= v.source_label %>, <%= v.device %><br>
+        <span style="color: #4b5563;"><%= v.paths.join(" → ") %><% if clicks.any? %> → out via <%= clicks.join(", ") %><% end %><% if booked %> → <strong>booked</strong><% end %></span>
+      </p>
+    <% end %>
+  <% end %>
+
+  <p style="margin: 24px 0 0;"><a href="<%= @analytics_url %>" style="color: #047857;">Full report</a></p>
+</div>

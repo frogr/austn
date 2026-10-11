@@ -7,6 +7,12 @@ module Admin
       @recent = @report.recent(touching: @touching)
     end
 
+    # Sends the twice-weekly digest now, for a look at it.
+    def digest
+      VisitDigestJob.perform_later
+      redirect_to admin_analytics_path, notice: "The digest is on its way to your inbox."
+    end
+
     def show
       @visit = Visit.find(params[:id])
       @events = @visit.events.order(:created_at)
