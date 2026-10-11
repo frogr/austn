@@ -22,7 +22,11 @@ class Visit < ApplicationRecord
   # Networks nobody browses from. Google, Microsoft and Amazon are not here
   # on purpose: their office networks carry the same names as their crawlers,
   # and a recruiter at one of them is exactly who the report is for.
-  HOSTING = /ovh|digitalocean|hetzner|linode|contabo|leaseweb|vultr|choopa|m247|scaleway|datacamp|data ?services|\bcloud\b|hosting|data ?cent|servers?\b|censys|shodan|stretchoid|onyphe|binaryedge|internet.measurement|collyer quay/i
+  HOSTING = /ovh|digitalocean|hetzner|linode|contabo|leaseweb|vultr|choopa|m247|scaleway|datacamp|data ?services|\bcloud\b|hosting|data ?cent|servers?\b|censys|shodan|stretchoid|onyphe|binaryedge|internet.measurement|collyer quay|omegatech|1337 services|inap-|rmp protection|cia triad|buyvm|hostslick|frantech|internetbolaget/i
+  # Their crawlers and their offices share these names. A visit from one
+  # counts only when it reads enough pages to be a person (see flag_crawlers!).
+  BIG_TECH = /google llc|microsoft|amazon technologies|amazon data services|amazon\.com/i
+  CRAWLER_PAGES = 2
   SWARM_WINDOW = 1.hour
   SWARM_SIZE = 25
   SWARM_PAGES = 3
@@ -79,12 +83,22 @@ class Visit < ApplicationRecord
   end
   private_class_method :start
 
-  # Flags the swarms that started since the given time. Returns how many
+  # Flags the swarms that started since the given time: an hour with enough
+  # short direct visits is a swarm, and every direct visit that started in
+  # it is flagged, however many times it reloaded a page. Returns how many
   # visits were newly flagged.
   def self.flag_swarms!(since: 2.hours.ago)
-    short_and_direct = people.where(medium: "direct").where(page_views_count: ..SWARM_PAGES)
-    hours = short_and_direct.since(since).group(Arel.sql("date_trunc('hour', started_at)")).having("count(*) >= ?", SWARM_SIZE).pluck(Arel.sql("date_trunc('hour', started_at)"))
-    hours.sum { |hour| short_and_direct.where(started_at: hour...(hour + SWARM_WINDOW)).update_all(bot: true) }
+    direct = people.where(medium: "direct")
+    hours = direct.since(since).where(page_views_count: ..SWARM_PAGES).group(Arel.sql("date_trunc('hour', started_at)")).having("count(*) >= ?", SWARM_SIZE).pluck(Arel.sql("date_trunc('hour', started_at)"))
+    hours.sum { |hour| direct.where(started_at: hour...(hour + SWARM_WINDOW)).update_all(bot: true) }
+  end
+
+  # Flags finished direct visits from Google, Microsoft and Amazon addresses
+  # that read two pages or fewer. Their crawlers fetch the home page and one
+  # post; a person from one of their offices reads more. Returns the count.
+  def self.flag_crawlers!(since: 2.hours.ago)
+    people.since(since).where(medium: "direct", page_views_count: ..CRAWLER_PAGES)
+      .where(last_seen_at: ...IDLE_AFTER.ago).where("org ~* ?", BIG_TECH.source).update_all(bot: true)
   end
 
   def self.hosting?(org)
