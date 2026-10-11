@@ -67,6 +67,16 @@ class VisitBotsTest < ActiveSupport::TestCase
     assert_not referred.reload.bot?
   end
 
+  test "a swarm hour found once keeps catching the visits in it that finish later" do
+    now = Time.current.beginning_of_hour + 10.minutes
+    Visit::SWARM_SIZE.times { |i| visit(ip: "198.51.100.#{i}", started_at: now + i.seconds) }
+    assert_equal Visit::SWARM_SIZE, Visit.flag_swarms!(since: 3.hours.ago)
+
+    late = visit(ip: "203.0.113.9", pages: 5, started_at: now + 30.minutes)
+    assert_equal 1, Visit.flag_swarms!(since: 3.hours.ago)
+    assert late.reload.bot?
+  end
+
   test "a short direct visit from a big crawler's network is a crawler once it is over; a longer one is a person" do
     short = visit(ip: "203.0.113.1", pages: 2, started_at: 2.hours.ago)
     long = visit(ip: "203.0.113.2", pages: 3, started_at: 2.hours.ago)
